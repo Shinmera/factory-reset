@@ -100,6 +100,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Level.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
