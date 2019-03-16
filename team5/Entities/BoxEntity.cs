@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
-namespace team5.Entities
+namespace team5
 {
 	abstract class BoxEntity : Entity
 	{
@@ -21,17 +21,24 @@ namespace team5.Entities
 		//Source: https://www.gamedev.net/articles/programming/general-and-gameplay-programming/swept-aabb-collision-detection-and-response-r3084
 		public override bool collide(Entity source, float timestep, out int direction, out Vector2 position)
 		{
+			return collideBox(source, timestep, out direction, out position, boundingBox);
+		}
+
+		public static bool collideBox(Entity source, float timestep, out int direction, out Vector2 position, Rectangle target)
+		{
 			Rectangle motionBB;
 
+
 			Rectangle sourceBB = source.getBoundingBox();
-			Vector2 sourceMotion = source.velocity*timestep;
+			Vector2 sourceMotion = source.velocity * timestep;
 
 			motionBB.X = sourceBB.X + (int)Math.Floor(Math.Min(0.0, sourceMotion.X));
 			motionBB.Y = sourceBB.Y + (int)Math.Floor(Math.Min(0.0, sourceMotion.Y));
 			motionBB.Width = sourceBB.Width + (int)Math.Ceiling(Math.Max(0.0, sourceMotion.X));
 			motionBB.Height = sourceBB.Height + (int)Math.Ceiling(Math.Max(0.0, sourceMotion.Y));
 
-			if(!motionBB.Intersects(boundingBox)){
+			if (!motionBB.Intersects(target))
+			{
 				direction = -1;
 				position = new Vector2();
 				return false;
@@ -42,24 +49,24 @@ namespace team5.Entities
 
 			if (sourceMotion.X > 0.0f)
 			{
-				InvEntry.X = boundingBox.X - (sourceBB.X + sourceBB.Width);
-				InvExit.X = (boundingBox.X + boundingBox.Width) - sourceBB.X;
+				InvEntry.X = target.X - (sourceBB.X + sourceBB.Width);
+				InvExit.X = (target.X + target.Width) - sourceBB.X;
 			}
 			else
 			{
-				InvEntry.X = (boundingBox.X + boundingBox.Width) - sourceBB.X;
-				InvExit.X = boundingBox.X - (sourceBB.X + sourceBB.Width);
+				InvEntry.X = (target.X + target.Width) - sourceBB.X;
+				InvExit.X = target.X - (sourceBB.X + sourceBB.Width);
 			}
 
 			if (sourceMotion.Y > 0.0f)
 			{
-				InvEntry.Y = boundingBox.Y - (sourceBB.Y + sourceBB.Width);
-				InvExit.Y = (boundingBox.Y + boundingBox.Width) - sourceBB.Y;
+				InvEntry.Y = target.Y - (sourceBB.Y + sourceBB.Width);
+				InvExit.Y = (target.Y + target.Width) - sourceBB.Y;
 			}
 			else
 			{
-				InvEntry.Y = (boundingBox.Y + boundingBox.Width) - sourceBB.Y;
-				InvExit.Y = boundingBox.Y - (sourceBB.Y + sourceBB.Width);
+				InvEntry.Y = (target.Y + target.Width) - sourceBB.Y;
+				InvExit.Y = target.Y - (sourceBB.Y + sourceBB.Width);
 			}
 
 			Vector2 Entry;
@@ -126,6 +133,7 @@ namespace team5.Entities
 				position = entryTime * sourceMotion * source.position;
 				return true;
 			}
+
 		}
 	}
 }

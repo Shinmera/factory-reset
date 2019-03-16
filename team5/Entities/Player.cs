@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
-namespace team5.Entities
+namespace team5
 {
 	class Player : BoxEntity
 	{

@@ -51,8 +51,17 @@ namespace team5
 		public static int DOWN = 3;
 		public static int LEFT = 4;
 
-		public bool collide(Entity source, out int direction, out Entity target, out Vector2 position, float timestep)
+		//TODO: Tile collisions
+		public bool collideSolid(Entity source, float timestep, out int direction, out Entity target, out Vector2 position)
 		{
+			foreach (var entity in SolidEntities)
+			{
+				if (((BoxEntity)entity).collide(source, timestep, out direction,out position)){
+					target = (BoxEntity)entity;
+					return true;
+				}
+			}
+
 			direction = -1;
 			target = null;
 			position = new Vector2();
