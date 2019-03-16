@@ -46,6 +46,11 @@ namespace team5
 
 		}
 
+		public static int UP = 1;
+		public static int RIGHT = 2;
+		public static int DOWN = 3;
+		public static int LEFT = 4;
+
 		public bool collide(Entity source, out int direction, out Entity target, out Vector2 position, float timestep)
 		{
 			direction = -1;

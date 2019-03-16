@@ -9,8 +9,8 @@ namespace team5
 {
 	abstract class Entity
 	{
-		protected Vector2 velocity;
-		protected Vector2 position;
+		public Vector2 velocity;
+		public Vector2 position;
 
 		public abstract Rectangle getBoundingBox();
 
