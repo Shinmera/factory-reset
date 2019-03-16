@@ -19,7 +19,7 @@ namespace team5.Entities
 		public override bool collide(Entity source, float timestep, out int direction, out Vector2 position)
 		{
 			Rectangle motionBB;
-			motionBB.X = source.getBoundingBox().Left + Math.Floor(Math.Min(0,));
+			motionBB.X = source.getBoundingBox().Left + (int)Math.Floor(Math.Min(0.0,1.0));
 
 			direction = -1;
 			position = new Vector2();
