@@ -7,12 +7,12 @@ using Microsoft.Xna.Framework;
 
 namespace team5
 {
-	class Entity
+	abstract class Entity
 	{
+		protected Vector2 velocity;
+		protected Vector2 position;
 
-		Rectangle boundingBox;
-		Vector2 velocity;
-		Vector2 position;
+		public abstract Rectangle getBoundingBox();
 
 		public virtual void Update(GameTime gameTime)
 		{
@@ -25,8 +25,10 @@ namespace team5
 		}
 
 		//Assume source is always a box
-		public virtual bool collide(Entity source, ref int direction, ref Vector2 position)
+		public virtual bool collide(Entity source, out int direction, out Vector2 position)
 		{
+			direction = -1;
+			position = new Vector2();
 			return false;
 		}
 	}

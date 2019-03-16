@@ -46,8 +46,11 @@ namespace team5
 
 		}
 
-		public bool collide(Entity source, ref int direction, ref Entity target, ref Vector2 position)
+		public bool collide(Entity source, out int direction, out Entity target, out Vector2 position)
 		{
+			direction = -1;
+			target = null;
+			position = new Vector2();
 			return false;
 		}
 	}
