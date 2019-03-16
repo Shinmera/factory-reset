@@ -46,7 +46,7 @@ namespace team5
 
 		}
 
-		public bool collide(Entity source, out int direction, out Entity target, out Vector2 position)
+		public bool collide(Entity source, out int direction, out Entity target, out Vector2 position, float timestep)
 		{
 			direction = -1;
 			target = null;

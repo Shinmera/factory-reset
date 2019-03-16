@@ -25,11 +25,6 @@ namespace team5
 		}
 
 		//Assume source is always a box
-		public virtual bool collide(Entity source, out int direction, out Vector2 position)
-		{
-			direction = -1;
-			position = new Vector2();
-			return false;
-		}
+		public abstract bool collide(Entity source, float timestep, out int direction, out Vector2 position);
 	}
 }

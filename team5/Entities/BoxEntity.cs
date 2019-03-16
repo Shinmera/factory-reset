@@ -15,5 +15,15 @@ namespace team5.Entities
 		{
 			return boundingBox;
 		}
+
+		public override bool collide(Entity source, float timestep, out int direction, out Vector2 position)
+		{
+			Rectangle motionBB;
+			motionBB.X = source.getBoundingBox().Left + Math.Floor(Math.Min(0,));
+
+			direction = -1;
+			position = new Vector2();
+			return false;
+		}
 	}
 }
