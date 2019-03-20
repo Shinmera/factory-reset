@@ -8,6 +8,8 @@ namespace team5
     /// </summary>
     public class Game1 : Game
     {
+		public const float physicstimestep = 1 / 60.0F;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
@@ -15,6 +17,8 @@ namespace team5
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+			IsFixedTimeStep = true;
         }
 
         /// <summary>

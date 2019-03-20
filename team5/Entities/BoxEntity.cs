@@ -19,12 +19,19 @@ namespace team5
 
 		//Standard swept AABB
 		//Source: https://www.gamedev.net/articles/programming/general-and-gameplay-programming/swept-aabb-collision-detection-and-response-r3084
-		public override bool collide(Entity source, float timestep, out int direction, out Vector2 position)
+		public override bool collide(Entity source, float timestep, out int direction, out float time)
 		{
-			return collideBox(source, timestep, out direction, out position, boundingBox);
+			if (source is BoxEntity)
+				return collideBox((BoxEntity)source, timestep, out direction, out time, boundingBox);
+			else
+			{
+				direction = -1;
+				time = -1;
+				return false;
+			}
 		}
 
-		public static bool collideBox(Entity source, float timestep, out int direction, out Vector2 position, Rectangle target)
+		public static bool collideBox(BoxEntity source, float timestep, out int direction, out float time, Rectangle target)
 		{
 			Rectangle motionBB;
 
@@ -40,7 +47,7 @@ namespace team5
 			if (!motionBB.Intersects(target))
 			{
 				direction = -1;
-				position = new Vector2();
+				time = -1;
 				return false;
 			}
 
@@ -100,7 +107,7 @@ namespace team5
 			if (entryTime > exitTime || Entry.X < 0.0f && Entry.Y < 0.0f || Entry.X > 1.0f || Entry.Y > 1.0f)
 			{
 				direction = 0;
-				position = new Vector2();
+				time = 0;
 				return false;
 			}
 			else
@@ -110,27 +117,27 @@ namespace team5
 				{
 					if (sourceMotion.X < 0.0f)
 					{
-						direction = Level.LEFT;
+						direction = Chunk.LEFT;
 					}
 					else
 					{
-						direction = Level.RIGHT;
+						direction = Chunk.RIGHT;
 					}
 				}
 				else
 				{
 					if (sourceMotion.Y < 0.0f)
 					{
-						direction = Level.UP;
+						direction = Chunk.UP;
 					}
 					else
 					{
-						direction = Level.DOWN;
+						direction = Chunk.DOWN;
 					}
 				}
 
 				// return the time of collision
-				position = entryTime * sourceMotion * source.position;
+				time = entryTime;
 				return true;
 			}
 
