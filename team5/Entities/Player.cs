@@ -14,11 +14,15 @@ namespace team5
 		public bool moveLeft = false;
 		public bool jump = false;
 
-		public const float maxVel = 100;
-		public const float accelRate = 300;
-		public const float jumpSpeed = 100;
-		public const float friction = 0.5F;
-		public static readonly float stepFriction = (float)Math.Pow(0.5F, Game1.DELTAT);
+		public int longjump = 0;
+
+		public const float maxVel = 200;
+		public const float accelRate = 600;
+		public const float jumpSpeed = 400;
+		public const float groundFriction = 0.01F;
+		public const float airFriction = 0.5F;
+		public static readonly float stepGroundFriction = (float)Math.Pow(groundFriction, Game1.DELTAT);
+		public static readonly float stepAirFriction = (float)Math.Pow(airFriction, Game1.DELTAT);
 
 		public Player(Vector2 position, Game1 game):base(game)
 		{
@@ -46,59 +50,64 @@ namespace team5
 
 			if (chunk != null)
 			{
+				if (moveRight && velocity.X < maxVel)
+				{
+					velocity.X = Math.Min(maxVel, velocity.X + accelRate * Game1.DELTAT);
+				}
+				if (moveLeft && -velocity.X < maxVel)
+				{
+					velocity.X = Math.Max(-maxVel, velocity.X - accelRate * Game1.DELTAT);
+				}
+
 				velocity.Y += Game1.DELTAT * Game1.GRAVITY;
 
-				if (chunk.collideSolid(this, Game1.DELTAT, out direction, out time, out target))
+				float deltat = Game1.DELTAT;
+
+				while (chunk.collideSolid(this, deltat, out direction, out time, out target))
 				{
 					if ((direction & Chunk.DOWN) != 0) {
-						velocity.Y = 0;
+						velocity.Y = target[0].velocity.Y;
 						position.Y = target[0].getBoundingBox().Top - size.Y;
 					}
 					if ((direction & Chunk.UP) != 0)
 					{
-						velocity.Y = 0;
+						velocity.Y = target[0].velocity.Y;
 						position.Y = target[0].getBoundingBox().Bottom;
 					}
 					if ((direction & Chunk.LEFT) != 0)
 					{
-						velocity.X = 0;
-						position.Y = target[1].getBoundingBox().Right;
+						velocity.X = target[1].velocity.X;
+						position.X = target[1].getBoundingBox().Right;
 					}
 					if ((direction & Chunk.RIGHT) != 0)
 					{
-						position.Y = target[1].getBoundingBox().Left - size.X;
-						velocity.X = 0;
+						velocity.X = target[1].velocity.X;
+						position.X = target[1].getBoundingBox().Left - size.X;
 					}
-					position += velocity * Game1.DELTAT;
+					position += velocity * time*deltat;
 
 					if((direction & Chunk.DOWN) != 0)
 					{
-						if (moveRight && velocity.X < maxVel)
-						{
-							velocity.X = Math.Min(maxVel, velocity.X + accelRate * Game1.DELTAT);
-						}
-						if (moveLeft && -velocity.X < maxVel)
-						{
-							velocity.X = Math.Max(-maxVel, velocity.X - accelRate * Game1.DELTAT);
-						}
 						if (jump)
 						{
 							velocity.Y -= jumpSpeed;
+							longjump = 15;
 						}
 						if(!(moveLeft || moveRight || jump))
 						{
-							velocity.X = velocity.X * stepFriction;
-							if(Math.Abs(velocity.X) < 1F)
-							{
-								velocity.X = 0;
-							}
+							velocity.X = 0;
 						}
 					}
+					else
+					{
+						velocity = velocity * stepAirFriction;
+					}
+
+					deltat = (1 - time) * deltat;
 				}
-				else
-				{
-					position += velocity * Game1.DELTAT;
-				}
+
+				position += velocity * deltat;
+				velocity = velocity * stepAirFriction;
 			}
 			else
 			{

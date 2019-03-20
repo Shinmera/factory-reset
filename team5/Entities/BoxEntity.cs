@@ -50,7 +50,7 @@ namespace team5
 
 			if (!motionBB.Intersects(target))
 			{
-				direction = -1;
+				direction = 0;
 				time = -1;
 				return false;
 			}
@@ -71,13 +71,13 @@ namespace team5
 
 			if (sourceMotion.Y > 0.0f)
 			{
-				InvEntry.Y = target.Y - (sourceBB.Y + sourceBB.Width);
-				InvExit.Y = (target.Y + target.Width) - sourceBB.Y;
+				InvEntry.Y = target.Y - (sourceBB.Y + sourceBB.Height);
+				InvExit.Y = (target.Y + target.Height) - sourceBB.Y;
 			}
 			else
 			{
-				InvEntry.Y = (target.Y + target.Width) - sourceBB.Y;
-				InvExit.Y = target.Y - (sourceBB.Y + sourceBB.Width);
+				InvEntry.Y = (target.Y + target.Height) - sourceBB.Y;
+				InvExit.Y = target.Y - (sourceBB.Y + sourceBB.Height);
 			}
 
 			Vector2 Entry;
@@ -111,7 +111,7 @@ namespace team5
 			if (entryTime > exitTime || Entry.X < 0.0f && Entry.Y < 0.0f || Entry.X > 1 || Entry.Y > 1)
 			{
 				direction = 0;
-				time = 0;
+				time = -1;
 				return false;
 			}
 			else
