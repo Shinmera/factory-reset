@@ -9,11 +9,15 @@ namespace team5
 {
 	abstract class BoxEntity : Entity
 	{
-		protected Rectangle boundingBox;
+		protected Point size;
+
+		public BoxEntity(Game1 game):base(game)
+		{
+		}
 
 		public override Rectangle getBoundingBox()
 		{
-			return boundingBox;
+			return new Rectangle((int)Math.Floor(position.X), (int)Math.Floor(position.Y), size.X, size.Y);
 		}
 
 
@@ -22,7 +26,7 @@ namespace team5
 		public override bool collide(Entity source, float timestep, out int direction, out float time)
 		{
 			if (source is BoxEntity)
-				return collideBox((BoxEntity)source, timestep, out direction, out time, boundingBox);
+				return collideBox((BoxEntity)source, timestep, out direction, out time, getBoundingBox());
 			else
 			{
 				direction = -1;
@@ -104,7 +108,7 @@ namespace team5
 			float entryTime = Math.Max(Entry.X, Entry.Y);
 			float exitTime = Math.Min(Exit.X, Exit.Y);
 
-			if (entryTime > exitTime || Entry.X < 0.0f && Entry.Y < 0.0f || Entry.X > 1.0f || Entry.Y > 1.0f)
+			if (entryTime > exitTime || Entry.X < 0.0f && Entry.Y < 0.0f || Entry.X > 1 || Entry.Y > 1)
 			{
 				direction = 0;
 				time = 0;

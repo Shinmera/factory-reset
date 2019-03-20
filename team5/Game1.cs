@@ -8,12 +8,16 @@ namespace team5
     /// </summary>
     public class Game1 : Game
     {
-		public const float physicstimestep = 1 / 60.0F;
+		public const float GRAVITY = 1F;
+		public const float DELTAT = 1 / 60.0F;
 
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
 
-        public Game1()
+		public SpriteBatch SpriteBatch { get; private set; }
+
+		Level level;
+
+		public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -21,17 +25,20 @@ namespace team5
 			IsFixedTimeStep = true;
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
-        protected override void Initialize()
+
+		/// <summary>
+		/// Allows the game to perform any initialization it needs to before starting to run.
+		/// This is where it can query for any required services and load any non-graphic
+		/// related content.  Calling base.Initialize will enumerate through any components
+		/// and initialize them as well.
+		/// </summary>
+		protected override void Initialize()
         {
             // TODO: Add your initialization logic here
 
             base.Initialize();
+
+			level = new Level(this);
         }
 
         /// <summary>
@@ -41,7 +48,7 @@ namespace team5
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            SpriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
         }
@@ -65,6 +72,7 @@ namespace team5
             // TODO: Add your update logic here
 
             base.Update(gameTime);
+			level.Update(gameTime);
         }
 
         /// <summary>
@@ -78,6 +86,7 @@ namespace team5
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
+			level.Draw(gameTime);
         }
     }
 }

@@ -18,15 +18,17 @@ namespace team5
         public int Columns { get; set; }
         private int currentFrame;
         private int totalFrames;
+		private SpriteBatch spriteBatch;
 
 
-        public AnimatedSprite(Texture2D texture, int rows, int columns)
+        public AnimatedSprite(Texture2D texture, int rows, int columns, SpriteBatch spriteBatch)
         {
             Texture = texture;
             Rows = rows;
             Columns = columns;
             currentFrame = 0;
             totalFrames = Rows * Columns;
+			this.spriteBatch = spriteBatch;
         }
 
         public void Update()
@@ -36,7 +38,7 @@ namespace team5
                 currentFrame = 0;
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 location)
+        public void Draw(Vector2 location)
         {
             int width = Texture.Width / Columns;
             int hight = Texture.Height / Rows;
@@ -50,5 +52,5 @@ namespace team5
             spriteBatch.End();
 
         }
-    }
+	}
 }

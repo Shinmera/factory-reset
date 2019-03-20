@@ -13,8 +13,8 @@ namespace team5
 {
 	class Chunk
 	{
-		public static int EMPTY = 0;
-		public static int SOLIDPLATFORM = 1;
+		public const int EMPTY = 0;
+		public const int SOLIDPLATFORM = 1;
 
 		public int[][] tileset;
 
@@ -27,14 +27,29 @@ namespace team5
 		//things that will stop you like moving platforms (which are not part of the tileset)
 		ArrayList SolidEntities;
 
-		SpriteBatch spriteBatch;
+		Game1 game;
 
+		//TESTING ONLY
+		public Chunk(Game1 game, Player player)
+		{
+			SolidEntities = new ArrayList();
+			NonCollidingEntities = new ArrayList();
+			CollidingEntities = new ArrayList();
 
-		public Chunk(SpriteBatch spriteBatch, int [][] tileset)
+			NonCollidingEntities.Add(player);
+
+			SolidEntities.Add(new Platform(new Vector2(100, 700), game, 600, 10));
+
+			this.game = game;
+		}
+
+		public Chunk(Game1 game, int [][] tileset)
 		{
 			this.tileset = tileset;
-			ArrayList SolidEntities = new ArrayList();
-			this.spriteBatch = spriteBatch;
+			SolidEntities = new ArrayList();
+			NonCollidingEntities = new ArrayList();
+			CollidingEntities = new ArrayList();
+			this.game = game;
 		}
 
 		public void Update(GameTime gameTime)
@@ -43,17 +58,41 @@ namespace team5
 			{
 				((Entity)entity).Update(gameTime, this);
 			}
+
+			foreach (var entity in NonCollidingEntities)
+			{
+				((Entity)entity).Update(gameTime, this);
+			}
+
+			foreach (var entity in CollidingEntities)
+			{
+				((Entity)entity).Update(gameTime, this);
+			}
 		}
 
 		public void Draw(GameTime gameTime)
 		{
+			foreach (var entity in SolidEntities)
+			{
+				((Entity)entity).Draw(gameTime, new Vector2());
+			}
+
+			foreach (var entity in NonCollidingEntities)
+			{
+				((Entity)entity).Draw(gameTime, new Vector2());
+			}
+
+			foreach (var entity in CollidingEntities)
+			{
+				((Entity)entity).Draw(gameTime, new Vector2());
+			}
 
 		}
 
-		public static int UP = 1;
-		public static int RIGHT = 2;
-		public static int DOWN = 3;
-		public static int LEFT = 4;
+		public const int UP = 1;
+		public const int RIGHT = 2;
+		public const int DOWN = 3;
+		public const int LEFT = 4;
 
 		//TODO: Tile collisions
 		public bool collideSolid(Entity source, float timestep, out int direction, out float time, out Entity target)
@@ -67,12 +106,16 @@ namespace team5
 			{
 				float tempTime;
 				int tempDirection;
-				if (((BoxEntity)entity).collide(source, timestep, out tempDirection, out tempTime)){
-					if (tempTime < time)
+				if (entity is BoxEntity)
+				{
+					if (((BoxEntity)entity).collide(source, timestep, out tempDirection, out tempTime))
 					{
-						time = tempTime;
-						direction = tempDirection;
-						target = (BoxEntity)entity;
+						if (tempTime < time)
+						{
+							time = tempTime;
+							direction = tempDirection;
+							target = (BoxEntity)entity;
+						}
 					}
 				}
 			}

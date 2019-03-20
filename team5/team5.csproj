@@ -103,8 +103,10 @@
     <Compile Include="Entities\BoxEntity.cs" />
     <Compile Include="Components\AnimatedSprite.cs" />
     <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Entities\Platform.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Chunk.cs" />
+    <Compile Include="Level.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
