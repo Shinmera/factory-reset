@@ -10,6 +10,15 @@ namespace team5
 {
 	class Player : BoxEntity
 	{
+		public bool moveRight = false;
+		public bool moveLeft = false;
+		public bool jump = false;
+
+		public const float maxVel = 100;
+		public const float accelRate = 300;
+		public const float jumpSpeed = 100;
+		public const float friction = 0.5F;
+		public static readonly float stepFriction = (float)Math.Pow(0.5F, Game1.DELTAT);
 
 		public Player(Vector2 position, Game1 game):base(game)
 		{
@@ -33,35 +42,57 @@ namespace team5
 			int direction;
 			float time;
 
-			Entity target;
+			Entity[] target;
 
 			if (chunk != null)
 			{
-				velocity.Y += Game1.GRAVITY;
+				velocity.Y += Game1.DELTAT * Game1.GRAVITY;
+
 				if (chunk.collideSolid(this, Game1.DELTAT, out direction, out time, out target))
 				{
-					switch (direction)
+					if ((direction & Chunk.DOWN) != 0) {
+						velocity.Y = 0;
+						position.Y = target[0].getBoundingBox().Top - size.Y;
+					}
+					if ((direction & Chunk.UP) != 0)
 					{
-						case Chunk.DOWN:
-							velocity.Y = 0;
-							position.Y = target.getBoundingBox().Top - size.Y;
-							position.X += velocity.X * Game1.DELTAT;
-							break;
-						case Chunk.UP:
-							velocity.Y = 0;
-							position.Y = target.getBoundingBox().Bottom;
-							position.X += velocity.X * Game1.DELTAT;
-							break;
-						case Chunk.LEFT:
-							velocity.X = 0;
-							position.Y = target.getBoundingBox().Right;
-							position.Y += velocity.Y * Game1.DELTAT;
-							break;
-						case Chunk.RIGHT:
-							position.Y = target.getBoundingBox().Left - size.X;
-							velocity.X = 0;
-							position.Y += velocity.Y * Game1.DELTAT;
-							break;
+						velocity.Y = 0;
+						position.Y = target[0].getBoundingBox().Bottom;
+					}
+					if ((direction & Chunk.LEFT) != 0)
+					{
+						velocity.X = 0;
+						position.Y = target[1].getBoundingBox().Right;
+					}
+					if ((direction & Chunk.RIGHT) != 0)
+					{
+						position.Y = target[1].getBoundingBox().Left - size.X;
+						velocity.X = 0;
+					}
+					position += velocity * Game1.DELTAT;
+
+					if((direction & Chunk.DOWN) != 0)
+					{
+						if (moveRight && velocity.X < maxVel)
+						{
+							velocity.X = Math.Min(maxVel, velocity.X + accelRate * Game1.DELTAT);
+						}
+						if (moveLeft && -velocity.X < maxVel)
+						{
+							velocity.X = Math.Max(-maxVel, velocity.X - accelRate * Game1.DELTAT);
+						}
+						if (jump)
+						{
+							velocity.Y -= jumpSpeed;
+						}
+						if(!(moveLeft || moveRight || jump))
+						{
+							velocity.X = velocity.X * stepFriction;
+							if(Math.Abs(velocity.X) < 1F)
+							{
+								velocity.X = 0;
+							}
+						}
 					}
 				}
 				else

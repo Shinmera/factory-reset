@@ -100,6 +100,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controller.cs" />
     <Compile Include="Entities\BoxEntity.cs" />
     <Compile Include="Components\AnimatedSprite.cs" />
     <Compile Include="Entities\Entity.cs" />

@@ -8,7 +8,7 @@ namespace team5
     /// </summary>
     public class Game1 : Game
     {
-		public const float GRAVITY = 1F;
+		public const float GRAVITY = 100F;
 		public const float DELTAT = 1 / 60.0F;
 
         GraphicsDeviceManager graphics;
@@ -16,6 +16,7 @@ namespace team5
 		public SpriteBatch SpriteBatch { get; private set; }
 
 		Level level;
+		Controller controller;
 
 		public Game1()
         {
@@ -39,6 +40,10 @@ namespace team5
             base.Initialize();
 
 			level = new Level(this);
+
+			controller = new Controller(this);
+
+			controller.setPlayer(level.player);
         }
 
         /// <summary>
@@ -73,6 +78,7 @@ namespace team5
 
             base.Update(gameTime);
 			level.Update(gameTime);
+			controller.Update();
         }
 
         /// <summary>

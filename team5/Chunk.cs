@@ -89,18 +89,18 @@ namespace team5
 
 		}
 
-		public const int UP = 1;
-		public const int RIGHT = 2;
-		public const int DOWN = 3;
-		public const int LEFT = 4;
+		public const int UP =		0x00000001;
+		public const int RIGHT =	0x00000010;
+		public const int DOWN =		0x00000100;
+		public const int LEFT =		0x00001000;
 
 		//TODO: Tile collisions
-		public bool collideSolid(Entity source, float timestep, out int direction, out float time, out Entity target)
+		public bool collideSolid(Entity source, float timestep, out int direction, out float time, out Entity[] target)
 		{
 
 			time = float.PositiveInfinity;
 			direction = -1;
-			target = null;
+			target = new Entity[2];
 
 			foreach (var entity in SolidEntities)
 			{
@@ -114,13 +114,34 @@ namespace team5
 						{
 							time = tempTime;
 							direction = tempDirection;
-							target = (BoxEntity)entity;
+							if ((tempDirection & (UP | DOWN)) != 0)
+							{
+								target[0] = (BoxEntity)entity;
+							}
+							else
+							{
+								target[1] = (BoxEntity)entity;
+							}
+						}
+						if(tempTime == time)
+						{
+							//Allows collisions with multiple directions
+							direction = direction | tempDirection;
+
+							if ((tempDirection & (UP | DOWN)) != 0)
+							{
+								target[0] = (BoxEntity)entity;
+							}
+							else
+							{
+								target[1] = (BoxEntity)entity;
+							}
 						}
 					}
 				}
 			}
 
-			if (target != null)
+			if (target[0] != null || target[1] != null)
 				return true;
 
 			return false;
