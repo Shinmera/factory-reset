@@ -40,7 +40,7 @@ namespace team5
 
 			SolidEntities.Add(new Platform(new Vector2(100, 700), game, 600, 10));
 
-			SolidEntities.Add(new Platform(new Vector2(600, 600), game, 10, 200));
+			SolidEntities.Add(new Platform(new Vector2(600, 400), game, 10, 400));
 
 			SolidEntities.Add(new Platform(new Vector2(500, 670), game, 100, 10));
 

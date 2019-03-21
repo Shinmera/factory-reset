@@ -10,16 +10,22 @@ namespace team5
 {
 	class Player : BoxEntity
 	{
+		const bool canRepeatWallJump = false;
+		const bool canDoubleJump = false;
+
 		public bool moveRight = false;
 		public bool moveLeft = false;
 		public bool jump = false;
+		private bool jumpkeydown = true;
+		private bool hasWallJumped = false;
+		private bool hasDoubleJumped = false;
 
 		public int longjump = 0;
 
 		public const float maxVel = 200;
 		public const float accelRate = 600;
 		public const float jumpSpeed = 400;
-		public const float groundFriction = 0.01F;
+		public const float groundFriction = 0.0001F;
 		public const float airFriction = 0.5F;
 		public static readonly float stepGroundFriction = (float)Math.Pow(groundFriction, Game1.DELTAT);
 		public static readonly float stepAirFriction = (float)Math.Pow(airFriction, Game1.DELTAT);
@@ -63,33 +69,42 @@ namespace team5
 
 				float deltat = Game1.DELTAT;
 
+				bool collided = false;
+
 				while (chunk.collideSolid(this, deltat, out direction, out time, out target))
 				{
+					collided = true;
 					if ((direction & Chunk.DOWN) != 0) {
 						velocity.Y = target[0].velocity.Y;
 						position.Y = target[0].getBoundingBox().Top - size.Y;
+						hasDoubleJumped = false;
+						hasWallJumped = false;
 					}
 					if ((direction & Chunk.UP) != 0)
 					{
-						velocity.Y = target[0].velocity.Y;
+						float relVel = velocity.Y - target[0].velocity.Y;
+						velocity.Y = target[0].velocity.Y - (relVel/3);
 						position.Y = target[0].getBoundingBox().Bottom;
 					}
 					if ((direction & Chunk.LEFT) != 0)
 					{
 						velocity.X = target[1].velocity.X;
+						velocity.Y = velocity.Y * (float)Math.Pow(groundFriction, Game1.DELTAT);
 						position.X = target[1].getBoundingBox().Right;
 					}
 					if ((direction & Chunk.RIGHT) != 0)
 					{
 						velocity.X = target[1].velocity.X;
+						velocity.Y = velocity.Y * (float)Math.Pow(groundFriction, Game1.DELTAT);
 						position.X = target[1].getBoundingBox().Left - size.X;
 					}
 					position += velocity * time*deltat;
 
 					if((direction & Chunk.DOWN) != 0)
 					{
-						if (jump)
+						if (jump && jumpkeydown)
 						{
+							jumpkeydown = false;
 							velocity.Y -= jumpSpeed;
 							longjump = 15;
 						}
@@ -100,10 +115,30 @@ namespace team5
 					}
 					else
 					{
-						velocity = velocity * stepAirFriction;
+						if (jump && jumpkeydown && (!hasWallJumped || canRepeatWallJump) && (direction & Chunk.RIGHT) != 0)
+						{
+							velocity.Y -= jumpSpeed;
+							velocity.X = -maxVel;
+							jumpkeydown = false;
+							hasWallJumped = true;
+						}
+						if(jump && jumpkeydown && !hasWallJumped && (direction & Chunk.LEFT) != 0)
+						{
+							velocity.Y -= jumpSpeed;
+							velocity.X = maxVel;
+							jumpkeydown = false;
+							hasWallJumped = true;
+						}
 					}
 
 					deltat = (1 - time) * deltat;
+				}
+
+				if (!collided && jump && jumpkeydown && (!hasDoubleJumped && canDoubleJump))
+				{
+					velocity.Y = Math.Min(velocity.Y,Math.Max(-jumpSpeed, velocity.Y-jumpSpeed));
+					longjump = 15;
+					hasDoubleJumped = true;
 				}
 
 				position += velocity * deltat;
@@ -113,6 +148,8 @@ namespace team5
 			{
 
 			}
+
+			jumpkeydown = !jump;
 		}
 	}
 }
