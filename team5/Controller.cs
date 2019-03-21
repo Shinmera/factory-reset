@@ -8,27 +8,27 @@ using Microsoft.Xna.Framework.Input;
 
 namespace team5
 {
-	class Controller
-	{
-		Player player;
+    class Controller
+    {
+        Player player;
 
-		public void setPlayer(Player player)
-		{
-			this.player = player;
-		}
+        public void setPlayer(Player player)
+        {
+            this.player = player;
+        }
 
-		public Controller(Game1 game)
-		{
+        public Controller(Game1 game)
+        {
 
-		}
+        }
 
-		public void Update()
-		{
-			KeyboardState state = Keyboard.GetState();
+        public void Update()
+        {
+            KeyboardState state = Keyboard.GetState();
 
-			player.moveLeft = state.IsKeyDown(Keys.A);
-			player.moveRight = state.IsKeyDown(Keys.D);
-			player.jump = state.IsKeyDown(Keys.W);
-		}
-	}
+            player.moveLeft = state.IsKeyDown(Keys.A);
+            player.moveRight = state.IsKeyDown(Keys.D);
+            player.jumpkeydown = state.IsKeyDown(Keys.W);
+        }
+    }
 }

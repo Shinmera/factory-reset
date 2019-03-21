@@ -8,42 +8,42 @@ namespace team5
     /// </summary>
     public class Game1 : Game
     {
-		public const float GRAVITY = 400F;
-		public const float DELTAT = 1 / 60.0F;
+        public const float GRAVITY = 400F;
+        public const float DELTAT = 1 / 60.0F;
 
         GraphicsDeviceManager graphics;
 
-		public SpriteBatch SpriteBatch { get; private set; }
+        public SpriteBatch SpriteBatch { get; private set; }
 
-		Level level;
-		Controller controller;
+        Level level;
+        Controller controller;
 
-		public Game1()
+        public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
-			IsFixedTimeStep = true;
+            IsFixedTimeStep = true;
         }
 
 
-		/// <summary>
-		/// Allows the game to perform any initialization it needs to before starting to run.
-		/// This is where it can query for any required services and load any non-graphic
-		/// related content.  Calling base.Initialize will enumerate through any components
-		/// and initialize them as well.
-		/// </summary>
-		protected override void Initialize()
+        /// <summary>
+        /// Allows the game to perform any initialization it needs to before starting to run.
+        /// This is where it can query for any required services and load any non-graphic
+        /// related content.  Calling base.Initialize will enumerate through any components
+        /// and initialize them as well.
+        /// </summary>
+        protected override void Initialize()
         {
             // TODO: Add your initialization logic here
 
             base.Initialize();
 
-			level = new Level(this);
+            level = new Level(this);
 
-			controller = new Controller(this);
+            controller = new Controller(this);
 
-			controller.setPlayer(level.player);
+            controller.setPlayer(level.player);
         }
 
         /// <summary>
@@ -77,8 +77,8 @@ namespace team5
             // TODO: Add your update logic here
 
             base.Update(gameTime);
-			level.Update(gameTime);
-			controller.Update();
+            level.Update(gameTime);
+            controller.Update();
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace team5
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
-			level.Draw(gameTime);
+            level.Draw(gameTime);
         }
     }
 }
