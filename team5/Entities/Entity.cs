@@ -9,17 +9,17 @@ namespace team5
 {
     abstract class Entity
     {
-        protected Game1 game;
-        protected AnimatedSprite drawer;
+        protected Game1 Game;
+        protected AnimatedSprite Drawer;
 
-        public Vector2 velocity;
-        public Vector2 position;
+        public Vector2 Velocity;
+        public Vector2 Position;
 
-        public abstract Rectangle getBoundingBox();
+        public abstract RectangleF GetBoundingBox();
 
         public Entity(Game1 game)
         {
-            this.game = game;
+            this.Game = game;
         }
 
         public virtual void Update(GameTime gameTime, Chunk level)
@@ -29,11 +29,11 @@ namespace team5
 
         public virtual void Draw(GameTime gameTime, Vector2 CameraOffset)
         {
-            if(drawer != null)
-            drawer.Draw(position + CameraOffset);
+            if(Drawer != null)
+            Drawer.Draw(Position + CameraOffset);
         }
 
         //Assume source is always a box
-        public abstract bool collide(Entity source, float timestep, out int direction, out float time);
+        public abstract bool Collide(Entity source, float timestep, out int direction, out float time);
     }
 }

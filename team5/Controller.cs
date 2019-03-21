@@ -10,11 +10,11 @@ namespace team5
 {
     class Controller
     {
-        Player player;
+        Player Player;
 
-        public void setPlayer(Player player)
+        public void SetPlayer(Player player)
         {
-            this.player = player;
+            this.Player = player;
         }
 
         public Controller(Game1 game)
@@ -26,9 +26,9 @@ namespace team5
         {
             KeyboardState state = Keyboard.GetState();
 
-            player.moveLeft = state.IsKeyDown(Keys.A);
-            player.moveRight = state.IsKeyDown(Keys.D);
-            player.jumpkeydown = state.IsKeyDown(Keys.W);
+            Player.MoveLeft = state.IsKeyDown(Keys.A);
+            Player.MoveRight = state.IsKeyDown(Keys.D);
+            Player.JumpKeyDown = state.IsKeyDown(Keys.W);
         }
     }
 }

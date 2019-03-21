@@ -9,24 +9,24 @@ namespace team5
 {
     abstract class BoxEntity : Entity
     {
-        protected Point size;
+        protected Point Size;
 
         public BoxEntity(Game1 game):base(game)
         {
         }
 
-        public override Rectangle getBoundingBox()
+        public override RectangleF GetBoundingBox()
         {
-            return new Rectangle((int)Math.Floor(position.X), (int)Math.Floor(position.Y), size.X+1, size.Y+1);
+            return new RectangleF(Position.X, Position.Y, Size.X+1, Size.Y+1);
         }
 
 
         //Standard swept AABB
         //Source: https://www.gamedev.net/articles/programming/general-and-gameplay-programming/swept-aabb-collision-detection-and-response-r3084
-        public override bool collide(Entity source, float timestep, out int direction, out float time)
+        public override bool Collide(Entity source, float timestep, out int direction, out float time)
         {
             if (source is BoxEntity)
-                return collideBox((BoxEntity)source, timestep, out direction, out time, getBoundingBox());
+                return collideBox((BoxEntity)source, timestep, out direction, out time, GetBoundingBox());
             else
             {
                 direction = -1;
@@ -35,12 +35,12 @@ namespace team5
             }
         }
 
-        public static bool collideBox(BoxEntity source, float timestep, out int direction, out float time, Rectangle target)
+        public static bool collideBox(BoxEntity source, float timestep, out int direction, out float time, RectangleF target)
         {
-            Rectangle motionBB;
+            RectangleF motionBB;
 
-            Rectangle sourceBB = source.getBoundingBox();
-            Vector2 sourceMotion = source.velocity * timestep;
+            RectangleF sourceBB = source.GetBoundingBox();
+            Vector2 sourceMotion = source.Velocity * timestep;
 
             motionBB.X = sourceBB.X + (int)Math.Floor(Math.Min(0.0, sourceMotion.X));
             motionBB.Y = sourceBB.Y + (int)Math.Floor(Math.Min(0.0, sourceMotion.Y));
@@ -59,24 +59,24 @@ namespace team5
 
             if (sourceMotion.X > 0.0f)
             {
-                InvEntry.X = target.X - (source.position.X + source.size.X);
-                InvExit.X = (target.X + target.Width) - source.position.X;
+                InvEntry.X = target.X - (source.Position.X + source.Size.X);
+                InvExit.X = (target.X + target.Width) - source.Position.X;
             }
             else
             {
-                InvEntry.X = (target.X + target.Width) - source.position.X;
-                InvExit.X = target.X - (source.position.X + source.size.X);
+                InvEntry.X = (target.X + target.Width) - source.Position.X;
+                InvExit.X = target.X - (source.Position.X + source.Size.X);
             }
 
             if (sourceMotion.Y > 0.0f)
             {
-                InvEntry.Y = target.Y - (source.position.Y + source.size.Y);
-                InvExit.Y = (target.Y + target.Height) - source.position.Y;
+                InvEntry.Y = target.Y - (source.Position.Y + source.Size.Y);
+                InvExit.Y = (target.Y + target.Height) - source.Position.Y;
             }
             else
             {
-                InvEntry.Y = (target.Y + target.Height) - source.position.Y;
-                InvExit.Y = target.Y - (source.position.Y + source.size.Y);
+                InvEntry.Y = (target.Y + target.Height) - source.Position.Y;
+                InvExit.Y = target.Y - (source.Position.Y + source.Size.Y);
             }
 
             Vector2 Entry;
@@ -120,22 +120,22 @@ namespace team5
                 {
                     if (sourceMotion.X < 0.0f)
                     {
-                        direction = Chunk.LEFT;
+                        direction = Chunk.Left;
                     }
                     else
                     {
-                        direction = Chunk.RIGHT;
+                        direction = Chunk.Right;
                     }
                 }
                 else
                 {
                     if (sourceMotion.Y < 0.0f)
                     {
-                        direction = Chunk.UP;
+                        direction = Chunk.Up;
                     }
                     else
                     {
-                        direction = Chunk.DOWN;
+                        direction = Chunk.Down;
                     }
                 }
 

@@ -8,33 +8,31 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace team5
 {
-    class Player : BoxEntity
+    class Player : GroundBoxEntity
     {
-        const bool canRepeatWallJump = false;
-        const bool canDoubleJump = false;
+        const bool CanRepeatWallJump = false;
+        const bool CanDoubleJump = false;
 
-        public bool moveRight = false;
-        public bool moveLeft = false;
-        public bool jumpkeydown = true;
-        private bool jumpkeywasup = false;
-        public bool jump = false;
-        private bool hasWallJumped = false;
-        private bool hasDoubleJumped = false;
+        const int Width = 10;
+        const int Height = 10;
 
-        public int longjump = 0;
+        private bool JumpKeyWasUp = false;
+        private bool HasWallJumped = false;
+        private bool HasDoubleJumped = false;
 
-        public const float maxVel = 200;
-        public const float accelRate = 600;
-        public const float jumpSpeed = 400;
-        public const float groundFriction = 0.0001F;
-        public const float airFriction = 0.5F;
-        public static readonly float stepGroundFriction = (float)Math.Pow(groundFriction, Game1.DELTAT);
-        public static readonly float stepAirFriction = (float)Math.Pow(airFriction, Game1.DELTAT);
+        public const float PlayerMaxVel = 200;
+        public const float PlayerAccelRate = 600;
+        public const float PlayerJumpSpeed = 200;
+        public const float PlayerLongJumpSpeed = 300;
+        public const float PlayerLongJumpTime = 15*Game1.DeltaT;
+        public const float PlayerGroundFriction = 0.0001F;
+        public const float PlayerAirFriction = 0.5F;
 
-        public Player(Vector2 position, Game1 game):base(game)
+        public static readonly float PlayerStepGroundFriction = (float)Math.Pow(PlayerGroundFriction, Game1.DeltaT);
+        public static readonly float PlayerStepAirFriction = (float)Math.Pow(PlayerAirFriction, Game1.DeltaT);
+
+        public Player(Vector2 position, Game1 game):base(position,game, new Point(Width, Height))
         {
-            this.position = position;
-            size = new Point(10,10);
             Texture2D dummyTexture;
             dummyTexture = new Texture2D(game.GraphicsDevice, 10, 10);
             Color[] colors = new Color[10*10];
@@ -43,116 +41,53 @@ namespace team5
                 colors[i] = Color.Green;
             }
             dummyTexture.SetData(colors);
-            drawer = new AnimatedSprite(dummyTexture, 1, 1, game.SpriteBatch);
+            Drawer = new AnimatedSprite(dummyTexture, 1, 1, game.SpriteBatch);
+
+            MaxVel = PlayerMaxVel;
+            AccelRate = PlayerAccelRate;
+            JumpSpeed = PlayerJumpSpeed;
+            LongJumpSpeed = PlayerJumpSpeed;
+            StepAirFriction = PlayerStepAirFriction;
+        }
+
+        public override void WallAction(int direction)
+        {
+            base.WallAction(direction);
+            if(Velocity.Y > 0)
+                Velocity.Y *= PlayerStepGroundFriction;
+
+            if (Jump && (!HasWallJumped || CanRepeatWallJump) && (direction & Chunk.Right) != 0)
+            {
+                Velocity.Y -= JumpSpeed;
+                Velocity.X = -MaxVel;
+                HasWallJumped = true;
+                Jump = false;
+            }
+            if (Jump && (!HasWallJumped || CanRepeatWallJump) && (direction & Chunk.Left) != 0)
+            {
+                Velocity.Y -= JumpSpeed;
+                Velocity.X = MaxVel;
+                HasWallJumped = true;
+                Jump = false;
+            }
+        }
+
+        public override void OnTouchGround()
+        {
+            base.OnTouchGround();
+            HasDoubleJumped = false;
+            HasWallJumped = false;
         }
 
         public override void Update(GameTime gameTime, Chunk chunk)
         {
-            //base.Update(gameTime, chunk);
 
-            jump = jumpkeydown && jumpkeywasup;
+            Jump = JumpKeyDown && JumpKeyWasUp;
 
-            int direction;
-            float time;
+            base.Update(gameTime, chunk);
 
-            Entity[] target;
+            JumpKeyWasUp = !JumpKeyDown;
 
-            if (chunk != null)
-            {
-                if (moveRight && velocity.X < maxVel)
-                {
-                    velocity.X = Math.Min(maxVel, velocity.X + accelRate * Game1.DELTAT);
-                }
-                if (moveLeft && -velocity.X < maxVel)
-                {
-                    velocity.X = Math.Max(-maxVel, velocity.X - accelRate * Game1.DELTAT);
-                }
-
-                velocity.Y += Game1.DELTAT * Game1.GRAVITY;
-
-                float deltat = Game1.DELTAT;
-
-                bool collided = false;
-
-                while (chunk.collideSolid(this, deltat, out direction, out time, out target))
-                {
-                    collided = true;
-                    if ((direction & Chunk.DOWN) != 0) {
-                        velocity.Y = target[0].velocity.Y;
-                        position.Y = target[0].getBoundingBox().Top - size.Y;
-                        hasDoubleJumped = false;
-                        hasWallJumped = false;
-                    }
-                    if ((direction & Chunk.UP) != 0)
-                    {
-                        float relVel = velocity.Y - target[0].velocity.Y;
-                        velocity.Y = target[0].velocity.Y - (relVel/3);
-                        position.Y = target[0].getBoundingBox().Bottom;
-                    }
-                    if ((direction & Chunk.LEFT) != 0)
-                    {
-                        velocity.X = target[1].velocity.X;
-                        velocity.Y = velocity.Y * (float)Math.Pow(groundFriction, Game1.DELTAT);
-                        position.X = target[1].getBoundingBox().Right;
-                    }
-                    if ((direction & Chunk.RIGHT) != 0)
-                    {
-                        velocity.X = target[1].velocity.X;
-                        velocity.Y = velocity.Y * (float)Math.Pow(groundFriction, Game1.DELTAT);
-                        position.X = target[1].getBoundingBox().Left - size.X;
-                    }
-                    position += velocity * time*deltat;
-
-                    if((direction & Chunk.DOWN) != 0)
-                    {
-                        if (jump)
-                        {
-                            jumpkeydown = false;
-                            velocity.Y -= jumpSpeed;
-                            longjump = 15;
-                        }
-                        if(!(moveLeft || moveRight || jump))
-                        {
-                            velocity.X = 0;
-                        }
-                    }
-                    else
-                    {
-                        if (jump && (!hasWallJumped || canRepeatWallJump) && (direction & Chunk.RIGHT) != 0)
-                        {
-                            velocity.Y -= jumpSpeed;
-                            velocity.X = -maxVel;
-                            hasWallJumped = true;
-                            jump = false;
-                        }
-                        if(jump && !hasWallJumped && (direction & Chunk.LEFT) != 0)
-                        {
-                            velocity.Y -= jumpSpeed;
-                            velocity.X = maxVel;
-                            hasWallJumped = true;
-                            jump = false;
-                        }
-                    }
-
-                    deltat = (1 - time) * deltat;
-                }
-
-                if (!collided && jump && (!hasDoubleJumped && canDoubleJump))
-                {
-                    velocity.Y = Math.Min(velocity.Y,Math.Max(-jumpSpeed, velocity.Y-jumpSpeed));
-                    longjump = 15;
-                    hasDoubleJumped = true;
-                }
-                
-                position += velocity * deltat;
-                velocity = velocity * stepAirFriction;
-            }
-            else
-            {
-
-            }
-
-            jumpkeywasup = !jumpkeydown;
         }
     }
 }

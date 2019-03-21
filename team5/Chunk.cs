@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
 
@@ -13,12 +7,12 @@ namespace team5
 {
     class Chunk
     {
-        public const int EMPTY = 0;
-        public const int SOLIDPLATFORM = 1;
+        public const int Empty = 0;
+        public const int SolidPlatform = 1;
 
-        public const int tilesize = 10;
+        public const int TileSize = 10;
 
-        public int[][] tileset;
+        public int[][] TileSet;
 
         //Viewcones, intelligence
         ArrayList CollidingEntities;
@@ -29,7 +23,7 @@ namespace team5
         //things that will stop you like moving platforms (which are not part of the tileset)
         ArrayList SolidEntities;
 
-        Game1 game;
+        Game1 Game;
 
         //TESTING ONLY
         public Chunk(Game1 game, Player player)
@@ -46,16 +40,16 @@ namespace team5
 
             SolidEntities.Add(new Platform(new Vector2(500, 670), game, 100, 10));
 
-            this.game = game;
+            this.Game = game;
         }
 
         public Chunk(Game1 game, int [][] tileset)
         {
-            this.tileset = tileset;
+            TileSet = tileset;
             SolidEntities = new ArrayList();
             NonCollidingEntities = new ArrayList();
             CollidingEntities = new ArrayList();
-            this.game = game;
+            Game = game;
         }
 
         public void Update(GameTime gameTime)
@@ -95,17 +89,17 @@ namespace team5
 
         }
 
-        public const int UP =        0x00000001;
-        public const int RIGHT =    0x00000010;
-        public const int DOWN =        0x00000100;
-        public const int LEFT =        0x00001000;
+        public const int Up =        0x00000001;
+        public const int Right =    0x00000010;
+        public const int Down =        0x00000100;
+        public const int Left =        0x00001000;
 
         //TODO: Tile collisions
-        public bool collideSolid(Entity source, float timestep, out int direction, out float time, out Entity[] target)
+        public bool CollideSolid(Entity source, float timestep, out int direction, out float time, out Entity[] target)
         {
 
             time = float.PositiveInfinity;
-            direction = -1;
+            direction = 0;
             target = new Entity[2];
 
             foreach (var entity in SolidEntities)
@@ -114,13 +108,13 @@ namespace team5
                 int tempDirection;
                 if (entity is BoxEntity)
                 {
-                    if (((BoxEntity)entity).collide(source, timestep, out tempDirection, out tempTime))
+                    if (((BoxEntity)entity).Collide(source, timestep, out tempDirection, out tempTime))
                     {
                         if (tempTime < time)
                         {
                             time = tempTime;
                             direction = tempDirection;
-                            if ((tempDirection & (UP | DOWN)) != 0)
+                            if ((tempDirection & (Up | Down)) != 0)
                             {
                                 target[0] = (BoxEntity)entity;
                             }
@@ -134,7 +128,7 @@ namespace team5
                             //Allows collisions with multiple directions
                             direction = direction | tempDirection;
 
-                            if ((tempDirection & (UP | DOWN)) != 0)
+                            if ((tempDirection & (Up | Down)) != 0)
                             {
                                 target[0] = (BoxEntity)entity;
                             }

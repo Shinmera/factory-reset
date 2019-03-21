@@ -11,11 +11,11 @@ namespace team5
 {
     class Level
     {
-        public ArrayList chunks;
-        public Chunk activeChunk;
-        public Player player;
+        public ArrayList Chunks;
+        public Chunk ActiveChunk;
+        public Player Player;
 
-        private bool chunkTrans = false;
+        private bool ChunkTrans = false;
 
         public Level()
         {
@@ -25,22 +25,22 @@ namespace team5
         //TESTING ONLY
         public Level(Game1 game)
         {
-            player = new Player(new Vector2(200, 50), game);
-            activeChunk = new Chunk(game, player);
+            Player = new Player(new Vector2(200, 50), game);
+            ActiveChunk = new Chunk(game, Player);
         }
 
         public void Update(GameTime gameTime)
         {
-            activeChunk.Update(gameTime);
-            if (chunkTrans)
+            ActiveChunk.Update(gameTime);
+            if (ChunkTrans)
             {
-                player.Update(gameTime, null);
+                Player.Update(gameTime, null);
             }
         }
 
         public void Draw(GameTime gameTime)
         {
-            activeChunk.Draw(gameTime);
+            ActiveChunk.Draw(gameTime);
         }
     }
 }

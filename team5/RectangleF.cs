@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 
 namespace team5
 {
-    class RectangleF
+    struct RectangleF
     {
         public float X;
         public float Y;
         public float Width;
         public float Height;
 
-        public RectangleF()
+        public Rectangle GetRectangle()
         {
-
+            return new Rectangle((int)X, (int)Y, (int)Math.Ceiling(Width), (int)Math.Ceiling(Height));
         }
 
         public RectangleF(float x, float y, float width, float height)
@@ -24,6 +25,38 @@ namespace team5
             Y = y;
             Width = width;
             Height = height;
+        }
+
+        public float Bottom
+        {
+            get
+            {
+                return Y + Height;
+            }
+        }
+
+        public float Top
+        {
+            get
+            {
+                return Y;
+            }
+        }
+
+        public float Left
+        {
+            get
+            {
+                return X;
+            }
+        }
+
+        public float Right
+        {
+            get
+            {
+                return X + Width;
+            }
         }
 
         public bool Intersects(RectangleF target)

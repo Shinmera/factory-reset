@@ -8,8 +8,8 @@ namespace team5
     /// </summary>
     public class Game1 : Game
     {
-        public const float GRAVITY = 400F;
-        public const float DELTAT = 1 / 60.0F;
+        public const float GRAVITY = 600F;
+        public const float DeltaT = 1 / 60.0F;
 
         GraphicsDeviceManager graphics;
 
@@ -43,7 +43,7 @@ namespace team5
 
             controller = new Controller(this);
 
-            controller.setPlayer(level.player);
+            controller.SetPlayer(level.Player);
         }
 
         /// <summary>

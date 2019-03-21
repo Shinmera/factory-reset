@@ -12,8 +12,8 @@ namespace team5
     {
         public Platform(Vector2 position, Game1 game, int width, int height) : base(game)
         {
-            this.position = position;
-            size = new Point(width, height);
+            Position = position;
+            Size = new Point(width, height);
             Texture2D dummyTexture;
             dummyTexture = new Texture2D(game.GraphicsDevice, width, height);
             Color[] colors = new Color[width * height];
@@ -22,7 +22,7 @@ namespace team5
                 colors[i] = Color.Black;
             }
             dummyTexture.SetData(colors);
-            drawer = new AnimatedSprite(dummyTexture, 1, 1, game.SpriteBatch);
+            Drawer = new AnimatedSprite(dummyTexture, 1, 1, game.SpriteBatch);
         }
     }
 }
