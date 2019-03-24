@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
 
@@ -15,22 +15,22 @@ namespace team5
         public int[][] TileSet;
 
         //Viewcones, intelligence
-        ArrayList CollidingEntities;
+        List<Entity> CollidingEntities;
 
         //Enemies, background objects
-        ArrayList NonCollidingEntities;
+        List<Entity> NonCollidingEntities;
 
         //things that will stop you like moving platforms (which are not part of the tileset)
-        ArrayList SolidEntities;
+        List<Entity> SolidEntities;
 
         Game1 Game;
 
         //TESTING ONLY
         public Chunk(Game1 game, Player player)
         {
-            SolidEntities = new ArrayList();
-            NonCollidingEntities = new ArrayList();
-            CollidingEntities = new ArrayList();
+            SolidEntities = new List<Entity>();
+            NonCollidingEntities = new List<Entity>();
+            CollidingEntities = new List<Entity>();
 
             NonCollidingEntities.Add(player);
 
@@ -46,9 +46,9 @@ namespace team5
         public Chunk(Game1 game, int [][] tileset)
         {
             TileSet = tileset;
-            SolidEntities = new ArrayList();
-            NonCollidingEntities = new ArrayList();
-            CollidingEntities = new ArrayList();
+            SolidEntities = new List<Entity>();
+            NonCollidingEntities = new List<Entity>();
+            CollidingEntities = new List<Entity>();
             Game = game;
         }
 
@@ -95,12 +95,13 @@ namespace team5
         public const int Left =        0x00001000;
 
         //TODO: Tile collisions
-        public bool CollideSolid(Entity source, float timestep, out int direction, out float time, out Entity[] target)
+        public bool CollideSolid(Entity source, float timestep, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetVel)
         {
 
             time = float.PositiveInfinity;
             direction = 0;
-            target = new Entity[2];
+            targetBB = new RectangleF[2];
+            targetVel = new Vector2[2];
 
             foreach (var entity in SolidEntities)
             {
@@ -116,11 +117,13 @@ namespace team5
                             direction = tempDirection;
                             if ((tempDirection & (Up | Down)) != 0)
                             {
-                                target[0] = (BoxEntity)entity;
+                                targetBB[0] = ((BoxEntity)entity).GetBoundingBox();
+                                targetVel[0] = ((BoxEntity)entity).Velocity;
                             }
                             else
                             {
-                                target[1] = (BoxEntity)entity;
+                                targetBB[1] = ((BoxEntity)entity).GetBoundingBox();
+                                targetVel[1] = ((BoxEntity)entity).Velocity;
                             }
                         }
                         if(tempTime == time)
@@ -130,18 +133,22 @@ namespace team5
 
                             if ((tempDirection & (Up | Down)) != 0)
                             {
-                                target[0] = (BoxEntity)entity;
+                                targetBB[0] = ((BoxEntity)entity).GetBoundingBox();
+                                targetVel[0] = ((BoxEntity)entity).Velocity;
                             }
                             else
                             {
-                                target[1] = (BoxEntity)entity;
+                                targetBB[1] = ((BoxEntity)entity).GetBoundingBox();
+                                targetVel[1] = ((BoxEntity)entity).Velocity;
                             }
                         }
                     }
                 }
             }
 
-            if (target[0] != null || target[1] != null)
+
+
+            if (direction != 0)
                 return true;
 
             return false;

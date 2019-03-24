@@ -42,7 +42,8 @@ namespace team5
             int direction;
             float time;
 
-            Entity[] target;
+            RectangleF[] targetBB;
+            Vector2[] targetVel;
 
             if (chunk != null)
             {
@@ -59,32 +60,29 @@ namespace team5
 
                 float deltat = Game1.DeltaT;
 
-                bool collided = false;
-
-                while (chunk.CollideSolid(this, deltat, out direction, out time, out target))
+                while (chunk.CollideSolid(this, deltat, out direction, out time, out targetBB, out targetVel))
                 {
-                    collided = true;
                     if ((direction & Chunk.Down) != 0)
                     {
-                        Velocity.Y = target[0].Velocity.Y;
-                        Position.Y = target[0].GetBoundingBox().Top - Size.Y;
+                        Velocity.Y = targetVel[0].Y;
+                        Position.Y = targetBB[0].Top - Size.Y;
                         OnTouchGround();
                     }
                     if ((direction & Chunk.Up) != 0)
                     {
-                        float relVel = Velocity.Y - target[0].Velocity.Y;
-                        Velocity.Y = target[0].Velocity.Y - (relVel / 3);
-                        Position.Y = target[0].GetBoundingBox().Bottom;
+                        float relVel = Velocity.Y - targetBB[0].Y;
+                        Velocity.Y = targetVel[0].Y - (relVel / 3);
+                        Position.Y = targetBB[0].Bottom;
                     }
                     if ((direction & Chunk.Left) != 0)
                     {
-                        Velocity.X = target[1].Velocity.X;
-                        Position.X = target[1].GetBoundingBox().Right;
+                        Velocity.X = targetVel[1].X;
+                        Position.X = targetBB[1].Right;
                     }
                     if ((direction & Chunk.Right) != 0)
                     {
-                        Velocity.X = target[1].Velocity.X;
-                        Position.X = target[1].GetBoundingBox().Left - Size.X;
+                        Velocity.X = targetVel[1].X;
+                        Position.X = targetBB[1].Left - Size.X;
                     }
 
                     Position += Velocity * time * deltat;
