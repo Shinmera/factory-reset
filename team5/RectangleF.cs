@@ -67,5 +67,15 @@ namespace team5
                 Y + Height > target.Y;
         }
 
+        public List<Vector2> ToPolygon()
+        {
+            List<Vector2> res = new List<Vector2>(4);
+            res.Add(new Vector2(X, Y));
+            res.Add(new Vector2(X, Y + Height));
+            res.Add(new Vector2(X + Width, Y + Height));
+            res.Add(new Vector2(X + Width, Y));
+
+        }
+
     }
 }

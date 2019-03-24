@@ -103,6 +103,7 @@
     <Compile Include="Controller.cs" />
     <Compile Include="Entities\BoxEntity.cs" />
     <Compile Include="Components\AnimatedSprite.cs" />
+    <Compile Include="Entities\ConeEntity.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\GroundBoxEntity.cs" />
     <Compile Include="Entities\Platform.cs" />
