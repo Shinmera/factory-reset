@@ -146,8 +146,6 @@ namespace team5
                 }
             }
 
-
-
             if (direction != 0)
                 return true;
 

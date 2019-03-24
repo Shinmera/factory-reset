@@ -75,6 +75,7 @@ namespace team5
             res.Add(new Vector2(X + Width, Y + Height));
             res.Add(new Vector2(X + Width, Y));
 
+            return res;
         }
 
     }
