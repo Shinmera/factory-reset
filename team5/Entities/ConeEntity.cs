@@ -133,8 +133,7 @@ namespace team5.Entities
             float r = point.Length();
             float phi = (float)Math.Atan2(point.Y, point.X);
             return r <= radius
-                && angle1 <= phi
-                && phi <= angle2;
+                 && (phi > angle1 && phi < angle2) || (angle2 < angle1 && phi > angle1 || phi < angle2);
         }
 
         // <Nicolas> This also seems super complicated for what it has to do.
