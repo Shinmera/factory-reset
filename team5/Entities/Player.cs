@@ -12,7 +12,9 @@ namespace team5
     {
         const bool CanRepeatWallJump = false;
         const bool CanDoubleJump = false;
-        
+
+        public bool FallThrough => Controller.MoveDown;
+
         private Controller Controller;
         private bool JumpKeyWasUp = false;
         private bool HasWallJumped = false;

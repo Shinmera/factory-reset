@@ -41,13 +41,13 @@ namespace team5
             else if (source is BoxEntity)
             {
                 // FIXME!!
-                direction = -1;
+                direction = 0;
                 time = -1;
                 return false;
             }
             else
             {
-                direction = -1;
+                direction = 0;
                 time = -1;
                 return false;
             }
