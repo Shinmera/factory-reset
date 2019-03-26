@@ -21,11 +21,11 @@ namespace team5
         private bool HasDoubleJumped = false;
         private float LongJump = 0;
 
-        private float Gravity = 600F;
+        private float Gravity = 800;
         private float MaxVel = 200;
         private float AccelRate = 600;
-        private float JumpSpeed = 200;
-        private float LongJumpSpeed = 300;
+        private float JumpSpeed = 150;
+        private float LongJumpSpeed = 250;
         private float LongJumpTime = 15;
         private float WallSlideFriction = 0.9F;
 
