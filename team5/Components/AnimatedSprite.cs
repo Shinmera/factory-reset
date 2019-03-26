@@ -47,7 +47,7 @@ namespace team5
 
             Rectangle sourceRectangle = new Rectangle(width * column, hight * row, width, hight);
             Rectangle destinationRectangle = new Rectangle((int)location.X, (int)location.Y, width, hight);
-            spriteBatch.Begin();
+            spriteBatch.Begin(SamplerState.PointClamp);
             spriteBatch.Draw(Texture, destinationRectangle, sourceRectangle, Color.White);
             spriteBatch.End();
 
