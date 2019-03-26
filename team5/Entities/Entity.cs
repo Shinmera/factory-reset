@@ -12,8 +12,7 @@ namespace team5
         protected Game1 Game;
         protected AnimatedSprite Drawer;
 
-        public Vector2 Velocity;
-        public Vector2 Position;
+        public Vector2 Position = new Vector2();
 
         public abstract RectangleF GetBoundingBox();
 

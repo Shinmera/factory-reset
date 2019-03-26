@@ -105,7 +105,7 @@
     <Compile Include="Components\AnimatedSprite.cs" />
     <Compile Include="Entities\ConeEntity.cs" />
     <Compile Include="Entities\Entity.cs" />
-    <Compile Include="Entities\GroundBoxEntity.cs" />
+    <Compile Include="Entities\Movable.cs" />
     <Compile Include="Entities\Platform.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Chunk.cs" />

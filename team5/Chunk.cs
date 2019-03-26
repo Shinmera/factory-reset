@@ -107,9 +107,10 @@ namespace team5
             {
                 float tempTime;
                 int tempDirection;
-                if (entity is BoxEntity)
+                if (entity is Movable)
                 {
-                    if (((BoxEntity)entity).Collide(source, timestep, out tempDirection, out tempTime))
+                    Movable movable = (Movable)entity;
+                    if (movable.Collide(source, timestep, out tempDirection, out tempTime))
                     {
                         if (tempTime < time)
                         {
@@ -117,13 +118,13 @@ namespace team5
                             direction = tempDirection;
                             if ((tempDirection & (Up | Down)) != 0)
                             {
-                                targetBB[0] = ((BoxEntity)entity).GetBoundingBox();
-                                targetVel[0] = ((BoxEntity)entity).Velocity;
+                                targetBB[0] = movable.GetBoundingBox();
+                                targetVel[0] = movable.Velocity;
                             }
                             else
                             {
-                                targetBB[1] = ((BoxEntity)entity).GetBoundingBox();
-                                targetVel[1] = ((BoxEntity)entity).Velocity;
+                                targetBB[1] = movable.GetBoundingBox();
+                                targetVel[1] = movable.Velocity;
                             }
                         }
                         if(tempTime == time)
@@ -133,13 +134,13 @@ namespace team5
 
                             if ((tempDirection & (Up | Down)) != 0)
                             {
-                                targetBB[0] = ((BoxEntity)entity).GetBoundingBox();
-                                targetVel[0] = ((BoxEntity)entity).Velocity;
+                                targetBB[0] = movable.GetBoundingBox();
+                                targetVel[0] = movable.Velocity;
                             }
                             else
                             {
-                                targetBB[1] = ((BoxEntity)entity).GetBoundingBox();
-                                targetVel[1] = ((BoxEntity)entity).Velocity;
+                                targetBB[1] = movable.GetBoundingBox();
+                                targetVel[1] = movable.Velocity;
                             }
                         }
                     }

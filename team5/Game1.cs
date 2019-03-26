@@ -16,7 +16,6 @@ namespace team5
         public SpriteBatch SpriteBatch { get; private set; }
 
         Level level;
-        Controller controller;
 
         public Game1()
         {
@@ -40,10 +39,6 @@ namespace team5
             base.Initialize();
 
             level = new Level(this);
-
-            controller = new Controller(this);
-
-            controller.SetPlayer(level.Player);
         }
 
         /// <summary>
@@ -78,7 +73,6 @@ namespace team5
 
             base.Update(gameTime);
             level.Update(gameTime);
-            controller.Update();
         }
 
         /// <summary>

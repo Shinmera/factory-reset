@@ -10,25 +10,43 @@ namespace team5
 {
     class Controller
     {
-        Player Player;
-
-        public void SetPlayer(Player player)
+        readonly int gamepadIndex;
+        KeyboardState key;
+        GamePadState pad;
+        
+        public Controller(int gamepadIndex=0)
         {
-            this.Player = player;
+            this.gamepadIndex = gamepadIndex;
         }
 
-        public Controller(Game1 game)
-        {
+        public bool MoveLeft => key.IsKeyDown(Keys.A)
+                || key.IsKeyDown(Keys.Left)
+                || pad.DPad.Left == ButtonState.Pressed
+                || pad.ThumbSticks.Left.X < -0.25;
 
-        }
+        public bool MoveRight => key.IsKeyDown(Keys.D)
+                || key.IsKeyDown(Keys.Right)
+                || pad.DPad.Right == ButtonState.Pressed
+                || pad.ThumbSticks.Left.X > +0.25;
+
+        public bool MoveUp => key.IsKeyDown(Keys.W)
+                || key.IsKeyDown(Keys.Up)
+                || pad.DPad.Up == ButtonState.Pressed
+                || pad.ThumbSticks.Left.Y > +0.25;
+
+        public bool MoveDown => key.IsKeyDown(Keys.S)
+                || key.IsKeyDown(Keys.Down)
+                || pad.DPad.Down == ButtonState.Pressed
+                || pad.ThumbSticks.Left.Y < -0.25;
+
+        public bool Jump => key.IsKeyDown(Keys.Space)
+                || pad.Buttons.A == ButtonState.Pressed
+                || pad.Buttons.B == ButtonState.Pressed;
 
         public void Update()
         {
-            KeyboardState state = Keyboard.GetState();
-
-            Player.MoveLeft = state.IsKeyDown(Keys.A);
-            Player.MoveRight = state.IsKeyDown(Keys.D);
-            Player.JumpKeyDown = state.IsKeyDown(Keys.W);
+            key = Keyboard.GetState();
+            pad = GamePad.GetState(gamepadIndex);
         }
     }
 }

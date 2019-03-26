@@ -8,86 +8,115 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace team5
 {
-    class Player : GroundBoxEntity
+    class Player : Movable
     {
         const bool CanRepeatWallJump = false;
         const bool CanDoubleJump = false;
-
-        const int Width = 10;
-        const int Height = 10;
-
+        
+        private Controller Controller;
         private bool JumpKeyWasUp = false;
         private bool HasWallJumped = false;
         private bool HasDoubleJumped = false;
+        private float LongJump = 0;
 
-        public const float PlayerMaxVel = 200;
-        public const float PlayerAccelRate = 600;
-        public const float PlayerJumpSpeed = 200;
-        public const float PlayerLongJumpSpeed = 300;
-        public const float PlayerLongJumpTime = 15*Game1.DeltaT;
-        public const float PlayerGroundFriction = 0.0001F;
-        public const float PlayerAirFriction = 0.5F;
+        private const float MaxVel = 200;
+        private const float AccelRate = 600;
+        private const float JumpSpeed = 200;
+        private const float LongJumpSpeed = 300;
+        private const float LongJumpTime = 15;
+        private const float WallSlideFriction = 0.0001F;
 
-        public static readonly float PlayerStepGroundFriction = (float)Math.Pow(PlayerGroundFriction, Game1.DeltaT);
-        public static readonly float PlayerStepAirFriction = (float)Math.Pow(PlayerAirFriction, Game1.DeltaT);
-
-        public Player(Vector2 position, Game1 game):base(position,game, new Point(Width, Height))
+        public Player(Vector2 position, Game1 game):base(game, new Point(Chunk.TileSize, Chunk.TileSize))
         {
             Texture2D dummyTexture;
-            dummyTexture = new Texture2D(game.GraphicsDevice, 10, 10);
-            Color[] colors = new Color[10*10];
-            for(int i = 0; i < 100; ++i)
+            dummyTexture = new Texture2D(game.GraphicsDevice, Size.X, Size.Y);
+            Color[] colors = new Color[Size.X*Size.Y];
+            for(int i = 0; i < colors.Length; ++i)
             {
                 colors[i] = Color.Green;
             }
             dummyTexture.SetData(colors);
             Drawer = new AnimatedSprite(dummyTexture, 1, 1, game.SpriteBatch);
 
-            MaxVel = PlayerMaxVel;
-            AccelRate = PlayerAccelRate;
-            JumpSpeed = PlayerJumpSpeed;
-            LongJumpSpeed = PlayerJumpSpeed;
-            StepAirFriction = PlayerStepAirFriction;
-        }
+            this.Position = position;
 
-        public override void WallAction(int direction)
-        {
-            base.WallAction(direction);
-            if(Velocity.Y > 0)
-                Velocity.Y *= PlayerStepGroundFriction;
-
-            if (Jump && (!HasWallJumped || CanRepeatWallJump) && (direction & Chunk.Right) != 0)
-            {
-                Velocity.Y -= JumpSpeed;
-                Velocity.X = -MaxVel;
-                HasWallJumped = true;
-                Jump = false;
-            }
-            if (Jump && (!HasWallJumped || CanRepeatWallJump) && (direction & Chunk.Left) != 0)
-            {
-                Velocity.Y -= JumpSpeed;
-                Velocity.X = MaxVel;
-                HasWallJumped = true;
-                Jump = false;
-            }
-        }
-
-        public override void OnTouchGround()
-        {
-            base.OnTouchGround();
-            HasDoubleJumped = false;
-            HasWallJumped = false;
+            Controller = new Controller();
         }
 
         public override void Update(GameTime gameTime, Chunk chunk)
         {
+            Controller.Update();
+            bool Jump = Controller.Jump && JumpKeyWasUp;
 
-            Jump = JumpKeyDown && JumpKeyWasUp;
+            float dt = Game1.DeltaT;
+            
+            // Perform movement stepping. 
+            // !! This code should never touch Position !!
+            if(Controller.MoveRight && Velocity.X < MaxVel)
+            {
+                Velocity.X += AccelRate * dt;
+            }
+            if(Controller.MoveLeft && -MaxVel < Velocity.X)
+            {
+                Velocity.X -= AccelRate * dt;
+            }
+            
+            Velocity.Y += dt * Game1.GRAVITY;
 
-            base.Update(gameTime, chunk);
+            if(Controller.Jump && LongJump > 0)
+            {
+                Velocity.Y -= AccelRate * dt;
+            }
 
-            JumpKeyWasUp = !JumpKeyDown;
+            if(LongJump > 0)
+            {
+                LongJump -= dt;
+                if (Velocity.Y > 0)
+                {
+                    LongJump = 0;
+                }
+            }
+            
+            if ((collided & Chunk.Down) != 0)
+            {
+                HasDoubleJumped = false;
+                HasWallJumped = false;
+                if (Jump)
+                {
+                    Jump = false;
+                    Velocity.Y -= JumpSpeed;
+                    LongJump = LongJumpTime*dt;
+                }
+                if (!(Controller.MoveLeft || Controller.MoveRight || Jump))
+                {
+                    Velocity.X = 0;
+                }
+            }
+            if ((collided & (Chunk.Left | Chunk.Right)) != 0)
+            {
+                if(Velocity.Y > 0)
+                    Velocity.Y *= WallSlideFriction;
 
+                if (Jump && (!HasWallJumped || CanRepeatWallJump) && (collided & Chunk.Right) != 0)
+                {
+                    Velocity.Y -= JumpSpeed;
+                    Velocity.X = -MaxVel;
+                    HasWallJumped = true;
+                    Jump = false;
+                }
+                if (Jump && (!HasWallJumped || CanRepeatWallJump) && (collided & Chunk.Left) != 0)
+                {
+                    Velocity.Y -= JumpSpeed;
+                    Velocity.X = MaxVel;
+                    HasWallJumped = true;
+                    Jump = false;
+                }
+            }
+
+            JumpKeyWasUp = !Controller.Jump;
+            
+            // Now that all movement has been updated, check for collisions
+            HandleCollisions(dt, chunk);
         }
     }
 }

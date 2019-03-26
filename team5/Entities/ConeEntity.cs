@@ -128,24 +128,27 @@ namespace team5.Entities
             return BoundingBox;
         }
 
-        public override bool Collide(Entity source, float timestep, out int direction, out float time)
+        // <Nicolas> This also seems super complicated for what it has to do.
+        //           Wouldn't it just be sufficient to test the four corner points of the BoxEntity
+        //           against the cone by translating them to polar coordinates and then checking range?
+        public override bool Collide(Entity entity, float timestep, out int direction, out float time)
         {
             direction = 0;
             time = -1;
 
-            if (!(source is BoxEntity))
+            if (!(entity is Movable))
             {
                 return false;
             }
 
-            var boxSource = (BoxEntity)source;
+            Movable source = (Movable)entity;
 
             RectangleF motionBB;
 
             RectangleF sourceBB = source.GetBoundingBox();
             Vector2 sourceMotion = source.Velocity * timestep;
 
-            var center = new Vector2((boxSource.GetBoundingBox().Left+boxSource.GetBoundingBox().Right)*0.5F,(boxSource.GetBoundingBox().Top + boxSource.GetBoundingBox().Bottom) * 0.5F);
+            var center = new Vector2((source.GetBoundingBox().Left+source.GetBoundingBox().Right)*0.5F,(source.GetBoundingBox().Top + source.GetBoundingBox().Bottom) * 0.5F);
 
             center -= Position;
 
@@ -171,7 +174,7 @@ namespace team5.Entities
                 }
             }
 
-            List<Vector2> polygon = boxSource.GetSweptAABBPolygon(timestep);
+            List<Vector2> polygon = source.GetSweptAABBPolygon(timestep);
 
             for(int i = 0; i < polygon.Count; ++i)
             {

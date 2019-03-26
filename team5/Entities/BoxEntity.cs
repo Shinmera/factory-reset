@@ -11,8 +11,9 @@ namespace team5
     {
         protected Point Size;
 
-        public BoxEntity(Game1 game):base(game)
+        public BoxEntity(Game1 game, Point Size):base(game)
         {
+            this.Size = Size;
         }
 
         public override RectangleF GetBoundingBox()
@@ -25,8 +26,15 @@ namespace team5
         //Source: https://www.gamedev.net/articles/programming/general-and-gameplay-programming/swept-aabb-collision-detection-and-response-r3084
         public override bool Collide(Entity source, float timestep, out int direction, out float time)
         {
-            if (source is BoxEntity)
-                return collideBox((BoxEntity)source, timestep, out direction, out time, GetBoundingBox());
+            if (source is Movable)
+                return CollideMovable((Movable)source, timestep, out direction, out time, GetBoundingBox());
+            else if (source is BoxEntity)
+            {
+                // FIXME!!
+                direction = -1;
+                time = -1;
+                return false;
+            }
             else
             {
                 direction = -1;
@@ -35,7 +43,7 @@ namespace team5
             }
         }
 
-        public static bool collideBox(BoxEntity source, float timestep, out int direction, out float time, RectangleF target)
+        public static bool CollideMovable(Movable source, float timestep, out int direction, out float time, RectangleF target)
         {
             RectangleF motionBB;
 
@@ -143,121 +151,11 @@ namespace team5
                 time = entryTime;
                 return true;
             }
-
         }
 
-        public List<Vector2> GetSweptAABBPolygon(float timestep)
+        public virtual List<Vector2> GetSweptAABBPolygon(float timestep)
         {
-            if(Velocity.X == 0 && Velocity.Y == 0)
-            {
-                return GetBoundingBox().ToPolygon();
-            }
-
-            RectangleF motionBB;
-
-            RectangleF sourceBB = GetBoundingBox();
-
-            Vector2 Motion = Velocity * timestep;
-
-            if (Velocity.X == 0)
-            {
-                var res = new List<Vector2>(4);
-                if(Velocity.Y < 0)
-                {
-                    res.Add(new Vector2(Position.X, Position.Y + Size.Y));
-                    res.Add(new Vector2(Position.X + Size.X, Position.Y + Size.Y));
-                    res.Add(new Vector2(Position.X + Size.X, Position.Y + Motion.Y));
-                    res.Add(new Vector2(Position.X, Position.Y + Motion.Y));
-                    return res;
-                }
-
-                if(Velocity.Y > 0)
-                {
-                    res.Add(new Vector2(Position.X + Size.X, Position.Y));
-                    res.Add(new Vector2(Position.X, Position.Y));
-                    res.Add(new Vector2(Position.X, Position.Y + Motion.Y + Size.Y));
-                    res.Add(new Vector2(Position.X + Size.X, Position.Y + Motion.Y + Size.Y));
-                    return res;
-                }
-
-                
-            }
-
-            if (Velocity.Y == 0)
-            {
-                var res = new List<Vector2>(4);
-                if (Velocity.X < 0)
-                {
-                    res.Add(new Vector2(Position.X + Size.X, Position.Y + Size.Y));
-                    res.Add(new Vector2(Position.X + Size.X, Position.Y));
-                    res.Add(new Vector2(Position.X + Motion.X, Position.Y));
-                    res.Add(new Vector2(Position.X + Motion.X, Position.Y + Size.Y));
-                }
-                else
-                {
-                    res.Add(new Vector2(Position.X, Position.Y + Size.Y));
-                    res.Add(new Vector2(Position.X, Position.Y));
-                    res.Add(new Vector2(Position.X + Size.X + Motion.X, Position.Y));
-                    res.Add(new Vector2(Position.X + Size.X + Motion.X, Position.Y + Size.Y));
-                }
-
-                return res;
-            }
-
-            if (Velocity.X < 0)
-            {
-                var res = new List<Vector2>(6);
-
-                if (Velocity.Y < 0)
-                {
-                    res.Add(new Vector2(Position.X, Position.Y + Size.Y));
-                    res.Add(new Vector2(Position.X + Size.X, Position.Y + Size.Y));
-                    res.Add(new Vector2(Position.X + Size.X, Position.Y));
-                    res.Add(new Vector2(Position.X + Size.X + Motion.X, Position.Y + Motion.Y));
-                    res.Add(new Vector2(Position.X + Motion.X, Position.Y + Motion.Y));
-                    res.Add(new Vector2(Position.X + Motion.X, Position.Y + Size.Y + Motion.Y));
-                }
-                else
-                {
-                    res.Add(new Vector2(Position.X + Size.X, Position.Y + Size.Y));
-                    res.Add(new Vector2(Position.X + Size.X, Position.Y));
-                    res.Add(new Vector2(Position.X, Position.Y));
-                    res.Add(new Vector2(Position.X + Motion.X, Position.Y + Motion.Y));
-                    res.Add(new Vector2(Position.X + Motion.X, Position.Y + Size.Y + Motion.Y));
-                    res.Add(new Vector2(Position.X + Size.X + Motion.X, Position.Y + Size.Y + Motion.Y));
-                }
-
-                return res;
-            }
-
-            if (Velocity.X > 0)
-            {
-                var res = new List<Vector2>(6);
-
-                if (Velocity.Y < 0)
-                {
-                    res.Add(new Vector2(Position.X, Position.Y));
-                    res.Add(new Vector2(Position.X, Position.Y + Size.Y));
-                    res.Add(new Vector2(Position.X + Size.X, Position.Y + Size.Y));
-                    res.Add(new Vector2(Position.X + Size.X + Motion.X, Position.Y + Size.Y + Motion.Y));
-                    res.Add(new Vector2(Position.X + Size.X + Motion.X, Position.Y + Motion.Y));
-                    res.Add(new Vector2(Position.X + Motion.X, Position.Y + Motion.Y));
-                }
-                else
-                {
-                    res.Add(new Vector2(Position.X + Size.X, Position.Y));
-                    res.Add(new Vector2(Position.X, Position.Y));
-                    res.Add(new Vector2(Position.X, Position.Y + Size.Y));
-                    res.Add(new Vector2(Position.X + Motion.X, Position.Y + Size.Y + Motion.Y));
-                    res.Add(new Vector2(Position.X + Size.X + Motion.X, Position.Y + Size.Y + Motion.Y));
-                    res.Add(new Vector2(Position.X + Size.X + Motion.X, Position.Y + Motion.Y));
-                }
-
-                return res;
-            }
-
-            throw new ArithmeticException("Velocity of Swept AABB invalid");
+            return GetBoundingBox().ToPolygon();
         }
-
     }
 }
