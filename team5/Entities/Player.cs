@@ -16,6 +16,7 @@ namespace team5
         public bool FallThrough => Controller.MoveDown;
 
         private Controller Controller;
+        private bool IsClimbing = false;
         private bool JumpKeyWasUp = false;
         private bool HasWallJumped = false;
         private bool HasDoubleJumped = false;
@@ -24,6 +25,7 @@ namespace team5
         private float Gravity = 800;
         private float MaxVel = 200;
         private float AccelRate = 600;
+        private float ClimbSpeed = 70;
         private float JumpSpeed = 150;
         private float LongJumpSpeed = 250;
         private float LongJumpTime = 15;
@@ -53,22 +55,76 @@ namespace team5
 
             float dt = Game1.DeltaT;
             
-            // Perform movement stepping. 
-            // !! This code should never change Position !!
-            if(Controller.MoveRight && Velocity.X < MaxVel)
+            //// Perform movement stepping. 
+            //// !! This code should never change Position !!
+            // Check for neighbors
+            Object down = chunk.CollidePoint(new Vector2(Position.X+Size.X/2,
+                                                         Position.Y+Size.Y+1));
+            Object left = chunk.CollidePoint(new Vector2(Position.X       -1,
+                                                         Position.Y+Size.Y/2));
+            Object right= chunk.CollidePoint(new Vector2(Position.X+Size.X+1,
+                                                         Position.Y+Size.Y/2));
+            
+            IsClimbing = false;
+            if (down != null)
             {
-                Velocity.X += AccelRate * dt;
+                HasDoubleJumped = false;
+                HasWallJumped = false;
+                if (Jump)
+                {
+                    Jump = false;
+                    Velocity.Y -= JumpSpeed;
+                    LongJump = LongJumpTime*dt;
+                }
             }
-            if(Controller.MoveLeft && -MaxVel < Velocity.X)
+            if (left != null || right != null)
             {
-                Velocity.X -= AccelRate * dt;
-            }
-            if (!(Controller.MoveLeft || Controller.MoveRight))
-            {
-                Velocity.X = 0;
+                HasWallJumped = false;
+                if(Controller.Climb)
+                {
+                    IsClimbing = true;
+                    if(Controller.MoveUp)
+                        Velocity.Y = -ClimbSpeed;
+                    else if(Controller.MoveDown)
+                        Velocity.Y = +ClimbSpeed;
+                    else
+                        Velocity.Y = 0;
+                }
+                else if(Velocity.Y > 0)
+                    Velocity.Y *= WallSlideFriction;
+
+                if (Jump && (!HasWallJumped || CanRepeatWallJump) && right != null)
+                {
+                    Velocity.Y -= JumpSpeed;
+                    Velocity.X = -MaxVel;
+                    HasWallJumped = true;
+                    Jump = false;
+                }
+                if (Jump && (!HasWallJumped || CanRepeatWallJump) && left != null)
+                {
+                    Velocity.Y -= JumpSpeed;
+                    Velocity.X = MaxVel;
+                    HasWallJumped = true;
+                    Jump = false;
+                }
             }
             
-            Velocity.Y += dt * Gravity;
+            if(!IsClimbing){
+                if(Controller.MoveRight && Velocity.X < MaxVel)
+                {
+                    Velocity.X += AccelRate * dt;
+                }
+                if(Controller.MoveLeft && -MaxVel < Velocity.X)
+                {
+                    Velocity.X -= AccelRate * dt;
+                }
+                if (!(Controller.MoveLeft || Controller.MoveRight))
+                {
+                    Velocity.X = 0;
+                }
+                
+                Velocity.Y += dt * Gravity;
+            }
             
             // // Debug
             // if(Controller.MoveUp) Velocity.Y = -MaxVel;
@@ -86,46 +142,6 @@ namespace team5
                 if (Velocity.Y > 0)
                 {
                     LongJump = 0;
-                }
-            }
-            
-            Object down = chunk.CollidePoint(new Vector2(Position.X+Size.X/2,
-                                                         Position.Y+Size.Y+1));
-            Object left = chunk.CollidePoint(new Vector2(Position.X       -1,
-                                                         Position.Y+Size.Y/2));
-            Object right= chunk.CollidePoint(new Vector2(Position.X+Size.X+1,
-                                                         Position.Y+Size.Y/2));
-            
-            if (down != null)
-            {
-                HasDoubleJumped = false;
-                HasWallJumped = false;
-                if (Jump)
-                {
-                    Jump = false;
-                    Velocity.Y -= JumpSpeed;
-                    LongJump = LongJumpTime*dt;
-                }
-            }
-            if (left != null || right != null)
-            {
-                HasWallJumped = false;
-                if(Velocity.Y > 0)
-                    Velocity.Y *= WallSlideFriction;
-
-                if (Jump && (!HasWallJumped || CanRepeatWallJump) && right != null)
-                {
-                    Velocity.Y -= JumpSpeed;
-                    Velocity.X = -MaxVel;
-                    HasWallJumped = true;
-                    Jump = false;
-                }
-                if (Jump && (!HasWallJumped || CanRepeatWallJump) && left != null)
-                {
-                    Velocity.Y -= JumpSpeed;
-                    Velocity.X = MaxVel;
-                    HasWallJumped = true;
-                    Jump = false;
                 }
             }
 

@@ -20,28 +20,32 @@ namespace team5
         }
 
         public bool MoveLeft => key.IsKeyDown(Keys.A)
-                || key.IsKeyDown(Keys.Left)
-                || pad.DPad.Left == ButtonState.Pressed
-                || pad.ThumbSticks.Left.X < -0.25;
+            || key.IsKeyDown(Keys.Left)
+            || pad.DPad.Left == ButtonState.Pressed
+            || pad.ThumbSticks.Left.X < -0.25;
 
         public bool MoveRight => key.IsKeyDown(Keys.D)
-                || key.IsKeyDown(Keys.Right)
-                || pad.DPad.Right == ButtonState.Pressed
-                || pad.ThumbSticks.Left.X > +0.25;
+            || key.IsKeyDown(Keys.Right)
+            || pad.DPad.Right == ButtonState.Pressed
+            || pad.ThumbSticks.Left.X > +0.25;
 
         public bool MoveUp => key.IsKeyDown(Keys.W)
-                || key.IsKeyDown(Keys.Up)
-                || pad.DPad.Up == ButtonState.Pressed
-                || pad.ThumbSticks.Left.Y > +0.25;
+            || key.IsKeyDown(Keys.Up)
+            || pad.DPad.Up == ButtonState.Pressed
+            || pad.ThumbSticks.Left.Y > +0.25;
 
         public bool MoveDown => key.IsKeyDown(Keys.S)
-                || key.IsKeyDown(Keys.Down)
-                || pad.DPad.Down == ButtonState.Pressed
-                || pad.ThumbSticks.Left.Y < -0.25;
+            || key.IsKeyDown(Keys.Down)
+            || pad.DPad.Down == ButtonState.Pressed
+            || pad.ThumbSticks.Left.Y < -0.25;
 
         public bool Jump => key.IsKeyDown(Keys.Space)
-                || pad.Buttons.A == ButtonState.Pressed
-                || pad.Buttons.B == ButtonState.Pressed;
+            || pad.Buttons.A == ButtonState.Pressed
+            || pad.Buttons.B == ButtonState.Pressed;
+        
+        public bool Climb => key.IsKeyDown(Keys.LeftShift)
+            || pad.Buttons.LeftShoulder == ButtonState.Pressed
+            || pad.Buttons.RightShoulder == ButtonState.Pressed;
 
         public void Update()
         {
