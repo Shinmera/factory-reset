@@ -68,10 +68,10 @@ namespace team5
             
             Velocity.Y += dt * Gravity;
             
-            // Debug
-            if(Controller.MoveUp) Velocity.Y = -MaxVel;
-            else if(Controller.MoveDown) Velocity.Y = MaxVel;
-            else Velocity.Y = 0;
+            // // Debug
+            // if(Controller.MoveUp) Velocity.Y = -MaxVel;
+            // else if(Controller.MoveDown) Velocity.Y = MaxVel;
+            // else Velocity.Y = 0;
 
             if(Controller.Jump && LongJump > 0)
             {

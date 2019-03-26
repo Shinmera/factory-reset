@@ -97,7 +97,6 @@ namespace team5
         //TODO: Tile collisions
         public bool CollideSolid(Entity source, float timestep, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetVel)
         {
-
             time = float.PositiveInfinity;
             direction = 0;
             targetBB = new RectangleF[2];
@@ -107,10 +106,11 @@ namespace team5
             {
                 float tempTime;
                 int tempDirection;
-                if (entity is Movable)
+                if (entity is BoxEntity)
                 {
-                    Movable movable = (Movable)entity;
-                    if (movable.Collide(source, timestep, out tempDirection, out tempTime))
+                    BoxEntity boxEntity = (BoxEntity)entity;
+                    Vector2 velocity = (boxEntity is Movable)? ((Movable)boxEntity).Velocity : new Vector2();
+                    if (boxEntity.Collide(source, timestep, out tempDirection, out tempTime))
                     {
                         if (tempTime < time)
                         {
@@ -118,13 +118,13 @@ namespace team5
                             direction = tempDirection;
                             if ((tempDirection & (Up | Down)) != 0)
                             {
-                                targetBB[0] = movable.GetBoundingBox();
-                                targetVel[0] = movable.Velocity;
+                                targetBB[0] = boxEntity.GetBoundingBox();
+                                targetVel[0] = velocity;
                             }
                             else
                             {
-                                targetBB[1] = movable.GetBoundingBox();
-                                targetVel[1] = movable.Velocity;
+                                targetBB[1] = boxEntity.GetBoundingBox();
+                                targetVel[0] = velocity;
                             }
                         }
                         if(tempTime == time)
@@ -134,13 +134,13 @@ namespace team5
 
                             if ((tempDirection & (Up | Down)) != 0)
                             {
-                                targetBB[0] = movable.GetBoundingBox();
-                                targetVel[0] = movable.Velocity;
+                                targetBB[0] = boxEntity.GetBoundingBox();
+                                targetVel[0] = velocity;
                             }
                             else
                             {
-                                targetBB[1] = movable.GetBoundingBox();
-                                targetVel[1] = movable.Velocity;
+                                targetBB[1] = boxEntity.GetBoundingBox();
+                                targetVel[0] = velocity;
                             }
                         }
                     }
