@@ -255,6 +255,7 @@ namespace team5
                                 }
                                 if (tempTime == time)
                                 {
+                                    
                                     //Allows collisions with multiple directions
                                     direction = direction | tempDirection;
 

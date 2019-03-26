@@ -145,7 +145,7 @@ namespace team5
                         direction = Chunk.Right;
                     }
                 }
-                else
+                else if(Entry.X < Entry.Y)
                 {
                     if (sourceMotion.Y < 0.0f)
                     {
@@ -156,6 +156,32 @@ namespace team5
                         direction = Chunk.Down;
                     }
                 }
+                else
+                {
+                    if(Math.Abs(sourceMotion.X) <= Math.Abs(sourceMotion.Y))
+                    {
+                        if (sourceMotion.X < 0.0f)
+                        {
+                            direction = Chunk.Left;
+                        }
+                        else
+                        {
+                            direction = Chunk.Right;
+                        }
+                    }
+                    else
+                    {
+                        if (sourceMotion.Y < 0.0f)
+                        {
+                            direction = Chunk.Up;
+                        }
+                        else
+                        {
+                            direction = Chunk.Down;
+                        }
+                    }
+                }
+
 
                 // return the time of collision
                 time = entryTime;
