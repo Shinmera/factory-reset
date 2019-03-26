@@ -13,6 +13,7 @@ namespace team5
         GraphicsDeviceManager graphics;
 
         public SpriteBatch SpriteBatch { get; private set; }
+        public readonly Transforms Transforms = new Transforms();
 
         Level level;
 
