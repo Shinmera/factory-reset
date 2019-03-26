@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using System;
 
 
 
@@ -7,6 +8,8 @@ namespace team5
 {
     class Chunk
     {
+        Vector2 relPosition;
+
         public const int Empty = 0;
         public const int SolidPlatform = 1;
 
@@ -152,6 +155,20 @@ namespace team5
                     }
                 }
             }
+
+            RectangleF motionBB;
+            RectangleF sourceBB = source.GetBoundingBox();
+            Vector2 sourceMotion = ((source is Movable) ? ((Movable)source).Velocity : new Vector2()) * timestep;
+
+            motionBB.X = sourceBB.X + (float)Math.Min(0.0, sourceMotion.X);
+            motionBB.Y = sourceBB.Y + (float)Math.Min(0.0, sourceMotion.Y);
+            motionBB.Width = sourceBB.Width + (float)Math.Max(0.0, sourceMotion.X);
+            motionBB.Height = sourceBB.Height + (float)Math.Max(0.0, sourceMotion.Y);
+
+            int minX = (int)Math.Floor((motionBB.X - relPosition.X) / TileSize);
+            int minY = (int)Math.Floor((motionBB.Y - relPosition.X) / TileSize);
+            int maxX = (int)Math.Ceiling((motionBB.Right - relPosition.X) / TileSize);
+            int maxY = (int)Math.Ceiling((motionBB.Bottom - relPosition.X) / TileSize);
 
             if (direction != 0)
                 return true;

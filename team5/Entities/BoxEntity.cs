@@ -60,10 +60,10 @@ namespace team5
             RectangleF sourceBB = source.GetBoundingBox();
             Vector2 sourceMotion = source.Velocity * timestep;
 
-            motionBB.X = sourceBB.X + (int)Math.Floor(Math.Min(0.0, sourceMotion.X));
-            motionBB.Y = sourceBB.Y + (int)Math.Floor(Math.Min(0.0, sourceMotion.Y));
-            motionBB.Width = sourceBB.Width + (int)Math.Ceiling(Math.Max(0.0, sourceMotion.X));
-            motionBB.Height = sourceBB.Height + (int)Math.Ceiling(Math.Max(0.0, sourceMotion.Y));
+            motionBB.X = sourceBB.X + (float)Math.Min(0.0, sourceMotion.X);
+            motionBB.Y = sourceBB.Y + (float)Math.Min(0.0, sourceMotion.Y);
+            motionBB.Width = sourceBB.Width + (float)Math.Max(0.0, sourceMotion.X);
+            motionBB.Height = sourceBB.Height + (float)Math.Max(0.0, sourceMotion.Y);
 
             if (!motionBB.Intersects(target))
             {
