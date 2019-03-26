@@ -154,6 +154,11 @@ namespace team5
             int x = (int)((point.X - relPosition.X) / TileSize);
             int y = (int)((point.Y - relPosition.Y) / TileSize);
 
+            if(x < 0 || x > TileSet.GetUpperBound(0) || y < 0 || y > TileSet.GetUpperBound(1))
+            {
+                return null;
+            }
+
             if(TileSet[x,y] == SolidPlatform)
             {
                 return tileObjects[SolidPlatform];
