@@ -8,7 +8,6 @@ namespace team5
     /// </summary>
     public class Game1 : Game
     {
-        public const float GRAVITY = 600F;
         public const float DeltaT = 1 / 60.0F;
 
         GraphicsDeviceManager graphics;

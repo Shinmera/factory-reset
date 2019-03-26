@@ -19,6 +19,7 @@ namespace team5
         private bool HasDoubleJumped = false;
         private float LongJump = 0;
 
+        private const float Gravity = 600F;
         private const float MaxVel = 200;
         private const float AccelRate = 600;
         private const float JumpSpeed = 200;
@@ -60,8 +61,17 @@ namespace team5
             {
                 Velocity.X -= AccelRate * dt;
             }
+            if (!(Controller.MoveLeft || Controller.MoveRight))
+            {
+                Velocity.X = 0;
+            }
             
-            Velocity.Y += dt * Game1.GRAVITY;
+            Velocity.Y += dt * Gravity;
+            
+            // Debug
+            if(Controller.MoveUp) Velocity.Y = -MaxVel;
+            else if(Controller.MoveDown) Velocity.Y = MaxVel;
+            else Velocity.Y = 0;
 
             if(Controller.Jump && LongJump > 0)
             {
@@ -86,10 +96,6 @@ namespace team5
                     Jump = false;
                     Velocity.Y -= JumpSpeed;
                     LongJump = LongJumpTime*dt;
-                }
-                if (!(Controller.MoveLeft || Controller.MoveRight || Jump))
-                {
-                    Velocity.X = 0;
                 }
             }
             if ((collided & (Chunk.Left | Chunk.Right)) != 0)
