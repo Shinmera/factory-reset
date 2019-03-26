@@ -140,8 +140,9 @@ namespace team5.Entities
         // <Nicolas> This also seems super complicated for what it has to do.
         //           Wouldn't it just be sufficient to test the four corner points of the BoxEntity
         //           against the cone by translating them to polar coordinates and then checking range?
-        public override bool Collide(Entity entity, float timestep, out int direction, out float time)
+        public override bool Collide(Entity entity, float timestep, out int direction, out float time, out bool corner)
         {
+            corner = false;
             direction = 0;
             time = -1;
 

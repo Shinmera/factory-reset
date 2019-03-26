@@ -166,18 +166,21 @@ namespace team5
         {
             time = float.PositiveInfinity;
             direction = 0;
+            bool corner = true;
             targetBB = new RectangleF[2];
             targetVel = new Vector2[2];
 
             foreach (var entity in SolidEntities)
             {
+                bool tempCorner;
                 float tempTime;
                 int tempDirection;
                 Vector2 velocity = (entity is Movable)? ((Movable)entity).Velocity : new Vector2();
-                if (entity.Collide(source, timestep, out tempDirection, out tempTime))
+                if (entity.Collide(source, timestep, out tempDirection, out tempTime, out tempCorner))
                 {
-                    if (tempTime < time)
+                    if (tempTime < time || (tempTime == time && (corner && !tempCorner)))
                     {
+                        corner = tempCorner;
                         time = tempTime;
                         direction = tempDirection;
                         if ((tempDirection & (Up | Down)) != 0)
@@ -191,7 +194,7 @@ namespace team5
                             targetVel[1] = velocity;
                         }
                     }
-                    if(tempTime == time)
+                    if(tempTime == time && (corner || !tempCorner))
                     {
                         //Allows collisions with multiple directions
                         direction = direction | tempDirection;
@@ -233,12 +236,13 @@ namespace team5
                         if (TileSet[x,y] == Chunk.SolidPlatform) {
                             int tempDirection;
                             float tempTime;
+                            bool tempCorner;
 
                             var tileBB = new RectangleF(x * TileSize + relPosition.X, y * TileSize + relPosition.Y, TileSize, TileSize);
 
-                            if (BoxEntity.CollideMovable((Movable)source, timestep, out tempDirection, out tempTime, tileBB))
+                            if (BoxEntity.CollideMovable((Movable)source, tileBB, timestep, out tempDirection, out tempTime, out tempCorner))
                             {
-                                if (tempTime < time)
+                                if (tempTime < time || (tempTime == time && (corner && !tempCorner)))
                                 {
                                     time = tempTime;
                                     direction = tempDirection;
@@ -253,7 +257,7 @@ namespace team5
                                         targetVel[1] = new Vector2();
                                     }
                                 }
-                                if (tempTime == time)
+                                if (tempTime == time && (corner || !tempCorner))
                                 {
                                     
                                     //Allows collisions with multiple directions

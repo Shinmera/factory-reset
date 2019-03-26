@@ -16,9 +16,9 @@ namespace team5
             PassThroughs = passThroughs;
         }
 
-        public override bool Collide(Entity source, float timestep, out int direction, out float time)
+        public override bool Collide(Entity source, float timestep, out int direction, out float time, out bool corner)
         {
-            if(base.Collide(source, timestep, out direction, out time))
+            if(base.Collide(source, timestep, out direction, out time, out corner))
             {
                 direction = direction & ~PassThroughs;
 

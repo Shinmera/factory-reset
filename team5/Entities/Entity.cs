@@ -25,7 +25,7 @@ namespace team5
             Drawer.Draw(Position + CameraOffset);
         }
 
-        public abstract bool Collide(Entity source, float timestep, out int direction, out float time);
+        public abstract bool Collide(Entity source, float timestep, out int direction, out float time, out bool corner);
         public abstract bool Contains(Vector2 point);
     }
 }

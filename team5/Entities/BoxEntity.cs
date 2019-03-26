@@ -34,27 +34,31 @@ namespace team5
 
         //Standard swept AABB
         //Source: https://www.gamedev.net/articles/programming/general-and-gameplay-programming/swept-aabb-collision-detection-and-response-r3084
-        public override bool Collide(Entity source, float timestep, out int direction, out float time)
+        public override bool Collide(Entity source, float timestep, out int direction, out float time, out bool corner)
         {
             if (source is Movable)
-                return CollideMovable((Movable)source, timestep, out direction, out time, GetBoundingBox());
+                return CollideMovable((Movable)source, GetBoundingBox(), timestep, out direction, out time, out corner);
             else if (source is BoxEntity)
             {
                 // FIXME!!
+                corner = false;
                 direction = 0;
                 time = -1;
                 return false;
             }
             else
             {
+                corner = false;
                 direction = 0;
                 time = -1;
                 return false;
             }
         }
 
-        public static bool CollideMovable(Movable source, float timestep, out int direction, out float time, RectangleF target)
+        public static bool CollideMovable(Movable source, RectangleF target, float timestep, out int direction, out float time, out bool corner)
         {
+            corner = false;
+
             RectangleF motionBB;
 
             RectangleF sourceBB = source.GetBoundingBox();
@@ -158,6 +162,7 @@ namespace team5
                 }
                 else
                 {
+                    corner = true;
                     if(Math.Abs(sourceMotion.X) <= Math.Abs(sourceMotion.Y))
                     {
                         if (sourceMotion.X < 0.0f)
