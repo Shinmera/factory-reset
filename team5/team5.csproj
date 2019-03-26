@@ -105,11 +105,13 @@
     <Compile Include="Components\AnimatedSprite.cs" />
     <Compile Include="Entities\ConeEntity.cs" />
     <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Entities\GameObject.cs" />
     <Compile Include="Entities\Movable.cs" />
     <Compile Include="Entities\PassThroughPlatform.cs" />
     <Compile Include="Entities\Platform.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Chunk.cs" />
+    <Compile Include="Entities\TilePlatform.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />

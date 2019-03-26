@@ -33,7 +33,7 @@ namespace team5
                 {
                     // <Nicolas> This results in a strange rebound from the top. Why was this done?
                     float relVel = Velocity.Y - targetBB[0].Y;
-                    Velocity.Y = targetVel[0].Y - (relVel / 3);
+                    Velocity.Y = targetVel[0].Y - (relVel / 5);
                     Position.Y = targetBB[0].Bottom;
                 }
                 if ((direction & Chunk.Left) != 0)

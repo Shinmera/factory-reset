@@ -21,7 +21,7 @@ namespace team5
         //           positions and center->bound extends (or half-widths).
         public override RectangleF GetBoundingBox()
         {
-            return new RectangleF(Position.X, Position.Y, Size.X+1, Size.Y+1);
+            return new RectangleF(Position.X, Position.Y, Size.X, Size.Y);
         }
 
         public override bool Contains(Vector2 point)

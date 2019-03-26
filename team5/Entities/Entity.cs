@@ -7,26 +7,19 @@ using Microsoft.Xna.Framework;
 
 namespace team5
 {
-    abstract class Entity
+    abstract class Entity:GameObject
     {
-        protected Game1 Game;
         protected AnimatedSprite Drawer;
 
         public Vector2 Position = new Vector2();
 
         public abstract RectangleF GetBoundingBox();
 
-        public Entity(Game1 game)
+        public Entity(Game1 game):base(game)
         {
-            this.Game = game;
         }
 
-        public virtual void Update(GameTime gameTime, Chunk level)
-        {
-
-        }
-
-        public virtual void Draw(GameTime gameTime, Vector2 CameraOffset)
+        public override void Draw(GameTime gameTime, Vector2 CameraOffset)
         {
             if(Drawer != null)
             Drawer.Draw(Position + CameraOffset);
