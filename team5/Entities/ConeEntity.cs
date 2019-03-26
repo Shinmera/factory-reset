@@ -127,6 +127,15 @@ namespace team5.Entities
             }
             return BoundingBox;
         }
+        
+        public override bool Contains(Vector2 point)
+        {
+            float r = point.Length();
+            float phi = (float)Math.Atan2(point.Y, point.X);
+            return r <= radius
+                && angle1 <= phi
+                && phi <= angle2;
+        }
 
         // <Nicolas> This also seems super complicated for what it has to do.
         //           Wouldn't it just be sufficient to test the four corner points of the BoxEntity

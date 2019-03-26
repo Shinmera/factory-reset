@@ -19,19 +19,19 @@ namespace team5
         private bool HasDoubleJumped = false;
         private float LongJump = 0;
 
-        private const float Gravity = 600F;
-        private const float MaxVel = 200;
-        private const float AccelRate = 600;
-        private const float JumpSpeed = 200;
-        private const float LongJumpSpeed = 300;
-        private const float LongJumpTime = 15;
-        private const float WallSlideFriction = 0.0001F;
+        private float Gravity = 600F;
+        private float MaxVel = 200;
+        private float AccelRate = 600;
+        private float JumpSpeed = 200;
+        private float LongJumpSpeed = 300;
+        private float LongJumpTime = 15;
+        private float WallSlideFriction = 0.9F;
 
-        public Player(Vector2 position, Game1 game):base(game, new Point(Chunk.TileSize, Chunk.TileSize))
+        public Player(Vector2 position, Game1 game):base(game, new Vector2(Chunk.TileSize, Chunk.TileSize))
         {
             Texture2D dummyTexture;
-            dummyTexture = new Texture2D(game.GraphicsDevice, Size.X, Size.Y);
-            Color[] colors = new Color[Size.X*Size.Y];
+            dummyTexture = new Texture2D(game.GraphicsDevice, (int)Size.X, (int)Size.Y);
+            Color[] colors = new Color[(int)(Size.X*Size.Y)];
             for(int i = 0; i < colors.Length; ++i)
             {
                 colors[i] = Color.Green;
@@ -52,7 +52,7 @@ namespace team5
             float dt = Game1.DeltaT;
             
             // Perform movement stepping. 
-            // !! This code should never touch Position !!
+            // !! This code should never change Position !!
             if(Controller.MoveRight && Velocity.X < MaxVel)
             {
                 Velocity.X += AccelRate * dt;
@@ -87,7 +87,14 @@ namespace team5
                 }
             }
             
-            if ((collided & Chunk.Down) != 0)
+            Object down = chunk.CollidePoint(new Vector2(Position.X+Size.X/2,
+                                                         Position.Y+Size.Y+1));
+            Object left = chunk.CollidePoint(new Vector2(Position.X       -1,
+                                                         Position.Y+Size.Y/2));
+            Object right= chunk.CollidePoint(new Vector2(Position.X+Size.X+1,
+                                                         Position.Y+Size.Y/2));
+            
+            if (down != null)
             {
                 HasDoubleJumped = false;
                 HasWallJumped = false;
@@ -98,19 +105,20 @@ namespace team5
                     LongJump = LongJumpTime*dt;
                 }
             }
-            if ((collided & (Chunk.Left | Chunk.Right)) != 0)
+            if (left != null || right != null)
             {
+                HasWallJumped = false;
                 if(Velocity.Y > 0)
                     Velocity.Y *= WallSlideFriction;
 
-                if (Jump && (!HasWallJumped || CanRepeatWallJump) && (collided & Chunk.Right) != 0)
+                if (Jump && (!HasWallJumped || CanRepeatWallJump) && right != null)
                 {
                     Velocity.Y -= JumpSpeed;
                     Velocity.X = -MaxVel;
                     HasWallJumped = true;
                     Jump = false;
                 }
-                if (Jump && (!HasWallJumped || CanRepeatWallJump) && (collided & Chunk.Left) != 0)
+                if (Jump && (!HasWallJumped || CanRepeatWallJump) && left != null)
                 {
                     Velocity.Y -= JumpSpeed;
                     Velocity.X = MaxVel;

@@ -12,9 +12,8 @@ namespace team5
     class Movable : BoxEntity
     {
         public Vector2 Velocity = new Vector2();
-        protected int collided = 0;
 
-        public Movable(Game1 game, Point size):base(game, size)
+        public Movable(Game1 game, Vector2 size):base(game, size)
         {
         }
 
@@ -23,14 +22,8 @@ namespace team5
             float time;
             RectangleF[] targetBB;
             Vector2[] targetVel;
-            collided = 0;
             while (chunk.CollideSolid(this, dt, out direction, out time, out targetBB, out targetVel))
-            {
-                // FIXME: Change this to explicit point tests after sweep test
-                //        as the collisions we get during sweeping might not be
-                //        relevant at the end of collision handling.
-                collided |= direction;
-                
+            {   
                 if ((direction & Chunk.Down) != 0)
                 {
                     Velocity.Y = targetVel[0].Y;

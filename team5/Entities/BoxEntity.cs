@@ -9,18 +9,28 @@ namespace team5
 {
     abstract class BoxEntity : Entity
     {
-        protected Point Size;
+        protected Vector2 Size;
 
-        public BoxEntity(Game1 game, Point Size):base(game)
+        public BoxEntity(Game1 game, Vector2 size):base(game)
         {
-            this.Size = Size;
+            this.Size = size;
         }
 
+        // <Nicolas> Does this mean Position is in the top left corner and Size is the full 
+        //           width and height? Ime it's generally better to work with centered 
+        //           positions and center->bound extends (or half-widths).
         public override RectangleF GetBoundingBox()
         {
             return new RectangleF(Position.X, Position.Y, Size.X+1, Size.Y+1);
         }
 
+        public override bool Contains(Vector2 point)
+        {
+            return Position.X <= point.X
+                && Position.Y <= point.Y
+                && point.X <= Position.X + Size.X
+                && point.Y <= Position.Y + Size.Y;
+        }
 
         //Standard swept AABB
         //Source: https://www.gamedev.net/articles/programming/general-and-gameplay-programming/swept-aabb-collision-detection-and-response-r3084

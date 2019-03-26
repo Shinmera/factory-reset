@@ -10,7 +10,7 @@ namespace team5
 {
     class Platform : BoxEntity
     {
-        public Platform(Vector2 position, Game1 game, int width, int height) : base(game, new Point(width, height))
+        public Platform(Vector2 position, Game1 game, int width, int height) : base(game, new Vector2(width, height))
         {
             Position = position;
             Texture2D dummyTexture;

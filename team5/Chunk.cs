@@ -94,7 +94,17 @@ namespace team5
         public const int Down =        0x00000100;
         public const int Left =        0x00001000;
 
-        //TODO: Tile collisions
+        // TODO: Tile collisions!!!
+        public Entity CollidePoint(Vector2 point)
+        {
+            foreach (var entity in SolidEntities)
+            {
+                if(entity.Contains(point))
+                    return entity;
+            }
+            return null;
+        }
+        
         public bool CollideSolid(Entity source, float timestep, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetVel)
         {
             time = float.PositiveInfinity;
@@ -106,42 +116,38 @@ namespace team5
             {
                 float tempTime;
                 int tempDirection;
-                if (entity is BoxEntity)
+                Vector2 velocity = (entity is Movable)? ((Movable)entity).Velocity : new Vector2();
+                if (entity.Collide(source, timestep, out tempDirection, out tempTime))
                 {
-                    BoxEntity boxEntity = (BoxEntity)entity;
-                    Vector2 velocity = (boxEntity is Movable)? ((Movable)boxEntity).Velocity : new Vector2();
-                    if (boxEntity.Collide(source, timestep, out tempDirection, out tempTime))
+                    if (tempTime < time)
                     {
-                        if (tempTime < time)
+                        time = tempTime;
+                        direction = tempDirection;
+                        if ((tempDirection & (Up | Down)) != 0)
                         {
-                            time = tempTime;
-                            direction = tempDirection;
-                            if ((tempDirection & (Up | Down)) != 0)
-                            {
-                                targetBB[0] = boxEntity.GetBoundingBox();
-                                targetVel[0] = velocity;
-                            }
-                            else
-                            {
-                                targetBB[1] = boxEntity.GetBoundingBox();
-                                targetVel[0] = velocity;
-                            }
+                            targetBB[0] = entity.GetBoundingBox();
+                            targetVel[0] = velocity;
                         }
-                        if(tempTime == time)
+                        else
                         {
-                            //Allows collisions with multiple directions
-                            direction = direction | tempDirection;
+                            targetBB[1] = entity.GetBoundingBox();
+                            targetVel[0] = velocity;
+                        }
+                    }
+                    if(tempTime == time)
+                    {
+                        //Allows collisions with multiple directions
+                        direction = direction | tempDirection;
 
-                            if ((tempDirection & (Up | Down)) != 0)
-                            {
-                                targetBB[0] = boxEntity.GetBoundingBox();
-                                targetVel[0] = velocity;
-                            }
-                            else
-                            {
-                                targetBB[1] = boxEntity.GetBoundingBox();
-                                targetVel[0] = velocity;
-                            }
+                        if ((tempDirection & (Up | Down)) != 0)
+                        {
+                            targetBB[0] = entity.GetBoundingBox();
+                            targetVel[0] = velocity;
+                        }
+                        else
+                        {
+                            targetBB[1] = entity.GetBoundingBox();
+                            targetVel[0] = velocity;
                         }
                     }
                 }
