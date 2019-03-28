@@ -76,7 +76,7 @@ namespace team5
             int width = (int)FrameSize.X;
             int height = (int)FrameSize.Y;
 
-            Rectangle source = new Rectangle(width * Frame, height, width, height);
+            Rectangle source = new Rectangle(width * Frame, 0, width, height);
             Engine.Draw(Texture, source, position);
         }
 
