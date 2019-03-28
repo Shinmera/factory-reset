@@ -26,8 +26,8 @@ namespace team5
         protected override void Initialize()
         {
             base.Initialize();
-            Transforms.ProjectionMatrix = Matrix.CreateOrthographicOffCenter(0, GraphicsDevice.Viewport.Width, 0, GraphicsDevice.Viewport.Height, -10, 10);
-            System.Diagnostics.Debug.WriteLine("Viewport: "+GraphicsDevice.Viewport.Width+"x"+GraphicsDevice.Viewport.Height);
+            Window.ClientSizeChanged += (x, y) => { Resize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height); };
+            Resize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
             RasterizerState rs = new RasterizerState();
             rs.CullMode = CullMode.None;
             GraphicsDevice.RasterizerState = rs;
@@ -43,6 +43,12 @@ namespace team5
         
         protected override void UnloadContent()
         {
+        }
+
+        protected void Resize(int width, int height)
+        {
+            Transforms.ProjectionMatrix = Matrix.CreateOrthographicOffCenter(0, width, 0, height, -10, 10);
+            System.Diagnostics.Debug.WriteLine("Viewport: " + width + "x" + height);
         }
 
         protected override void Update(GameTime gameTime)
