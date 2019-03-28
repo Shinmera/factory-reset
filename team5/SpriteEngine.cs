@@ -64,9 +64,18 @@ namespace team5
             }
         }
         
+        public void Draw(Vector2 pos, Vector2 size)
+        {
+            
+            Game.Transforms.Push();
+            Game.Transforms.Translate(pos);
+            Draw(SolidTexture, new Vector4(0, 0, size.X, size.Y));
+            Game.Transforms.Pop();
+        }
+        
         public void Draw(Vector4 rect)
         {
-            Draw(SolidTexture, rect);
+            Draw(new Vector2(rect.X, rect.Y), new Vector2(rect.Z, rect.W));
         }
     }
 }

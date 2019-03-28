@@ -204,10 +204,10 @@ namespace team5
                 else
                     Sprite.Play("idle");
                 // Base direction on movement
-                if (Velocity.X < 0) ;
-                //Sprite.Direction = -1;
-                if (0 < Velocity.X) ;
-                    //Sprite.Direction = +1;
+                if (Velocity.X < 0)
+                    Sprite.Direction = -1;
+                if (0 < Velocity.X)
+                    Sprite.Direction = +1;
             }
         }
     }
