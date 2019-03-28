@@ -138,7 +138,7 @@ namespace team5
                     {
                         Vector2 tile = tileDrawers[type];
                         Vector2 pos = new Vector2(x, y) * TileSize + relPosition;
-                        Game.SpriteEngine.Draw(new Rectangle((int)pos.X, (int)pos.Y, TileSize, TileSize));
+                        Game.SpriteEngine.Draw(new Vector4(pos.X, pos.Y, TileSize, TileSize));
                     }
                 }
             }

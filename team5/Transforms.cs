@@ -74,6 +74,8 @@ namespace team5
         private MatrixStack ViewStack = new MatrixStack();
         private MatrixStack ModelStack = new MatrixStack();
         
+        public Matrix ProjectionMatrix = Matrix.Identity;
+        
         /// <summary>
         ///   Returns the current View matrix.
         /// </summary>
@@ -106,6 +108,11 @@ namespace team5
         ///   Scale the Model matrix by the given float in both X and Y.
         /// </summary>
         public Matrix Scale(float by){ return ModelStack.Scale(by); }
+
+        /// <summary>
+        ///   Scale the Model matrix by the given float in X and Y.
+        /// </summary>
+        public Matrix Scale(float x, float y) { return ModelStack.Scale(new Vector2(x, y)); }
         
         /// <summary>
         ///   Scale the Model matrix by the given vector.

@@ -17,6 +17,7 @@ namespace team5
         {
             DeviceManager = new GraphicsDeviceManager(this);
             SpriteEngine = new SpriteEngine(this);
+            DeviceManager.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
 
             IsFixedTimeStep = true;
@@ -25,6 +26,11 @@ namespace team5
         protected override void Initialize()
         {
             base.Initialize();
+            Transforms.ProjectionMatrix = Matrix.CreateOrthographicOffCenter(0, GraphicsDevice.Viewport.Width, 0, GraphicsDevice.Viewport.Height, -10, 10);
+            System.Diagnostics.Debug.WriteLine("Viewport: "+GraphicsDevice.Viewport.Width+"x"+GraphicsDevice.Viewport.Height);
+            RasterizerState rs = new RasterizerState();
+            rs.CullMode = CullMode.None;
+            GraphicsDevice.RasterizerState = rs;
         }
 
         protected override void LoadContent()

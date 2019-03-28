@@ -17,8 +17,7 @@ namespace team5
         
         public override void Draw(GameTime gameTime)
         {
-            Game.SpriteEngine.Draw(new Rectangle((int)(Position.X- Size.X/2), (int)(Position.Y - Size.Y/2),
-                                                 (int)Size.X, (int)Size.Y));
+            Game.SpriteEngine.Draw(new Vector4(Position.X, Position.Y, Size.X, Size.Y));
         }
     }
 }

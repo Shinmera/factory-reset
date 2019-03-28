@@ -31,7 +31,7 @@ namespace team5
         private float JumpSpeed = 150;
         private float LongJumpSpeed = 250;
         private float LongJumpTime = 15;
-        private Vector2 WallJumpVelocity = new Vector2(100, -200);
+        private Vector2 WallJumpVelocity = new Vector2(100, 200);
         private float WallSlideFriction = 0.9F;
         
         private AnimatedSprite Sprite;
@@ -46,7 +46,7 @@ namespace team5
                 colors[i] = Color.Green;
             }
             dummyTexture.SetData(colors);
-            Sprite = new AnimatedSprite(null, game.SpriteEngine, Size);
+            Sprite = new AnimatedSprite(null, game, Size);
 
             this.Position = position;
 

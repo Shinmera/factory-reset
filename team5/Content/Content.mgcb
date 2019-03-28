@@ -25,6 +25,12 @@
 /processorParam:TextureFormat=Color
 /build:Chunks/TestChunk.png
 
+#begin Shaders/tile.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/tile.fx
+
 #begin Textures/tempplayer.png
 /importer:TextureImporter
 /processor:TextureProcessor

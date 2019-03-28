@@ -33,21 +33,23 @@ namespace team5
         }
         
         public Texture2D Texture { get; set; }
-        private SpriteEngine Engine;
+        private Game1 Game;
         public float Speed = 1;
+        public float Direction = 1;
         private float TimeAccumulator = 0;
         private int Frame = 0;
         private Animation Anim;
         private List<Animation> Animations = new List<Animation>();
         private Vector2 FrameSize;
 
-        public AnimatedSprite(Texture2D texture, SpriteEngine engine) : this(texture, engine, new Vector2(Chunk.TileSize, Chunk.TileSize))
+        public AnimatedSprite(Texture2D texture, Game1 game) 
+            : this(texture, game, new Vector2(Chunk.TileSize, Chunk.TileSize))
         { }
 
-        public AnimatedSprite(Texture2D texture, SpriteEngine engine, Vector2 frameSize)
+        public AnimatedSprite(Texture2D texture, Game1 game, Vector2 frameSize)
         {
             Texture = texture;
-            Engine = engine;
+            Game = game;
             FrameSize = frameSize;
         }
         
@@ -74,12 +76,17 @@ namespace team5
 
         public void Draw(Vector2 position)
         {
+            Game.Transforms.Push();
+            Game.Transforms.Scale(Direction, 1);
+            Game.Transforms.Translate(position);
             int width = (int)FrameSize.X;
             int height = (int)FrameSize.Y;
 
-            Rectangle source = new Rectangle(width * Frame, 0, width, height);
-            Engine.Draw(Texture, source, position);
+            Vector4 source = new Vector4(width * Frame, 0, width, height);
+            Game.SpriteEngine.Draw(Texture, source);
+            Game.Transforms.Pop();
         }
+        
         public void Draw()
         {
             Draw(new Vector2(0, 0));
