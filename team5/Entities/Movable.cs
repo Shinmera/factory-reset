@@ -35,8 +35,8 @@ namespace team5
                 if ((direction & Chunk.Up) != 0)
                 {
                     // <Nicolas> This results in a strange rebound from the top. Why was this done?
-                    float relVel = Velocity.Y - targetBB[0].Y;
-                    Velocity.Y = targetVel[0].Y - (relVel / 8);
+                    float relVel = Velocity.Y - targetVel[0].Y;
+                    Velocity.Y = targetVel[0].Y - (relVel / 4);
                     Position.Y = targetBB[0].Bottom - Size.Y / 2;
                 }
                 if ((direction & Chunk.Left) != 0)
