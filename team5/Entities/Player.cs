@@ -67,7 +67,7 @@ namespace team5
 
         public override void Draw(GameTime gameTime)
         {
-            Sprite.Draw(Position);
+            Sprite.Draw(Position - Size/2);
         }
 
         public override void Update(GameTime gameTime, Chunk chunk)
@@ -82,12 +82,12 @@ namespace team5
             //// Perform movement stepping. 
             //// !! This code should never change Position !!
             // Check for neighbors
-            Object down = chunk.CollidePoint(new Vector2(Position.X+Size.X/2,
-                                                         Position.Y+Size.Y+1));
-            Object left = chunk.CollidePoint(new Vector2(Position.X       -1,
-                                                         Position.Y+Size.Y/2));
-            Object right= chunk.CollidePoint(new Vector2(Position.X+Size.X+1,
-                                                         Position.Y+Size.Y/2));
+            Object down = chunk.CollidePoint(new Vector2(Position.X,
+                                                         Position.Y+Size.Y/2+1));
+            Object left = chunk.CollidePoint(new Vector2(Position.X-Size.X/2-1,
+                                                         Position.Y));
+            Object right= chunk.CollidePoint(new Vector2(Position.X+Size.X/2+1,
+                                                         Position.Y));
             
             // Apply gravity
             Velocity.Y += dt * Gravity;
@@ -191,7 +191,7 @@ namespace team5
             {
                 Sprite.Play("climb");
                 // Force direction to face wall
-                Sprite.Direction = (left != null)? -1 : +1;
+                //Sprite.Direction = (left != null)? -1 : +1;
             }
             else
             {
@@ -204,10 +204,10 @@ namespace team5
                 else
                     Sprite.Play("idle");
                 // Base direction on movement
-                if(Velocity.X < 0)
-                    Sprite.Direction = -1;
-                if(0 < Velocity.X)
-                    Sprite.Direction = +1;
+                if (Velocity.X < 0) ;
+                //Sprite.Direction = -1;
+                if (0 < Velocity.X) ;
+                    //Sprite.Direction = +1;
             }
         }
     }

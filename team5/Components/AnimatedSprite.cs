@@ -79,6 +79,7 @@ namespace team5
 
             Rectangle source = new Rectangle(width * Frame, 0, width, height);
             Engine.Draw(Texture, source, position);
+        }
         public void Draw()
         {
             Draw(new Vector2(0, 0));

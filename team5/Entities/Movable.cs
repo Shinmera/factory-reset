@@ -30,24 +30,24 @@ namespace team5
                 {
                     Grounded = true;
                     Velocity.Y = targetVel[0].Y;
-                    Position.Y = targetBB[0].Top - Size.Y;
+                    Position.Y = targetBB[0].Top - Size.Y / 2;
                 }
                 if ((direction & Chunk.Up) != 0)
                 {
                     // <Nicolas> This results in a strange rebound from the top. Why was this done?
                     float relVel = Velocity.Y - targetBB[0].Y;
-                    Velocity.Y = targetVel[0].Y - (relVel / 5);
-                    Position.Y = targetBB[0].Bottom;
+                    Velocity.Y = targetVel[0].Y - (relVel / 8);
+                    Position.Y = targetBB[0].Bottom + Size.Y / 2;
                 }
                 if ((direction & Chunk.Left) != 0)
                 {
                     Velocity.X = targetVel[1].X;
-                    Position.X = targetBB[1].Right;
+                    Position.X = targetBB[1].Right + Size.X / 2;
                 }
                 if ((direction & Chunk.Right) != 0)
                 {
                     Velocity.X = targetVel[1].X;
-                    Position.X = targetBB[1].Left - Size.X;
+                    Position.X = targetBB[1].Left - Size.X / 2;
                 }
 
                 Position += Velocity * time * dt;
@@ -58,7 +58,7 @@ namespace team5
         }
         
         // <Nicolas> Why is this code so complicated?
-        public override List<Vector2> GetSweptAABBPolygon(float timestep)
+        /*public override List<Vector2> GetSweptAABBPolygon(float timestep)
         {
             if(Velocity.X == 0 && Velocity.Y == 0)
             {
@@ -169,6 +169,6 @@ namespace team5
             }
 
             throw new ArithmeticException("Velocity of Swept AABB invalid");
-        }
+        }*/
     }
 }

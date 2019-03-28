@@ -21,15 +21,15 @@ namespace team5
         //           positions and center->bound extends (or half-widths).
         public override RectangleF GetBoundingBox()
         {
-            return new RectangleF(Position.X, Position.Y, Size.X, Size.Y);
+            return new RectangleF(Position.X - Size.X / 2, Position.Y - Size.Y / 2, Size.X, Size.Y);
         }
 
         public override bool Contains(Vector2 point)
         {
-            return Position.X <= point.X
-                && Position.Y <= point.Y
-                && point.X <= Position.X + Size.X
-                && point.Y <= Position.Y + Size.Y;
+            return Position.X - Size.X / 2 <= point.X
+                && Position.Y - Size.X / 2 <= point.Y
+                && point.X <= Position.X + Size.X /2
+                && point.Y <= Position.Y + Size.Y /2;
         }
 
         //Standard swept AABB
@@ -81,24 +81,24 @@ namespace team5
 
             if (sourceMotion.X > 0.0f)
             {
-                InvEntry.X = target.X - (source.Position.X + source.Size.X);
-                InvExit.X = (target.X + target.Width) - source.Position.X;
+                InvEntry.X = target.X - sourceBB.Right;
+                InvExit.X = (target.X + target.Width) - sourceBB.Left;
             }
             else
             {
-                InvEntry.X = (target.X + target.Width) - source.Position.X;
-                InvExit.X = target.X - (source.Position.X + source.Size.X);
+                InvEntry.X = (target.X + target.Width) - sourceBB.Left;
+                InvExit.X = target.X - sourceBB.Right;
             }
 
             if (sourceMotion.Y > 0.0f)
             {
-                InvEntry.Y = target.Y - (source.Position.Y + source.Size.Y);
-                InvExit.Y = (target.Y + target.Height) - source.Position.Y;
+                InvEntry.Y = target.Y - sourceBB.Bottom;
+                InvExit.Y = (target.Y + target.Height) - sourceBB.Top;
             }
             else
             {
-                InvEntry.Y = (target.Y + target.Height) - source.Position.Y;
-                InvExit.Y = target.Y - (source.Position.Y + source.Size.Y);
+                InvEntry.Y = (target.Y + target.Height) - sourceBB.Top;
+                InvExit.Y = target.Y - sourceBB.Bottom;
             }
 
             Vector2 Entry;
