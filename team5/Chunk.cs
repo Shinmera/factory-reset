@@ -10,15 +10,18 @@ namespace team5
     {
         Vector2 relPosition;
 
-        public const int Empty = 0;
-        public const int SolidPlatform = 1;
+        //Tile refernces;
+        public readonly uint Empty = Color.White.PackedValue;
+        public readonly uint SolidPlatform = Color.Black.PackedValue;
 
         public const int TileSize = 16;
 
-        public int[,] TileSet;
+        private string TileSetName;
+        public Texture2D TileSetTexture;
+        public uint[,] TileSet;
 
-        Dictionary<int, Vector2> tileDrawers;
-        Dictionary<int, GameObject> tileObjects;
+        Dictionary<uint, Vector2> tileDrawers;
+        Dictionary<uint, TileType> tileObjects;
 
         //Viewcones, intelligence
         List<Entity> CollidingEntities;
@@ -32,8 +35,10 @@ namespace team5
         Game1 Game;
 
         //TESTING ONLY
-        public Chunk(Game1 game, Player player)
+        public Chunk(Game1 game, Player player, string tileSetName)
         {
+            TileSetName = tileSetName;
+
             Texture2D dummyTexture;
             dummyTexture = new Texture2D(game.GraphicsDevice, TileSize, TileSize);
             Color[] colors = new Color[TileSize * TileSize];
@@ -43,44 +48,45 @@ namespace team5
             }
             dummyTexture.SetData(colors);
 
-            tileDrawers = new Dictionary<int, Vector2>
+            tileDrawers = new Dictionary<uint, Vector2>
             {
                 { SolidPlatform, new Vector2(0,0) }
             };
 
-            tileObjects = new Dictionary<int, GameObject>();
+            tileObjects = new Dictionary<uint, TileType>();
             tileObjects.Add(SolidPlatform, new TilePlatform(game));
 
             SolidEntities = new List<Entity>();
             NonCollidingEntities = new List<Entity>();
             CollidingEntities = new List<Entity>();
 
-            TileSet = new int[100,100];
+            
 
+            /*
             for(int i = 20; i < 40; ++i)
             {
-                TileSet[i, 65] = 1;
+                TileSet[i, 65] = SolidPlatform;
             }
 
             for (int i = 50; i < 67; ++i)
             {
-                TileSet[30, i] = 1;
+                TileSet[30, i] = SolidPlatform;
             }
-
+            */
             NonCollidingEntities.Add(player);
 
-            SolidEntities.Add(new Platform(new Vector2(100, 700), game, 600, 10));
+            //SolidEntities.Add(new Platform(new Vector2(100, 700), game, 600, 10));
 
-            SolidEntities.Add(new Platform(new Vector2(600, 400), game, 10, 400));
+            //SolidEntities.Add(new Platform(new Vector2(600, 400), game, 10, 400));
 
             SolidEntities.Add(new PassThroughPlatform(Chunk.Up,new Vector2(500, 670), game, 100, 10));
 
             this.Game = game;
         }
 
-        public Chunk(Game1 game, int [,] tileset)
+        public Chunk(Game1 game, string tileSetName)
         {
-            TileSet = tileset;
+            TileSetName = tileSetName;
             SolidEntities = new List<Entity>();
             NonCollidingEntities = new List<Entity>();
             CollidingEntities = new List<Entity>();
@@ -96,7 +102,20 @@ namespace team5
         
         public void LoadContent(ContentManager content)
         {
-            CallAll(x => x.LoadContent(content));
+            TileSetTexture = content.Load<Texture2D>(TileSetName);
+
+            int width = TileSetTexture.Width;
+            int height = TileSetTexture.Height;
+
+            uint[] tileData = new uint[width*height];
+
+            TileSetTexture.GetData<uint>(tileData);
+
+            TileSet = new uint[height, width];
+
+            Buffer.BlockCopy(tileData, 0, TileSet, 0, tileData.Length * sizeof(uint));
+
+            CallAll(obj => obj.LoadContent(content));
         }
 
         public void Update(GameTime gameTime)
@@ -110,11 +129,11 @@ namespace team5
 
             // FIXME: This will all be removed later and replaced by a
             //        full tilemap render method.
-            for(int x = 0; x < TileSet.GetUpperBound(0); ++x)
+            for(int x = 0; x < TileSet.GetUpperBound(1); ++x)
             {
-                for(int y = 0; y < TileSet.GetUpperBound(1); ++y)
+                for(int y = 0; y < TileSet.GetUpperBound(0); ++y)
                 {
-                    int type = TileSet[x, y];
+                    uint type = TileSet[y, x];
                     if (tileDrawers.ContainsKey(type))
                     {
                         Vector2 tile = tileDrawers[type];
@@ -143,12 +162,12 @@ namespace team5
             int x = (int)((point.X - relPosition.X) / TileSize);
             int y = (int)((point.Y - relPosition.Y) / TileSize);
 
-            if(x < 0 || x > TileSet.GetUpperBound(0) || y < 0 || y > TileSet.GetUpperBound(1))
+            if(x < 0 || x > TileSet.GetUpperBound(1) || y < 0 || y > TileSet.GetUpperBound(0))
             {
                 return null;
             }
 
-            if(TileSet[x,y] == SolidPlatform)
+            if(TileSet[y,x] == SolidPlatform)
             {
                 return tileObjects[SolidPlatform];
             }
@@ -218,7 +237,7 @@ namespace team5
 
             int minX = (int)Math.Max(Math.Floor((motionBB.X - relPosition.X) / TileSize),0);
             int minY = (int)Math.Max(Math.Floor((motionBB.Y - relPosition.X) / TileSize),0);
-            int maxX = (int)Math.Min(Math.Floor((motionBB.Right - relPosition.X) / TileSize) + 1,TileSet.GetUpperBound(0)+1);
+            int maxX = (int)Math.Min(Math.Floor((motionBB.Right - relPosition.X) / TileSize) + 1,TileSet.GetUpperBound(1)+1);
             int maxY = (int)Math.Min(Math.Floor((motionBB.Bottom - relPosition.X) / TileSize) + 1, TileSet.GetUpperBound(0) + 1);
 
             if (source is Movable)
@@ -227,14 +246,14 @@ namespace team5
                 {
                     for (int y = minY; y < maxY; ++y)
                     {
-                        if (TileSet[x,y] == Chunk.SolidPlatform) {
+                        if (tileObjects.ContainsKey(TileSet[y,x])) {
                             int tempDirection;
                             float tempTime;
                             bool tempCorner;
 
                             var tileBB = new RectangleF(x * TileSize + relPosition.X, y * TileSize + relPosition.Y, TileSize, TileSize);
 
-                            if (BoxEntity.CollideMovable((Movable)source, tileBB, timestep, out tempDirection, out tempTime, out tempCorner))
+                            if (tileObjects[TileSet[y, x]].Collide((Movable)source, tileBB, timestep, out tempDirection, out tempTime, out tempCorner))
                             {
                                 if (tempTime < time || (tempTime == time && (corner && !tempCorner)))
                                 {

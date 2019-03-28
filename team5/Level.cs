@@ -27,7 +27,7 @@ namespace team5
         public Level(Game1 game)
         {
             Player = new Player(new Vector2(200, 50), game);
-            ActiveChunk = new Chunk(game, Player);
+            ActiveChunk = new Chunk(game, Player, "Chunks/TestChunk");
         }
         
         public void LoadContent(ContentManager content)

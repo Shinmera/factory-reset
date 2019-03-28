@@ -119,6 +119,7 @@
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Chunk.cs" />
     <Compile Include="Entities\TilePlatform.cs" />
+    <Compile Include="Entities\TileType.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
