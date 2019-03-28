@@ -22,6 +22,8 @@ namespace team5
         public uint Width;
         public uint Height;
         public uint[] TileSet;
+        public Texture2D Foreground;
+        public Texture2D Tileset;
 
         Dictionary<uint, Vector2> tileDrawers;
         Dictionary<uint, TileType> tileObjects;
@@ -117,6 +119,8 @@ namespace team5
         public void LoadContent(ContentManager content)
         {
             TileSetTexture = content.Load<Texture2D>(TileSetName);
+            Foreground = content.Load<Texture2D>("Chunks/temptilemap");
+            Tileset = content.Load<Texture2D>("Textures/temptiles");
 
             Width = (uint)TileSetTexture.Width;
             Height = (uint)TileSetTexture.Height;
@@ -159,6 +163,7 @@ namespace team5
                 }
             }
 
+            Game.TilemapEngine.Draw(Foreground, Tileset);
         }
 
         public const int Up =        0b00000001;

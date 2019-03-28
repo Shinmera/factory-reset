@@ -9,6 +9,7 @@ namespace team5
 
         GraphicsDeviceManager DeviceManager;
         public readonly SpriteEngine SpriteEngine;
+        public readonly TilemapEngine TilemapEngine;
         public readonly Transforms Transforms = new Transforms();
 
         Level level;
@@ -17,6 +18,7 @@ namespace team5
         {
             DeviceManager = new GraphicsDeviceManager(this);
             SpriteEngine = new SpriteEngine(this);
+            TilemapEngine = new TilemapEngine(this);
             DeviceManager.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
 
@@ -35,6 +37,7 @@ namespace team5
         protected override void LoadContent()
         {
             SpriteEngine.LoadContent(Content);
+            TilemapEngine.LoadContent(Content);
 
             level = new Level(this);
             level.LoadContent(Content);

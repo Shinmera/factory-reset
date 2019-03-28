@@ -48,8 +48,10 @@ namespace team5
             GraphicsDevice device = Game.GraphicsDevice;
             
             TileEffect.CurrentTechnique = TileEffect.Techniques["Tile"];
+            TileEffect.Parameters["viewSize"].SetValue(new Vector2(device.Viewport.Width, device.Viewport.Height));
             TileEffect.Parameters["viewMatrix"].SetValue(Game.Transforms.ViewMatrix);
             TileEffect.Parameters["modelMatrix"].SetValue(Game.Transforms.ModelMatrix);
+            TileEffect.Parameters["tileSize"].SetValue(Chunk.TileSize);
             TileEffect.Parameters["tileset"].SetValue(tileset);
             TileEffect.Parameters["tilemap"].SetValue(tilemap);
             
