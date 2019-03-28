@@ -87,6 +87,11 @@ namespace team5
         public Matrix ModelMatrix => ModelStack.Top;
         
         /// <summary>
+        ///   Resets the Model matrix to an identity matrix.
+        /// </summary>
+        public Matrix Reset(){ return ModelStack.Reset(); }
+        
+        /// <summary>
         ///   Push the Model matrix stack, copying the previous matrix and preventing
         ///   it from being modified.
         /// </summary>
@@ -138,7 +143,12 @@ namespace team5
         public Matrix PopView(){ return ViewStack.Pop(); }
         
         /// <summary>
-        ///   Translate tho View matrix by the given vector.
+        ///   Reset the View matrix to an identity matryx.
+        /// </summary>
+        public Matrix ResetView(){ return ViewStack.Reset(); }
+        
+        /// <summary>
+        ///   Translate the View matrix by the given vector.
         /// </summary>
         public Matrix TranslateView(Vector2 by){ return ViewStack.Translate(by); }
         

@@ -53,6 +53,8 @@ namespace team5
 
         protected override void Update(GameTime gameTime)
         {
+            Transforms.Reset();
+            Transforms.ResetView();
             base.Update(gameTime);
             level.Update(gameTime);
         }
