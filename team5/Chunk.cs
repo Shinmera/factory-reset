@@ -16,9 +16,12 @@ namespace team5
 
         public const int TileSize = 16;
 
-        private string TileSetName;
+        private readonly string TileSetName;
         public Texture2D TileSetTexture;
-        public uint[,] TileSet;
+
+        public uint Width;
+        public uint Height;
+        public uint[] TileSet;
 
         Dictionary<uint, Vector2> tileDrawers;
         Dictionary<uint, TileType> tileObjects;
@@ -60,7 +63,7 @@ namespace team5
             NonCollidingEntities = new List<Entity>();
             CollidingEntities = new List<Entity>();
 
-            
+            relPosition = new Vector2(0, -300);
 
             /*
             for(int i = 20; i < 40; ++i)
@@ -93,27 +96,40 @@ namespace team5
             Game = game;
         }
         
+
         private void CallAll(Action<GameObject> func)
         {
             SolidEntities.ForEach(func);
             NonCollidingEntities.ForEach(func);
             CollidingEntities.ForEach(func);
         }
-        
+
+        public uint GetTile(int x, int y)
+        {
+            if(x < 0 || x >= Width || y < 0 || y >= Height)
+            {
+                throw new IndexOutOfRangeException("No such tile exists");
+            }
+
+            return TileSet[(Height - y - 1)*Width + x];
+        }
+
         public void LoadContent(ContentManager content)
         {
             TileSetTexture = content.Load<Texture2D>(TileSetName);
 
-            int width = TileSetTexture.Width;
-            int height = TileSetTexture.Height;
+            Width = (uint)TileSetTexture.Width;
+            Height = (uint)TileSetTexture.Height;
 
-            uint[] tileData = new uint[width*height];
+            //uint[] tileData = new uint[Width*Height];
 
-            TileSetTexture.GetData<uint>(tileData);
+            TileSet = new uint[Width * Height];
 
-            TileSet = new uint[height, width];
+            TileSetTexture.GetData<uint>(TileSet);
 
-            Buffer.BlockCopy(tileData, 0, TileSet, 0, tileData.Length * sizeof(uint));
+            
+
+            //Buffer.BlockCopy(tileData, 0, TileSet, 0, tileData.Length * sizeof(uint));
 
             CallAll(obj => obj.LoadContent(content));
         }
@@ -129,11 +145,11 @@ namespace team5
 
             // FIXME: This will all be removed later and replaced by a
             //        full tilemap render method.
-            for(int x = 0; x < TileSet.GetUpperBound(1); ++x)
+            for(int x = 0; x < Width; ++x)
             {
-                for(int y = 0; y < TileSet.GetUpperBound(0); ++y)
+                for(int y = 0; y < Height; ++y)
                 {
-                    uint type = TileSet[y, x];
+                    uint type = GetTile(x,y);
                     if (tileDrawers.ContainsKey(type))
                     {
                         Vector2 tile = tileDrawers[type];
@@ -162,12 +178,12 @@ namespace team5
             int x = (int)((point.X - relPosition.X) / TileSize);
             int y = (int)((point.Y - relPosition.Y) / TileSize);
 
-            if(x < 0 || x > TileSet.GetUpperBound(1) || y < 0 || y > TileSet.GetUpperBound(0))
+            if(x < 0 || x >= Width || y < 0 || y >= Height)
             {
                 return null;
             }
 
-            if(TileSet[y,x] == SolidPlatform)
+            if(GetTile(x,y) == SolidPlatform)
             {
                 return tileObjects[SolidPlatform];
             }
@@ -235,10 +251,10 @@ namespace team5
             motionBB.Width = sourceBB.Width + (float)Math.Max(0.0, sourceMotion.X);
             motionBB.Height = sourceBB.Height + (float)Math.Max(0.0, sourceMotion.Y);
 
-            int minX = (int)Math.Max(Math.Floor((motionBB.X - relPosition.X) / TileSize),0);
-            int minY = (int)Math.Max(Math.Floor((motionBB.Y - relPosition.X) / TileSize),0);
-            int maxX = (int)Math.Min(Math.Floor((motionBB.Right - relPosition.X) / TileSize) + 1,TileSet.GetUpperBound(1)+1);
-            int maxY = (int)Math.Min(Math.Floor((motionBB.Bottom - relPosition.X) / TileSize) + 1, TileSet.GetUpperBound(0) + 1);
+            int minX = (int)Math.Max(Math.Floor((motionBB.Left - relPosition.X) / TileSize),0);
+            int minY = (int)Math.Max(Math.Floor((motionBB.Bottom - relPosition.Y) / TileSize),0);
+            int maxX = (int)Math.Min(Math.Floor((motionBB.Right - relPosition.X) / TileSize) + 1, Width + 1);
+            int maxY = (int)Math.Min(Math.Floor((motionBB.Top - relPosition.Y) / TileSize) + 1, Height + 1);
 
             if (source is Movable)
             {
@@ -246,14 +262,14 @@ namespace team5
                 {
                     for (int y = minY; y < maxY; ++y)
                     {
-                        if (tileObjects.ContainsKey(TileSet[y,x])) {
+                        if (tileObjects.ContainsKey(GetTile(x,y))) {
                             int tempDirection;
                             float tempTime;
                             bool tempCorner;
 
                             var tileBB = new RectangleF(x * TileSize + relPosition.X, y * TileSize + relPosition.Y, TileSize, TileSize);
 
-                            if (tileObjects[TileSet[y, x]].Collide((Movable)source, tileBB, timestep, out tempDirection, out tempTime, out tempCorner))
+                            if (tileObjects[GetTile(x,y)].Collide((Movable)source, tileBB, timestep, out tempDirection, out tempTime, out tempCorner))
                             {
                                 if (tempTime < time || (tempTime == time && (corner && !tempCorner)))
                                 {
