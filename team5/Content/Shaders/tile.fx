@@ -13,15 +13,6 @@ float4x4 modelMatrix;
 float4 offset;
 Texture2D tileset;
 
-sampler tilesetSampler = sampler_state
-{
-    Texture = <tileset>;
-    MagFilter = None;
-    MinFilter = None;
-    AddressU = Clamp;
-    AddressV = Clamp;
-};
-
 struct VertexShaderInput
 {
     float4 Position : POSITION0;

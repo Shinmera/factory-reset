@@ -28,8 +28,7 @@ namespace team5
             base.Initialize();
             Window.ClientSizeChanged += (x, y) => { Resize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height); };
             Resize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
-            RasterizerState rs = new RasterizerState();
-            rs.CullMode = CullMode.None;
+            RasterizerState rs = new RasterizerState{ CullMode = CullMode.None };
             GraphicsDevice.RasterizerState = rs;
         }
 
