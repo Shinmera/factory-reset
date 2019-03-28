@@ -2,8 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-
-
+using Microsoft.Xna.Framework.Content;
 
 namespace team5
 {
@@ -14,11 +13,11 @@ namespace team5
         public const int Empty = 0;
         public const int SolidPlatform = 1;
 
-        public const int TileSize = 10;
+        public const int TileSize = 16;
 
         public int[,] TileSet;
 
-        Dictionary<int,AnimatedSprite> tileDrawers;
+        Dictionary<int, Vector2> tileDrawers;
         Dictionary<int, GameObject> tileObjects;
 
         //Viewcones, intelligence
@@ -44,9 +43,9 @@ namespace team5
             }
             dummyTexture.SetData(colors);
 
-            tileDrawers = new Dictionary<int, AnimatedSprite>
+            tileDrawers = new Dictionary<int, Vector2>
             {
-                { SolidPlatform, new AnimatedSprite(dummyTexture, 1, 1, game.SpriteBatch) }
+                { SolidPlatform, new Vector2(0,0) }
             };
 
             tileObjects = new Dictionary<int, GameObject>();
@@ -87,42 +86,30 @@ namespace team5
             CollidingEntities = new List<Entity>();
             Game = game;
         }
+        
+        private void CallAll(Action<GameObject> func)
+        {
+            SolidEntities.ForEach(func);
+            NonCollidingEntities.ForEach(func);
+            CollidingEntities.ForEach(func);
+        }
+        
+        public void LoadContent(ContentManager content)
+        {
+            CallAll(x => x.LoadContent(content));
+        }
 
         public void Update(GameTime gameTime)
         {
-            foreach (var entity in SolidEntities)
-            {
-                ((Entity)entity).Update(gameTime, this);
-            }
-
-            foreach (var entity in NonCollidingEntities)
-            {
-                ((Entity)entity).Update(gameTime, this);
-            }
-
-            foreach (var entity in CollidingEntities)
-            {
-                ((Entity)entity).Update(gameTime, this);
-            }
+            CallAll(x => x.Update(gameTime, this));
         }
 
         public void Draw(GameTime gameTime)
         {
-            foreach (var entity in SolidEntities)
-            {
-                ((Entity)entity).Draw(gameTime, new Vector2());
-            }
+            CallAll(x => x.Draw(gameTime));
 
-            foreach (var entity in NonCollidingEntities)
-            {
-                ((Entity)entity).Draw(gameTime, new Vector2());
-            }
-
-            foreach (var entity in CollidingEntities)
-            {
-                ((Entity)entity).Draw(gameTime, new Vector2());
-            }
-
+            // FIXME: This will all be removed later and replaced by a
+            //        full tilemap render method.
             for(int x = 0; x < TileSet.GetUpperBound(0); ++x)
             {
                 for(int y = 0; y < TileSet.GetUpperBound(1); ++y)
@@ -130,7 +117,9 @@ namespace team5
                     int type = TileSet[x, y];
                     if (tileDrawers.ContainsKey(type))
                     {
-                        tileDrawers[type].Draw(new Vector2(x, y) * TileSize + relPosition);
+                        Vector2 tile = tileDrawers[type];
+                        Vector2 pos = new Vector2(x, y) * TileSize + relPosition;
+                        Game.SpriteEngine.Draw(new Rectangle((int)pos.X, (int)pos.Y, TileSize, TileSize));
                     }
                 }
             }

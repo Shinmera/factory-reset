@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Content;
 
 namespace team5
 {
@@ -27,6 +28,11 @@ namespace team5
         {
             Player = new Player(new Vector2(200, 50), game);
             ActiveChunk = new Chunk(game, Player);
+        }
+        
+        public void LoadContent(ContentManager content)
+        {
+            ActiveChunk.LoadContent(content);
         }
 
         public void Update(GameTime gameTime)

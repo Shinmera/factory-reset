@@ -12,6 +12,7 @@ namespace team5
     class Movable : BoxEntity
     {
         public Vector2 Velocity = new Vector2();
+        protected bool Grounded = false;
 
         public Movable(Game1 game, Vector2 size):base(game, size)
         {
@@ -22,10 +23,12 @@ namespace team5
             float time;
             RectangleF[] targetBB;
             Vector2[] targetVel;
+            Grounded = false;
             while (chunk.CollideSolid(this, dt, out direction, out time, out targetBB, out targetVel))
             {   
                 if ((direction & Chunk.Down) != 0)
                 {
+                    Grounded = true;
                     Velocity.Y = targetVel[0].Y;
                     Position.Y = targetBB[0].Top - Size.Y;
                 }

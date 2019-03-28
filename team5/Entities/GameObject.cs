@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 
 namespace team5
 {
@@ -15,13 +16,18 @@ namespace team5
         {
             this.Game = game;
         }
+        
+        public virtual void LoadContent(ContentManager content)
+        {
+            
+        }
 
         public virtual void Update(GameTime gameTime, Chunk level)
         {
 
         }
 
-        public virtual void Draw(GameTime gameTime, Vector2 CameraOffset)
+        public virtual void Draw(GameTime gameTime)
         {
 
         }

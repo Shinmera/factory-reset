@@ -13,15 +13,12 @@ namespace team5
         public Platform(Vector2 position, Game1 game, int width, int height) : base(game, new Vector2(width, height))
         {
             Position = position;
-            Texture2D dummyTexture;
-            dummyTexture = new Texture2D(game.GraphicsDevice, width, height);
-            Color[] colors = new Color[width * height];
-            for (int i = 0; i < width * height; ++i)
-            {
-                colors[i] = Color.Black;
-            }
-            dummyTexture.SetData(colors);
-            Drawer = new AnimatedSprite(dummyTexture, 1, 1, game.SpriteBatch);
+        }
+        
+        public override void Draw(GameTime gameTime)
+        {
+            Game.SpriteEngine.Draw(new Rectangle((int)Position.X, (int)Position.Y,
+                                                 (int)Size.X, (int)Size.Y));
         }
     }
 }

@@ -1,56 +1,105 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-
-
 
 namespace team5
 {   
     //Basic animation class for sprites
     public class AnimatedSprite
     {
+        private struct Animation
+        {
+            public string Name;
+            /// <summary>The index of the starting frame of this animation.</summary>
+            public int Start;
+            /// <summary>The index of the frame after the end of this animation.</summary>
+            public int End;
+            /// <summary>The duration in seconds for a single frame at standard speed.</summary>
+            public float FrameTime;
+            /// <summary>The index of the first frame after a loop.</summary>
+            public int LoopStart;
+            /// <summary>The next animation to transition to when this one is done, or -1 to loop the animation</summary>
+            public int Next;
+            
+            public Animation(string name, int start, int frames, double duration, int loopOffset = 0, int next = -1)
+            {
+                Name = name;
+                Start = start;
+                End = start+frames;
+                FrameTime = (float)(duration/frames);
+                LoopStart = start+loopOffset; 
+                Next = next;
+            }
+        }
+        
         public Texture2D Texture { get; set; }
-        public int Rows { get; set; }
-        public int Columns { get; set; }
-        private int currentFrame;
-        private int totalFrames;
-        private SpriteBatch spriteBatch;
+        private SpriteEngine Engine;
+        public float Speed = 1;
+        private float TimeAccumulator = 0;
+        private int Frame = 0;
+        private Animation Anim;
+        private List<Animation> Animations = new List<Animation>();
+        private Vector2 FrameSize;
 
+        public AnimatedSprite(Texture2D texture, SpriteEngine engine) : this(texture, engine, new Vector2(Chunk.TileSize, Chunk.TileSize))
+        { }
 
-        public AnimatedSprite(Texture2D texture, int rows, int columns, SpriteBatch spriteBatch)
+        public AnimatedSprite(Texture2D texture, SpriteEngine engine, Vector2 frameSize)
         {
             Texture = texture;
-            Rows = rows;
-            Columns = columns;
-            currentFrame = 0;
-            totalFrames = Rows * Columns;
-            this.spriteBatch = spriteBatch;
+            Engine = engine;
+            FrameSize = frameSize;
+        }
+        
+        public void Add(string name, int start, int frames, double duration, int loopOffset = 0, int next = -1)
+        {
+            Animations.Add(new Animation(name, start, frames, duration, loopOffset, next));
+            if(Animations.Count == 1) Anim = Animations[0];
+        }
+        
+        public void Play(int idx)
+        {
+            Anim = Animations[idx];
+            Frame = Anim.Start;
+            TimeAccumulator = 0;
+        }
+        
+        public void Play(string name)
+        {
+            Anim = Animations.Find(a => a.Name.Equals(name));
+            Frame = Anim.Start;
+            TimeAccumulator = 0;
         }
 
-        public void Update()
+        public void Draw(Vector2 position)
         {
-            currentFrame++;
-            if (currentFrame == totalFrames)
-                currentFrame = 0;
+            int width = (int)FrameSize.X;
+            int height = (int)FrameSize.Y;
+
+            Rectangle source = new Rectangle(width * Frame, height, width, height);
+            Engine.Draw(Texture, source, position);
         }
 
-        public void Draw(Vector2 location)
+        public void Update(float dt)
         {
-            int width = Texture.Width / Columns;
-            int hight = Texture.Height / Rows;
-            int row = (int)((float)currentFrame / (float)Columns);
-            int column = currentFrame % Columns;
-
-            Rectangle sourceRectangle = new Rectangle(width * column, hight * row, width, hight);
-            Rectangle destinationRectangle = new Rectangle((int)location.X, (int)location.Y, width, hight);
-            spriteBatch.Begin(SamplerState.PointClamp);
-            spriteBatch.Draw(Texture, destinationRectangle, sourceRectangle, Color.White);
-            spriteBatch.End();
-
+            // Calculate number of frames to advance
+            TimeAccumulator += dt;
+            int frameInc = (int)System.Math.Floor(TimeAccumulator / Anim.FrameTime);
+            TimeAccumulator = TimeAccumulator % Anim.FrameTime;
+            // Step frames and check bounds
+            Frame += frameInc;
+            if(Anim.End <= Frame)
+            {
+                int oversteppedFrames = Anim.End - Frame;
+                // Handle animation transition logic.
+                if(Anim.Next == -1)
+                    Frame = Anim.LoopStart + oversteppedFrames;
+                else
+                {
+                    Anim = Animations[Anim.Next];
+                    Frame = Anim.Start + oversteppedFrames;
+                }
+            }
         }
     }
 }

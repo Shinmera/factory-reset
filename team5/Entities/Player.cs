@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace team5
@@ -32,6 +33,8 @@ namespace team5
         private float LongJumpTime = 15;
         private Vector2 WallJumpVelocity = new Vector2(100, -200);
         private float WallSlideFriction = 0.9F;
+        
+        private AnimatedSprite Sprite;
 
         public Player(Vector2 position, Game1 game):base(game, new Vector2(Chunk.TileSize, Chunk.TileSize))
         {
@@ -43,19 +46,38 @@ namespace team5
                 colors[i] = Color.Green;
             }
             dummyTexture.SetData(colors);
-            Drawer = new AnimatedSprite(dummyTexture, 1, 1, game.SpriteBatch);
+            Sprite = new AnimatedSprite(null, game.SpriteEngine, Size);
 
             this.Position = position;
 
             Controller = new Controller();
         }
+        
+        public override void LoadContent(ContentManager content)
+        {
+            Sprite.Texture = content.Load<Texture2D>("Textures/tempplayer");
+            Sprite.Add("idle",   0,  4, 1.0);
+            Sprite.Add("run",    4, 10, 0.8);
+            Sprite.Add("jump",  14,  6, 0.5);
+            Sprite.Add("fall",  20,  4, 0.5);
+            Sprite.Add("climp", 24,  4, 0.5);
+            Sprite.Add("die",   28,  5, 0.5);
+            Sprite.Add("revive",33,  7, 1.0);
+        }
+
+        public override void Draw(GameTime gameTime)
+        {
+            Sprite.Draw(Position);
+        }
 
         public override void Update(GameTime gameTime, Chunk chunk)
         {
-            Controller.Update();
-            bool Jump = Controller.Jump && JumpKeyWasUp;
-
             float dt = Game1.DeltaT;
+
+            Controller.Update();
+            Sprite.Update(dt);
+
+            bool Jump = Controller.Jump && JumpKeyWasUp;
             
             //// Perform movement stepping. 
             //// !! This code should never change Position !!
@@ -71,7 +93,7 @@ namespace team5
             Velocity.Y += dt * Gravity;
             
             IsClimbing = false;
-            if (down != null)
+            if (Grounded != null)
             {
                 HasDoubleJumped = false;
                 HasWallJumped = false;
@@ -117,23 +139,23 @@ namespace team5
                 }
             }
             
-            if(!IsClimbing || down != null){
+            if(!IsClimbing || Grounded != null){
                 if(Controller.MoveRight && Velocity.X < MaxVel)
                 {
                     // Allow quick turns on the ground
-                    if(Velocity.X < 0 && down != null) Velocity.X = 0;
+                    if(Velocity.X < 0 && Grounded != null) Velocity.X = 0;
                     Velocity.X += AccelRate * dt;
                 }
                 else if(Controller.MoveLeft && -MaxVel < Velocity.X)
                 {
                     // Allow quick turns on the ground
-                    if(0 < Velocity.X && down != null) Velocity.X = 0;
+                    if(0 < Velocity.X && Grounded != null) Velocity.X = 0;
                     Velocity.X -= AccelRate * dt;
                 }
                 else if (!Controller.MoveLeft && !Controller.MoveRight)
                 {
                     // Deaccelerate in the air to accomodate wall jumps
-                    if(down != null || Math.Abs(Velocity.X) < DeaccelRate*dt)
+                    if(Grounded != null || Math.Abs(Velocity.X) < DeaccelRate*dt)
                         Velocity.X = 0;
                     else
                         Velocity.X -= Math.Sign(Velocity.X)*DeaccelRate*dt;
