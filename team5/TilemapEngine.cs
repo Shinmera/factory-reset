@@ -4,30 +4,26 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace team5
 {
-    public class SpriteEngine
+    public class TilemapEngine
     {
         private Game1 Game;
-        private Texture2D SolidTexture;
         private VertexBuffer VertexBuffer;
         private IndexBuffer IndexBuffer;
         private Effect TileEffect;
         
-        public SpriteEngine(Game1 game)
+        public TilemapEngine(Game1 game)
         {
             Game = game;
         }
         
         public void LoadContent(ContentManager content)
         {
-            SolidTexture = new Texture2D(Game.GraphicsDevice, 1, 1);
-            SolidTexture.SetData<Color>(new Color[]{Color.White});
-            
             VertexPositionTexture[] vertices = new VertexPositionTexture[] 
             { 
-                new VertexPositionTexture(new Vector3(+0.5f, -0.5f, 0), Vector2.One),
-                new VertexPositionTexture(new Vector3(-0.5f, -0.5f, 0), Vector2.UnitY),
-                new VertexPositionTexture(new Vector3(-0.5f, +0.5f, 0), Vector2.Zero),
-                new VertexPositionTexture(new Vector3(+0.5f, +0.5f, 0), Vector2.UnitX)
+                new VertexPositionTexture(new Vector3(+1, -1, 0), Vector2.One),
+                new VertexPositionTexture(new Vector3(-1, -1, 0), Vector2.UnitY),
+                new VertexPositionTexture(new Vector3(-1, +1, 0), Vector2.Zero),
+                new VertexPositionTexture(new Vector3(+1, +1, 0), Vector2.UnitX)
             };
             VertexBuffer = new VertexBuffer(Game.GraphicsDevice, VertexPositionTexture.VertexDeclaration, 
                                             vertices.Length, BufferUsage.None);
@@ -39,19 +35,23 @@ namespace team5
             IndexBuffer.SetData(indices);
             
             // Create shader
-            TileEffect = content.Load<Effect>("Shaders/sprite");
+            TileEffect = content.Load<Effect>("Shaders/tile");
         }
         
-        public void Draw(Texture2D texture, Vector4 source)
+        /// <summary>
+        ///   Render the given tilemap using the tileset atlas.xs
+        /// </summary>
+        /// <param name="tilemap">The map texture, describing which tiles to render where.</param>
+        /// <param name="tileset">The set texture, describing individual tiles in an atlas.</param>
+        public void Draw(Texture2D tilemap, Texture2D tileset)
         {
             GraphicsDevice device = Game.GraphicsDevice;
             
             TileEffect.CurrentTechnique = TileEffect.Techniques["Tile"];
-            TileEffect.Parameters["projectionMatrix"].SetValue(Game.Transforms.ProjectionMatrix);
             TileEffect.Parameters["viewMatrix"].SetValue(Game.Transforms.ViewMatrix);
             TileEffect.Parameters["modelMatrix"].SetValue(Game.Transforms.ModelMatrix);
-            TileEffect.Parameters["offset"].SetValue(source);
-            TileEffect.Parameters["tileset"].SetValue(texture);
+            TileEffect.Parameters["tileset"].SetValue(tileset);
+            TileEffect.Parameters["tilemap"].SetValue(tilemap);
             
             device.SetVertexBuffer(VertexBuffer);
             device.Indices = IndexBuffer;
@@ -61,21 +61,6 @@ namespace team5
                 pass.Apply();
                 device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 2);
             }
-        }
-        
-        public void Draw(Vector2 pos, Vector2 size)
-        {
-            
-            Game.Transforms.Push();
-            Game.Transforms.Scale(size);
-            Game.Transforms.Translate(pos);
-            Draw(SolidTexture, new Vector4(0, 0, 1, 1));
-            Game.Transforms.Pop();
-        }
-        
-        public void Draw(Vector4 rect)
-        {
-            Draw(new Vector2(rect.X, rect.Y), new Vector2(rect.Z, rect.W));
         }
     }
 }

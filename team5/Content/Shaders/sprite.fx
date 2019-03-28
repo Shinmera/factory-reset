@@ -7,10 +7,11 @@
     #define PS_SHADERMODEL ps_4_0
 #endif
 
+float4x4 projectionMatrix;
 float4x4 viewMatrix;
 float4x4 modelMatrix;
+float4 offset;
 Texture2D tileset;
-Texture2D tilemap;
 
 struct VertexShaderInput
 {
@@ -28,8 +29,10 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 {
     VertexShaderOutput output = (VertexShaderOutput)0;
 
-    
-    output.UV = input.UV;
+    float4 pos = input.Position;
+    pos.xy *= offset.zw;
+    output.Position = mul(mul(mul(pos, modelMatrix), viewMatrix), projectionMatrix);
+    output.UV = offset.xy + input.UV*offset.zw;
 
     return output;
 }
