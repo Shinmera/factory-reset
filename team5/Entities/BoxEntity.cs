@@ -81,24 +81,24 @@ namespace team5
 
             if (sourceMotion.X > 0.0f)
             {
-                InvEntry.X = target.X - sourceBB.Right;
-                InvExit.X = (target.X + target.Width) - sourceBB.Left;
+                InvEntry.X = target.Left - sourceBB.Right;
+                InvExit.X = target.Right - sourceBB.Left;
             }
             else
             {
-                InvEntry.X = (target.X + target.Width) - sourceBB.Left;
-                InvExit.X = target.X - sourceBB.Right;
+                InvEntry.X = target.Right - sourceBB.Left;
+                InvExit.X = target.Left - sourceBB.Right;
             }
 
             if (sourceMotion.Y > 0.0f)
             {
-                InvEntry.Y = target.Y - sourceBB.Bottom;
-                InvExit.Y = (target.Y + target.Height) - sourceBB.Top;
+                InvEntry.Y = target.Bottom - sourceBB.Top;
+                InvExit.Y = target.Top - sourceBB.Bottom;
             }
             else
             {
-                InvEntry.Y = (target.Y + target.Height) - sourceBB.Top;
-                InvExit.Y = target.Y - sourceBB.Bottom;
+                InvEntry.Y = target.Top - sourceBB.Bottom;
+                InvExit.Y = target.Bottom - sourceBB.Top;
             }
 
             Vector2 Entry;
@@ -153,11 +153,11 @@ namespace team5
                 {
                     if (sourceMotion.Y < 0.0f)
                     {
-                        direction = Chunk.Up;
+                        direction = Chunk.Down;
                     }
                     else
                     {
-                        direction = Chunk.Down;
+                        direction = Chunk.Up;
                     }
                 }
                 else
@@ -178,11 +178,11 @@ namespace team5
                     {
                         if (sourceMotion.Y < 0.0f)
                         {
-                            direction = Chunk.Up;
+                            direction = Chunk.Down;
                         }
                         else
                         {
-                            direction = Chunk.Down;
+                            direction = Chunk.Up;
                         }
                     }
                 }

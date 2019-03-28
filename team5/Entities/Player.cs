@@ -75,7 +75,7 @@ namespace team5
             //// !! This code should never change Position !!
             // Check for neighbors
             Object down = chunk.CollidePoint(new Vector2(Position.X,
-                                                         Position.Y+Size.Y/2+1));
+                                                         Position.Y-Size.Y/2+1));
             Object left = chunk.CollidePoint(new Vector2(Position.X-Size.X/2-1,
                                                          Position.Y));
             Object right= chunk.CollidePoint(new Vector2(Position.X+Size.X/2+1,

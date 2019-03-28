@@ -16,7 +16,7 @@ namespace team5
 
         public Rectangle GetRectangle()
         {
-            return new Rectangle((int)X, (int)Y, (int)Math.Ceiling(Width), (int)Math.Ceiling(Height));
+            return new Rectangle((int)X, (int)(Y + Math.Ceiling(Height)), (int)Math.Ceiling(Width), (int)Math.Ceiling(Height));
         }
 
         public RectangleF(float x, float y, float width, float height)
@@ -31,7 +31,7 @@ namespace team5
         {
             get
             {
-                return Y + Height;
+                return Y;
             }
         }
 
@@ -39,7 +39,7 @@ namespace team5
         {
             get
             {
-                return Y;
+                return Y + Height;
             }
         }
 
