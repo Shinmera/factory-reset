@@ -59,16 +59,17 @@ namespace team5
         
         public void Play(int idx)
         {
-            Anim = Animations[idx];
-            Frame = Anim.Start;
-            TimeAccumulator = 0;
+            if(!EqualityComparer<Animation>.Default.Equals(Anim, Animations[idx]))
+            {
+                Anim = Animations[idx];
+                Frame = Anim.Start;
+                TimeAccumulator = 0;
+            }
         }
         
         public void Play(string name)
         {
-            Anim = Animations.Find(a => a.Name.Equals(name));
-            Frame = Anim.Start;
-            TimeAccumulator = 0;
+            Play(Animations.FindIndex(a => a.Name.Equals(name)));
         }
 
         public void Draw(Vector2 position)
@@ -78,6 +79,9 @@ namespace team5
 
             Rectangle source = new Rectangle(width * Frame, 0, width, height);
             Engine.Draw(Texture, source, position);
+        public void Draw()
+        {
+            Draw(new Vector2(0, 0));
         }
 
         public void Update(float dt)

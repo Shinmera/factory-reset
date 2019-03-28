@@ -58,10 +58,10 @@ namespace team5
             Sprite.Texture = content.Load<Texture2D>("Textures/tempplayer");
             Sprite.Add("idle",   0,  4, 1.0);
             Sprite.Add("run",    4, 10, 0.8);
-            Sprite.Add("jump",  14,  6, 0.5);
-            Sprite.Add("fall",  20,  4, 0.5);
-            Sprite.Add("climp", 24,  4, 0.5);
-            Sprite.Add("die",   28,  5, 0.5);
+            Sprite.Add("jump",  14,  6, 0.5, 5);
+            Sprite.Add("fall",  20,  4, 0.5, 3);
+            Sprite.Add("climb", 24,  4, 0.5);
+            Sprite.Add("die",   28,  5, 0.5, 4);
             Sprite.Add("revive",33,  7, 1.0);
         }
 
@@ -185,6 +185,30 @@ namespace team5
             
             // Now that all movement has been updated, check for collisions
             HandleCollisions(dt, chunk);
+            
+            // Animations
+            if(IsClimbing)
+            {
+                Sprite.Play("climb");
+                // Force direction to face wall
+                Sprite.Direction = (left != null)? -1 : +1;
+            }
+            else
+            {
+                if(Velocity.Y < 0)
+                    Sprite.Play("jump");
+                else if(0 < Velocity.Y)
+                    Sprite.Play("fall");
+                else if(Velocity.X != 0)
+                    Sprite.Play("run");
+                else
+                    Sprite.Play("idle");
+                // Base direction on movement
+                if(Velocity.X < 0)
+                    Sprite.Direction = -1;
+                if(0 < Velocity.X)
+                    Sprite.Direction = +1;
+            }
         }
     }
 }

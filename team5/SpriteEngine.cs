@@ -22,6 +22,11 @@ namespace team5
             SolidTexture.SetData<Color>(new Color[]{Color.White});
         }
         
+        public void Draw(Texture2D texture, Rectangle source)
+        {
+            Draw(texture, source, new Vector2(0,0));
+        }
+        
         public void Draw(Texture2D texture, Rectangle source, Vector2 position)
         {
             // FIXME: We cannot use spriteBatch as it does not handle rotations or scaling
