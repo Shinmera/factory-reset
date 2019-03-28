@@ -93,7 +93,7 @@ namespace team5
             Velocity.Y += dt * Gravity;
             
             IsClimbing = false;
-            if (Grounded != null)
+            if (Grounded)
             {
                 HasDoubleJumped = false;
                 HasWallJumped = false;
@@ -139,23 +139,23 @@ namespace team5
                 }
             }
             
-            if(!IsClimbing || Grounded != null){
+            if(!IsClimbing || Grounded){
                 if(Controller.MoveRight && Velocity.X < MaxVel)
                 {
                     // Allow quick turns on the ground
-                    if(Velocity.X < 0 && Grounded != null) Velocity.X = 0;
+                    if(Velocity.X < 0 && Grounded) Velocity.X = 0;
                     Velocity.X += AccelRate * dt;
                 }
                 else if(Controller.MoveLeft && -MaxVel < Velocity.X)
                 {
                     // Allow quick turns on the ground
-                    if(0 < Velocity.X && Grounded != null) Velocity.X = 0;
+                    if(0 < Velocity.X && Grounded) Velocity.X = 0;
                     Velocity.X -= AccelRate * dt;
                 }
                 else if (!Controller.MoveLeft && !Controller.MoveRight)
                 {
                     // Deaccelerate in the air to accomodate wall jumps
-                    if(Grounded != null || Math.Abs(Velocity.X) < DeaccelRate*dt)
+                    if(Grounded || Math.Abs(Velocity.X) < DeaccelRate*dt)
                         Velocity.X = 0;
                     else
                         Velocity.X -= Math.Sign(Velocity.X)*DeaccelRate*dt;
