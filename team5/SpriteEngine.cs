@@ -46,7 +46,7 @@ namespace team5
         public void Draw(Texture2D texture, Vector4 source)
         {
             GraphicsDevice device = Game.GraphicsDevice;
-            // KLUDGE: Scale to UVs here as we can't use texel fetch (hlsl Load) for some reason.
+            
             TileEffect.CurrentTechnique = TileEffect.Techniques["Tile"];
             TileEffect.Parameters["projectionMatrix"].SetValue(Game.Transforms.ProjectionMatrix);
             TileEffect.Parameters["viewMatrix"].SetValue(Game.Transforms.ViewMatrix);
@@ -68,8 +68,9 @@ namespace team5
         {
             
             Game.Transforms.Push();
+            Game.Transforms.Scale(size);
             Game.Transforms.Translate(pos);
-            Draw(SolidTexture, new Vector4(0, 0, size.X, size.Y));
+            Draw(SolidTexture, new Vector4(0, 0, 1, 1));
             Game.Transforms.Pop();
         }
         
