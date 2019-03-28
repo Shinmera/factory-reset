@@ -38,14 +38,6 @@ namespace team5
 
         public Player(Vector2 position, Game1 game):base(game, new Vector2(Chunk.TileSize, Chunk.TileSize))
         {
-            Texture2D dummyTexture;
-            dummyTexture = new Texture2D(game.GraphicsDevice, (int)Size.X, (int)Size.Y);
-            Color[] colors = new Color[(int)(Size.X*Size.Y)];
-            for(int i = 0; i < colors.Length; ++i)
-            {
-                colors[i] = Color.Green;
-            }
-            dummyTexture.SetData(colors);
             Sprite = new AnimatedSprite(null, game, Size);
 
             this.Position = position;
@@ -90,7 +82,7 @@ namespace team5
                                                          Position.Y));
             
             // Apply gravity
-            Velocity.Y += dt * Gravity;
+            Velocity.Y -= dt * Gravity;
             
             IsClimbing = false;
             if (Grounded)
@@ -100,7 +92,7 @@ namespace team5
                 if (Jump)
                 {
                     Jump = false;
-                    Velocity.Y = -JumpSpeed;
+                    Velocity.Y = JumpSpeed;
                     LongJump = LongJumpTime*dt;
                 }
             }
@@ -110,14 +102,14 @@ namespace team5
                 if(Controller.Climb)
                 {
                     IsClimbing = true;
-                    if(Controller.MoveUp && -ClimbSpeed < Velocity.Y)
-                        Velocity.Y = -ClimbSpeed;
-                    else if(Controller.MoveDown)
+                    if(Controller.MoveUp && Velocity.Y < ClimbSpeed)
                         Velocity.Y = +ClimbSpeed;
-                    else if(-ClimbSpeed <= Velocity.Y)
+                    else if(Controller.MoveDown)
+                        Velocity.Y = -ClimbSpeed;
+                    else if(Velocity.Y <= ClimbSpeed)
                         Velocity.Y = 0;
                 }
-                else if(0 < Velocity.Y)
+                else if(Velocity.Y < 0)
                     Velocity.Y *= WallSlideFriction;
 
                 if (Jump && (!HasWallJumped || CanRepeatWallJump))
@@ -163,19 +155,19 @@ namespace team5
             }
             
             // // Debug
-            // if(Controller.MoveUp) Velocity.Y = -MaxVel;
-            // else if(Controller.MoveDown) Velocity.Y = MaxVel;
+            // if(Controller.MoveUp) Velocity.Y = +MaxVel;
+            // else if(Controller.MoveDown) Velocity.Y = -MaxVel;
             // else Velocity.Y = 0;
 
             if(Controller.Jump && 0 < LongJump)
             {
-                Velocity.Y -= AccelRate * dt;
+                Velocity.Y += AccelRate * dt;
             }
 
             if(0 < LongJump)
             {
                 LongJump -= dt;
-                if (0 < Velocity.Y)
+                if (Velocity.Y < 0)
                 {
                     LongJump = 0;
                 }
@@ -191,13 +183,13 @@ namespace team5
             {
                 Sprite.Play("climb");
                 // Force direction to face wall
-                //Sprite.Direction = (left != null)? -1 : +1;
+                Sprite.Direction = (left != null)? -1 : +1;
             }
             else
             {
-                if(Velocity.Y < 0)
+                if(0 < Velocity.Y)
                     Sprite.Play("jump");
-                else if(0 < Velocity.Y)
+                else if(Velocity.Y < 0)
                     Sprite.Play("fall");
                 else if(Velocity.X != 0)
                     Sprite.Play("run");

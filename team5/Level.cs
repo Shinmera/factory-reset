@@ -26,7 +26,7 @@ namespace team5
         //TESTING ONLY
         public Level(Game1 game)
         {
-            Player = new Player(new Vector2(200, 50), game);
+            Player = new Player(new Vector2(400, 400), game);
             ActiveChunk = new Chunk(game, Player, "Chunks/TestChunk");
         }
         
