@@ -21,7 +21,7 @@ namespace team5
 
         public uint Width;
         public uint Height;
-        public uint[] TileSet;
+        public uint[] SolidTiles;
         public Texture2D Foreground;
         public Texture2D Tileset;
 
@@ -113,7 +113,7 @@ namespace team5
                 throw new IndexOutOfRangeException("No such tile exists");
             }
 
-            return TileSet[(Height - y - 1)*Width + x];
+            return SolidTiles[(Height - y - 1)*Width + x];
         }
 
         public void LoadContent(ContentManager content)
@@ -127,9 +127,9 @@ namespace team5
 
             //uint[] tileData = new uint[Width*Height];
 
-            TileSet = new uint[Width * Height];
+            SolidTiles = new uint[Width * Height];
 
-            TileSetTexture.GetData<uint>(TileSet);
+            TileSetTexture.GetData<uint>(SolidTiles);
 
             
 
