@@ -111,6 +111,7 @@
     <Compile Include="Entities\BoxEntity.cs" />
     <Compile Include="Components\AnimatedSprite.cs" />
     <Compile Include="Entities\ConeEntity.cs" />
+    <Compile Include="Entities\Enemy.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\GameObject.cs" />
     <Compile Include="Entities\Movable.cs" />
