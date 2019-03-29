@@ -22,7 +22,6 @@ namespace team5
         public uint Width;
         public uint Height;
         public uint[] SolidTiles;
-        public Texture2D Foreground;
         public Texture2D Tileset;
 
         Dictionary<uint, Vector2> tileDrawers;
@@ -43,15 +42,6 @@ namespace team5
         public Chunk(Game1 game, Player player, string tileSetName)
         {
             TileSetName = tileSetName;
-
-            Texture2D dummyTexture;
-            dummyTexture = new Texture2D(game.GraphicsDevice, TileSize, TileSize);
-            Color[] colors = new Color[TileSize * TileSize];
-            for (int i = 0; i < TileSize * TileSize; ++i)
-            {
-                colors[i] = Color.Black;
-            }
-            dummyTexture.SetData(colors);
 
             tileDrawers = new Dictionary<uint, Vector2>
             {
@@ -120,10 +110,7 @@ namespace team5
         public void LoadContent(ContentManager content)
         {
             TileSetTexture = content.Load<Texture2D>(TileSetName);
-            Foreground = Game.TilemapEngine.CreateDebugTilemap();
             Tileset = Game.TilemapEngine.CreateDebugTileset();
-            //Foreground = content.Load<Texture2D>("Chunks/temptilemap");
-            //Tileset = content.Load<Texture2D>("Textures/temptiles");
 
             Width = (uint)TileSetTexture.Width;
             Height = (uint)TileSetTexture.Height;
@@ -149,22 +136,6 @@ namespace team5
         public void Draw(GameTime gameTime)
         {
             CallAll(x => x.Draw(gameTime));
-
-            // FIXME: This will all be removed later and replaced by a
-            //        full tilemap render method.
-            for(int x = 0; x < Width; ++x)
-            {
-                for(int y = 0; y < Height; ++y)
-                {
-                    uint type = GetTile(x,y);
-                    if (tileDrawers.ContainsKey(type))
-                    {
-                        Vector2 tile = tileDrawers[type];
-                        Vector2 pos = new Vector2(x, y) * TileSize + relPosition;
-                        Game.SpriteEngine.Draw(pos, new Vector2(TileSize, TileSize));
-                    }
-                }
-            }
             
             Game.TilemapEngine.Draw(TileSetTexture, Tileset, relPosition);
         }
