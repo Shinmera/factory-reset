@@ -174,7 +174,6 @@ namespace team5
         public const int Down =        0b00000100;
         public const int Left =        0b00001000;
 
-        // TODO: Tile collisions!!!
         public GameObject CollidePoint(Vector2 point)
         {
             foreach (var entity in SolidEntities)
