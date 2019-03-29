@@ -5,7 +5,7 @@
 /intermediateDir:obj/$(Platform)
 /platform:WindowsStoreApp
 /config:
-/profile:Reach
+/profile:HiDef
 /compress:False
 
 #-------------------------------- References --------------------------------#
