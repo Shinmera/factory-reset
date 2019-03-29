@@ -73,6 +73,11 @@ namespace team5
         {
             Play(Animations.FindIndex(a => a.Name.Equals(name)));
         }
+        
+        public void Reset()
+        {
+            Frame = Anim.Start;
+        }
 
         public void Draw(Vector2 position)
         {

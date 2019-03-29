@@ -184,6 +184,7 @@ namespace team5
                 Sprite.Play("climb");
                 // Force direction to face wall
                 Sprite.Direction = (left != null)? -1 : +1;
+                if(Velocity.Y == 0) Sprite.Reset();
             }
             else
             {
