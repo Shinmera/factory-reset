@@ -50,7 +50,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR0
     int2 mapXY = int2(floor(input.mapCoord));
     
     // Flip around to be bottom-bound.
-    mapXY.y = mapWH.y - mapXY.y;
+    mapXY.y = mapWH.y - mapXY.y - 1;
     
     // Bounds check to ensure we're still within the tilemap.
     if(mapXY.x < 0 || mapXY.y < 0 | mapWH.x <= mapXY.x || mapWH.y <= mapXY.y)
