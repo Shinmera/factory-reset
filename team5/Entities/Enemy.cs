@@ -34,6 +34,7 @@ namespace team5
         {
             Sprite.Texture = content.Load<Texture2D>("Textures/tempplayer");
             Sprite.Add("idle", 0, 4, 1.0);
+            Sprite.Add("run", 0, 4, 1.0);
         }
 
         public override void Update(GameTime gameTime, Chunk level)
@@ -62,6 +63,12 @@ namespace team5
         public override void Draw(GameTime gameTime)
         {
             Sprite.Draw(Position - Size / 2);
+
+            if (Velocity.X > 0)
+                Sprite.Direction = +1;
+            else
+                Sprite.Direction = -1;
+
         }
 
  
