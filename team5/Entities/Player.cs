@@ -65,7 +65,7 @@ namespace team5
         public override void Update(GameTime gameTime, Chunk chunk)
         {
             if(Controller.Quit)
-                Game1.Exit();
+                Game.Exit();
             
             float dt = Game1.DeltaT;
 

@@ -74,7 +74,7 @@ namespace team5
 
             //SolidEntities.Add(new Platform(new Vector2(600, 400), game, 10, 400));
 
-            SolidEntities.Add(new PassThroughPlatform(0,new Vector2(300, 320), game, 100, 10));
+            SolidEntities.Add(new PassThroughPlatform(Chunk.Up,new Vector2(300, 320), game, 100, 10));
             SolidEntities.Add(new Enemy(new Vector2(300, 400), 200, game));
 
             this.Game = game;
