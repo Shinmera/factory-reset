@@ -9,6 +9,10 @@ namespace team5
 {
     abstract class BoxEntity : Entity
     {
+        /// <summary>
+        ///   This is the /half-size/, meaning the width and height from the center of
+        ///   the box to its edges.
+        /// </summary>
         protected Vector2 Size;
 
         public BoxEntity(Game1 game, Vector2 size):base(game)
@@ -21,15 +25,15 @@ namespace team5
         //           positions and center->bound extends (or half-widths).
         public override RectangleF GetBoundingBox()
         {
-            return new RectangleF(Position.X - Size.X / 2, Position.Y - Size.Y / 2, Size.X, Size.Y);
+            return new RectangleF(Position.X - Size.X, Position.Y - Size.Y, Size.X*2, Size.Y*2);
         }
 
         public override bool Contains(Vector2 point)
         {
-            return Position.X - Size.X / 2 <= point.X
-                && Position.Y - Size.Y / 2 <= point.Y
-                && point.X <= Position.X + Size.X /2
-                && point.Y <= Position.Y + Size.Y /2;
+            return Position.X - Size.X <= point.X
+                && Position.Y - Size.Y <= point.Y
+                && point.X <= Position.X + Size.X
+                && point.Y <= Position.Y + Size.Y;
         }
 
         //Standard swept AABB

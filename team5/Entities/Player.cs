@@ -36,9 +36,9 @@ namespace team5
         
         private AnimatedSprite Sprite;
 
-        public Player(Vector2 position, Game1 game):base(game, new Vector2(Chunk.TileSize, Chunk.TileSize))
+        public Player(Vector2 position, Game1 game):base(game, new Vector2(Chunk.TileSize/2, Chunk.TileSize))
         {
-            Sprite = new AnimatedSprite(null, game, Size);
+            Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize, Chunk.TileSize));
 
             this.Position = position;
 
@@ -59,7 +59,7 @@ namespace team5
 
         public override void Draw(GameTime gameTime)
         {
-            Sprite.Draw(Position - Size/2);
+            Sprite.Draw(Position);
         }
 
         public override void Update(GameTime gameTime, Chunk chunk)
@@ -78,15 +78,15 @@ namespace team5
             //// !! This code should never change Position !!
             // Check for neighbors
             Object down = chunk.CollidePoint(new Vector2(Position.X,
-                                                         Position.Y-Size.Y/2-1));
-            Object left = chunk.CollidePoint(new Vector2(Position.X-Size.X/2-1,
+                                                         Position.Y-Size.Y-1));
+            Object left = chunk.CollidePoint(new Vector2(Position.X-Size.X-1,
                                                          Position.Y));
-            Object right= chunk.CollidePoint(new Vector2(Position.X+Size.X/2+1,
+            Object right= chunk.CollidePoint(new Vector2(Position.X+Size.X+1,
                                                          Position.Y));
-            Object leftCorner = chunk.CollidePoint(new Vector2(Position.X-Size.X/2-1,
-                                                               Position.Y-Size.Y/2-1));
-            Object rightCorner= chunk.CollidePoint(new Vector2(Position.X+Size.X/2+1,
-                                                               Position.Y-Size.Y/2-1));
+            Object leftCorner = chunk.CollidePoint(new Vector2(Position.X-Size.X-1,
+                                                               Position.Y-Size.Y-1));
+            Object rightCorner= chunk.CollidePoint(new Vector2(Position.X+Size.X+1,
+                                                               Position.Y-Size.Y-1));
             
             // Apply gravity
             Velocity.Y -= dt * Gravity;

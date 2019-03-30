@@ -22,7 +22,7 @@ namespace team5
         //TESTING ONLY
         public Level(Game1 game)
         {
-            Player = new Player(new Vector2(400, 400), game);
+            Player = new Player(new Vector2(Chunk.TileSize*2, Chunk.TileSize*2), game);
             Camera = new Camera(Player, game);
             ActiveChunk = new Chunk(game, Player, "Chunks/TestChunk");
         }

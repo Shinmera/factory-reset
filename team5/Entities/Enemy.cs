@@ -62,7 +62,7 @@ namespace team5
 
         public override void Draw(GameTime gameTime)
         {
-            Sprite.Draw(Position - Size / 2);
+            Sprite.Draw(Position);
 
             if (Velocity.X > 0)
                 Sprite.Direction = +1;
