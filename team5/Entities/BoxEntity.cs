@@ -70,8 +70,8 @@ namespace team5
 
             motionBB.X = sourceBB.X + (float)Math.Min(0.0, sourceMotion.X);
             motionBB.Y = sourceBB.Y + (float)Math.Min(0.0, sourceMotion.Y);
-            motionBB.Width = sourceBB.Width + (float)Math.Max(0.0, sourceMotion.X);
-            motionBB.Height = sourceBB.Height + (float)Math.Max(0.0, sourceMotion.Y);
+            motionBB.Width = sourceBB.Width + (float)Math.Abs(sourceMotion.X);
+            motionBB.Height = sourceBB.Height + (float)Math.Abs(sourceMotion.Y);
 
             if (!motionBB.Intersects(target))
             {

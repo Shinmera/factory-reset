@@ -157,8 +157,8 @@ namespace team5
                     return entity;
             }
 
-            int x = (int)((point.X - relPosition.X) / TileSize);
-            int y = (int)((point.Y - relPosition.Y) / TileSize);
+            int x = (int)((point.X - relPosition.X + TileSize / 2) / TileSize);
+            int y = (int)((point.Y - relPosition.Y + TileSize / 2) / TileSize);
 
             if(x < 0 || x >= Width || y < 0 || y >= Height)
             {
@@ -230,13 +230,13 @@ namespace team5
 
             motionBB.X = sourceBB.X + (float)Math.Min(0.0, sourceMotion.X);
             motionBB.Y = sourceBB.Y + (float)Math.Min(0.0, sourceMotion.Y);
-            motionBB.Width = sourceBB.Width + (float)Math.Max(0.0, sourceMotion.X);
-            motionBB.Height = sourceBB.Height + (float)Math.Max(0.0, sourceMotion.Y);
+            motionBB.Width = sourceBB.Width + Math.Abs(sourceMotion.X);
+            motionBB.Height = sourceBB.Height + Math.Abs(sourceMotion.Y);
 
-            int minX = (int)Math.Max(Math.Floor((motionBB.Left - relPosition.X) / TileSize),0);
-            int minY = (int)Math.Max(Math.Floor((motionBB.Bottom - relPosition.Y) / TileSize),0);
-            int maxX = (int)Math.Min(Math.Floor((motionBB.Right - relPosition.X) / TileSize) + 1, Width + 1);
-            int maxY = (int)Math.Min(Math.Floor((motionBB.Top - relPosition.Y) / TileSize) + 1, Height + 1);
+            int minX = (int)Math.Max(Math.Floor((motionBB.Left - relPosition.X + TileSize / 2) / TileSize),0);
+            int minY = (int)Math.Max(Math.Floor((motionBB.Bottom - relPosition.Y + TileSize / 2) / TileSize),0);
+            int maxX = (int)Math.Min(Math.Floor((motionBB.Right - relPosition.X + TileSize / 2) / TileSize) + 1, Width + 1);
+            int maxY = (int)Math.Min(Math.Floor((motionBB.Top - relPosition.Y + TileSize / 2) / TileSize) + 1, Height + 1);
 
             if (source is Movable)
             {
@@ -257,6 +257,7 @@ namespace team5
                             {
                                 if (tempTime < time || (tempTime == time && (corner && !tempCorner)))
                                 {
+                                    corner = tempCorner;
                                     time = tempTime;
                                     direction = tempDirection;
                                     if ((tempDirection & (Up | Down)) != 0)
@@ -270,7 +271,7 @@ namespace team5
                                         targetVel[1] = new Vector2();
                                     }
                                 }
-                                if (tempTime == time && (corner || !tempCorner))
+                                else if (tempTime == time && (corner || !tempCorner))
                                 {
                                     
                                     //Allows collisions with multiple directions
