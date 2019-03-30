@@ -46,8 +46,10 @@ namespace team5
         {
             Texture2D tex = new Texture2D(Game.GraphicsDevice, 256, 256);
             Color[] data = new Color[tex.Width*tex.Height];
-            for(int y=0; y<tex.Height; ++y){
-                for(int x=0; x<tex.Width; ++x){
+            for(int y=0; y<tex.Height; ++y)
+            {
+                for(int x=0; x<tex.Width; ++x)
+                {
                     data[y*tex.Width+x] = new Color(x, y, 0);
                 }
             }
@@ -62,12 +64,40 @@ namespace team5
         {
             Texture2D tex = new Texture2D(Game.GraphicsDevice, 256*Chunk.TileSize, 256*Chunk.TileSize);
             Color[] data = new Color[tex.Width*tex.Height];
-            for(int y=0; y<tex.Height; ++y){
-                for(int x=0; x<tex.Width; ++x){
+            for(int y=0; y<tex.Height; ++y)
+            {
+                for(int x=0; x<tex.Width; ++x)
+                {
                     data[y*tex.Width+x] = new Color(0, x/Chunk.TileSize, y/Chunk.TileSize,
                                                     ((x)%Chunk.TileSize)*256/Chunk.TileSize);
                 }
             }
+            tex.SetData(data);
+            return tex;
+        }
+        
+        public Texture2D CreateChunkTileset()
+        {
+            Texture2D tex = new Texture2D(Game.GraphicsDevice, 256*Chunk.TileSize, 256*Chunk.TileSize);
+            Color[] data = new Color[tex.Width*tex.Height];
+            // Clear to empty
+            for(int i=0; i<data.Length; ++i)
+            {
+                data[i] = new Color(0);
+            }
+            // Set colors at own positions.
+            uint[] colors = (uint[])System.Enum.GetValues(typeof(Chunk.Colors));
+            foreach(uint c in colors)
+            {
+                uint r = (c & 0x000000FF) >> 0;
+                uint g = (c & 0x0000FF00) >> 8;
+                System.Diagnostics.Debug.WriteLine("C: "+r+"x"+g+" {0:X}",c);
+                for(int i=0; i<Chunk.TileSize*Chunk.TileSize; ++i)
+                {
+                    data[(r+i%Chunk.TileSize)+(g+i/Chunk.TileSize)*tex.Width] = new Color(c);
+                }
+            }
+        
             tex.SetData(data);
             return tex;
         }

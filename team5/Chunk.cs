@@ -10,17 +10,21 @@ namespace team5
     {
         Vector2 relPosition;
 
-        //Tile refernces;                      AABBGGRR
-        public const uint Empty         = 0xFFFFFFFF; // Nothing
-        public const uint SolidPlatform = 0xFF000000; // A wall
-        public const uint HidingSpot    = 0xFF404040; // A hiding spot for the player
-        public const uint BackgroundWall= 0xFF808080; // A wall for enemies, but not the player
-        public const uint FallThrough   = 0xFFC0C0C0; // A jump/fall-through platform
-        public const uint PlayerStart   = 0xFF00FF00; // The start position for the player
-        public const uint EnemyStart    = 0xFFFF0000; // An enemy spawn position
-        public const uint Spike         = 0xFF0000FF; // A death spike
-        public const uint Pickup        = 0xFF00FFFF; // An information pickup item
-        public const uint Goal          = 0xFFFFFF00; // A goal tile leading to end-of-level
+        // IMPORTANT: Identifiers need to be unique in the GGRR range
+        //            Or there will be collisions in the debug visualisation.
+        // Tile identifiers     AABBGGRR
+        public enum Colors: uint{
+            Empty           = 0xFFFFFFFF, // Nothing. All tiles with alpha 0 are also nothing
+            SolidPlatform   = 0xFF000000, // A solid wall or platform
+            HidingSpot      = 0xFF404040, // A hiding spot for the player
+            BackgroundWall  = 0xFF808080, // A wall for enemies, but not the player
+            FallThrough     = 0xFFC0C0C0, // A jump/fall-through platform
+            PlayerStart     = 0xFF00FF00, // The start position for the player
+            EnemyStart      = 0xFFFF0000, // An enemy spawn position
+            Spike           = 0xFF0000FF, // A death spike
+            Pickup          = 0xFF00EEFF, // An information pickup item
+            Goal            = 0xFFFFEE00, // A goal tile leading to end-of-level
+        }
 
         public const int TileSize = 16;
 
@@ -52,7 +56,7 @@ namespace team5
             TileSetName = tileSetName;
 
             tileObjects = new Dictionary<uint, TileType>();
-            tileObjects.Add(SolidPlatform, new TilePlatform(game));
+            tileObjects.Add((uint)Colors.SolidPlatform, new TilePlatform(game));
             // FIXME: FallThrough, BackgroundWall
 
             SolidEntities = new List<Entity>();
@@ -96,7 +100,7 @@ namespace team5
         public void LoadContent(ContentManager content)
         {
             TileSetTexture = content.Load<Texture2D>(TileSetName);
-            Tileset = Game.TilemapEngine.CreateDebugTileset();
+            Tileset = Game.TilemapEngine.CreateChunkTileset();
 
             Width = (uint)TileSetTexture.Width;
             Height = (uint)TileSetTexture.Height;
@@ -112,11 +116,11 @@ namespace team5
                     uint tile = GetTile(x, y);
                     switch(tile)
                     {
-                        case PlayerStart: 
+                        case (uint)Colors.PlayerStart: 
                             SpawnPosition = new Vector2(x * TileSize + relPosition.X - TileSize/2,
                                                         y * TileSize + relPosition.Y + TileSize/2);
                             break;
-                        case EnemyStart:
+                        case (uint)Colors.EnemyStart:
                             NonCollidingEntities.Add(new Enemy(new Vector2(x * TileSize + relPosition.X - TileSize/2,
                                                                            y * TileSize + relPosition.Y - TileSize/2),
                                                                200, Game));
@@ -161,9 +165,9 @@ namespace team5
                 return null;
             }
 
-            if(GetTile(x,y) == SolidPlatform)
+            if(GetTile(x,y) == (uint)Colors.SolidPlatform)
             {
-                return tileObjects[SolidPlatform];
+                return tileObjects[(uint)Colors.SolidPlatform];
             }
 
             return null;
