@@ -82,6 +82,11 @@ var newTilemap = function(){
     drawTilemap();
 };
 
+var getTilemap = function(){
+    mapcanvas.getContext("2d").putImageData(mapimage, 0, 0);
+    return mapcanvas.toDataURL("image/png");
+};
+
 var clearTileset = function(){
     var s = tileSize/2;
     tileset.width = tileset.clientWidth;
@@ -194,7 +199,11 @@ var openImage = function(callback){
 };
 
 var saveTilemap = function(){
-    
+    var data = getTilemap();
+    var link = document.createElement("a");
+    link.setAttribute("download", "tilemap.png");
+    link.setAttribute("href", data.replace("image/png", "image/octet-stream"));
+    link.click();
 };
 
 var openTilemap = function(){
