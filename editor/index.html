@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Level Editor</title>
+    <link rel="stylesheet" type="text/css" href="editor.css">
+  </head>
+  <body>
+    <nav>
+      <input type="file" id="fileInput" style="display:none">
+      <a id="new-tilemap">New Tilemap</a>
+      <a id="save-tilemap">Save Tilemap</a>
+      <a id="open-tilemap">Load Tilemap</a>
+      <a id="open-tileset">Load Tileset</a>
+    </nav>
+    <main>
+      <canvas id="tilemap" width="0" height="0"></canvas>
+    </main>
+    <footer>
+      <canvas id="tileset"></canvas>
+    </footer>
+    <script type="text/javascript" src="editor.js"></script>
+  </body>
+</html>
