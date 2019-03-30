@@ -22,7 +22,7 @@ namespace team5
         //TESTING ONLY
         public Level(Game1 game)
         {
-            Player = new Player(new Vector2(Chunk.TileSize*2, Chunk.TileSize*2), game);
+            Player = new Player(new Vector2(0, 0), game);
             Camera = new Camera(Player, game);
             ActiveChunk = new Chunk(game, Player, "Chunks/TestChunk");
         }
@@ -30,6 +30,7 @@ namespace team5
         public void LoadContent(ContentManager content)
         {
             ActiveChunk.LoadContent(content);
+            Player.Position = ActiveChunk.SpawnPosition;
         }
         
         public void Resize(int width, int height)

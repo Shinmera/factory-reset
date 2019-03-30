@@ -10,21 +10,29 @@ namespace team5
     {
         Vector2 relPosition;
 
-        //Tile refernces;
-        public readonly uint Empty = Color.White.PackedValue;
-        public readonly uint SolidPlatform = Color.Black.PackedValue;
+        //Tile refernces;                      AABBGGRR
+        public const uint Empty         = 0xFFFFFFFF; // Nothing
+        public const uint SolidPlatform = 0xFF000000; // A wall
+        public const uint HidingSpot    = 0xFF404040; // A hiding spot for the player
+        public const uint BackgroundWall= 0xFF808080; // A wall for enemies, but not the player
+        public const uint FallThrough   = 0xFFC0C0C0; // A jump/fall-through platform
+        public const uint PlayerStart   = 0xFF00FF00; // The start position for the player
+        public const uint EnemyStart    = 0xFFFF0000; // An enemy spawn position
+        public const uint Spike         = 0xFF0000FF; // A death spike
+        public const uint Pickup        = 0xFF00FFFF; // An information pickup item
+        public const uint Goal          = 0xFFFFFF00; // A goal tile leading to end-of-level
 
         public const int TileSize = 16;
 
         private readonly string TileSetName;
         public Texture2D TileSetTexture;
+        public Vector2 SpawnPosition;
 
         public uint Width;
         public uint Height;
         public uint[] SolidTiles;
         public Texture2D Tileset;
 
-        Dictionary<uint, Vector2> tileDrawers;
         Dictionary<uint, TileType> tileObjects;
 
         //Viewcones, intelligence
@@ -43,13 +51,9 @@ namespace team5
         {
             TileSetName = tileSetName;
 
-            tileDrawers = new Dictionary<uint, Vector2>
-            {
-                { SolidPlatform, new Vector2(0,0) }
-            };
-
             tileObjects = new Dictionary<uint, TileType>();
             tileObjects.Add(SolidPlatform, new TilePlatform(game));
+            // FIXME: FallThrough, BackgroundWall
 
             SolidEntities = new List<Entity>();
             NonCollidingEntities = new List<Entity>();
@@ -58,9 +62,6 @@ namespace team5
             relPosition = new Vector2(0, 0);
             
             NonCollidingEntities.Add(player);
-
-            SolidEntities.Add(new PassThroughPlatform(Chunk.Up,new Vector2(300, 320), game, 100, 10));
-            SolidEntities.Add(new Enemy(new Vector2(300, 400), 200, game));
 
             this.Game = game;
         }
@@ -100,15 +101,29 @@ namespace team5
             Width = (uint)TileSetTexture.Width;
             Height = (uint)TileSetTexture.Height;
 
-            //uint[] tileData = new uint[Width*Height];
-
             SolidTiles = new uint[Width * Height];
-
             TileSetTexture.GetData<uint>(SolidTiles);
-
             
-
-            //Buffer.BlockCopy(tileData, 0, TileSet, 0, tileData.Length * sizeof(uint));
+            // Scan through and populate
+            for(int y=0; y<Height; ++y)
+            {
+                for(int x=0; x<Width; ++x)
+                {
+                    uint tile = GetTile(x, y);
+                    switch(tile)
+                    {
+                        case PlayerStart: 
+                            SpawnPosition = new Vector2(x * TileSize + relPosition.X - TileSize/2,
+                                                        y * TileSize + relPosition.Y + TileSize/2);
+                            break;
+                        case EnemyStart:
+                            NonCollidingEntities.Add(new Enemy(new Vector2(x * TileSize + relPosition.X - TileSize/2,
+                                                                           y * TileSize + relPosition.Y - TileSize/2),
+                                                               200, Game));
+                            break;
+                    }
+                }
+            }
 
             CallAll(obj => obj.LoadContent(content));
         }
