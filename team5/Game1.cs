@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace team5
 {
@@ -56,26 +57,23 @@ namespace team5
         // KLUDGE: Fix for odd monogame behaviour that causes B to suspend the app.
         // See: http://community.monogame.net/t/xbox-one-back-vs-b-button-possible-bug/8862/10
         // See: https://github.com/MonoGame/MonoGame/issues/6404
-        #if XBOX
         int ButtonB_KeyUpTime = 0;
         GamePadState previousState, currentState;
         public bool BackButtonDownEvent()
         {
             if (ButtonB_KeyUpTime > 0)
                 return false;
+            return currentState.IsButtonDown(Buttons.Back) && previousState.IsButtonUp(Buttons.Back);
         }
-        #endif
         
         protected override void Update(GameTime gameTime)
         {
-            #if XBOX
             previousState = currentState;
             currentState = GamePad.GetState(0);
             if (currentState.IsButtonUp(Buttons.B) && previousState.IsButtonDown(Buttons.B))
                 ButtonB_KeyUpTime = 3;
             else
                 ButtonB_KeyUpTime -= 1;
-            #endif
             
             Transforms.Reset();
             Transforms.ResetView();
