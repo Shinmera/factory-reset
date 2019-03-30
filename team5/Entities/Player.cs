@@ -88,7 +88,6 @@ namespace team5
             // Apply gravity
             Velocity.Y -= dt * Gravity;
             
-            IsClimbing = false;
             if (Grounded)
             {
                 HasDoubleJumped = false;
@@ -100,9 +99,10 @@ namespace team5
                     LongJump = LongJumpTime*dt;
                 }
             }
-            if (left != null || right != null || (!Grounded && (leftCorner != null || rightCorner != null)))
+            if (left != null || right != null || (IsClimbing && (leftCorner != null || rightCorner != null)))
             {
                 HasWallJumped = false;
+                IsClimbing = false;
                 if(Controller.Climb)
                 {
                     IsClimbing = true;
@@ -145,6 +145,10 @@ namespace team5
                         Jump = false;
                     }
                 }
+            }
+            else
+            {
+                IsClimbing = false;
             }
             
             if(!IsClimbing || Grounded){
