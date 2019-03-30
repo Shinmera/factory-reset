@@ -38,7 +38,7 @@ namespace team5
 
         public Player(Vector2 position, Game1 game):base(game, new Vector2(Chunk.TileSize/2, Chunk.TileSize))
         {
-            Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize, Chunk.TileSize));
+            Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize*2, Chunk.TileSize*2));
 
             this.Position = position;
 

@@ -230,7 +230,9 @@ namespace team5
                             float tempTime;
                             bool tempCorner;
 
-                            var tileBB = new RectangleF(x * TileSize + relPosition.X, y * TileSize + relPosition.Y, TileSize, TileSize);
+                            var tileBB = new RectangleF(x * TileSize + relPosition.X - TileSize/2,
+                                                        y * TileSize + relPosition.Y - TileSize/2, 
+                                                        TileSize, TileSize);
 
                             if (tileObjects[GetTile(x,y)].Collide((Movable)source, tileBB, timestep, out tempDirection, out tempTime, out tempCorner))
                             {
