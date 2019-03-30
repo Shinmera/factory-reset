@@ -55,24 +55,9 @@ namespace team5
             NonCollidingEntities = new List<Entity>();
             CollidingEntities = new List<Entity>();
 
-            relPosition = new Vector2(0, -300);
-
-            /*
-            for(int i = 20; i < 40; ++i)
-            {
-                TileSet[i, 65] = SolidPlatform;
-            }
-
-            for (int i = 50; i < 67; ++i)
-            {
-                TileSet[30, i] = SolidPlatform;
-            }
-            */
+            relPosition = new Vector2(0, 0);
+            
             NonCollidingEntities.Add(player);
-
-            //SolidEntities.Add(new Platform(new Vector2(100, 700), game, 600, 10));
-
-            //SolidEntities.Add(new Platform(new Vector2(600, 400), game, 10, 400));
 
             SolidEntities.Add(new PassThroughPlatform(Chunk.Up,new Vector2(300, 320), game, 100, 10));
             SolidEntities.Add(new Enemy(new Vector2(300, 400), 200, game));
