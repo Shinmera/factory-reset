@@ -37,7 +37,8 @@ namespace team5
         public uint[] SolidTiles;
         public Texture2D Tileset;
 
-        Dictionary<uint, TileType> tileObjects;
+        static Dictionary<uint, TileType> tileObjects;
+
 
         //Viewcones, intelligence
         List<Entity> CollidingEntities;
@@ -55,8 +56,12 @@ namespace team5
         {
             TileSetName = tileSetName;
 
-            tileObjects = new Dictionary<uint, TileType>();
-            tileObjects.Add((uint)Colors.SolidPlatform, new TilePlatform(game));
+            tileObjects = new Dictionary<uint, TileType>
+            {
+                { (uint)Colors.SolidPlatform, new TilePlatform(game) },
+                { (uint)Colors.FallThrough, new TilePassThroughPlatform(game) },
+                { (uint)Colors.BackgroundWall, new TileBackgroundWall(game) }
+            };
             // FIXME: FallThrough, BackgroundWall
 
             SolidEntities = new List<Entity>();
