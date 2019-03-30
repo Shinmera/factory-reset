@@ -53,28 +53,9 @@ namespace team5
             Transforms.ProjectionMatrix = Matrix.CreateOrthographicOffCenter(0, width, 0, height, -10, 10);
             System.Diagnostics.Debug.WriteLine("Viewport: " + width + "x" + height);
         }
-
-        // KLUDGE: Fix for odd monogame behaviour that causes B to suspend the app.
-        // See: http://community.monogame.net/t/xbox-one-back-vs-b-button-possible-bug/8862/10
-        // See: https://github.com/MonoGame/MonoGame/issues/6404
-        int ButtonB_KeyUpTime = 0;
-        GamePadState previousState, currentState;
-        public bool BackButtonDownEvent()
-        {
-            if (ButtonB_KeyUpTime > 0)
-                return false;
-            return currentState.IsButtonDown(Buttons.Back) && previousState.IsButtonUp(Buttons.Back);
-        }
         
         protected override void Update(GameTime gameTime)
         {
-            previousState = currentState;
-            currentState = GamePad.GetState(0);
-            if (currentState.IsButtonUp(Buttons.B) && previousState.IsButtonDown(Buttons.B))
-                ButtonB_KeyUpTime = 3;
-            else
-                ButtonB_KeyUpTime -= 1;
-            
             Transforms.Reset();
             Transforms.ResetView();
             base.Update(gameTime);
