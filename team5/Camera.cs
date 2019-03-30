@@ -35,8 +35,8 @@ namespace team5
             Position += direction*ease/length;
             
             Vector2 camera = (TargetSize / Zoom)-Position;
-            Game.Transforms.ScaleView(ViewScale);
             Game.Transforms.TranslateView(camera);
+            Game.Transforms.ScaleView(ViewScale);
         }
     }
 }
