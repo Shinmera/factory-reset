@@ -80,6 +80,10 @@ namespace team5
                                                          Position.Y));
             Object right= chunk.CollidePoint(new Vector2(Position.X+Size.X/2+1,
                                                          Position.Y));
+            Object leftCorner = chunk.CollidePoint(new Vector2(Position.X-Size.X/2-1,
+                                                               Position.Y-Size.Y/2-1));
+            Object rightCorner= chunk.CollidePoint(new Vector2(Position.X+Size.X/2+1,
+                                                               Position.Y-Size.Y/2-1));
             
             // Apply gravity
             Velocity.Y -= dt * Gravity;
@@ -96,7 +100,7 @@ namespace team5
                     LongJump = LongJumpTime*dt;
                 }
             }
-            if (left != null || right != null)
+            if (left != null || right != null || (!Grounded && (leftCorner != null || rightCorner != null)))
             {
                 HasWallJumped = false;
                 if(Controller.Climb)
@@ -108,6 +112,18 @@ namespace team5
                         Velocity.Y = -ClimbSpeed;
                     else if(Velocity.Y <= ClimbSpeed)
                         Velocity.Y = 0;
+                    
+                    // Push over corners
+                    if(leftCorner != null && left == null && Sprite.Direction == -1)
+                    {
+                        Velocity.X = -50;
+                        Velocity.Y = ClimbSpeed;
+                    }
+                    if(rightCorner != null && right == null && Sprite.Direction == +1)
+                    {
+                        Velocity.X = +50;
+                        Velocity.Y = ClimbSpeed;
+                    }
                 }
                 else if(Velocity.Y < 0)
                     Velocity.Y *= WallSlideFriction;
@@ -183,7 +199,8 @@ namespace team5
             {
                 Sprite.Play("climb");
                 // Force direction to face wall
-                Sprite.Direction = (left != null)? -1 : +1;
+                if(left != null) Sprite.Direction = -1;
+                if(right != null) Sprite.Direction = +1;
                 if(Velocity.Y == 0) Sprite.Reset();
             }
             else
