@@ -120,6 +120,7 @@
     <Compile Include="Entities\Platform.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Chunk.cs" />
+    <Compile Include="Entities\TileBackgroundWall.cs" />
     <Compile Include="Entities\TilePassThroughPlatform.cs" />
     <Compile Include="Entities\TilePlatform.cs" />
     <Compile Include="Entities\TileType.cs" />
