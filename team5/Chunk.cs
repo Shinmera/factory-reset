@@ -20,7 +20,7 @@ namespace team5
             BackgroundWall  = 0xFF808080, // A wall for enemies, but not the player
             FallThrough     = 0xFFC0C0C0, // A jump/fall-through platform
             PlayerStart     = 0xFF00FF00, // The start position for the player
-            EnemyStart      = 0xFFFF0000, // An enemy spawn position
+            EnemyStart      = 0xFFFF1100, // An enemy spawn position
             Spike           = 0xFF0000FF, // A death spike
             Pickup          = 0xFF00EEFF, // An information pickup item
             Goal            = 0xFFFFEE00, // A goal tile leading to end-of-level

@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.IO;
+using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -91,15 +93,32 @@ namespace team5
             {
                 uint r = (c & 0x000000FF) >> 0;
                 uint g = (c & 0x0000FF00) >> 8;
-                System.Diagnostics.Debug.WriteLine("C: "+r+"x"+g+" {0:X}",c);
-                for(int i=0; i<Chunk.TileSize*Chunk.TileSize; ++i)
+                for(uint x=r*Chunk.TileSize; x<(r+1)*Chunk.TileSize; ++x)
                 {
-                    data[(r+i%Chunk.TileSize)+(g+i/Chunk.TileSize)*tex.Width] = new Color(c);
+                    for(uint y=g*Chunk.TileSize; y<(g+1)*Chunk.TileSize; ++y)
+                    {
+                        data[x+y*tex.Width] = new Color(c);
+                    }
                 }
             }
         
             tex.SetData(data);
             return tex;
+        }
+
+        private async void SaveTexture(Texture2D tex)
+        {
+            Windows.Storage.Pickers.FileSavePicker picker = new Windows.Storage.Pickers.FileSavePicker();
+            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+            picker.FileTypeChoices.Add("Portable Network Graphics", new[] { ".png" });
+            picker.SuggestedFileName = "texture";
+            Windows.Storage.StorageFile file = await picker.PickSaveFileAsync();
+
+            if (file != null)
+            {
+                var stream = await file.OpenStreamForWriteAsync();
+                tex.SaveAsPng(stream, tex.Width, tex.Height);
+            }
         }
         
         /// <summary>
