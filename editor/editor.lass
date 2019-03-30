@@ -35,4 +35,17 @@
    :max-height 30%
    :overflow-y scroll
    (>canvas
+    :width 100%))
+  ("#new-prompt"
+   :display none
+   :background (hex FFFFFF)
+   :border 2px solid (hex AAAAAA)
+   :padding 0.3em
+   :position fixed
+   :top 10vh
+   :left (calc (- 50vw 4em))
+   (label
+    :display inline-block
+    :min-width 5em)
+   (input[type=submit]
     :width 100%))))
