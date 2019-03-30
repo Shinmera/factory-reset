@@ -55,8 +55,6 @@ namespace team5
 
         protected override void Update(GameTime gameTime)
         {
-            if(Controller.Quit) Exit();
-            
             Transforms.Reset();
             Transforms.ResetView();
             base.Update(gameTime);
