@@ -27,7 +27,7 @@ namespace team5
         public override bool Contains(Vector2 point)
         {
             return Position.X - Size.X / 2 <= point.X
-                && Position.Y - Size.X / 2 <= point.Y
+                && Position.Y - Size.Y / 2 <= point.Y
                 && point.X <= Position.X + Size.X /2
                 && point.Y <= Position.Y + Size.Y /2;
         }

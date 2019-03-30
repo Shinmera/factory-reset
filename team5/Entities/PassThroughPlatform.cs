@@ -16,6 +16,11 @@ namespace team5
             PassThroughs = passThroughs;
         }
 
+        public override bool Contains(Vector2 point)
+        {
+            return false;
+        }
+
         public override bool Collide(Entity source, float timestep, out int direction, out float time, out bool corner)
         {
             if(base.Collide(source, timestep, out direction, out time, out corner))

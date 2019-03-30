@@ -69,6 +69,8 @@ namespace team5
             Game.Transforms.Push();
             Game.Transforms.Scale(size);
             Game.Transforms.Translate(pos);
+            
+            
             Draw(SolidTexture, new Vector4(0, 0, 1, 1));
             Game.Transforms.Pop();
         }
