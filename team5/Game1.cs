@@ -13,7 +13,7 @@ namespace team5
         public readonly TilemapEngine TilemapEngine;
         public readonly Transforms Transforms = new Transforms();
 
-        Level level;
+        Level Level;
 
         public Game1()
         {
@@ -40,8 +40,8 @@ namespace team5
             SpriteEngine.LoadContent(Content);
             TilemapEngine.LoadContent(Content);
 
-            level = new Level(this);
-            level.LoadContent(Content);
+            Level = new Level(this);
+            Level.LoadContent(Content);
         }
         
         protected override void UnloadContent()
@@ -52,6 +52,7 @@ namespace team5
         {
             Transforms.ProjectionMatrix = Matrix.CreateOrthographicOffCenter(0, width, 0, height, -10, 10);
             System.Diagnostics.Debug.WriteLine("Viewport: " + width + "x" + height);
+            Level.Resize(width, height);
         }
         
         protected override void Update(GameTime gameTime)
@@ -59,14 +60,14 @@ namespace team5
             Transforms.Reset();
             Transforms.ResetView();
             base.Update(gameTime);
-            level.Update(gameTime);
+            Level.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             base.Draw(gameTime);
-            level.Draw(gameTime);
+            Level.Draw(gameTime);
         }
     }
 }

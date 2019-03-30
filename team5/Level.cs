@@ -15,18 +15,15 @@ namespace team5
         public ArrayList Chunks;
         public Chunk ActiveChunk;
         public Player Player;
+        public Camera Camera;
 
         private bool ChunkTrans = false;
-
-        public Level()
-        {
-
-        }
 
         //TESTING ONLY
         public Level(Game1 game)
         {
             Player = new Player(new Vector2(400, 400), game);
+            Camera = new Camera(Player, game);
             ActiveChunk = new Chunk(game, Player, "Chunks/TestChunk");
         }
         
@@ -34,9 +31,15 @@ namespace team5
         {
             ActiveChunk.LoadContent(content);
         }
+        
+        public void Resize(int width, int height)
+        {
+            Camera.Resize(width, height);
+        }
 
         public void Update(GameTime gameTime)
         {
+            Camera.Update(gameTime);
             ActiveChunk.Update(gameTime);
             if (ChunkTrans)
             {
