@@ -46,6 +46,9 @@ namespace team5
         public bool Climb => key.IsKeyDown(Keys.LeftShift)
             || pad.Buttons.LeftShoulder == ButtonState.Pressed
             || pad.Buttons.RightShoulder == ButtonState.Pressed;
+        
+        public bool Quit => key.IsKeyDown(Keys.Escape)
+            || pad.Buttons.Start == ButtonState.Pressed;
 
         public void Update()
         {
