@@ -154,6 +154,50 @@ namespace team5
         public const int Down =        0b00000100;
         public const int Left =        0b00001000;
 
+        public bool inHidingSpot(Movable source, out Vector2 location)
+        {
+            var sourceBB = source.GetBoundingBox();
+
+            int minX = (int)Math.Max(Math.Floor((sourceBB.Left - relPosition.X + TileSize / 2) / TileSize), 0);
+            int minY = (int)Math.Max(Math.Floor((sourceBB.Bottom - relPosition.Y + TileSize / 2) / TileSize), 0);
+            int maxX = (int)Math.Min(Math.Floor((sourceBB.Right - relPosition.X + TileSize / 2) / TileSize) + 1, Width + 1);
+            int maxY = (int)Math.Min(Math.Floor((sourceBB.Top - relPosition.Y + TileSize / 2) / TileSize) + 1, Height + 1);
+
+            float closestSqr = float.PositiveInfinity;
+            int xpos = -1;
+            int ypos = -1;
+
+            for (int x = minX; x < maxX; ++x)
+            {
+                for (int y = minY; y < maxY; ++y)
+                {
+                    if(GetTile(x,y) == (uint)Colors.HidingSpot)
+                    {
+                        Vector2 tilePos = new Vector2(x * TileSize + relPosition.X, y * TileSize + relPosition.Y);
+
+                        float sqrdist = (tilePos-source.Position).LengthSquared();
+                        if(sqrdist < closestSqr)
+                        {
+                            closestSqr = sqrdist;
+                            xpos = x;
+                            ypos = y;
+                        }
+                    }
+                }
+            }
+
+            if(closestSqr == float.PositiveInfinity)
+            {
+                location = new Vector2(-1, -1);
+                return false;
+            }
+
+            while (GetTile(xpos, --ypos) == (uint)Colors.HidingSpot);
+
+            location = new Vector2(xpos * TileSize + relPosition.X, (ypos+1) * TileSize + relPosition.Y);
+            return true;
+        }
+
         public GameObject CollidePoint(Vector2 point)
         {
             foreach (var entity in SolidEntities)
