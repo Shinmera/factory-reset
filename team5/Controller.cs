@@ -19,6 +19,10 @@ namespace team5
             this.gamepadIndex = gamepadIndex;
         }
 
+        public bool Hide => key.IsKeyDown(Keys.F)
+            || pad.Buttons.X == ButtonState.Pressed
+            || pad.Buttons.Y == ButtonState.Pressed;
+
         public bool MoveLeft => key.IsKeyDown(Keys.A)
             || key.IsKeyDown(Keys.Left)
             || pad.DPad.Left == ButtonState.Pressed

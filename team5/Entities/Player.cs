@@ -19,6 +19,7 @@ namespace team5
         private Controller Controller;
         private bool IsClimbing = false;
         private bool JumpKeyWasUp = false;
+        private bool HideKeyWasUp = false;
         private bool HasWallJumped = false;
         private bool HasDoubleJumped = false;
         private float LongJump = 0;
@@ -33,7 +34,9 @@ namespace team5
         private float LongJumpTime = 15;
         private Vector2 WallJumpVelocity = new Vector2(100, 200);
         private float WallSlideFriction = 0.9F;
-        
+
+        public bool IsHiding { get; private set; }
+
         private AnimatedSprite Sprite;
 
         public Player(Vector2 position, Game1 game):base(game, new Vector2(Chunk.TileSize/2, Chunk.TileSize))
@@ -72,7 +75,8 @@ namespace team5
             Controller.Update();
             Sprite.Update(dt);
 
-            bool Jump = Controller.Jump && JumpKeyWasUp;
+            bool hide = Controller.Hide && HideKeyWasUp;
+            bool jump = Controller.Jump && JumpKeyWasUp;
             
             //// Perform movement stepping. 
             //// !! This code should never change Position !!
@@ -90,112 +94,140 @@ namespace team5
             
             // Apply gravity
             Velocity.Y -= dt * Gravity;
-            
-            if (Grounded)
+
+            if (hide)
             {
-                HasDoubleJumped = false;
-                HasWallJumped = false;
-                if (Jump)
+                if (IsHiding)
                 {
-                    Jump = false;
-                    Velocity.Y = JumpSpeed;
-                    LongJump = LongJumpTime*dt;
+                    IsHiding = false;
+                }
+                else {
+                    Vector2 hidePos;
+                    if (chunk.AtHidingSpot(this, out hidePos))
+                    {
+                        IsHiding = true;
+                        IsClimbing = false;
+                        HasWallJumped = false;
+                        HasDoubleJumped = false;
+                        Position = hidePos + new Vector2(0, Size.Y - Chunk.TileSize / 2);
+                    }
                 }
             }
-            if (left != null || right != null || (IsClimbing && (leftCorner != null || rightCorner != null)))
+
+            if (!IsHiding)
             {
-                HasWallJumped = false;
-                IsClimbing = false;
-                if(Controller.Climb)
+                if (Grounded)
                 {
-                    IsClimbing = true;
-                    if(Controller.MoveUp && Velocity.Y < ClimbSpeed)
-                        Velocity.Y = +ClimbSpeed;
-                    else if(Controller.MoveDown)
-                        Velocity.Y = -ClimbSpeed;
-                    else if(Velocity.Y <= ClimbSpeed)
-                        Velocity.Y = 0;
-                    
-                    // Push over corners
-                    if(leftCorner != null && left == null && Sprite.Direction == -1)
+                    HasDoubleJumped = false;
+                    HasWallJumped = false;
+                    if (jump && !IsHiding)
                     {
-                        Velocity.X = -50;
-                        Velocity.Y = ClimbSpeed;
-                    }
-                    if(rightCorner != null && right == null && Sprite.Direction == +1)
-                    {
-                        Velocity.X = +50;
-                        Velocity.Y = ClimbSpeed;
+                        jump = false;
+                        Velocity.Y = JumpSpeed;
+                        LongJump = LongJumpTime * dt;
                     }
                 }
-                else if(Velocity.Y < 0)
-                    Velocity.Y *= WallSlideFriction;
-
-                if (Jump && (!HasWallJumped || CanRepeatWallJump))
+                if (left != null || right != null || (IsClimbing && (leftCorner != null || rightCorner != null)))
                 {
-                    if (right != null)
+                    HasWallJumped = false;
+                    IsClimbing = false;
+                    if (Controller.Climb)
                     {
-                        Velocity.X = (Controller.MoveRight)? 0 : -WallJumpVelocity.X;
-                        Velocity.Y = WallJumpVelocity.Y;
-                        HasWallJumped = true;
-                        Jump = false;
+                        IsClimbing = true;
+                        if (Controller.MoveUp && Velocity.Y < ClimbSpeed)
+                            Velocity.Y = +ClimbSpeed;
+                        else if (Controller.MoveDown)
+                            Velocity.Y = -ClimbSpeed;
+                        else if (Velocity.Y <= ClimbSpeed)
+                            Velocity.Y = 0;
+
+                        // Push over corners
+                        if (leftCorner != null && left == null && Sprite.Direction == -1)
+                        {
+                            Velocity.X = -50;
+                            Velocity.Y = ClimbSpeed;
+                        }
+                        if (rightCorner != null && right == null && Sprite.Direction == +1)
+                        {
+                            Velocity.X = +50;
+                            Velocity.Y = ClimbSpeed;
+                        }
                     }
-                    else if (left != null)
+                    else if (Velocity.Y < 0)
+                        Velocity.Y *= WallSlideFriction;
+
+                    if (jump && (!HasWallJumped || CanRepeatWallJump))
                     {
-                        Velocity.X = (Controller.MoveLeft)? 0 : WallJumpVelocity.X;
-                        Velocity.Y = WallJumpVelocity.Y;
-                        HasWallJumped = true;
-                        Jump = false;
+                        if (right != null)
+                        {
+                            Velocity.X = (Controller.MoveRight) ? 0 : -WallJumpVelocity.X;
+                            Velocity.Y = WallJumpVelocity.Y;
+                            HasWallJumped = true;
+                            jump = false;
+                        }
+                        else if (left != null)
+                        {
+                            Velocity.X = (Controller.MoveLeft) ? 0 : WallJumpVelocity.X;
+                            Velocity.Y = WallJumpVelocity.Y;
+                            HasWallJumped = true;
+                            jump = false;
+                        }
+                    }
+                }
+                else
+                {
+                    IsClimbing = false;
+                }
+
+                if (!IsClimbing || Grounded)
+                {
+                    if (Controller.MoveRight && Velocity.X < MaxVel)
+                    {
+                        // Allow quick turns on the ground
+                        if (Velocity.X < 0 && Grounded) Velocity.X = 0;
+                        Velocity.X += AccelRate * dt;
+                    }
+                    else if (Controller.MoveLeft && -MaxVel < Velocity.X)
+                    {
+                        // Allow quick turns on the ground
+                        if (0 < Velocity.X && Grounded) Velocity.X = 0;
+                        Velocity.X -= AccelRate * dt;
+                    }
+                    else if (!Controller.MoveLeft && !Controller.MoveRight)
+                    {
+                        // Deaccelerate in the air to accomodate wall jumps
+                        if (Grounded || Math.Abs(Velocity.X) < DeaccelRate * dt)
+                            Velocity.X = 0;
+                        else
+                            Velocity.X -= Math.Sign(Velocity.X) * DeaccelRate * dt;
+                    }
+                }
+
+                // // Debug
+                // if(Controller.MoveUp) Velocity.Y = +MaxVel;
+                // else if(Controller.MoveDown) Velocity.Y = -MaxVel;
+                // else Velocity.Y = 0;
+
+                if (Controller.Jump && 0 < LongJump)
+                {
+                    Velocity.Y += AccelRate * dt;
+                }
+
+                if (0 < LongJump)
+                {
+                    LongJump -= dt;
+                    if (Velocity.Y < 0)
+                    {
+                        LongJump = 0;
                     }
                 }
             }
             else
             {
-                IsClimbing = false;
+                Velocity.X = 0;
+                Velocity.Y = 0;
             }
-            
-            if(!IsClimbing || Grounded){
-                if(Controller.MoveRight && Velocity.X < MaxVel)
-                {
-                    // Allow quick turns on the ground
-                    if(Velocity.X < 0 && Grounded) Velocity.X = 0;
-                    Velocity.X += AccelRate * dt;
-                }
-                else if(Controller.MoveLeft && -MaxVel < Velocity.X)
-                {
-                    // Allow quick turns on the ground
-                    if(0 < Velocity.X && Grounded) Velocity.X = 0;
-                    Velocity.X -= AccelRate * dt;
-                }
-                else if (!Controller.MoveLeft && !Controller.MoveRight)
-                {
-                    // Deaccelerate in the air to accomodate wall jumps
-                    if(Grounded || Math.Abs(Velocity.X) < DeaccelRate*dt)
-                        Velocity.X = 0;
-                    else
-                        Velocity.X -= Math.Sign(Velocity.X)*DeaccelRate*dt;
-                }
-            }
-            
-            // // Debug
-            // if(Controller.MoveUp) Velocity.Y = +MaxVel;
-            // else if(Controller.MoveDown) Velocity.Y = -MaxVel;
-            // else Velocity.Y = 0;
-
-            if(Controller.Jump && 0 < LongJump)
-            {
-                Velocity.Y += AccelRate * dt;
-            }
-
-            if(0 < LongJump)
-            {
-                LongJump -= dt;
-                if (Velocity.Y < 0)
-                {
-                    LongJump = 0;
-                }
-            }
-
+            HideKeyWasUp = !Controller.Hide;
             JumpKeyWasUp = !Controller.Jump;
             
             // Now that all movement has been updated, check for collisions
