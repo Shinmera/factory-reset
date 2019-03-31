@@ -95,16 +95,20 @@ namespace team5
             // Apply gravity
             Velocity.Y -= dt * Gravity;
 
-            if (hide)
+            if (IsHiding)
             {
-                if (IsHiding)
-                {
+                Grounded = true;
+                if(jump || hide)
                     IsHiding = false;
-                }
-                else {
+            }
+            else
+            {
+                if (hide)
+                {
                     Vector2 hidePos;
                     if (chunk.AtHidingSpot(this, out hidePos))
                     {
+                        Grounded = true;
                         IsHiding = true;
                         IsClimbing = false;
                         HasWallJumped = false;
