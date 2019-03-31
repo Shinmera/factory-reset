@@ -53,7 +53,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR0
     mapXY.y = mapWH.y - mapXY.y - 1;
     
     // Bounds check to ensure we're still within the tilemap.
-    if(mapXY.x < 0 || mapXY.y < 0 | mapWH.x <= mapXY.x || mapWH.y <= mapXY.y)
+    if(mapXY.x < 0 || mapXY.y < 0 || mapWH.x <= mapXY.x || mapWH.y <= mapXY.y)
       return float4(0, 0, 0, 0);
     
     // Calculate tile position of and offset within the tile.
@@ -64,7 +64,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR0
     float4 tile = tilemap.Load(int3(tileXY, 0));
     if(tile.a <= 0)
       return float4(0, 0, 0, 0);
-    float4 color = tileset.Load(int3(tile.rg*256*tileSize+offsetXY, 0));
+    float4 color = tileset.Load(int3(floor(tile.rg*256)*tileSize+offsetXY, 0));
     //color.rgb = float3(tile.rg, 0);
     return color;
 }
