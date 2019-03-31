@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
-namespace team5.Entities
+namespace team5
 {
     class ConeEntity : Entity
     {
@@ -22,6 +22,17 @@ namespace team5.Entities
         private bool computedBB = false;
 
         private RectangleF BoundingBox;
+
+
+        public ConeEntity(Game1 game) : base(game)
+        {
+        }
+
+        public void UpdatePosition(Vector2 position)
+        {
+            Position = position;
+            computedBB = false;
+        }
 
         public float Radius {
             get {
@@ -59,9 +70,6 @@ namespace team5.Entities
             }
         }
 
-        public ConeEntity(Game1 game) : base(game)
-        {
-        }
 
         private void RecomputeBB()
         {
@@ -187,7 +195,7 @@ namespace team5.Entities
 
             for(int i = 0; i < polygon.Count; ++i)
             {
-                int ind2 = i == polygon.Count - 1 ? i + 1 : 0;
+                int ind2 = i != polygon.Count - 1 ? i + 1 : 0;
                 Vector3 line = Vector3.Cross(new Vector3(polygon[i], 1), new Vector3(polygon[ind2], 1));
 
                 Vector3 point1 = Vector3.Cross(ConeLine1,line);
@@ -211,7 +219,7 @@ namespace team5.Entities
 
             for (int i = 0; i < polygon.Count; ++i)
             {
-                int ind2 = i == polygon.Count - 1 ? i + 1 : 0;
+                int ind2 = i != polygon.Count - 1 ? i + 1 : 0;
 
                 Vector2 p1 = polygon[i] - Position;
                 Vector2 p2 = polygon[ind2] - Position;

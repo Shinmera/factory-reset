@@ -22,7 +22,7 @@ namespace team5
             
         }
 
-        public virtual void Update(GameTime gameTime, Chunk level)
+        public virtual void Update(GameTime gameTime, Chunk chunk)
         {
 
         }

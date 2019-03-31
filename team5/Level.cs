@@ -24,7 +24,7 @@ namespace team5
         {
             Player = new Player(new Vector2(0, 0), game);
             Camera = new Camera(Player, game);
-            ActiveChunk = new Chunk(game, Player, "Chunks/TestChunk");
+            ActiveChunk = new Chunk(game, Player, this, "Chunks/TestChunk");
         }
         
         public void LoadContent(ContentManager content)
