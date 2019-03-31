@@ -64,7 +64,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR0
     float4 tile = tilemap.Load(int3(tileXY, 0));
     if(tile.a <= 0)
       return float4(0, 0, 0, 0);
-    float4 color = tileset.Load(int3(floor(tile.rg*256)*tileSize+offsetXY, 0));
+    float4 color = tileset.Load(int3(tile.rg*255*tileSize+offsetXY, 0));
     //color.rgb = float3(tile.rg, 0);
     return color;
 }
