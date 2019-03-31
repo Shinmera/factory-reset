@@ -97,17 +97,23 @@ namespace team5
             // Apply gravity
             Velocity.Y -= dt * Gravity;
 
-            if (IsHiding)
+            if (IsHiding || QueueHide)
             {
-                Grounded = true;
-                if(jump || hide)
+                if (IsHiding)
+                {
+                    Grounded = true;
+                }
+
+                if (jump || hide || (HidingSpot + new Vector2(0, Size.Y - Chunk.TileSize / 2) - Position).Length() > Chunk.TileSize * 1.5)
+                {
                     IsHiding = false;
+                    QueueHide = false;
+                }
             }
             else
             {
                 if (hide)
                 {
-                    Vector2 hidePos;
                     if (chunk.AtHidingSpot(this, out HidingSpot))
                     {
                         QueueHide = true;
