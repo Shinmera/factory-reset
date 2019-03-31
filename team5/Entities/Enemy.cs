@@ -14,19 +14,12 @@ namespace team5
     {
         private AnimatedSprite Sprite;
         private Vector2 Velocity;
-        private float Distance;
-        private float OldDistance;
-        private bool  Right;
+
 
         //Patrolling enemy type
-        public Enemy(Vector2 position, float distance, Game1 game) : base( game, new Vector2(Chunk.TileSize, Chunk.TileSize))
+        public Enemy(Vector2 position, Game1 game) : base( game, new Vector2(Chunk.TileSize/2, Chunk.TileSize))
         {
-            Sprite = new AnimatedSprite(null, game);
-
-            this.Position = position;
-            this.Distance = distance;
-
-            OldDistance = Distance;
+            Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize * 2, Chunk.TileSize * 2));
 
         }
 
@@ -45,19 +38,6 @@ namespace team5
             Sprite.Update(dt);
 
             Position += Velocity;
-
-            if (Distance <= 0)
-            {
-                Right = true;
-                Velocity.X = 1f;
-            }
-            else if (Distance >= OldDistance)
-            {
-                Right = false;
-                Velocity.X = -1f;
-            }
-            if (Right) Distance += 1; else Distance -= 1;
-
         }
 
         public override void Draw(GameTime gameTime)

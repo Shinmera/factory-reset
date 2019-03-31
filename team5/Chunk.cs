@@ -128,7 +128,7 @@ namespace team5
                         case (uint)Colors.EnemyStart:
                             NonCollidingEntities.Add(new Enemy(new Vector2(x * TileSize + relPosition.X - TileSize/2,
                                                                            y * TileSize + relPosition.Y - TileSize/2),
-                                                               200, Game));
+                                                                Game));
                             break;
                     }
                 }
