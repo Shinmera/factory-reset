@@ -28,8 +28,8 @@ namespace team5
 
         public const int TileSize = 16;
 
-        private readonly string TileSetName;
-        public Texture2D TileSetTexture;
+        private readonly string TileMapName;
+        public Texture2D TileMapTexture;
         public Vector2 SpawnPosition;
 
         public uint Width;
@@ -54,7 +54,7 @@ namespace team5
         //TESTING ONLY
         public Chunk(Game1 game, Player player, string tileSetName)
         {
-            TileSetName = tileSetName;
+            TileMapName = tileSetName;
 
             tileObjects = new Dictionary<uint, TileType>
             {
@@ -77,7 +77,7 @@ namespace team5
 
         public Chunk(Game1 game, string tileSetName)
         {
-            TileSetName = tileSetName;
+            TileMapName = tileSetName;
             SolidEntities = new List<Entity>();
             NonCollidingEntities = new List<Entity>();
             CollidingEntities = new List<Entity>();
@@ -104,14 +104,14 @@ namespace team5
 
         public void LoadContent(ContentManager content)
         {
-            TileSetTexture = content.Load<Texture2D>(TileSetName);
+            TileMapTexture = content.Load<Texture2D>(TileMapName);
             Tileset = Game.TilemapEngine.CreateChunkTileset();
 
-            Width = (uint)TileSetTexture.Width;
-            Height = (uint)TileSetTexture.Height;
+            Width = (uint)TileMapTexture.Width;
+            Height = (uint)TileMapTexture.Height;
 
             SolidTiles = new uint[Width * Height];
-            TileSetTexture.GetData<uint>(SolidTiles);
+            TileMapTexture.GetData<uint>(SolidTiles);
             
             // Scan through and populate
             for(int y=0; y<Height; ++y)
@@ -146,7 +146,7 @@ namespace team5
         {
             CallAll(x => x.Draw(gameTime));
             
-            Game.TilemapEngine.Draw(TileSetTexture, Tileset, relPosition);
+            Game.TilemapEngine.Draw(TileMapTexture, Tileset, relPosition);
         }
 
         public const int Up =        0b00000001;
@@ -154,7 +154,7 @@ namespace team5
         public const int Down =        0b00000100;
         public const int Left =        0b00001000;
 
-        public bool inHidingSpot(Movable source, out Vector2 location)
+        public bool AtHidingSpot(Movable source, out Vector2 location)
         {
             var sourceBB = source.GetBoundingBox();
 
