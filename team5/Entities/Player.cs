@@ -35,6 +35,8 @@ namespace team5
         private Vector2 WallJumpVelocity = new Vector2(100, 200);
         private float WallSlideFriction = 0.9F;
 
+        private bool QueueHide = false;
+        private Vector2 HidingSpot;
         public bool IsHiding { get; private set; }
 
         private AnimatedSprite Sprite;
@@ -106,25 +108,21 @@ namespace team5
                 if (hide)
                 {
                     Vector2 hidePos;
-                    if (chunk.AtHidingSpot(this, out hidePos))
+                    if (chunk.AtHidingSpot(this, out HidingSpot))
                     {
-                        Grounded = true;
-                        IsHiding = true;
+                        QueueHide = true;
                         IsClimbing = false;
-                        HasWallJumped = false;
-                        HasDoubleJumped = false;
-                        Position = hidePos + new Vector2(0, Size.Y - Chunk.TileSize / 2);
                     }
                 }
             }
 
-            if (!IsHiding)
+            if (!IsHiding && !QueueHide)
             {
                 if (Grounded)
                 {
                     HasDoubleJumped = false;
                     HasWallJumped = false;
-                    if (jump && !IsHiding)
+                    if (jump)
                     {
                         jump = false;
                         Velocity.Y = JumpSpeed;
@@ -226,7 +224,35 @@ namespace team5
                     }
                 }
             }
-            else
+
+            if (QueueHide)
+            {
+                if (Position.X < HidingSpot.X && Velocity.X < MaxVel)
+                {
+                    // Allow quick turns on the ground
+                    if (Velocity.X < 0 && Grounded) Velocity.X = 0;
+                    Velocity.X += AccelRate * dt;
+                }
+                else if (Position.X > HidingSpot.X && -MaxVel < Velocity.X)
+                {
+                    // Allow quick turns on the ground
+                    if (0 < Velocity.X && Grounded) Velocity.X = 0;
+                    Velocity.X -= AccelRate * dt;
+                }
+
+                if (Math.Abs(Position.X - HidingSpot.X) <= MaxVel * dt)
+                {
+                    HasDoubleJumped = false;
+                    HasWallJumped = false;
+                    QueueHide = false;
+
+                    IsHiding = true;
+
+                    Position = HidingSpot + new Vector2(0, Size.Y - Chunk.TileSize / 2);
+                }
+            }
+
+            if (IsHiding)
             {
                 Velocity.X = 0;
                 Velocity.Y = 0;
