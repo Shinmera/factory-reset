@@ -16,6 +16,7 @@ namespace team5
         public Chunk ActiveChunk;
         public Player Player;
         public Camera Camera;
+        public int collected = 0;
 
         private bool ChunkTrans = false;
 

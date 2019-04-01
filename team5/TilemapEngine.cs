@@ -97,7 +97,10 @@ namespace team5
                 {
                     for(uint y=g*Chunk.TileSize; y<(g+1)*Chunk.TileSize; ++y)
                     {
-                        data[x+y*tex.Width] = new Color(c);
+                        if (c != (uint)Chunk.Colors.Pickup)
+                        {
+                            data[x + y * tex.Width] = new Color(c);
+                        }
                     }
                 }
             }

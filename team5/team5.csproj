@@ -117,6 +117,7 @@
     <Compile Include="Entities\GameObject.cs" />
     <Compile Include="Entities\Movable.cs" />
     <Compile Include="Entities\PassThroughPlatform.cs" />
+    <Compile Include="Entities\Pickup.cs" />
     <Compile Include="Entities\Platform.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Chunk.cs" />
@@ -125,6 +126,8 @@
     <Compile Include="Entities\TileHidingSpot.cs" />
     <Compile Include="Entities\TilePassThroughPlatform.cs" />
     <Compile Include="Entities\TilePlatform.cs" />
+    <Compile Include="Entities\TileSolid.cs" />
+    <Compile Include="Entities\TileSpike.cs" />
     <Compile Include="Entities\TileType.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="Program.cs" />

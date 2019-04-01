@@ -97,6 +97,17 @@ namespace team5
             // Apply gravity
             Velocity.Y -= dt * Gravity;
 
+            List<TileType> touchingTiles = chunk.TouchingNonSolidTile(this);
+
+            foreach(var tile in touchingTiles)
+            {
+                if(tile is TileSpike)
+                {
+                    chunk.Die(this);
+                    return;
+                }
+            }
+
             if (IsHiding || QueueHide)
             {
                 if (IsHiding)
@@ -268,7 +279,9 @@ namespace team5
             
             // Now that all movement has been updated, check for collisions
             HandleCollisions(dt, chunk);
+
             
+
             // Animations
             if(IsClimbing)
             {

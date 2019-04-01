@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace team5
 {
-    class TileBackgroundWall : TileType
+    class TileBackgroundWall : TileSolid
     {
         public TileBackgroundWall(Game1 game) : base(game)
         {

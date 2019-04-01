@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace team5
 {
-    class TilePlatform : TileType
+    class TilePlatform : TileSolid
     {
         
         public TilePlatform(Game1 game) : base(game)

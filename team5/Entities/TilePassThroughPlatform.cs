@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace team5
 {
-    class TilePassThroughPlatform : TileType
+    class TilePassThroughPlatform : TileSolid
     {
         const int PassThroughs = 0b00001011;
 

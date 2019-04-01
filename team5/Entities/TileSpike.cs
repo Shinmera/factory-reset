@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace team5
 {
-    abstract class TileType : GameObject
+    class TileSpike : TileType
     {
-        public TileType(Game1 game) : base(game)
+        public TileSpike(Game1 game) : base(game)
         {
         }
     }

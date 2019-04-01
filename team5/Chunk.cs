@@ -51,6 +51,9 @@ namespace team5
         //things that will stop you like moving platforms (which are not part of the tileset)
         List<Entity> SolidEntities;
 
+        //things that will be removed at the end of the update (to ensure that collections are not modified during loops)
+        List<Entity> PendingDeletion;
+
         Game1 Game;
 
         //TESTING ONLY
@@ -62,13 +65,16 @@ namespace team5
             {
                 { (uint)Colors.SolidPlatform, new TilePlatform(game) },
                 { (uint)Colors.FallThrough, new TilePassThroughPlatform(game) },
-                { (uint)Colors.BackgroundWall, new TileBackgroundWall(game) }
+                { (uint)Colors.BackgroundWall, new TileBackgroundWall(game) },
+                { (uint)Colors.Spike, new TileSpike(game) },
+                { (uint)Colors.HidingSpot, new TileHidingSpot(game) }
             };
             // FIXME: FallThrough, BackgroundWall
 
             SolidEntities = new List<Entity>();
             NonCollidingEntities = new List<Entity>();
             CollidingEntities = new List<Entity>();
+            PendingDeletion = new List<Entity>();
 
             RelPosition = new Vector2(0, 0);
             
@@ -84,13 +90,22 @@ namespace team5
             SolidEntities = new List<Entity>();
             NonCollidingEntities = new List<Entity>();
             CollidingEntities = new List<Entity>();
+            PendingDeletion = new List<Entity>();
             Game = game;
             Level = level;
         }
         
-        public void Die(Player player)
+        public void Die(Entity entity)
         {
-            player.Position = SpawnPosition;
+            if (entity is Player)
+            {
+                entity.Position = SpawnPosition;
+            }
+
+            if(entity is Pickup)
+            {
+                PendingDeletion.Add(entity);
+            }
         }
 
         private void CallAll(Action<GameObject> func)
@@ -130,13 +145,17 @@ namespace team5
                     switch(tile)
                     {
                         case (uint)Colors.PlayerStart: 
-                            SpawnPosition = new Vector2(x * TileSize + RelPosition.X - TileSize/2,
+                            SpawnPosition = new Vector2(x * TileSize + RelPosition.X,
                                                         y * TileSize + RelPosition.Y + TileSize/2);
                             break;
                         case (uint)Colors.EnemyStart:
-                            NonCollidingEntities.Add(new Enemy(new Vector2(x * TileSize + RelPosition.X - TileSize/2,
+                            NonCollidingEntities.Add(new Enemy(new Vector2(x * TileSize + RelPosition.X,
                                                                            y * TileSize + RelPosition.Y - TileSize/2),
                                                                 Game));
+                            break;
+                        case (uint)Colors.Pickup:
+                            CollidingEntities.Add(new Pickup(Game, new Vector2(x * TileSize + RelPosition.X,
+                                                                           y * TileSize + RelPosition.Y)));
                             break;
                     }
                 }
@@ -148,6 +167,15 @@ namespace team5
         public void Update(GameTime gameTime)
         {
             CallAll(x => x.Update(gameTime, this));
+
+            PendingDeletion.ForEach(x => 
+            {
+                if (!CollidingEntities.Remove(x))
+                {
+                    if (!NonCollidingEntities.Remove(x))
+                        SolidEntities.Remove(x);
+                }
+            });
         }
 
         public void Draw(GameTime gameTime)
@@ -204,6 +232,36 @@ namespace team5
 
             location = new Vector2(xpos * TileSize + RelPosition.X, (ypos+1) * TileSize + RelPosition.Y);
             return true;
+        }
+
+        public List<TileType> TouchingNonSolidTile(Movable source)
+        {
+            var result = new List<TileType>();
+
+            var sourceBB = source.GetBoundingBox();
+
+            int minX = (int)Math.Max(Math.Floor((sourceBB.Left - RelPosition.X + TileSize / 2) / TileSize), 0);
+            int minY = (int)Math.Max(Math.Floor((sourceBB.Bottom - RelPosition.Y + TileSize / 2) / TileSize), 0);
+            int maxX = (int)Math.Min(Math.Floor((sourceBB.Right - RelPosition.X + TileSize / 2) / TileSize) + 1, Width + 1);
+            int maxY = (int)Math.Min(Math.Floor((sourceBB.Top - RelPosition.Y + TileSize / 2) / TileSize) + 1, Height + 1);
+
+            for (int x = minX; x < maxX; ++x)
+            {
+                for (int y = minY; y < maxY; ++y)
+                {
+                    if (tileObjects.ContainsKey(GetTile(x, y)))
+                    {
+                        var tile = tileObjects[GetTile(x, y)];
+                        if (!(tile is TileSolid))
+                        {
+                            result.Add(tile);
+                        }
+
+                    }
+                }
+            }
+
+            return result;
         }
 
         public GameObject CollidePoint(Vector2 point)
@@ -302,50 +360,56 @@ namespace team5
                     for (int y = minY; y < maxY; ++y)
                     {
                         if (tileObjects.ContainsKey(GetTile(x,y))) {
-                            int tempDirection;
-                            float tempTime;
-                            bool tempCorner;
+                            var tile = tileObjects[GetTile(x, y)];
 
-                            var tileBB = new RectangleF(x * TileSize + RelPosition.X - TileSize/2,
-                                                        y * TileSize + RelPosition.Y - TileSize/2, 
-                                                        TileSize, TileSize);
-
-                            if (tileObjects[GetTile(x,y)].Collide((Movable)source, tileBB, timestep, out tempDirection, out tempTime, out tempCorner))
+                            if (tile is TileSolid)
                             {
-                                if (tempTime < time || (tempTime == time && (corner && !tempCorner)))
-                                {
-                                    corner = tempCorner;
-                                    time = tempTime;
-                                    direction = tempDirection;
-                                    if ((tempDirection & (Up | Down)) != 0)
-                                    {
-                                        targetBB[0] = tileBB;
-                                        targetVel[0] = new Vector2();
-                                    }
-                                    else
-                                    {
-                                        targetBB[1] = tileBB;
-                                        targetVel[1] = new Vector2();
-                                    }
-                                }
-                                else if (tempTime == time && (corner || !tempCorner))
-                                {
-                                    
-                                    //Allows collisions with multiple directions
-                                    direction = direction | tempDirection;
 
-                                    if ((tempDirection & (Up | Down)) != 0)
+                                int tempDirection;
+                                float tempTime;
+                                bool tempCorner;
+
+                                var tileBB = new RectangleF(x * TileSize + RelPosition.X - TileSize / 2,
+                                                            y * TileSize + RelPosition.Y - TileSize / 2,
+                                                            TileSize, TileSize);
+
+                                if (((TileSolid)tile).Collide((Movable)source, tileBB, timestep, out tempDirection, out tempTime, out tempCorner))
+                                {
+                                    if (tempTime < time || (tempTime == time && (corner && !tempCorner)))
                                     {
-                                        targetBB[0] = tileBB;
-                                        targetVel[0] = new Vector2();
+                                        corner = tempCorner;
+                                        time = tempTime;
+                                        direction = tempDirection;
+                                        if ((tempDirection & (Up | Down)) != 0)
+                                        {
+                                            targetBB[0] = tileBB;
+                                            targetVel[0] = new Vector2();
+                                        }
+                                        else
+                                        {
+                                            targetBB[1] = tileBB;
+                                            targetVel[1] = new Vector2();
+                                        }
                                     }
-                                    else
+                                    else if (tempTime == time && (corner || !tempCorner))
                                     {
-                                        targetBB[1] = tileBB;
-                                        targetVel[1] = new Vector2();
+
+                                        //Allows collisions with multiple directions
+                                        direction = direction | tempDirection;
+
+                                        if ((tempDirection & (Up | Down)) != 0)
+                                        {
+                                            targetBB[0] = tileBB;
+                                            targetVel[0] = new Vector2();
+                                        }
+                                        else
+                                        {
+                                            targetBB[1] = tileBB;
+                                            targetVel[1] = new Vector2();
+                                        }
                                     }
-                                }
-                            };
+                                };
+                            }
                         }
                     }
                 }
