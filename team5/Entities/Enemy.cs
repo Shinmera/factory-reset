@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -32,7 +28,7 @@ namespace team5
         {
             Sprite.Texture = content.Load<Texture2D>("Textures/tempplayer");
             Sprite.Add("idle", 0, 4, 1.0);
-            Sprite.Add("run", 0, 4, 1.0);
+            Sprite.Add("run", 4, 10, 0.8);
 
             TempViewCone.LoadContent(content);
         }
@@ -81,7 +77,10 @@ namespace team5
             Sprite.Draw(Position);
 
             if (Velocity.X > 0)
+            {
                 Sprite.Direction = +1;
+                Sprite.Play("run");
+            }
             else
                 Sprite.Direction = -1;
 
