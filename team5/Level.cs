@@ -36,6 +36,7 @@ namespace team5
 
             ActiveChunk = new Chunk(game, this, "Chunks/TestChunk", new Vector2(0,0));
             ActiveChunk.Activate(Player);
+            LastActiveChunk = ActiveChunk;
 
             Chunks = new List<Chunk>();
             TransitionChunks = new List<Chunk>();
