@@ -38,6 +38,8 @@ namespace team5
         public Vector2 Size;
         public RectangleF BoundingBox;
 
+        private Player Player;
+
         public uint[] SolidTiles;
         public Texture2D Tileset;
         
@@ -72,7 +74,6 @@ namespace team5
                 { (uint)Colors.Spike, new TileSpike(game) },
                 { (uint)Colors.HidingSpot, new TileHidingSpot(game) }
             };
-            // FIXME: FallThrough, BackgroundWall
 
             SolidEntities = new List<Entity>();
             NonCollidingEntities = new List<Entity>();
@@ -81,23 +82,46 @@ namespace team5
 
             Position = new Vector2(0, 0);
 
-            NonCollidingEntities.Add(player);
+            Player = player;
 
             Game = game;
             Level = level;
         }
 
-        public Chunk(Game1 game, string tileSetName, Level level)
+        public Chunk(Game1 game, Level level, string tileSetName, Vector2 position)
         {
             TileMapName = tileSetName;
+
+            tileObjects = new Dictionary<uint, TileType>
+            {
+                { (uint)Colors.SolidPlatform, new TilePlatform(game) },
+                { (uint)Colors.FallThrough, new TilePassThroughPlatform(game) },
+                { (uint)Colors.BackgroundWall, new TileBackgroundWall(game) },
+                { (uint)Colors.Spike, new TileSpike(game) },
+                { (uint)Colors.HidingSpot, new TileHidingSpot(game) }
+            };
+
             SolidEntities = new List<Entity>();
             NonCollidingEntities = new List<Entity>();
             CollidingEntities = new List<Entity>();
             PendingDeletion = new List<Entity>();
+
+            Position = position;
+
             Game = game;
             Level = level;
         }
         
+        public void Activate(Player player)
+        {
+            Player = player;
+        }
+
+        public void Deactivate()
+        {
+            Player = null;
+        }
+
         public void Die(Entity entity)
         {
             if (entity is Player)
@@ -116,6 +140,8 @@ namespace team5
             SolidEntities.ForEach(func);
             NonCollidingEntities.ForEach(func);
             CollidingEntities.ForEach(func);
+            if (Player != null)
+                func.Invoke(Player);
         }
 
         public uint GetTile(int x, int y)
@@ -357,8 +383,8 @@ namespace team5
 
             int minX = (int)Math.Max(Math.Floor((motionBB.Left - BoundingBox.X) / TileSize),0);
             int minY = (int)Math.Max(Math.Floor((motionBB.Bottom - BoundingBox.Y) / TileSize),0);
-            int maxX = (int)Math.Min(Math.Floor((motionBB.Right - BoundingBox.X) / TileSize) + 1, Width + 1);
-            int maxY = (int)Math.Min(Math.Floor((motionBB.Top - BoundingBox.Y) / TileSize) + 1, Height + 1);
+            int maxX = (int)Math.Min(Math.Floor((motionBB.Right - BoundingBox.X) / TileSize) + 1, Width);
+            int maxY = (int)Math.Min(Math.Floor((motionBB.Top - BoundingBox.Y) / TileSize) + 1, Height);
 
             if (source is Movable)
             {

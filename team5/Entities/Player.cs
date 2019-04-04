@@ -308,5 +308,52 @@ namespace team5
                     Sprite.Direction = +1;
             }
         }
+
+        public void Update(GameTime gameTime, int direction)
+        {
+            float dt = Game1.DeltaT;
+
+            switch (direction)
+            {
+                case Chunk.Left:
+                    Velocity.Y = 0;
+                    if (-MaxVel < Velocity.X)
+                    {
+                        // Allow quick turns on the ground
+                        if (0 < Velocity.X && Grounded) Velocity.X = 0;
+                        Velocity.X -= AccelRate * dt;
+                    }
+                    break;
+                case Chunk.Right:
+                    Velocity.Y = 0;
+                    if (Velocity.X < MaxVel)
+                    {
+                        // Allow quick turns on the ground
+                        if (Velocity.X < 0 && Grounded) Velocity.X = 0;
+                        Velocity.X += AccelRate * dt;
+                    }
+                    break;
+                case Chunk.Down:
+                    Velocity.Y -= dt * Gravity;
+                    break;
+                case Chunk.Up:
+                    break;
+            }
+            if (0 < Velocity.Y)
+                Sprite.Play("jump");
+            else if (Velocity.Y < 0)
+                Sprite.Play("fall");
+            else if (Velocity.X != 0)
+                Sprite.Play("run");
+            else
+                Sprite.Play("idle");
+            // Base direction on movement
+            if (Velocity.X < 0)
+                Sprite.Direction = -1;
+            if (0 < Velocity.X)
+                Sprite.Direction = +1;
+
+            Position += Velocity * dt;
+        }
     }
 }

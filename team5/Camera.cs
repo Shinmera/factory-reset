@@ -37,8 +37,8 @@ namespace team5
                 Func<float, float, float, float> clamp = (l, x, u) => (x < l)? l : (u < x)? u : x;
                 float lx = chunk.BoundingBox.X;
                 float ly = chunk.BoundingBox.Y;
-                float lw = chunk.Size.X*2;
-                float lh = chunk.Size.Y*2;
+                float lw = chunk.Size.X;
+                float lh = chunk.Size.Y;
                 float cw = TargetSize.X;
                 float ch = TargetSize.Y;
                 intendedPosition.X = clamp(lx + cw, intendedPosition.X, lx - cw + lw*2);
