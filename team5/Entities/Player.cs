@@ -32,7 +32,7 @@ namespace team5
         private float JumpSpeed = 150;
         private float LongJumpSpeed = 250;
         private float LongJumpTime = 15;
-        private Vector2 WallJumpVelocity = new Vector2(100, 200);
+        private Vector2 WallJumpVelocity = new Vector2(200, 200);
         private float WallSlideFriction = 0.9F;
 
         private bool QueueHide = false;
@@ -179,14 +179,14 @@ namespace team5
                     {
                         if (right != null)
                         {
-                            Velocity.X = (Controller.MoveRight) ? 0 : -WallJumpVelocity.X;
+                            Velocity.X = -WallJumpVelocity.X;
                             Velocity.Y = WallJumpVelocity.Y;
                             HasWallJumped = true;
                             jump = false;
                         }
                         else if (left != null)
                         {
-                            Velocity.X = (Controller.MoveLeft) ? 0 : WallJumpVelocity.X;
+                            Velocity.X = WallJumpVelocity.X;
                             Velocity.Y = WallJumpVelocity.Y;
                             HasWallJumped = true;
                             jump = false;
