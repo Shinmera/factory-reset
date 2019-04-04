@@ -311,7 +311,13 @@ namespace team5
 
         public void Update(GameTime gameTime, int direction)
         {
+            if (Controller.Quit)
+                Game.Exit();
+
             float dt = Game1.DeltaT;
+
+            Controller.Update();
+            Sprite.Update(dt);
 
             switch (direction)
             {

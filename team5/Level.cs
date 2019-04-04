@@ -18,12 +18,15 @@ namespace team5
         public Camera Camera;
         public int collected = 0;
 
+
         private bool ChunkTrans = false;
 
         private List<Chunk> TransitionChunks;
         private int TransitionDirection;
         private Chunk LastActiveChunk;
         private Chunk TargetChunk;
+        private int transitionLingerCounter = 0;
+        private const int transitionLinger = 20;
 
         //TESTING ONLY
         public Level(Game1 game)
@@ -123,7 +126,12 @@ namespace team5
 
                 if(TransitionChunks.Count == 1)
                 {
-                    ActiveChunk = TransitionChunks[0];
+                    transitionLingerCounter++;
+                }
+                if(transitionLingerCounter == transitionLinger)
+                {
+                    transitionLingerCounter = 0;
+                    ActiveChunk = TargetChunk;
                     ActiveChunk.Activate(Player);
                     ChunkTrans = false;
                     TransitionChunks.Clear();
@@ -153,16 +161,15 @@ namespace team5
         {
             if (ChunkTrans)
             {
-                foreach(var chunk in TransitionChunks)
-                {
-                    chunk.Draw(gameTime);
-                }
+                Player.Draw(gameTime);
+                TargetChunk.Draw(gameTime);
+                LastActiveChunk.Draw(gameTime);
+
             }
             else
             {
                 ActiveChunk.Draw(gameTime);
             }
-            
         }
     }
 }
