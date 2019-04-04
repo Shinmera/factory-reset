@@ -133,7 +133,7 @@ namespace team5
 
             Width = (uint)TileMapTexture.Width;
             Height = (uint)TileMapTexture.Height;
-            Size = new Vector2(Width/2*TileSize, Height/2*TileSize);
+            Size = new Vector2((Width*TileSize)/2, (Height*TileSize)/2);
 
             SolidTiles = new uint[Width * Height];
             TileMapTexture.GetData<uint>(SolidTiles);
