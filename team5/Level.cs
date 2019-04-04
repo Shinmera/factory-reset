@@ -25,8 +25,8 @@ namespace team5
         private int TransitionDirection;
         private Chunk LastActiveChunk;
         private Chunk TargetChunk;
-        private int transitionLingerCounter = 0;
-        private const int transitionLinger = 20;
+        private int TransitionLingerCounter = 0;
+        private const int TransitionLingerDuration = 20;
 
         //TESTING ONLY
         public Level(Game1 game)
@@ -52,6 +52,8 @@ namespace team5
                 chunk.LoadContent(content);
             }
             Player.Position = ActiveChunk.SpawnPosition;
+
+            Camera.UpdateChunk(ActiveChunk);
         }
         
         public void Resize(int width, int height)
@@ -63,11 +65,11 @@ namespace team5
         {
             if (!ChunkTrans)
             {
-                Camera.Update(ActiveChunk, gameTime);
+                Camera.Update(gameTime);
             }
             else
             {
-                Camera.Update(TargetChunk, gameTime);
+                Camera.Update(gameTime);
             }
 
             RectangleF PlayerBB = Player.GetBoundingBox();
@@ -108,29 +110,37 @@ namespace team5
                             }
                         }
                     }
+
                     ActiveChunk.Deactivate();
                     LastActiveChunk = ActiveChunk;
                     ActiveChunk = null;
+
+                    if (TargetChunk == null)
+                    {
+                        TargetChunk = LastActiveChunk;
+                    }
+                    Camera.UpdateChunk(TargetChunk);
                 }
             }
 
             if(ChunkTrans){
                 TransitionChunks.Clear();
 
+                TargetChunk.Update(gameTime);
+
                 foreach (var chunk in Chunks){
                     if (PlayerBB.Intersects(chunk.BoundingBox)){
                         TransitionChunks.Add(chunk);
-                        chunk.Update(gameTime);
                     }
                 }
 
                 if(TransitionChunks.Count == 1)
                 {
-                    transitionLingerCounter++;
+                    TransitionLingerCounter++;
                 }
-                if(transitionLingerCounter == transitionLinger)
+                if(TransitionLingerCounter == TransitionLingerDuration)
                 {
-                    transitionLingerCounter = 0;
+                    TransitionLingerCounter = 0;
                     ActiveChunk = TargetChunk;
                     ActiveChunk.Activate(Player);
                     ChunkTrans = false;
@@ -164,11 +174,14 @@ namespace team5
                 Player.Draw(gameTime);
                 TargetChunk.Draw(gameTime);
                 LastActiveChunk.Draw(gameTime);
-
             }
             else
             {
                 ActiveChunk.Draw(gameTime);
+                if (!Camera.IsInClamp)
+                {
+                    LastActiveChunk.Draw(gameTime);
+                }
             }
         }
     }
