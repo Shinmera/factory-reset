@@ -34,7 +34,7 @@ namespace team5
             Player = new Player(new Vector2(0, 0), game);
             Camera = new Camera(Player, game);
 
-            ActiveChunk = new Chunk(game, this, "Chunks/TestChunk", new Vector2(0,0));
+            ActiveChunk = new Chunk(game, this, "Chunks/TestChunk", new Vector2(64*Chunk.TileSize, 64 * Chunk.TileSize));
             ActiveChunk.Activate(Player);
             LastActiveChunk = ActiveChunk;
 
@@ -42,8 +42,9 @@ namespace team5
             TransitionChunks = new List<Chunk>();
             TransitionDirection = 0;
             Chunks.Add(ActiveChunk);
-            Chunks.Add(new Chunk(game, this, "Chunks/TestChunk", new Vector2(128*Chunk.TileSize, 0)));
-            Chunks.Add(new Chunk(game, this, "Chunks/TestChunk", new Vector2(-128 * Chunk.TileSize, 0)));
+            Chunks.Add(new Chunk(game, this, "Chunks/TestChunk", new Vector2(192 * Chunk.TileSize, 64 * Chunk.TileSize)));
+            Chunks.Add(new Chunk(game, this, "Chunks/TestChunk", new Vector2(-128 * Chunk.TileSize, 64 * Chunk.TileSize)));
+            Chunks.Add(new Chunk(game, this, "Chunks/TestChunk2", new Vector2(10 * Chunk.TileSize, -10 * Chunk.TileSize)));
         }
         
         public void LoadContent(ContentManager content)
@@ -90,7 +91,7 @@ namespace team5
                 else if (PlayerBB.Top > ActiveChunk.BoundingBox.Top && Player.Velocity.Y > 0)
                 {
                     TransitionDirection = Chunk.Up;
-                    Player.Velocity.Y = 200;
+                    Player.Velocity.Y = 250;
                     ChunkTrans = true;
                 }
                 else if (PlayerBB.Bottom < ActiveChunk.BoundingBox.Bottom && Player.Velocity.Y < 0)
@@ -135,10 +136,17 @@ namespace team5
                     }
                 }
 
-                if(TransitionChunks.Count == 1)
+                if (TransitionChunks.Count == 1)
                 {
-                    TransitionLingerCounter++;
+                    if ((TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right)) { 
+                        TransitionLingerCounter++;
+                    }
+                    else
+                    {
+                        TransitionLingerCounter = TransitionLingerDuration;
+                    }
                 }
+                
                 if(TransitionLingerCounter == TransitionLingerDuration)
                 {
                     TransitionLingerCounter = 0;
