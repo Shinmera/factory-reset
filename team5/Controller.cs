@@ -19,10 +19,6 @@ namespace team5
             this.gamepadIndex = gamepadIndex;
         }
 
-        public bool Hide => key.IsKeyDown(Keys.F)
-            || pad.Buttons.X == ButtonState.Pressed
-            || pad.Buttons.Y == ButtonState.Pressed;
-
         public bool MoveLeft => key.IsKeyDown(Keys.A)
             || key.IsKeyDown(Keys.Left)
             || pad.DPad.Left == ButtonState.Pressed
@@ -50,6 +46,10 @@ namespace team5
         public bool Climb => key.IsKeyDown(Keys.LeftShift)
             || pad.Buttons.LeftShoulder == ButtonState.Pressed
             || pad.Buttons.RightShoulder == ButtonState.Pressed;
+
+        public bool Hide => key.IsKeyDown(Keys.F)
+            || pad.Buttons.X == ButtonState.Pressed
+            || pad.Buttons.Y == ButtonState.Pressed;
         
         public bool Quit => key.IsKeyDown(Keys.Escape)
             || pad.Buttons.Start == ButtonState.Pressed;

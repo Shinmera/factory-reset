@@ -41,7 +41,7 @@ namespace team5
 
         public void Update(GameTime gameTime)
         {
-            Camera.Update(gameTime);
+            Camera.Update(ActiveChunk, gameTime);
             ActiveChunk.Update(gameTime);
             if (ChunkTrans)
             {
