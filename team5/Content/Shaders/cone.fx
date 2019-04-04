@@ -14,21 +14,27 @@ float2 angles;
 float radius;
 int triangles;
 
+struct VertexShaderInput
+{
+   float4 Position : POSITION0;
+   uint VertexID: SV_VertexID;
+};
+
 struct VertexShaderOutput
 {
     float4 Position : SV_POSITION;
 };
 
-VertexShaderOutput MainVS(uint vertexId: SV_VertexID)
+VertexShaderOutput MainVS(in VertexShaderInput input)
 {
     VertexShaderOutput output = (VertexShaderOutput)0;
 
-    float4 pos = float4(0,0,0,0);
+    float4 pos = input.Position;
     
     // Compute vertices based on index if not a midpoint vertex.
-    int id = vertexId % 3;
+    int id = input.VertexID % 3;
     if(0 < id){
-        int tri = vertexId / 3;
+        int tri = input.VertexID / 3;
         int curve = tri+(id-1);
         float ease = ((float)curve)/triangles;
         

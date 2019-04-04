@@ -33,8 +33,11 @@ namespace team5
             base.Initialize();
             Window.ClientSizeChanged += (x, y) => { Resize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height); };
             Resize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
+            
             RasterizerState rs = new RasterizerState{ CullMode = CullMode.None };
             GraphicsDevice.RasterizerState = rs;
+            DepthStencilState ds = new DepthStencilState{ DepthBufferEnable = false };
+            GraphicsDevice.DepthStencilState = ds;
         }
 
         protected override void LoadContent()
@@ -71,7 +74,7 @@ namespace team5
             GraphicsDevice.Clear(Color.CornflowerBlue);
             base.Draw(gameTime);
             Level.Draw(gameTime);
-            ViewConeEngine.Draw(new Vector2(0, 0), 16, (float)System.Math.PI/2, (float)System.Math.PI/4);
+            ViewConeEngine.Draw(new Vector2(16, 16), 64, (float)System.Math.PI/2, (float)System.Math.PI/4);
         }
     }
 }

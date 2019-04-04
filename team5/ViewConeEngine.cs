@@ -25,8 +25,12 @@ namespace team5
         public void LoadContent(ContentManager content)
         {
             // This is stupid but monogame requires a bogus vertex buffer. Fuck you, monogame!
+            VertexPosition[] vertices = new VertexPosition[Triangles*3];
+            for(int i=0; i<vertices.Length; i++)
+                vertices[i] = new VertexPosition(new Vector3(0, 0, 0));
             VertexBuffer = new VertexBuffer(Game.GraphicsDevice, VertexPosition.VertexDeclaration,
                                             Triangles*3, BufferUsage.None);
+            VertexBuffer.SetData(vertices);
             // Create shader
             ConeEffect = content.Load<Effect>("Shaders/cone");
         }
