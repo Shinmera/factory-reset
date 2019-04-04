@@ -65,11 +65,9 @@ namespace team5
         
         public void Draw(Vector2 pos, Vector2 size)
         {
-            
             Game.Transforms.Push();
             Game.Transforms.Scale(size);
             Game.Transforms.Translate(pos);
-            
             
             Draw(SolidTexture, new Vector4(0, 0, 1, 1));
             Game.Transforms.Pop();

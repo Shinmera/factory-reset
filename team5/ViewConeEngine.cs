@@ -14,9 +14,8 @@ namespace team5
     {
         public Game1 Game;
         private VertexBuffer VertexBuffer;
-        private IndexBuffer IndexBuffer;
-        private BasicEffect BasicEffect;
-
+        private Effect ConeEffect;
+        private const int Triangles = 5;
 
         public ViewConeEngine(Game1 game)
         {
@@ -25,47 +24,40 @@ namespace team5
 
         public void LoadContent(ContentManager content)
         {
-            VertexPositionColor[] vertices = new VertexPositionColor[]
-            {
-                 new VertexPositionColor(new Vector3(0, 0.25f, 0), Color.Green),
-                 new VertexPositionColor(new Vector3(0.5f, 0, 0), Color.Green),
-                 new VertexPositionColor(new Vector3(0.52f, 0.1f, 0), Color.Green),
-                 new VertexPositionColor(new Vector3(0.53f, 0.2f, 0), Color.Green),
-                 new VertexPositionColor(new Vector3(0.53f, 0.3f, 0), Color.Green),
-                 new VertexPositionColor(new Vector3(0.52f, 0.4f, 0), Color.Green),
-                 new VertexPositionColor(new Vector3(0.5f, 0.5f, 0), Color.Green)
-            };
-
-            VertexBuffer = new VertexBuffer(Game.GraphicsDevice, VertexPositionTexture.VertexDeclaration,
-                                vertices.Length, BufferUsage.None);
-
-            VertexBuffer.SetData(vertices);
-            short[] indices = new short[] { 0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 6 };
-            IndexBuffer = new IndexBuffer(Game.GraphicsDevice, typeof(short), indices.Length, BufferUsage.None);
-            IndexBuffer.SetData(indices);
-
-            //shader
-            BasicEffect = new BasicEffect(Game.GraphicsDevice);
+            // This is stupid but monogame requires a bogus vertex buffer. Fuck you, monogame!
+            VertexBuffer = new VertexBuffer(Game.GraphicsDevice, VertexPosition.VertexDeclaration,
+                                            Triangles*3, BufferUsage.None);
+            // Create shader
+            ConeEffect = content.Load<Effect>("Shaders/cone");
         }
 
-        public void Draw(Vector2 pos)
+        public void Draw(float radius, float angle1, float angle2)
         {
             GraphicsDevice device = Game.GraphicsDevice;
 
-            BasicEffect.World = Game.Transforms.ModelMatrix;
-            BasicEffect.View = Game.Transforms.ViewMatrix;
-            BasicEffect.Projection = Game.Transforms.ProjectionMatrix;
-            BasicEffect.VertexColorEnabled = true;
+            ConeEffect.CurrentTechnique = ConeEffect.Techniques["Cone"];
+            ConeEffect.Parameters["projectionMatrix"].SetValue(Game.Transforms.ProjectionMatrix);
+            ConeEffect.Parameters["viewMatrix"].SetValue(Game.Transforms.ViewMatrix);
+            ConeEffect.Parameters["modelMatrix"].SetValue(Game.Transforms.ModelMatrix);
+            ConeEffect.Parameters["angles"].SetValue(new Vector2(angle1, angle2));
+            ConeEffect.Parameters["radius"].SetValue(radius);
+            ConeEffect.Parameters["triangles"].SetValue(Triangles);
 
             device.SetVertexBuffer(VertexBuffer);
-            device.Indices = IndexBuffer;
-
-            foreach (EffectPass pass in BasicEffect.CurrentTechnique.Passes)
+            device.BlendState = BlendState.AlphaBlend;
+            foreach (EffectPass pass in ConeEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 5);
+                device.DrawPrimitives(PrimitiveType.TriangleList, 0, Triangles);
             }
         }
-
+        
+        public void Draw(Vector2 position, float radius, float angle1, float angle2)
+        {
+            Game.Transforms.Push();
+            Game.Transforms.Translate(position);
+            Draw(radius, angle1, angle2);
+            Game.Transforms.Pop();
+        }
     }
 }

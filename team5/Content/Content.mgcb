@@ -37,6 +37,12 @@
 /processorParam:TextureFormat=Color
 /build:Chunks/TestChunk2.png
 
+#begin Shaders/cone.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/cone.fx
+
 #begin Shaders/sprite.fx
 /importer:EffectImporter
 /processor:EffectProcessor
