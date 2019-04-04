@@ -8,7 +8,6 @@ namespace team5
 {
     class Chunk
     {
-        Vector2 Position;
         public Level Level;
 
         // IMPORTANT: Identifiers need to be unique in the GGRR range
@@ -35,6 +34,8 @@ namespace team5
 
         public uint Width;
         public uint Height;
+        public readonly Vector2 Position;
+        public Vector2 Size;
         public uint[] SolidTiles;
         public Texture2D Tileset;
         
@@ -132,6 +133,7 @@ namespace team5
 
             Width = (uint)TileMapTexture.Width;
             Height = (uint)TileMapTexture.Height;
+            Size = new Vector2(Width/2*TileSize, Height/2*TileSize);
 
             SolidTiles = new uint[Width * Height];
             TileMapTexture.GetData<uint>(SolidTiles);
