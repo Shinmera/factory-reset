@@ -39,8 +39,8 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
         float ease = ((float)curve)/triangles;
         
         // Now that we have an ease factor in [0..1] we can get the real angle.
-		if(angles.x < angles.y){
-			angles.x += 2*3.14159265358979323;
+		if(angles.y < angles.x){
+			angles.y += 2*3.14159265358979323;
 		}
 		
         float angle = lerp(angles.x, angles.y, ease);

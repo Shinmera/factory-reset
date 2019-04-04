@@ -53,7 +53,7 @@ namespace team5
 
         public override void Draw(GameTime gameTime)
         {
-            Game.ViewConeEngine.Draw(Position, Radius, Angle2, Angle1);
+            Game.ViewConeEngine.Draw(Position, Radius, Angle1, Angle2);
         }
     }
 }
