@@ -43,7 +43,7 @@ namespace team5
             TransitionDirection = 0;
             Chunks.Add(ActiveChunk);
             Chunks.Add(new Chunk(game, this, "Chunks/TestChunk", new Vector2(192 * Chunk.TileSize, 64 * Chunk.TileSize)));
-            Chunks.Add(new Chunk(game, this, "Chunks/TestChunk", new Vector2(-128 * Chunk.TileSize, 64 * Chunk.TileSize)));
+            Chunks.Add(new Chunk(game, this, "Chunks/TestChunk", new Vector2(-64 * Chunk.TileSize, 64 * Chunk.TileSize)));
             Chunks.Add(new Chunk(game, this, "Chunks/TestChunk2", new Vector2(10 * Chunk.TileSize, -10 * Chunk.TileSize)));
         }
         
@@ -181,15 +181,12 @@ namespace team5
             if (ChunkTrans)
             {
                 Player.Draw(gameTime);
-                TargetChunk.Draw(gameTime);
-                LastActiveChunk.Draw(gameTime);
             }
-            else
-            {
-                ActiveChunk.Draw(gameTime);
-                if (!Camera.IsInClamp)
+
+            foreach (Chunk chunk in Chunks){
+                if (Camera.IsVisible(chunk.BoundingBox))
                 {
-                    LastActiveChunk.Draw(gameTime);
+                    chunk.Draw(gameTime);
                 }
             }
         }

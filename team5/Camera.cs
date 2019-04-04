@@ -49,6 +49,11 @@ namespace team5
             UpdateClampData();
         }
 
+        public bool IsVisible(RectangleF target)
+        {
+            return new RectangleF(Position, TargetSize).Intersects(target);
+        }
+
         public void Update(GameTime gameTime)
         {
             Vector2 intendedPosition = Player.Position;
