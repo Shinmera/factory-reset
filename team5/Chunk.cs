@@ -189,7 +189,7 @@ namespace team5
         {
             CallAll(x => x.Draw(gameTime));
             
-            Game.TilemapEngine.Draw(TileMapTexture, Tileset, new Vector2(BoundingBox.X + TileSize/2, BoundingBox.Y + TileSize / 2));
+            Game.TilemapEngine.Draw(TileMapTexture, Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
         }
 
         public const int Up =        0b00000001;

@@ -37,7 +37,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
     mapCoord = mul(mul(float4(mapCoord, 0, 1), viewMatrix), modelMatrix).xy;
     
     // Offset to be centered.
-    output.mapCoord = mapCoord+((uint)tileSize)/2;
+    output.mapCoord = mapCoord;
 
     return output;
 }
