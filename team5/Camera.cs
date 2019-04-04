@@ -35,10 +35,10 @@ namespace team5
             //         which is inconsistent.
             {
                 Func<float, float, float, float> clamp = (l, x, u) => (x < l)? l : (u < x)? u : x;
-                float lx = chunk.Position.X - Chunk.TileSize/2;
-                float ly = chunk.Position.Y - Chunk.TileSize/2;
-                float lw = chunk.Size.X;
-                float lh = chunk.Size.Y;
+                float lx = chunk.BoundingBox.X;
+                float ly = chunk.BoundingBox.Y;
+                float lw = chunk.Size.X*2;
+                float lh = chunk.Size.Y*2;
                 float cw = TargetSize.X;
                 float ch = TargetSize.Y;
                 intendedPosition.X = clamp(lx + cw, intendedPosition.X, lx - cw + lw*2);

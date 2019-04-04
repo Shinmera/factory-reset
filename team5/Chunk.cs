@@ -36,6 +36,8 @@ namespace team5
         public uint Height;
         public readonly Vector2 Position;
         public Vector2 Size;
+        public RectangleF BoundingBox;
+
         public uint[] SolidTiles;
         public Texture2D Tileset;
         
@@ -78,7 +80,7 @@ namespace team5
             PendingDeletion = new List<Entity>();
 
             Position = new Vector2(0, 0);
-            
+
             NonCollidingEntities.Add(player);
 
             Game = game;
@@ -134,12 +136,15 @@ namespace team5
             Width = (uint)TileMapTexture.Width;
             Height = (uint)TileMapTexture.Height;
             Size = new Vector2((Width*TileSize)/2, (Height*TileSize)/2);
+            BoundingBox = new RectangleF(Position, Size);
+
 
             SolidTiles = new uint[Width * Height];
             TileMapTexture.GetData<uint>(SolidTiles);
             
+
             // Scan through and populate
-            for(int y=0; y<Height; ++y)
+            for (int y=0; y<Height; ++y)
             {
                 for(int x=0; x<Width; ++x)
                 {
@@ -147,17 +152,17 @@ namespace team5
                     switch(tile)
                     {
                         case (uint)Colors.PlayerStart: 
-                            SpawnPosition = new Vector2(x * TileSize + Position.X,
-                                                        y * TileSize + Position.Y + TileSize/2);
+                            SpawnPosition = new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
+                                                        y * TileSize + BoundingBox.Y + TileSize*2);
                             break;
                         case (uint)Colors.EnemyStart:
-                            NonCollidingEntities.Add(new Enemy(new Vector2(x * TileSize + Position.X,
-                                                                           y * TileSize + Position.Y - TileSize/2),
+                            NonCollidingEntities.Add(new Enemy(new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
+                                                                           y * TileSize + BoundingBox.Y),
                                                                 Game));
                             break;
                         case (uint)Colors.Pickup:
-                            CollidingEntities.Add(new Pickup(Game, new Vector2(x * TileSize + Position.X,
-                                                                           y * TileSize + Position.Y)));
+                            CollidingEntities.Add(new Pickup(Game, new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
+                                                                           y * TileSize + BoundingBox.Y + TileSize / 2)));
                             break;
                     }
                 }
@@ -184,7 +189,7 @@ namespace team5
         {
             CallAll(x => x.Draw(gameTime));
             
-            Game.TilemapEngine.Draw(TileMapTexture, Tileset, Position);
+            Game.TilemapEngine.Draw(TileMapTexture, Tileset, new Vector2(BoundingBox.X + TileSize/2, BoundingBox.Y + TileSize / 2));
         }
 
         public const int Up =        0b00000001;
@@ -196,10 +201,10 @@ namespace team5
         {
             var sourceBB = source.GetBoundingBox();
 
-            int minX = (int)Math.Max(Math.Floor((sourceBB.Left - Position.X + TileSize / 2) / TileSize), 0);
-            int minY = (int)Math.Max(Math.Floor((sourceBB.Bottom - Position.Y + TileSize / 2) / TileSize), 0);
-            int maxX = (int)Math.Min(Math.Floor((sourceBB.Right - Position.X + TileSize / 2) / TileSize) + 1, Width + 1);
-            int maxY = (int)Math.Min(Math.Floor((sourceBB.Top - Position.Y + TileSize / 2) / TileSize) + 1, Height + 1);
+            int minX = (int)Math.Max(Math.Floor((sourceBB.Left - BoundingBox.X) / TileSize), 0);
+            int minY = (int)Math.Max(Math.Floor((sourceBB.Bottom - BoundingBox.Y) / TileSize), 0);
+            int maxX = (int)Math.Min(Math.Floor((sourceBB.Right - BoundingBox.X) / TileSize) + 1, Width + 1);
+            int maxY = (int)Math.Min(Math.Floor((sourceBB.Top - BoundingBox.Y) / TileSize) + 1, Height + 1);
 
             float closestSqr = float.PositiveInfinity;
             int xpos = -1;
@@ -211,7 +216,7 @@ namespace team5
                 {
                     if(GetTile(x,y) == (uint)Colors.HidingSpot)
                     {
-                        Vector2 tilePos = new Vector2(x * TileSize + Position.X, y * TileSize + Position.Y);
+                        Vector2 tilePos = new Vector2(x * TileSize + BoundingBox.X + TileSize / 2, y * TileSize + BoundingBox.Y + TileSize / 2);
 
                         float sqrdist = (tilePos-source.Position).LengthSquared();
                         if(sqrdist < closestSqr)
@@ -232,7 +237,7 @@ namespace team5
 
             while (GetTile(xpos, --ypos) == (uint)Colors.HidingSpot);
 
-            location = new Vector2(xpos * TileSize + Position.X, (ypos+1) * TileSize + Position.Y);
+            location = new Vector2(xpos * TileSize + BoundingBox.X + TileSize / 2, (ypos+1) * TileSize + BoundingBox.Y + TileSize / 2);
             return true;
         }
 
@@ -242,10 +247,10 @@ namespace team5
 
             var sourceBB = source.GetBoundingBox();
 
-            int minX = (int)Math.Max(Math.Floor((sourceBB.Left - Position.X + TileSize / 2) / TileSize), 0);
-            int minY = (int)Math.Max(Math.Floor((sourceBB.Bottom - Position.Y + TileSize / 2) / TileSize), 0);
-            int maxX = (int)Math.Min(Math.Floor((sourceBB.Right - Position.X + TileSize / 2) / TileSize) + 1, Width + 1);
-            int maxY = (int)Math.Min(Math.Floor((sourceBB.Top - Position.Y + TileSize / 2) / TileSize) + 1, Height + 1);
+            int minX = (int)Math.Max(Math.Floor((sourceBB.Left - BoundingBox.X) / TileSize), 0);
+            int minY = (int)Math.Max(Math.Floor((sourceBB.Bottom - BoundingBox.Y) / TileSize), 0);
+            int maxX = (int)Math.Min(Math.Floor((sourceBB.Right - BoundingBox.X) / TileSize) + 1, Width + 1);
+            int maxY = (int)Math.Min(Math.Floor((sourceBB.Top - BoundingBox.Y) / TileSize) + 1, Height + 1);
 
             for (int x = minX; x < maxX; ++x)
             {
@@ -274,8 +279,8 @@ namespace team5
                     return entity;
             }
 
-            int x = (int)((point.X - Position.X + TileSize / 2) / TileSize);
-            int y = (int)((point.Y - Position.Y + TileSize / 2) / TileSize);
+            int x = (int)((point.X - BoundingBox.X) / TileSize);
+            int y = (int)((point.Y - BoundingBox.Y) / TileSize);
 
             if(x < 0 || x >= Width || y < 0 || y >= Height)
             {
@@ -350,10 +355,10 @@ namespace team5
             motionBB.Width = sourceBB.Width + Math.Abs(sourceMotion.X);
             motionBB.Height = sourceBB.Height + Math.Abs(sourceMotion.Y);
 
-            int minX = (int)Math.Max(Math.Floor((motionBB.Left - Position.X + TileSize / 2) / TileSize),0);
-            int minY = (int)Math.Max(Math.Floor((motionBB.Bottom - Position.Y + TileSize / 2) / TileSize),0);
-            int maxX = (int)Math.Min(Math.Floor((motionBB.Right - Position.X + TileSize / 2) / TileSize) + 1, Width + 1);
-            int maxY = (int)Math.Min(Math.Floor((motionBB.Top - Position.Y + TileSize / 2) / TileSize) + 1, Height + 1);
+            int minX = (int)Math.Max(Math.Floor((motionBB.Left - BoundingBox.X) / TileSize),0);
+            int minY = (int)Math.Max(Math.Floor((motionBB.Bottom - BoundingBox.Y) / TileSize),0);
+            int maxX = (int)Math.Min(Math.Floor((motionBB.Right - BoundingBox.X) / TileSize) + 1, Width + 1);
+            int maxY = (int)Math.Min(Math.Floor((motionBB.Top - BoundingBox.Y) / TileSize) + 1, Height + 1);
 
             if (source is Movable)
             {
@@ -371,8 +376,8 @@ namespace team5
                                 float tempTime;
                                 bool tempCorner;
 
-                                var tileBB = new RectangleF(x * TileSize + Position.X - TileSize / 2,
-                                                            y * TileSize + Position.Y - TileSize / 2,
+                                var tileBB = new RectangleF(x * TileSize + BoundingBox.X,
+                                                            y * TileSize + BoundingBox.Y,
                                                             TileSize, TileSize);
 
                                 if (((TileSolid)tile).Collide((Movable)source, tileBB, timestep, out tempDirection, out tempTime, out tempCorner))

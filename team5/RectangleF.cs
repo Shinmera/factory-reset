@@ -13,7 +13,6 @@ namespace team5
         public float Y;
         public float Width;
         public float Height;
-
         public Rectangle GetRectangle()
         {
             return new Rectangle((int)X, (int)(Y + Math.Ceiling(Height)), (int)Math.Ceiling(Width), (int)Math.Ceiling(Height));
@@ -25,6 +24,14 @@ namespace team5
             Y = y;
             Width = width;
             Height = height;
+        }
+
+        public RectangleF(Vector2 center, Vector2 size)
+        {
+            X = center.X - size.X;
+            Y = center.Y - size.Y;
+            Width = size.X*2;
+            Height = size.Y*2;
         }
 
         public float Bottom
