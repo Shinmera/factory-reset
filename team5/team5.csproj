@@ -137,6 +137,7 @@
     <Compile Include="SpriteEngine.cs" />
     <Compile Include="TilemapEngine.cs" />
     <Compile Include="Transforms.cs" />
+    <Compile Include="ViewConeEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

@@ -11,6 +11,7 @@ namespace team5
         GraphicsDeviceManager DeviceManager;
         public readonly SpriteEngine SpriteEngine;
         public readonly TilemapEngine TilemapEngine;
+        public readonly ViewConeEngine ConeEngine;
         public readonly Transforms Transforms = new Transforms();
 
         Level Level;
@@ -20,6 +21,7 @@ namespace team5
             DeviceManager = new GraphicsDeviceManager(this);
             SpriteEngine = new SpriteEngine(this);
             TilemapEngine = new TilemapEngine(this);
+            ConeEngine = new ViewConeEngine(this);
             DeviceManager.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
 
@@ -39,6 +41,7 @@ namespace team5
         {
             SpriteEngine.LoadContent(Content);
             TilemapEngine.LoadContent(Content);
+            ConeEngine.LoadContent(Content);
 
             Level = new Level(this);
             Level.LoadContent(Content);
@@ -68,6 +71,9 @@ namespace team5
             GraphicsDevice.Clear(Color.CornflowerBlue);
             base.Draw(gameTime);
             Level.Draw(gameTime);
+
+            //Doesn't work
+            //ConeEngine.Draw(new Vector2(0, 0));
         }
     }
 }

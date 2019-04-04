@@ -23,7 +23,7 @@ namespace team5
             Game = game;
         }
 
-        public void LoadContent(ContentManager content, float angle)
+        public void LoadContent(ContentManager content)
         {
             VertexPositionColor[] vertices = new VertexPositionColor[]
             {
