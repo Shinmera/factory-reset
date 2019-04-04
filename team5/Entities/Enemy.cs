@@ -29,8 +29,6 @@ namespace team5
             Sprite.Texture = content.Load<Texture2D>("Textures/tempplayer");
             Sprite.Add("idle", 0, 4, 1.0);
             Sprite.Add("run", 4, 10, 0.8);
-
-            TempViewCone.LoadContent(content);
         }
 
         public override void Update(GameTime gameTime, Chunk chunk)
@@ -67,7 +65,6 @@ namespace team5
             }
 
             TempViewCone.Update(gameTime, chunk);
-
         }
 
         public override void Draw(GameTime gameTime)

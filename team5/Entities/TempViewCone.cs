@@ -11,24 +11,19 @@ namespace team5
 {
     class TempViewCone : ConeEntity
     {
-        private AnimatedSprite Sprite;
-
         private int Direction;
-
 
         public TempViewCone(Game1 game) : base(game)
         {
-            Sprite = new AnimatedSprite(null, game, new Vector2(69, 71));
             Radius = 69;
         }
 
-
+        // FIXME: Bad naming, also should use existing angles to do a conversion
+        //        so that the constants need only be set once.
         public void faceLeft()
         {
             if (Direction != -1)
             {
-                Direction = -1;
-                Sprite.Direction = -1;
                 Angle1 = 5.0F / 6 * (float)Math.PI;
                 Angle2 = 7.0F / 6 * (float)Math.PI;
             }
@@ -38,17 +33,9 @@ namespace team5
         {
             if (Direction != 1)
             {
-                Direction = 1;
-                Sprite.Direction = 1;
                 Angle1 = 11.0F / 6 * (float)Math.PI;
                 Angle2 = 1.0F / 6 * (float)Math.PI;
             }
-        }
-
-        public override void LoadContent(ContentManager content)
-        {
-            Sprite.Texture = content.Load<Texture2D>("Textures/Viewconetemp");
-            Sprite.Add("idle", 0, 1, 1.0);
         }
 
         public override void Update(GameTime gameTime, Chunk chunk)
@@ -66,15 +53,7 @@ namespace team5
 
         public override void Draw(GameTime gameTime)
         {
-            if(Direction == 1)
-            {
-                Sprite.Draw(Position + new Vector2(35,0));
-            }
-            else
-            {
-                Sprite.Draw(Position - new Vector2(35, 0));
-            }
-            
+            Game.ViewConeEngine.Draw(Position, Radius, Angle2, Angle1);
         }
     }
 }

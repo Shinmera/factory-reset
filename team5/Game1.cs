@@ -74,7 +74,6 @@ namespace team5
             GraphicsDevice.Clear(Color.CornflowerBlue);
             base.Draw(gameTime);
             Level.Draw(gameTime);
-            ViewConeEngine.Draw(new Vector2(16, 16), 64, (float)System.Math.PI/2, (float)System.Math.PI/4);
         }
     }
 }
