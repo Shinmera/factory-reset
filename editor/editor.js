@@ -3,11 +3,22 @@ var tilemap = document.querySelector("#tilemap");
 var tileset = document.querySelector("#tileset");
 var setctx, mapctx;
 // Virtual
-var mapcanvas = document.createElement("canvas");
+var tempcanvas = document.createElement("canvas");
 var setimage = null;
 var mapimage = null;
-var currentTile = [0,0];
+var nonNullTiles = [];
+var currentTile = 0;
 var mapname = "tilemap";
+
+var getImagePixels = function(image, dim){
+    dim = dim || [image.width, image.height];
+    tempcanvas.width = dim[0];
+    tempcanvas.height = dim[1];
+    var ctx = tempcanvas.getContext("2d");
+    ctx.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+    if(image) ctx.drawImage(image, 0, 0);
+    return ctx.getImageData(0, 0, tempcanvas.width, tempcanvas.height);
+};
 
 var drawTilemapGrid = function(){
     for(var y=0; y<tilemap.height; y+=tileSize){
@@ -64,13 +75,7 @@ var drawTilemap = function(){
 
 var useTilemap = function(image){
     console.log("Using new tilemap (",image.width,"x",image.width,")");
-    // First draw onto virtual
-    mapcanvas.width = image.width;
-    mapcanvas.height = image.height;
-    var ctx = mapcanvas.getContext("2d");
-    ctx.clearRect(0, 0, mapcanvas.width, mapcanvas.height);
-    ctx.drawImage(image);
-    mapimage = ctx.getImageData(0, 0, mapcanvas.width, mapcanvas.height);
+    mapimage = getImagePixels(image);
     // Then redraw using mapimage if we have a tileset
     if(setimage != null)
         drawTilemap();
@@ -79,11 +84,7 @@ var useTilemap = function(image){
 };
 
 var createTilemap = function(w, h){
-    mapcanvas.width = w;
-    mapcanvas.height = h;
-    var ctx = mapcanvas.getContext("2d");
-    ctx.clearRect(0, 0, mapcanvas.width, mapcanvas.height);
-    mapimage = ctx.getImageData(0, 0, mapcanvas.width, mapcanvas.height);
+    mapimage = getImagePixels(null, [w, h]);
     drawTilemap();
 };
 
@@ -107,22 +108,38 @@ var clearTileset = function(){
     setctx.fill();
 };
 
+var isTileEmpty = function(data, x, y){
+    for(var iy=y*tileSize; iy<(y+1)*tileSize; iy++){
+        for(var ix=x*tileSize; ix<(x+1)*tileSize; ix++){
+            // Read alpha component
+            if(data.data[(ix+iy*data.width)*4+3] != 0)
+                return false;
+        }
+    }
+    return true;
+};
+
 var drawTileset = function(){
     var tileW = setimage.width / tileSize;
     var tileH = setimage.height / tileSize;
     var tilesPerRow = Math.floor(tileset.clientWidth/tileSize);
     tileset.height = Math.ceil(tileW*tileH/tilesPerRow)*tileSize;
     clearTileset();
-    var tx = 0;
-    var ty = 0;
-    for(var iy=0; iy<setimage.width; iy+=tileSize){
-        for(var ix=0; ix<setimage.height; ix+=tileSize){
-            setctx.drawImage(setimage, ix, iy, tileSize, tileSize,
-                             tx, ty, tileSize, tileSize);
-            tx += tileSize;
-            if(tileset.width <= tx){
-                tx = 0;
-                ty += tileSize;
+    nonNullTiles = [];
+    var tx = 0, ty = 0;
+    data = getImagePixels(setimage);
+    for(var iy=0; iy<tileH; iy++){
+        for(var ix=0; ix<tileW; ix++){
+            // Check empty.
+            if(!isTileEmpty(data, ix, iy)){
+                setctx.drawImage(setimage, ix*tileSize, iy*tileSize, tileSize, tileSize,
+                                 tx*tileSize, ty*tileSize, tileSize, tileSize);
+                nonNullTiles[tx+ty*tilesPerRow] = [ix, iy];
+                tx++;
+                if(tilesPerRow <= tx){
+                    tx = 0;
+                    ty++;
+                }
             }
         }
     }
@@ -141,23 +158,21 @@ var useTileset = function(image){
 };
 
 var selectTile = function(x, y){
-    var i;
-    var tpr = Math.floor(setimage.width/tileSize);
     if(y === null){
-        i = x+currentTile[0]+currentTile[1]*tpr;
+        currentTile += x;
     }else{
-        i = x+y*Math.floor(tileset.width/tileSize);
+        currentTile = x+y*Math.floor(tileset.width/tileSize);
     }
-    currentTile = [Math.max(0, Math.min(setimage.width, i % tpr)),
-                   Math.max(0, Math.min(setimage.height, Math.floor(i / tpr)))];
-    console.log("Selected tile",currentTile);
+    currentTile = (currentTile<0)? 0 : currentTile;
+    console.log("Selected tile",currentTile,nonNullTiles[currentTile]);
 };
 
 var editMap = function(x, y, action){
     var pixelIndex = ((mapimage.width*y)+x)*4;
     if(action === "place"){
-        mapimage.data[pixelIndex+0] = currentTile[0];
-        mapimage.data[pixelIndex+1] = currentTile[1];
+        var tile = nonNullTiles[currentTile];
+        mapimage.data[pixelIndex+0] = tile[0];
+        mapimage.data[pixelIndex+1] = tile[1];
         mapimage.data[pixelIndex+3] = 255;
     }else if(action === "erase"){
         mapimage.data[pixelIndex+0] = 0;
