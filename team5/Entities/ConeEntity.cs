@@ -292,7 +292,7 @@ namespace team5
                 Vector2 p2 = polygon[ind2] - Position;
 
                 float a = (p2 - p1).LengthSquared();
-                float b = 0;
+                float b = 2*Vector2.Dot(p1,(p2-p1));
                 float c = p1.LengthSquared() - radius * radius;
 
                 float Disc = b * b - 4 * a * c;
@@ -303,7 +303,7 @@ namespace team5
                 }
                 if(Disc == 0)
                 {
-                    float t = -b / 2 * a;
+                    float t = -b / (2 * a);
 
                     if(t > 0 && t < 1)
                     {
@@ -322,7 +322,7 @@ namespace team5
                 }
                 if(Disc > 0)
                 {
-                    float t1 = -b + (float)Math.Sqrt(Disc) / (2 * a);
+                    float t1 = (-b + (float)Math.Sqrt(Disc)) / (2 * a);
 
                     if (t1 > 0 && t1 < 1)
                     {
@@ -336,7 +336,7 @@ namespace team5
                         }
                     }
 
-                    float t2 = -b + (float)Math.Sqrt(Disc) / 2 * a;
+                    float t2 = (-b + (float)Math.Sqrt(Disc)) / (2 * a);
 
                     if (t2 > 0 && t2 < 1)
                     {
