@@ -8,7 +8,7 @@
   :overflow hidden
   :display flex
   :flex-direction column
-  (canvas
+  ((:or canvas img)
    :image-rendering pixelated)
   (>nav
    :border-bottom 2px solid (hex AAAAAA)
@@ -20,13 +20,19 @@
     :background (hex AAAAAA)))
   (main
    :flex-grow 1
-   :display flex
-   :justify-content center
-   :align-items center
+   :position relative
    :overflow scroll
    :background (hex CCCCCC)
    (>canvas
-    :background (hex FFFFFF)))
+    :position absolute
+    :background (hex FFFFFF)
+    :z-index 1)
+   (>img
+    :border none
+    :position absolute
+    :z-index 2
+    :opacity 0.5
+    :pointer-events none))
   (footer
    :border-top 2px solid (hex AAAAAA)
    :margin 0

@@ -17,6 +17,7 @@ var solids = {
 var tileSize = 16;
 var tilemap = document.querySelector("#tilemap");
 var tileset = document.querySelector("#tileset");
+var overlay = document.querySelector("#overlay");
 var setctx, mapctx;
 // Virtual
 var tempcanvas = document.createElement("canvas");
@@ -113,6 +114,8 @@ var drawTilemapPos = function(x, y){
 var drawTilemap = function(){
     tilemap.width = mapimage.width*tileSize;
     tilemap.height = mapimage.height*tileSize;
+    overlay.width = tilemap.width;
+    overlay.height = tilemap.height;
     mapctx.fillStyle = "#FFFFFF";
     mapctx.fillRect(0, 0, tilemap.width, tilemap.height);
     for(var y=0; y<mapimage.height; y+=1){
@@ -298,6 +301,12 @@ var newTilemap = function(){
     };
 };
 
+var useOverlay = function(image){
+    overlay.src = image.src;
+    if(!mapimage || mapimage.width != image.width || mapimage.height != image.height)
+        createTilemap(image.width, image.height);
+};
+
 var loadFileCallback;
 var loadFile = function(ev){
     var f = ev.target.files[0];
@@ -336,11 +345,16 @@ var openTileset = function(){
     openImage(useTileset);
 };
 
+var openOverlay = function(){
+    openImage(useOverlay);
+};
+
 var initEvents = function(){
     document.querySelector("#new-tilemap").addEventListener("click", newTilemap);
     document.querySelector("#save-tilemap").addEventListener("click", saveTilemap);
     document.querySelector("#open-tilemap").addEventListener("click", openTilemap);
     document.querySelector("#open-tileset").addEventListener("click", openTileset);
+    document.querySelector("#open-overlay").addEventListener("click", openOverlay);
     document.querySelector("nav>input[type=file]").addEventListener("change",loadFile);
     window.addEventListener("wheel", selectTileEvent);
     window.addEventListener("resize", function(){drawTileset();});
