@@ -14,16 +14,19 @@ namespace team5
         //            Or there will be collisions in the debug visualisation.
         // Tile identifiers     AABBGGRR
         public enum Colors: uint{
-            Empty           = 0xFFFFFFFF, // Nothing. All tiles with alpha 0 are also nothing
-            SolidPlatform   = 0xFF000000, // A solid wall or platform
-            HidingSpot      = 0xFF404040, // A hiding spot for the player
-            BackgroundWall  = 0xFF808080, // A wall for enemies, but not the player
-            FallThrough     = 0xFFC0C0C0, // A jump/fall-through platform
-            PlayerStart     = 0xFF00FF00, // The start position for the player
-            EnemyStart      = 0xFFFF1100, // An enemy spawn position
-            Spike           = 0xFF0000FF, // A death spike
-            Pickup          = 0xFF00EEFF, // An information pickup item
-            Goal            = 0xFFFFEE00, // A goal tile leading to end-of-level
+            Empty          = 0xFFFFFFFF, // Nothing. All tiles with alpha 0 are also nothing
+            SolidPlatform  = 0xFF000000, // A solid wall or platform
+            HidingSpot     = 0xFF404040, // A hiding spot for the player
+            BackgroundWall = 0xFF808080, // A wall for enemies, but not the player
+            FallThrough    = 0xFFC0C0C0, // A jump/fall-through platform
+            PlayerStart    = 0xFF00FF00, // The start position for the player
+            StaticCamera   = 0xFFFF0100, // An enemy spawn position
+            MovingCamera   = 0xFFFF0200, // An enemy spawn position
+            GroundDrone    = 0xFFFF0300, // An enemy spawn position
+            AerialDrone    = 0xFFFF0400, // An enemy spawn position
+            Spike          = 0xFF0000FF, // A death spike
+            Pickup         = 0xFF00EEFF, // An information pickup item
+            Goal           = 0xFFFFEE00, // A goal tile leading to end-of-level
         }
 
         public const int TileSize = 16;
@@ -181,14 +184,20 @@ namespace team5
                             SpawnPosition = new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
                                                         y * TileSize + BoundingBox.Y + TileSize*2);
                             break;
-                        case (uint)Colors.EnemyStart:
-                            NonCollidingEntities.Add(new Enemy(new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
-                                                                           y * TileSize + BoundingBox.Y),
-                                                                Game));
+                        case (uint)Colors.StaticCamera:
+                            NonCollidingEntities.Add(new StaticCamera(new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
+                                                                                  y * TileSize + BoundingBox.Y + TileSize / 2),
+                                                                      Game));
+                            break;
+                        case (uint)Colors.GroundDrone:
+                            NonCollidingEntities.Add(new GroundDrone(new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
+                                                                                 y * TileSize + BoundingBox.Y + TileSize),
+                                                                     Game));
                             break;
                         case (uint)Colors.Pickup:
-                            CollidingEntities.Add(new Pickup(Game, new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
-                                                                           y * TileSize + BoundingBox.Y + TileSize / 2)));
+                            CollidingEntities.Add(new Pickup(new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
+                                                                         y * TileSize + BoundingBox.Y + TileSize / 2),
+                                                             Game));
                             break;
                     }
                 }
@@ -213,9 +222,8 @@ namespace team5
 
         public void Draw(GameTime gameTime)
         {
-            CallAll(x => x.Draw(gameTime));
-            
             Game.TilemapEngine.Draw(TileMapTexture, Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
+            CallAll(x => x.Draw(gameTime));
         }
 
         public const int Up =        0b00000001;

@@ -115,13 +115,14 @@
     <Compile Include="Entities\Enemy.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\GameObject.cs" />
+    <Compile Include="Entities\GroundDrone.cs" />
     <Compile Include="Entities\Movable.cs" />
     <Compile Include="Entities\PassThroughPlatform.cs" />
     <Compile Include="Entities\Pickup.cs" />
     <Compile Include="Entities\Platform.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Chunk.cs" />
-    <Compile Include="Entities\TempViewCone.cs" />
+    <Compile Include="Entities\StaticCamera.cs" />
     <Compile Include="Entities\TileBackgroundWall.cs" />
     <Compile Include="Entities\TileHidingSpot.cs" />
     <Compile Include="Entities\TilePassThroughPlatform.cs" />

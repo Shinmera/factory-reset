@@ -13,7 +13,7 @@ namespace team5
     {
         private AnimatedSprite Sprite;
 
-        public Pickup(Game1 game, Vector2 position) : base(game, new Vector2(Chunk.TileSize * 0.75F))
+        public Pickup(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize * 0.75F))
         {
             Position = position;
 
