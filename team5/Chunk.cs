@@ -30,9 +30,10 @@ namespace team5
         }
 
         public const int TileSize = 16;
+        private const bool DrawSolids = false;
 
-        private readonly string TileMapName;
-        public Texture2D TileMapTexture;
+        private readonly string TileMapName, TileSetName;
+        public Texture2D MapTexture, OverlayTexture;
         public Vector2 SpawnPosition;
 
         public uint Width;
@@ -44,7 +45,7 @@ namespace team5
         private Player Player;
 
         public uint[] SolidTiles;
-        public Texture2D Tileset;
+        public Texture2D Tileset, Solidset;
         
 
         static Dictionary<uint, TileType> tileObjects;
@@ -64,36 +65,10 @@ namespace team5
 
         Game1 Game;
 
-        //TESTING ONLY
-        public Chunk(Game1 game, Player player, Level level, string tileSetName)
+        public Chunk(Game1 game, Level level, string tileMap, Vector2 position)
         {
-            TileMapName = tileSetName;
-
-            tileObjects = new Dictionary<uint, TileType>
-            {
-                { (uint)Colors.SolidPlatform, new TilePlatform(game) },
-                { (uint)Colors.FallThrough, new TilePassThroughPlatform(game) },
-                { (uint)Colors.BackgroundWall, new TileBackgroundWall(game) },
-                { (uint)Colors.Spike, new TileSpike(game) },
-                { (uint)Colors.HidingSpot, new TileHidingSpot(game) }
-            };
-
-            SolidEntities = new List<Entity>();
-            NonCollidingEntities = new List<Entity>();
-            CollidingEntities = new List<Entity>();
-            PendingDeletion = new List<Entity>();
-
-            Position = new Vector2(0, 0);
-
-            Player = player;
-
-            Game = game;
-            Level = level;
-        }
-
-        public Chunk(Game1 game, Level level, string tileSetName, Vector2 position)
-        {
-            TileMapName = tileSetName;
+            TileMapName = tileMap;
+            TileSetName = "Textures/temptiles";
 
             tileObjects = new Dictionary<uint, TileType>
             {
@@ -160,18 +135,18 @@ namespace team5
 
         public void LoadContent(ContentManager content)
         {
-            TileMapTexture = content.Load<Texture2D>(TileMapName);
-            Tileset = Game.TilemapEngine.CreateChunkTileset();
+            MapTexture = content.Load<Texture2D>(TileMapName);
+            OverlayTexture = content.Load<Texture2D>(TileMapName+"-overlay");
+            Tileset = content.Load<Texture2D>(TileSetName);
+            Solidset = Game.TilemapEngine.CreateChunkTileset();
 
-            Width = (uint)TileMapTexture.Width;
-            Height = (uint)TileMapTexture.Height;
+            Width = (uint)MapTexture.Width;
+            Height = (uint)MapTexture.Height;
             Size = new Vector2((Width*TileSize)/2, (Height*TileSize)/2);
             BoundingBox = new RectangleF(Position, Size);
 
-
             SolidTiles = new uint[Width * Height];
-            TileMapTexture.GetData<uint>(SolidTiles);
-            
+            MapTexture.GetData<uint>(SolidTiles);
 
             // Scan through and populate
             for (int y=0; y<Height; ++y)
@@ -229,7 +204,9 @@ namespace team5
 
         public void Draw(GameTime gameTime)
         {
-            Game.TilemapEngine.Draw(TileMapTexture, Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
+            if(DrawSolids)
+                Game.TilemapEngine.Draw(MapTexture, Solidset, new Vector2(BoundingBox.X, BoundingBox.Y));
+            Game.TilemapEngine.Draw(OverlayTexture, Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
             CallAll(x => x.Draw(gameTime));
         }
 
