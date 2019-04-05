@@ -83,8 +83,16 @@ namespace team5
             // Ease towards intended position
             Vector2 direction = intendedPosition - Position;
             float length = (float)Math.Max(1.0, direction.Length());
-            float ease = (float)Math.Max(0.0, Math.Min(20.0, 0.2+(Math.Pow(length, 1.5)/100)));
-            Position += direction*ease/length;
+
+            if (length <= 1)
+            {
+                Position = intendedPosition;
+            }
+            else
+            {
+                float ease = (float)Math.Max(0.0, Math.Min(20.0, 0.2 + (Math.Pow(length, 1.5) / 100)));
+                Position += direction * ease / length;
+            }
 
             if (!IsInClamp)
             {

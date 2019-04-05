@@ -27,6 +27,7 @@ namespace team5
             ViewCone = new ConeEntity(game);
             ViewCone.Radius = Chunk.TileSize * 6;
             ViewCone.FromDegrees(0, 30);
+            ViewCone.UpdatePosition(position);
             Velocity = new Vector2(PatrolSpeed.X, PatrolSpeed.Y);
         }
 

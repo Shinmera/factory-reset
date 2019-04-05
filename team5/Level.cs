@@ -164,6 +164,8 @@ namespace team5
                     ChunkTrans = false;
                     TransitionChunks.Clear();
                     TransitionDirection = 0;
+                    Player.Velocity = new Vector2(0);
+                    return;
                 }
 
                 Player.Update(gameTime, TransitionDirection);

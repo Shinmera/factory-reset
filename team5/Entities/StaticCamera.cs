@@ -16,6 +16,7 @@ namespace team5
             ViewCone = new ConeEntity(game);
             ViewCone.FromDegrees(225, 32);
             ViewCone.Radius = Chunk.TileSize * 10;
+            ViewCone.UpdatePosition(position);
         }
         
         public override void LoadContent(ContentManager content)
