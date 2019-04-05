@@ -141,6 +141,8 @@ var createTilemap = function(w, h){
 };
 
 var getTilemap = function(){
+    tempcanvas.width = mapimage.width;
+    tempcanvas.height = mapimage.height;
     tempcanvas.getContext("2d").putImageData(mapimage, 0, 0);
     return tempcanvas.toDataURL("image/png");
 };
