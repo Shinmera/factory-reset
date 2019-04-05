@@ -86,6 +86,8 @@ namespace team5
             float ease = (float)Math.Max(0.0, Math.Min(20.0, 0.2+(Math.Pow(length, 1.5)/100)));
             Position += direction*ease/length;
 
+
+
             if (!IsInClamp)
             {
                 if(Position.X > ChunkClamps.Left && Position.X < ChunkClamps.Right && Position.Y > ChunkClamps.Bottom && Position.Y < ChunkClamps.Top)

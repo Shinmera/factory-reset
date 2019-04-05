@@ -23,6 +23,16 @@ namespace team5
 
         private RectangleF BoundingBox;
 
+        public static float ConvertAngle(float angle)
+        {
+            angle = angle % (float)(2*Math.PI);
+            if(angle < 0)
+            {
+                angle += (float)(2 * Math.PI);
+            }
+
+            return angle;
+        }
 
         public ConeEntity(Game1 game) : base(game)
         {
@@ -135,17 +145,17 @@ namespace team5
                 xvals.Add(Position.X + radius);
             }
 
-            if((Math.PI > angle1 && Math.PI < angle2) || (angle2 < angle1 && Math.PI > angle1 || Math.PI < angle2))
+            if((Math.PI > angle1 && Math.PI < angle2) || (angle2 < angle1 && (Math.PI > angle1 || Math.PI < angle2)))
             {
                 xvals.Add(Position.X - radius);
             }
 
-            if ((Math.PI * 0.5F > angle1 && Math.PI * 0.5F < angle2) || (angle2 < angle1 && Math.PI * 0.5F > angle1 || Math.PI * 0.5F < angle2))
+            if ((Math.PI * 0.5F > angle1 && Math.PI * 0.5F < angle2) || (angle2 < angle1 && (Math.PI * 0.5F > angle1 || Math.PI * 0.5F < angle2)))
             {
                 yvals.Add(Position.Y - radius);
             }
 
-            if ((Math.PI * 1.5F > angle1 && Math.PI * 1.5F < angle2) || (angle2 < angle1 && Math.PI * 1.5F > angle1 || Math.PI * 1.5F < angle2))
+            if ((Math.PI * 1.5F > angle1 && Math.PI * 1.5F < angle2) || (angle2 < angle1 && (Math.PI * 1.5F > angle1 || Math.PI * 1.5F < angle2)))
             {
                 yvals.Add(Position.Y + radius);
             }
@@ -190,9 +200,9 @@ namespace team5
         public override bool Contains(Vector2 point)
         {
             float r = point.Length();
-            float phi = (float)Math.Atan2(point.Y, point.X);
+            float phi = ConvertAngle((float)Math.Atan2(point.Y, point.X));
             return r <= radius
-                 && (phi > angle1 && phi < angle2) || (angle2 < angle1 && phi > angle1 || phi < angle2);
+                 && (phi > angle1 && phi < angle2) || (angle2 < angle1 && (phi > angle1 || phi < angle2));
         }
 
         // <Nicolas> This also seems super complicated for what it has to do.
@@ -234,9 +244,9 @@ namespace team5
 
             if(centerRad < radius * radius)
             {
-                float centerAngle = (float)Math.Atan2(center.Y, center.X);
+                float centerAngle = ConvertAngle((float)Math.Atan2(center.Y, center.X));
 
-                if ((centerAngle > angle1 && centerAngle < angle2) || (angle2 < angle1 && centerAngle > angle1 || centerAngle < angle2))
+                if ((centerAngle > angle1 && centerAngle < angle2) || (angle2 < angle1 && (centerAngle > angle1 || centerAngle < angle2)))
                 {
                     return true;
                 }
@@ -252,8 +262,13 @@ namespace team5
                 Vector3 point1 = Vector3.Cross(ConeLine1,line);
                 point1 = point1 / point1.Z;
 
+                Vector2 DirPoly = (polygon[ind2] - polygon[i]);
+                float lengthPoly = DirPoly.Length();
+                DirPoly.Normalize();
+
                 float dist1 = Vector2.Dot(new Vector2(point1.X, point1.Y) - Position, Dir1);
-                if (dist1 < radius && dist1 > 0)
+                float distPoly1 = Vector2.Dot(new Vector2(point1.X, point1.Y) - polygon[i], DirPoly);
+                if (dist1 < radius && dist1 > 0 && distPoly1 < lengthPoly && distPoly1 > 0)
                 {
                     return true;
                 }
@@ -261,8 +276,9 @@ namespace team5
                 Vector3 point2 = Vector3.Cross(ConeLine2, line);
                 point2 = point2 / point2.Z;
 
-                float dist2 = Vector2.Dot(new Vector2(point1.X, point2.Y) - Position, Dir2);
-                if (dist2 < radius && dist2 > 0)
+                float dist2 = Vector2.Dot(new Vector2(point2.X, point2.Y) - Position, Dir2);
+                float distPoly2 = Vector2.Dot(new Vector2(point2.X, point2.Y) - polygon[i], DirPoly);
+                if (dist2 < radius && dist2 > 0 && distPoly2 < lengthPoly && distPoly2 > 0)
                 {
                     return true;
                 }
@@ -276,7 +292,7 @@ namespace team5
                 Vector2 p2 = polygon[ind2] - Position;
 
                 float a = (p2 - p1).LengthSquared();
-                float b = 2 * p1.X * (p2.X - p1.X) + 2 * p1.Y * (p2.Y - p1.Y);
+                float b = 0;
                 float c = p1.LengthSquared() - radius * radius;
 
                 float Disc = b * b - 4 * a * c;
@@ -295,7 +311,7 @@ namespace team5
 
                         float angle = (float)Math.Atan2(intersect.Y, intersect.X);
 
-                        if ((angle > angle1 && angle < angle2) || (angle2 < angle1 && angle > angle1 || angle < angle2))
+                        if ((angle > angle1 && angle < angle2) || (angle2 < angle1 && (angle > angle1 || angle < angle2)))
                         {
                             return true;
                         }
@@ -306,15 +322,15 @@ namespace team5
                 }
                 if(Disc > 0)
                 {
-                    float t1 = -b + (float)Math.Sqrt(Disc) / 2 * a;
+                    float t1 = -b + (float)Math.Sqrt(Disc) / (2 * a);
 
                     if (t1 > 0 && t1 < 1)
                     {
                         Vector2 intersect = p1 + t1 * (p2 - p1);
 
-                        float angle = (float)Math.Atan2(intersect.Y, intersect.X);
+                        float angle = ConvertAngle((float)Math.Atan2(intersect.Y, intersect.X));
 
-                        if ((angle > angle1 && angle < angle2) || (angle2 < angle1 && angle > angle1 || angle < angle2))
+                        if ((angle > angle1 && angle < angle2) || (angle2 < angle1 && (angle > angle1 || angle < angle2)))
                         {
                             return true;
                         }
@@ -326,9 +342,9 @@ namespace team5
                     {
                         Vector2 intersect = p1 + t2 * (p2 - p1);
 
-                        float angle = (float)Math.Atan2(intersect.Y, intersect.X);
+                        float angle = ConvertAngle((float)Math.Atan2(intersect.Y, intersect.X));
 
-                        if ((angle > angle1 && angle < angle2) || (angle2 < angle1 && angle > angle1 || angle < angle2))
+                        if ((angle > angle1 && angle < angle2) || (angle2 < angle1 && (angle > angle1 || angle < angle2)))
                         {
                             return true;
                         }
