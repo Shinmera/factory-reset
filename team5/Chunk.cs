@@ -21,7 +21,7 @@ namespace team5
             FallThrough    = 0xFFC0C0C0, // A jump/fall-through platform
             PlayerStart    = 0xFF00FF00, // The start position for the player
             StaticCamera   = 0xFFFF0100, // An enemy spawn position
-            MovingCamera   = 0xFFFF0200, // An enemy spawn position
+            PivotCamera    = 0xFFFF0200, // An enemy spawn position
             GroundDrone    = 0xFFFF0300, // An enemy spawn position
             AerialDrone    = 0xFFFF0400, // An enemy spawn position
             Spike          = 0xFF0000FF, // A death spike
@@ -182,11 +182,17 @@ namespace team5
                     {
                         case (uint)Colors.PlayerStart: 
                             SpawnPosition = new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
-                                                        y * TileSize + BoundingBox.Y + TileSize*2);
+                                                        y * TileSize + BoundingBox.Y + TileSize);
                             break;
+                        // FIXME: this is way too verbose, factor out.
                         case (uint)Colors.StaticCamera:
                             NonCollidingEntities.Add(new StaticCamera(new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
                                                                                   y * TileSize + BoundingBox.Y + TileSize / 2),
+                                                                      Game));
+                            break;
+                        case (uint)Colors.PivotCamera:
+                            NonCollidingEntities.Add(new PivotCamera(new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
+                                                                                 y * TileSize + BoundingBox.Y + TileSize / 2),
                                                                       Game));
                             break;
                         case (uint)Colors.GroundDrone:

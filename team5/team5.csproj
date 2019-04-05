@@ -119,6 +119,7 @@
     <Compile Include="Entities\Movable.cs" />
     <Compile Include="Entities\PassThroughPlatform.cs" />
     <Compile Include="Entities\Pickup.cs" />
+    <Compile Include="Entities\PivotCamera.cs" />
     <Compile Include="Entities\Platform.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Chunk.cs" />

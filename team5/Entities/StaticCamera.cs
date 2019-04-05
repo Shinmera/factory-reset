@@ -6,8 +6,8 @@ namespace team5
 {
     class StaticCamera : Entity
     {
-        private AnimatedSprite Sprite;
-        private ConeEntity ViewCone;
+        protected AnimatedSprite Sprite;
+        protected ConeEntity ViewCone;
         
         public StaticCamera(Vector2 position, Game1 game) : base(game)
         {
@@ -45,12 +45,15 @@ namespace team5
 
         public override bool Collide(Entity source, float timestep, out int direction, out float time, out bool corner)
         {
-            throw new System.NotImplementedException();
+            direction = 0;
+            time = 0;
+            corner = false;
+            return false;
         }
 
         public override bool Contains(Vector2 point)
         {
-            throw new System.NotImplementedException();
+            return false;
         }
     }
 }

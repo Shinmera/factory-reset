@@ -83,7 +83,7 @@ namespace team5
             double diff = (angle2-angle1)/2;
             if(angle2 < angle1) diff += Math.PI;
             direction = (float)((angle2-diff)*180/Math.PI) % 360;
-            view = (float)(diff*180/Math.PI) % 360;
+            view = (float)(diff*2*180/Math.PI) % 360;
         }
         
         public float Direction
