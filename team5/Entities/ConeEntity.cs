@@ -332,7 +332,7 @@ namespace team5
                 }
                 if(Disc > 0)
                 {
-                    float t1 = (-b + (float)Math.Sqrt(Disc)) / (2 * a);
+                    float t1 = (-b - (float)Math.Sqrt(Disc)) / (2 * a);
 
                     if (t1 > 0 && t1 < 1)
                     {
