@@ -69,7 +69,46 @@ namespace team5
                 computedBB = false;
             }
         }
+        
+        public void FromDegrees(float direction, float view)
+        {
+            double deg1 = (direction-view/2) % 360;
+            double deg2 = (direction+view/2) % 360;
+            Angle1 = (float)(deg1/180*Math.PI);
+            Angle2 = (float)(deg2/180*Math.PI);
+        }
 
+        public void ToDegrees(out float direction, out float view)
+        {
+            double diff = (angle2-angle1)/2;
+            if(angle2 < angle1) diff += Math.PI;
+            direction = (float)((angle2-diff)*180/Math.PI) % 360;
+            view = (float)(diff*180/Math.PI) % 360;
+        }
+        
+        public float Direction
+        {
+            get
+            {
+                double diff = (angle2-angle1)/2;
+                if(angle2 < angle1) diff += Math.PI;
+                double mid = angle2-diff;
+                return ((Math.PI*3)/2 < mid || mid < Math.PI/2) ? +1 : -1;
+            }
+            set
+            {
+                if(value == Direction) return;
+                double diff = (angle2-angle1)/2;
+                if(angle2 < angle1) diff += Math.PI;
+                double mid = angle2-diff;
+                // Flip midpoint
+                mid = Math.PI - mid;
+                if(mid < 0) mid += 2*Math.PI;
+                // Assign angles again
+                Angle1 = (float)((mid - diff) % (2*Math.PI));
+                Angle2 = (float)((mid + diff) % (2*Math.PI));
+            }
+        }
 
         private void RecomputeBB()
         {
@@ -289,5 +328,23 @@ namespace team5
 
         }
 
+        
+        public override void Update(GameTime gameTime, Chunk chunk)
+        {
+            base.Update(gameTime, chunk);
+
+            if (!chunk.Level.Player.IsHiding)
+            {
+                if (Collide(chunk.Level.Player, Game1.DeltaT, out int dirction, out float time, out bool corner))
+                {
+                    chunk.Die(chunk.Level.Player);
+                }
+            }
+        }
+
+        public override void Draw(GameTime gameTime)
+        {
+            Game.ViewConeEngine.Draw(Position, Radius, Angle1, Angle2);
+        }
     }
 }

@@ -14,7 +14,7 @@ namespace team5
 
         public override bool Collide(Entity source, RectangleF tileBB, float timestep, out int direction, out float time, out bool corner)
         {
-            if (!(source is Enemy))
+            if (!(source is IEnemy))
             {
                 direction = 0;
                 time = -1;
