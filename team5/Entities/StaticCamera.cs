@@ -35,7 +35,10 @@ namespace team5
         public override void Draw(GameTime gameTime)
         {
             ViewCone.Draw(gameTime);
+            Game.Transforms.Push();
+            Game.Transforms.Rotate(ViewCone.Middle);
             Sprite.Draw(Position);
+            Game.Transforms.Pop();
         }
 
         public override RectangleF GetBoundingBox()

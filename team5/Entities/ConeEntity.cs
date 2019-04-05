@@ -86,6 +86,23 @@ namespace team5
             view = (float)(diff*2*180/Math.PI) % 360;
         }
         
+        public float Middle
+        {
+            get
+            {
+                double diff = (angle2-angle1)/2;
+                if(angle2 < angle1) diff += Math.PI;
+                return (float)(angle2-diff);
+            }
+            set
+            {
+                double diff = (angle2-angle1)/2;
+                if(angle2 < angle1) diff += Math.PI;
+                Angle1 = (float)((value - diff) % (2*Math.PI));
+                Angle2 = (float)((value + diff) % (2*Math.PI));
+            }
+        }
+        
         public float Direction
         {
             get
@@ -98,15 +115,10 @@ namespace team5
             set
             {
                 if(value == Direction) return;
-                double diff = (angle2-angle1)/2;
-                if(angle2 < angle1) diff += Math.PI;
-                double mid = angle2-diff;
-                // Flip midpoint
+                double mid = Middle;
                 mid = Math.PI - mid;
                 if(mid < 0) mid += 2*Math.PI;
-                // Assign angles again
-                Angle1 = (float)((mid - diff) % (2*Math.PI));
-                Angle2 = (float)((mid + diff) % (2*Math.PI));
+                Middle = (float)mid;
             }
         }
 
