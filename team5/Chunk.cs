@@ -130,6 +130,7 @@ namespace team5
             if (entity is Player)
             {
                 entity.Position = SpawnPosition;
+                ((Player)entity).Velocity = new Vector2(0);
             }
 
             if(entity is Pickup)

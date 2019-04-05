@@ -190,6 +190,11 @@ namespace team5
 
         public override RectangleF GetBoundingBox()
         {
+            return new RectangleF(Position, new Vector2(radius));
+        }
+
+        public RectangleF GetTightBoundingBox()
+        {
             if (!computedBB)
             {
                 RecomputeBB();
@@ -236,6 +241,11 @@ namespace team5
             motionBB.Height = sourceBB.Height + (int)Math.Ceiling(Math.Max(0.0, sourceMotion.Y));
 
             if (!motionBB.Intersects(GetBoundingBox()))
+            {
+                return false;
+            }
+
+            if (!motionBB.Intersects(GetTightBoundingBox()))
             {
                 return false;
             }
