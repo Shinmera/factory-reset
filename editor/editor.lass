@@ -1,5 +1,5 @@
 (html
- :font-family sans-serif
+ :font-family monospace
  :font-size 12pt
  (body
   :height 100vh
@@ -34,6 +34,8 @@
    :min-height 128px
    :max-height 30%
    :overflow-y scroll
+   ("#info"
+    (>* :white-space pre))
    (>canvas
     :width 100%))
   ("#new-prompt"

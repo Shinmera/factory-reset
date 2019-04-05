@@ -1,14 +1,53 @@
+// COPYPAPSTA from Chunk.cs
+var solids = {
+    SolidPlatform:  0xFF000000, // A solid wall or platform
+    HidingSpot:     0xFF404040, // A hiding spot for the player
+    BackgroundWall: 0xFF808080, // A wall for enemies, but not the player
+    FallThrough:    0xFFC0C0C0, // A jump/fall-through platform
+    PlayerStart:    0xFF00FF00, // The start position for the player
+    StaticCamera:   0xFFFF0100, // An enemy spawn position
+    PivotCamera:    0xFFFF0200, // An enemy spawn position
+    GroundDrone:    0xFFFF0300, // An enemy spawn position
+    AerialDrone:    0xFFFF0400, // An enemy spawn position
+    Spike:          0xFF0000FF, // A death spike
+    Pickup:         0xFF00EEFF, // An information pickup item
+    Goal:           0xFFFFEE00, // A goal tile leading to end-of-level
+};
+
 var tileSize = 16;
 var tilemap = document.querySelector("#tilemap");
 var tileset = document.querySelector("#tileset");
 var setctx, mapctx;
 // Virtual
 var tempcanvas = document.createElement("canvas");
-var setimage = null;
+var setpixels = null, setimage = null;
 var mapimage = null;
 var nonNullTiles = [];
 var currentTile = 0;
 var mapname = "tilemap";
+
+var pad = function(string, length, char){
+    char = char || " ";
+    string = string+"";
+    while(string.length < length){
+        string = char + string;
+    }
+    return string;
+};
+
+var getPixel = function(data, x, y){
+    var index = (x+y*data.width)*4;
+    var r = data.data[index+0];
+    var g = data.data[index+1];
+    var b = data.data[index+2];
+    var a = data.data[index+3];
+    return ((r << 24) + (g << 16) + (b << 8) + a) >>> 0;
+};
+
+var formatRGB = function(pixel){
+    var string = pixel.toString(16);
+    return "#"+("00000000" + string).slice(-8);
+};
 
 var getImagePixels = function(image, dim){
     dim = dim || [image.width, image.height];
@@ -18,6 +57,16 @@ var getImagePixels = function(image, dim){
     ctx.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
     if(image) ctx.drawImage(image, 0, 0);
     return ctx.getImageData(0, 0, tempcanvas.width, tempcanvas.height);
+};
+
+var getImage = function(imagedata){
+    tempcanvas.width = imagedata.width;
+    tempcanvas.height = imagedata.height;
+    var ctx = tempcanvas.getContext("2d");
+    ctx.putImageData(imagedata, 0, 0);
+    var image = new Image();
+    image.src = tempcanvas.toDataURL();
+    return image;
 };
 
 var drawTilemapGrid = function(){
@@ -77,7 +126,7 @@ var useTilemap = function(image){
     console.log("Using new tilemap (",image.width,"x",image.width,")");
     mapimage = getImagePixels(image);
     // Then redraw using mapimage if we have a tileset
-    if(setimage != null)
+    if(setpixels != null)
         drawTilemap();
     else
         clearTilemap();
@@ -89,8 +138,8 @@ var createTilemap = function(w, h){
 };
 
 var getTilemap = function(){
-    mapcanvas.getContext("2d").putImageData(mapimage, 0, 0);
-    return mapcanvas.toDataURL("image/png");
+    tempcanvas.getContext("2d").putImageData(mapimage, 0, 0);
+    return tempcanvas.toDataURL("image/png");
 };
 
 var clearTileset = function(){
@@ -127,11 +176,10 @@ var drawTileset = function(){
     clearTileset();
     nonNullTiles = [];
     var tx = 0, ty = 0;
-    data = getImagePixels(setimage);
     for(var iy=0; iy<tileH; iy++){
         for(var ix=0; ix<tileW; ix++){
             // Check empty.
-            if(!isTileEmpty(data, ix, iy)){
+            if(!isTileEmpty(setpixels, ix, iy)){
                 setctx.drawImage(setimage, ix*tileSize, iy*tileSize, tileSize, tileSize,
                                  tx*tileSize, ty*tileSize, tileSize, tileSize);
                 nonNullTiles[tx+ty*tilesPerRow] = [ix, iy];
@@ -145,16 +193,25 @@ var drawTileset = function(){
     }
 };
 
-var useTileset = function(image){
-    var tileW = image.width / tileSize;
-    var tileH = image.height / tileSize;
-    console.log("Using new tileset (",tileW,"x",tileH,")");
-    setimage = image;
-
-    drawTileset();
-    // Refresh map
-    if(mapimage != null)
-        drawTilemap();
+var createSolidsPixels = function(){
+    var data = new ImageData(tileSize*256, tileSize*256);
+    for(var key in solids){
+        var color = solids[key];
+        var r = (color & 0x000000FF) >>>  0;
+        var g = (color & 0x0000FF00) >>>  8;
+        var b = (color & 0x00FF0000) >>> 16;
+        var a = (color & 0xFF000000) >>> 24;
+        for(var y=g*tileSize; y<(g+1)*tileSize; y++){
+            for(var x=r*tileSize; x<(r+1)*tileSize; x++){
+                var index = (x+y*data.width)*4;
+                data.data[index+0] = r;
+                data.data[index+1] = g;
+                data.data[index+2] = b;
+                data.data[index+3] = a;
+            }
+        }
+    }
+    return data;
 };
 
 var selectTile = function(x, y){
@@ -163,8 +220,34 @@ var selectTile = function(x, y){
     }else{
         currentTile = x+y*Math.floor(tileset.width/tileSize);
     }
-    currentTile = (currentTile<0)? 0 : currentTile;
-    console.log("Selected tile",currentTile,nonNullTiles[currentTile]);
+    currentTile = (currentTile<0)? 0 : (nonNullTiles.length <= currentTile)? nonNullTiles.length-1 : currentTile;
+
+    var tile = nonNullTiles[currentTile];
+    var format = formatRGB(getPixel(setpixels, tile[0]*tileSize, tile[1]*tileSize));
+    document.querySelector("#selected").innerText = pad(tile[0], 3)+","+pad(tile[1], 3);
+    document.querySelector("#color").innerText = format;
+    console.log("Selected tile", currentTile, tile, format);
+};
+
+var useTileset = function(image){
+    var tileW = image.width / tileSize;
+    var tileH = image.height / tileSize;
+    console.log("Using new tileset (",tileW,"x",tileH,")");
+    if(image instanceof Image){
+        setpixels = getImagePixels(image);
+        setimage = image;
+    }else if(image instanceof ImageData){
+        setpixels = image;
+        setimage = getImage(image);
+    }else{
+        throw new Error("Wtf?");
+    }
+
+    drawTileset();
+    // Refresh map
+    if(mapimage != null)
+        drawTilemap();
+    selectTile(0, 0);
 };
 
 var editMap = function(x, y, action){
@@ -280,7 +363,7 @@ var initCanvas = function(){
     setctx.webkitImageSmoothingEnabled = false;
     setctx.msImageSmoothingEnabled = false;
     setctx.imageSmoothingEnabled = false;
-    clearTileset();
+    useTileset(createSolidsPixels());
 };
 
 var init = function(){
