@@ -67,14 +67,22 @@ namespace team5
             switch(State)
             {
                 case AIState.Patrolling:
-                    if (chunk.CollideSolid(this, Game1.DeltaT, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetVel))
+                    Vector2 edgePoint = Position + new Vector2(Size.X * Sprite.Direction, -Size.Y-0.01F);
+                    bool switchDirection = (chunk.CollidePoint(edgePoint) == null);
+
+                    if(!switchDirection && chunk.CollideSolid(this, Game1.DeltaT, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetVel))
                     {
                         if ((Sprite.Direction == 1 && (direction & Chunk.Right) != 0)
                             || Sprite.Direction == -1 && (direction & Chunk.Left) != 0)
                         {
-                            EdgeTimer = EdgeWaitTime;
-                            SetState(AIState.Waiting);
+                            switchDirection = true;
                         }
+                    }
+
+                    if (switchDirection)
+                    {
+                        EdgeTimer = EdgeWaitTime;
+                        SetState(AIState.Waiting);
                     }
                     break;
                     
