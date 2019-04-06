@@ -45,7 +45,6 @@ Level: {
   name: String,
   description: String,
   startChase: Boolean,
-  chaseCountdown: Integer,
   startChunk: Integer,
   chunks: [ Chunk ]
 }

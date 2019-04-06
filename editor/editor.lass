@@ -11,29 +11,41 @@
   ((:or canvas img)
    :image-rendering pixelated)
   (>nav
-   :border-bottom 2px solid (hex AAAAAA)
+   :border-bottom 2px solid (hex 0088EE)
    (a
     :display inline-block
     :padding 0.3em
     :cursor pointer)
    ((:and a :hover)
-    :background (hex AAAAAA)))
+    :background (hex 0088EE)
+    :color (hex FFFFFF)))
   (main
    :display flex
    :flex-grow 1
    :background (hex CCCCCC)
-   ("#layers"
+   (.sidebar
     :min-width 150px
     :overflow-y auto
     :background white
-    :border-right 2px solid (hex AAAAAA)
-    (h2 :margin 0 :padding 0 :font-size 1.0em
-        :background (hex AAAAAA))
-    (.layer
+    :border-right 2px solid (hex 0088EE)
+    (h2 :margin 0 :padding 0
+        :font-size 1.0em
+        :background (hex 0088EE)
+        :color (hex FFFFFF))
+    (a
+     :cursor pointer
+     :padding 0 2px)
+    ((:and a :hover)
+     :color (hex 0088EE))
+    (>div
+     :margin-bottom 1em)
+    (ul
+     :list-style none
+     :margin 0 :padding 0)
+    (li
      :display flex
-     (>label :flex-grow 1)
-     (>a :padding 0 2px)))
-   ("#view"
+     (>label :flex-grow 1)))
+   (.main
     :flex-grow 1
     :padding 16px
     :overflow scroll
@@ -41,7 +53,7 @@
      :background (hex FFFFFF)
      :z-index 1)))
   (footer
-   :border-top 2px solid (hex AAAAAA)
+   :border-top 2px solid (hex 0088EE)
    :margin 0
    :padding 0
    :min-height 128px
@@ -51,7 +63,7 @@
     (>* :white-space pre))
    (>canvas
     :width 100%))
-  ("#new-prompt"
+  (.prompt
    :display none
    :background (hex FFFFFF)
    :border 2px solid (hex AAAAAA)
@@ -61,6 +73,6 @@
    :left (calc (- 50vw 4em))
    (label
     :display inline-block
-    :min-width 5em)
+    :min-width 12em)
    (input[type=submit]
     :width 100%))))
