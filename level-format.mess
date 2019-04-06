@@ -44,15 +44,18 @@ We will now describe the level file format using the established conventions.
 Level: {
   name: String,
   description: String,
-  storyItems: [ String ],
   startChase: Boolean,
+  chaseCountdown: Integer,
+  startChunk: Integer,
   chunks: [ Chunk ]
 }
 
 Chunk: {
   name: String,
   position: Vector,
-  layers: Integer
+  layers: Integer,
+  tileset: String,
+  storyItems: [ String ]
 }
 
 Vector: [ Float 2 ]
