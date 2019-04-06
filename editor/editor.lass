@@ -19,20 +19,23 @@
    ((:and a :hover)
     :background (hex AAAAAA)))
   (main
+   :display flex
    :flex-grow 1
-   :position relative
-   :overflow scroll
    :background (hex CCCCCC)
-   (>canvas
-    :position absolute
-    :background (hex FFFFFF)
-    :z-index 1)
-   (>img
-    :border none
-    :position absolute
-    :z-index 2
-    :opacity 0.5
-    :pointer-events none))
+   ("#layers"
+    :overflow-y auto
+    :background white
+    :border-right 2px solid (hex AAAAAA)
+    (h2 :margin 0 :padding 0 :font-size 1.0em
+        :background (hex AAAAAA))
+    (>li :display flex
+         (>label :flex-grow 1)))
+   ("#view"
+    :flex-grow 1
+    :padding 16px
+    (>canvas
+     :background (hex FFFFFF)
+     :z-index 1)))
   (footer
    :border-top 2px solid (hex AAAAAA)
    :margin 0

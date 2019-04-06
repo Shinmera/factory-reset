@@ -14,17 +14,19 @@ var solids = {
     Goal:           0xFFFFEE00, // A goal tile leading to end-of-level
 };
 
-var tileSize = 16;
+const tileSize = 16;
+const defaultLayers = 4;
+const layerNames = ["Solids", "Background", "Ground", "Foreground", "Special"];
 var tilemap = document.querySelector("#tilemap");
 var tileset = document.querySelector("#tileset");
-var overlay = document.querySelector("#overlay");
 var setctx, mapctx;
 // Virtual
 var tempcanvas = document.createElement("canvas");
 var setpixels = null, setimage = null;
-var mapimage = null;
+var mappixels = [];
 var nonNullTiles = [];
 var currentTile = 0;
+var currentLayer = 0;
 var mapname = "tilemap";
 
 var pad = function(string, length, char){
@@ -93,14 +95,21 @@ var clearTilemap = function(){
 };
 
 var drawTilemapPos = function(x, y){
-    var pixelIndex = ((mapimage.width*y)+x)*4;
-    var r = mapimage.data[pixelIndex+0];
-    var g = mapimage.data[pixelIndex+1];
-    var a = mapimage.data[pixelIndex+3];
-    if(0 < a){
-        mapctx.drawImage(setimage, r*tileSize, g*tileSize, tileSize, tileSize,
-                         x*tileSize, y*tileSize, tileSize, tileSize);
-    }else{
+    var pixelIndex = ((mappixels[0].width*y)+x)*4;
+    var empty = true;
+    for(var l=0; l<mappixels.length; l++){
+        if(mappixels[l].show){
+            var r = mappixels[l].data[pixelIndex+0];
+            var g = mappixels[l].data[pixelIndex+1];
+            var a = mappixels[l].data[pixelIndex+3];
+            if(0 < a){
+                epmty = false;
+                mapctx.drawImage(setimage, r*tileSize, g*tileSize, tileSize, tileSize,
+                                 x*tileSize, y*tileSize, tileSize, tileSize);
+            }
+        }
+    }
+    if(empty){
         mapctx.fillRect(x*tileSize, y*tileSize, tileSize, tileSize);
         mapctx.strokeStyle = "#DDDDDD";
         mapctx.beginPath();
@@ -112,38 +121,43 @@ var drawTilemapPos = function(x, y){
 };
 
 var drawTilemap = function(){
-    tilemap.width = mapimage.width*tileSize;
-    tilemap.height = mapimage.height*tileSize;
-    overlay.width = tilemap.width;
-    overlay.height = tilemap.height;
+    tilemap.width = mappixels[0].width*tileSize;
+    tilemap.height = mappixels[0].height*tileSize;
     mapctx.fillStyle = "#FFFFFF";
     mapctx.fillRect(0, 0, tilemap.width, tilemap.height);
-    for(var y=0; y<mapimage.height; y+=1){
-        for(var x=0; x<mapimage.width; x+=1){
+    for(var y=0; y<mappixels[0].height; y+=1){
+        for(var x=0; x<mappixels[0].width; x+=1){
             drawTilemapPos(x, y);
         }
     }
 };
 
-var useTilemap = function(image){
-    console.log("Using new tilemap (",image.width,"x",image.width,")");
-    mapimage = getImagePixels(image);
-    // Then redraw using mapimage if we have a tileset
+var useTilemap = function(image, layer){
+    layer = layer || currentLayer;
+    console.log("Using new tilemap (",image.width,"x",image.width,") for layer", layer);
+    mappixels[layer] = getImagePixels(image);
+    // Then redraw using mappixels if we have a tileset
     if(setpixels != null)
         drawTilemap();
     else
         clearTilemap();
 };
 
-var createTilemap = function(w, h){
-    mapimage = getImagePixels(null, [w, h]);
+var createTilemap = function(w, h, layers){
+    layers = layers || defaultLayers;
+    mappixels = [];
+    for(var l=0; l<layers; l++){
+        mappixels[l] = getImagePixels(null, [w, h]);
+    }
     drawTilemap();
 };
 
-var getTilemap = function(){
-    tempcanvas.width = mapimage.width;
-    tempcanvas.height = mapimage.height;
-    tempcanvas.getContext("2d").putImageData(mapimage, 0, 0);
+var getTilemap = function(layer){
+    layer = layer || currentLayer;
+    var pixels = mappixels[layer];
+    tempcanvas.width = pixels.width;
+    tempcanvas.height = pixels.height;
+    tempcanvas.getContext("2d").putImageData(pixels, 0, 0);
     return tempcanvas.toDataURL("image/png");
 };
 
@@ -250,22 +264,23 @@ var useTileset = function(image){
 
     drawTileset();
     // Refresh map
-    if(mapimage != null)
+    if(0 < mappixels.length)
         drawTilemap();
     selectTile(0, 0);
 };
 
-var editMap = function(x, y, action){
-    var pixelIndex = ((mapimage.width*y)+x)*4;
+var editMap = function(x, y, layer, action){
+    var pixels = mappixels[layer];
+    var pixelIndex = ((pixels.width*y)+x)*4;
     if(action === "place"){
         var tile = nonNullTiles[currentTile];
-        mapimage.data[pixelIndex+0] = tile[0];
-        mapimage.data[pixelIndex+1] = tile[1];
-        mapimage.data[pixelIndex+3] = 255;
+        pixels.data[pixelIndex+0] = tile[0];
+        pixels.data[pixelIndex+1] = tile[1];
+        pixels.data[pixelIndex+3] = 255;
     }else if(action === "erase"){
-        mapimage.data[pixelIndex+0] = 0;
-        mapimage.data[pixelIndex+1] = 0;
-        mapimage.data[pixelIndex+3] = 0;
+        pixels.data[pixelIndex+0] = 0;
+        pixels.data[pixelIndex+1] = 0;
+        pixels.data[pixelIndex+3] = 0;
     }
     drawTilemapPos(x,y);
     console.log("Edited (",x,"x",y,")");
@@ -287,7 +302,7 @@ var editMapEvent = function(ev){
         var x = Math.floor(ev.offsetX/tileSize);
         var y = Math.floor(ev.offsetY/tileSize);
         var action = (button == 2)? "erase" : "place";
-        editMap(x, y, action);
+        editMap(x, y, currentLayer, action);
     }
 };
 
@@ -301,12 +316,6 @@ var newTilemap = function(){
         var h = parseInt(prompt.querySelector("#new-height").value);
         createTilemap(w, h);
     };
-};
-
-var useOverlay = function(image){
-    overlay.src = image.src;
-    if(!mapimage || mapimage.width != image.width || mapimage.height != image.height)
-        createTilemap(image.width, image.height);
 };
 
 var loadFileCallback;
@@ -347,16 +356,10 @@ var openTileset = function(){
     openImage(useTileset);
 };
 
-var openOverlay = function(){
-    openImage(useOverlay);
-};
-
 var initEvents = function(){
-    document.querySelector("#new-tilemap").addEventListener("click", newTilemap);
-    document.querySelector("#save-tilemap").addEventListener("click", saveTilemap);
-    document.querySelector("#open-tilemap").addEventListener("click", openTilemap);
+    document.querySelector("#new-chunk").addEventListener("click", newTilemap);
+    document.querySelector("#open-chunk").addEventListener("click", openTilemap);
     document.querySelector("#open-tileset").addEventListener("click", openTileset);
-    document.querySelector("#open-overlay").addEventListener("click", openOverlay);
     document.querySelector("nav>input[type=file]").addEventListener("change",loadFile);
     window.addEventListener("wheel", selectTileEvent);
     window.addEventListener("resize", function(){drawTileset();});

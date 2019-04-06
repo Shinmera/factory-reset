@@ -8,15 +8,23 @@
   <body>
     <nav>
       <input type="file" id="fileInput" style="display:none">
-      <a id="new-tilemap">New Tilemap</a>
-      <a id="save-tilemap">Save Tilemap</a>
-      <a id="open-tilemap">Load Tilemap</a>
+      <a id="new-chunk">New Chunk</a>
       <a id="open-tileset">Load Tileset</a>
-      <a id="open-overlay">Open Solid Map</a>
+      <a id="open-chunk">Load Chunk</a>
     </nav>
     <main>
-      <canvas id="tilemap" width="0" height="0"></canvas>
-      <img id="overlay" />
+      <div id="layers">
+        <h2>Layers:</h2>
+        <div data-id="0">
+          <label>Solids</label>
+          <input type="checkbox" class="show" value="true" />
+          <a class="load"></a>
+          <a class="save"></a>
+        </div>
+      </div>
+      <section id="view">
+        <canvas id="tilemap" width="0" height="0"></canvas>
+      </section>
     </main>
     <footer>
       <div id="info">
