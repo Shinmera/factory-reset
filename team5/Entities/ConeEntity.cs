@@ -215,16 +215,65 @@ namespace team5
         
         public override bool Contains(Vector2 point)
         {
+            point = point - Position;
             float r = point.Length();
             float phi = ConvertAngle((float)Math.Atan2(point.Y, point.X));
             return r <= OccludedRadius
                  && (phi > LocalAngle1 && phi < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (phi > LocalAngle1 || phi < LocalAngle2));
         }
 
+        public override bool Collide(Entity entity, float timestep, out int direction, out float time, out bool corner)
+        {
+            corner = false;
+            direction = 0;
+            time = -1;
+
+            if (!(entity is Movable))
+            {
+                return false;
+            }
+
+            Movable source = (Movable)entity;
+            RectangleF sourceBB = source.GetBoundingBox();
+
+            if (!ComputedBB && !sourceBB.Intersects(GetBoundingBox()))
+            {
+                return false;
+            }
+
+            if (!sourceBB.Intersects(GetTightBoundingBox()))
+            {
+                return false;
+            }
+
+            List<Vector2> points = new List<Vector2>(8)
+            {
+                new Vector2(sourceBB.Left, sourceBB.Top),
+                new Vector2(sourceBB.Left, sourceBB.Bottom),
+                new Vector2(sourceBB.Right, sourceBB.Top),
+                new Vector2(sourceBB.Right, sourceBB.Bottom),
+                new Vector2(sourceBB.Left, source.Position.Y),
+                new Vector2(sourceBB.Right, source.Position.Y),
+                new Vector2(source.Position.X, sourceBB.Top),
+                new Vector2(source.Position.X, sourceBB.Bottom)
+            };
+
+            foreach(var point in points)
+            {
+                if (Contains(point))
+                {
+                    time = 0;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         // <Nicolas> This also seems super complicated for what it has to do.
         //           Wouldn't it just be sufficient to test the four corner points of the BoxEntity
         //           against the cone by translating them to polar coordinates and then checking range?
-        public override bool Collide(Entity entity, float timestep, out int direction, out float time, out bool corner)
+        public bool CollideObsolete(Entity entity, float timestep, out int direction, out float time, out bool corner)
         {
             corner = false;
             direction = 0;
