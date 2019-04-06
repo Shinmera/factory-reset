@@ -313,6 +313,108 @@ namespace team5
             return null;
         }
         
+        public bool IntersectLine(Vector2 Source, Vector2 Dir, float length, out float location)
+        {
+            Vector2 relSource = Source - new Vector2(BoundingBox.X, BoundingBox.Y);
+
+            Vector2 relEnd = Dir * length + relSource;
+
+            int minX = (int)Math.Max(Math.Floor(Math.Min(relSource.X, relEnd.X) / TileSize), 0);
+            int minY = (int)Math.Max(Math.Floor(Math.Min(relSource.Y, relEnd.Y) / TileSize), 0);
+
+            int maxX = (int)Math.Min(Math.Floor(Math.Max(relSource.X, relEnd.X) / TileSize) + 1, Width);
+            int maxY = (int)Math.Min(Math.Floor(Math.Max(relSource.Y, relEnd.Y) / TileSize) + 1, Height);
+
+            float prevLength = 0;
+            float nextLength = 0;
+
+            int xincrement = Dir.X > 0 ? 1 : -1;
+            int yincrement = Dir.Y > 0 ? 1 : -1;
+
+            for (int x = (Dir.X > 0 ? minX : (maxX-1)); x < maxX && x >= minX; x += xincrement)
+            {
+                Vector2 prevPos = relSource + Dir * prevLength;
+
+                int localMinY;
+                int localMaxY;
+
+                if(Dir.X == 0)
+                {
+                    localMinY = (int)Math.Max(Math.Floor(Math.Min(relSource.Y, relEnd.Y) / TileSize), minY);
+                    localMaxY = (int)Math.Min(Math.Floor(Math.Max(relSource.Y, relEnd.Y) / TileSize) + 1, maxY);
+                    nextLength = float.PositiveInfinity;
+                }
+                else if (Dir.X > 0)
+                {
+                    float distToNextX = ((x + 1) * TileSize - prevPos.X) / Dir.X;
+
+                    nextLength = distToNextX + prevLength;
+
+                    Vector2 nextPos = relSource + Dir * nextLength;
+
+                    localMinY = (int)Math.Max(Math.Floor(Math.Min(prevPos.Y, nextPos.Y) / TileSize), minY);
+                    localMaxY = (int)Math.Min(Math.Floor(Math.Max(prevPos.Y, nextPos.Y) / TileSize) + 1, maxY);
+                }
+                else
+                {
+                    float distToNextX = (x * TileSize - prevPos.X) / Dir.X;
+
+                    nextLength = distToNextX + prevLength;
+
+                    Vector2 nextPos = relSource + Dir * nextLength;
+
+                    localMinY = (int)Math.Max(Math.Floor(Math.Min(prevPos.Y, nextPos.Y) / TileSize), minY);
+                    localMaxY = (int)Math.Min(Math.Floor(Math.Max(prevPos.Y, nextPos.Y) / TileSize) + 1, maxY);
+                }
+
+                for(int y = (Dir.Y > 0 ? localMinY : (localMaxY - 1)); y < localMaxY && y >= localMinY; y += yincrement)
+                {
+                    if(GetTile(x,y) == (uint)Colors.SolidPlatform || GetTile(x, y) == (uint)Colors.BackgroundWall)
+                    {
+                        if(y == (Dir.Y > 0 ? localMinY : (localMaxY - 1)))
+                        {
+                            location = prevLength;
+                            return true;
+                        }
+
+                        if(Dir.Y == 0)
+                        {
+                            location = prevLength;
+                            if (location < length)
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                location = -1;
+                                return false;
+                            }
+                        }
+
+                        float yPos = Dir.Y > 0 ? y * TileSize : (y + 1) * TileSize;
+
+                        location = (yPos - relSource.Y) / Dir.Y;
+
+                        if (location < length)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            location = -1;
+                            return false;
+                        }
+                    }
+                }
+
+                prevLength = nextLength;
+            }
+            
+
+            location = -1;
+            return false;
+        }
+
         public bool CollideSolid(Entity source, float timestep, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetVel)
         {
             time = float.PositiveInfinity;

@@ -10,16 +10,18 @@ namespace team5
     class ConeEntity : Entity
     {
         //Angles are specified counterclockwise.
-        private float angle1;
-        private float angle2;
-        private float radius;
+        private float LocalAngle1;
+        private float LocalAngle2;
+        private float OccludedRadius;
+        private float FullRadius;
         private Vector2 ConePoint1;
         private Vector2 ConePoint2;
         private Vector2 Dir1;
         private Vector2 Dir2;
         private Vector3 ConeLine1;
         private Vector3 ConeLine2;
-        private bool computedBB = false;
+        private bool ComputedBB = false;
+        private bool ComputedOccludedRadius = false;
 
         private RectangleF BoundingBox;
 
@@ -41,16 +43,18 @@ namespace team5
         public void UpdatePosition(Vector2 position)
         {
             Position = position;
-            computedBB = false;
+            ComputedBB = false;
         }
 
         public float Radius {
             get {
-                return radius;
+                return OccludedRadius;
             }
             set {
-                radius = value;
-                computedBB = false;
+                FullRadius = value;
+                OccludedRadius = value;
+                ComputedBB = false;
+                ComputedOccludedRadius = false;
             }
         }
 
@@ -58,12 +62,13 @@ namespace team5
         {
             get
             {
-                return angle1;
+                return LocalAngle1;
             }
             set
             {
-                angle1 = value;
-                computedBB = false;
+                LocalAngle1 = value;
+                ComputedBB = false;
+                ComputedOccludedRadius = false;
             }
         }
 
@@ -71,12 +76,13 @@ namespace team5
         {
             get
             {
-                return angle2;
+                return LocalAngle2;
             }
             set
             {
-                angle2 = value;
-                computedBB = false;
+                LocalAngle2 = value;
+                ComputedBB = false;
+                ComputedOccludedRadius = false;
             }
         }
         
@@ -90,9 +96,9 @@ namespace team5
 
         public void ToDegrees(out float direction, out float view)
         {
-            double diff = (angle2-angle1)/2;
-            if(angle2 < angle1) diff += Math.PI;
-            direction = (float)((angle2-diff)*180/Math.PI) % 360;
+            double diff = (LocalAngle2-LocalAngle1)/2;
+            if(LocalAngle2 < LocalAngle1) diff += Math.PI;
+            direction = (float)((LocalAngle2-diff)*180/Math.PI) % 360;
             view = (float)(diff*2*180/Math.PI) % 360;
         }
         
@@ -100,14 +106,14 @@ namespace team5
         {
             get
             {
-                double diff = (angle2-angle1)/2;
-                if(angle2 < angle1) diff += Math.PI;
-                return (float)(angle2-diff);
+                double diff = (LocalAngle2-LocalAngle1)/2;
+                if(LocalAngle2 < LocalAngle1) diff += Math.PI;
+                return (float)(LocalAngle2-diff);
             }
             set
             {
-                double diff = (angle2-angle1)/2;
-                if(angle2 < angle1) diff += Math.PI;
+                double diff = (LocalAngle2-LocalAngle1)/2;
+                if(LocalAngle2 < LocalAngle1) diff += Math.PI;
                 Angle1 = (float)((value - diff) % (2*Math.PI));
                 Angle2 = (float)((value + diff) % (2*Math.PI));
             }
@@ -117,9 +123,9 @@ namespace team5
         {
             get
             {
-                double diff = (angle2-angle1)/2;
-                if(angle2 < angle1) diff += Math.PI;
-                double mid = angle2-diff;
+                double diff = (LocalAngle2-LocalAngle1)/2;
+                if(LocalAngle2 < LocalAngle1) diff += Math.PI;
+                double mid = LocalAngle2-diff;
                 return ((Math.PI*3)/2 < mid || mid < Math.PI/2) ? +1 : -1;
             }
             set
@@ -134,38 +140,43 @@ namespace team5
 
         private void RecomputeBB()
         {
+            if (ComputedBB)
+            {
+                return;
+            }
+
             var xvals = new List<float>();
             var yvals = new List<float>();
 
             xvals.Add(Position.X);
             yvals.Add(Position.Y);
 
-            if(angle2 < angle1)
+            if(LocalAngle2 < LocalAngle1)
             {
-                xvals.Add(Position.X + radius);
+                xvals.Add(Position.X + OccludedRadius);
             }
 
-            if((Math.PI > angle1 && Math.PI < angle2) || (angle2 < angle1 && (Math.PI > angle1 || Math.PI < angle2)))
+            if((Math.PI > LocalAngle1 && Math.PI < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (Math.PI > LocalAngle1 || Math.PI < LocalAngle2)))
             {
-                xvals.Add(Position.X - radius);
+                xvals.Add(Position.X - OccludedRadius);
             }
 
-            if ((Math.PI * 0.5F > angle1 && Math.PI * 0.5F < angle2) || (angle2 < angle1 && (Math.PI * 0.5F > angle1 || Math.PI * 0.5F < angle2)))
+            if ((Math.PI * 0.5F > LocalAngle1 && Math.PI * 0.5F < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (Math.PI * 0.5F > LocalAngle1 || Math.PI * 0.5F < LocalAngle2)))
             {
-                yvals.Add(Position.Y - radius);
+                yvals.Add(Position.Y - OccludedRadius);
             }
 
-            if ((Math.PI * 1.5F > angle1 && Math.PI * 1.5F < angle2) || (angle2 < angle1 && (Math.PI * 1.5F > angle1 || Math.PI * 1.5F < angle2)))
+            if ((Math.PI * 1.5F > LocalAngle1 && Math.PI * 1.5F < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (Math.PI * 1.5F > LocalAngle1 || Math.PI * 1.5F < LocalAngle2)))
             {
-                yvals.Add(Position.Y + radius);
+                yvals.Add(Position.Y + OccludedRadius);
             }
 
 
-            xvals.Add(Position.X + radius * (float)Math.Cos(angle1));
-            xvals.Add(Position.X + radius * (float)Math.Cos(angle2));
+            xvals.Add(Position.X + OccludedRadius * (float)Math.Cos(LocalAngle1));
+            xvals.Add(Position.X + OccludedRadius * (float)Math.Cos(LocalAngle2));
 
-            yvals.Add(Position.Y + radius * (float)Math.Sin(angle1));
-            yvals.Add(Position.Y + radius * (float)Math.Sin(angle2));
+            yvals.Add(Position.Y + OccludedRadius * (float)Math.Sin(LocalAngle1));
+            yvals.Add(Position.Y + OccludedRadius * (float)Math.Sin(LocalAngle2));
 
             BoundingBox.X = xvals.Min();
             BoundingBox.Y = yvals.Min();
@@ -173,8 +184,8 @@ namespace team5
             BoundingBox.Width = xvals.Max() - BoundingBox.X;
             BoundingBox.Height = yvals.Max() - BoundingBox.Y;
 
-            ConePoint1 = new Vector2(radius * (float)Math.Cos(angle1), radius * (float)Math.Sin(angle1)) + Position;
-            ConePoint2 = new Vector2(radius * (float)Math.Cos(angle2), radius * (float)Math.Sin(angle2)) + Position;
+            ConePoint1 = new Vector2(OccludedRadius * (float)Math.Cos(LocalAngle1), OccludedRadius * (float)Math.Sin(LocalAngle1)) + Position;
+            ConePoint2 = new Vector2(OccludedRadius * (float)Math.Cos(LocalAngle2), OccludedRadius * (float)Math.Sin(LocalAngle2)) + Position;
 
             ConeLine1 = Vector3.Cross(new Vector3(ConePoint1, 1), new Vector3(Position, 1));
             ConeLine2 = Vector3.Cross(new Vector3(ConePoint2, 1), new Vector3(Position, 1));
@@ -184,18 +195,18 @@ namespace team5
             Dir2 = ConePoint2 - Position;
             Dir2.Normalize();
 
-            computedBB = true;
+            ComputedBB = true;
         }
 
 
         public override RectangleF GetBoundingBox()
         {
-            return new RectangleF(Position, new Vector2(radius));
+            return new RectangleF(Position, new Vector2(OccludedRadius));
         }
 
         public RectangleF GetTightBoundingBox()
         {
-            if (!computedBB)
+            if (!ComputedBB)
             {
                 RecomputeBB();
             }
@@ -206,8 +217,8 @@ namespace team5
         {
             float r = point.Length();
             float phi = ConvertAngle((float)Math.Atan2(point.Y, point.X));
-            return r <= radius
-                 && (phi > angle1 && phi < angle2) || (angle2 < angle1 && (phi > angle1 || phi < angle2));
+            return r <= OccludedRadius
+                 && (phi > LocalAngle1 && phi < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (phi > LocalAngle1 || phi < LocalAngle2));
         }
 
         // <Nicolas> This also seems super complicated for what it has to do.
@@ -252,11 +263,11 @@ namespace team5
 
             float centerRad = center.LengthSquared();
 
-            if(centerRad < radius * radius)
+            if(centerRad < OccludedRadius * OccludedRadius)
             {
                 float centerAngle = ConvertAngle((float)Math.Atan2(center.Y, center.X));
 
-                if ((centerAngle > angle1 && centerAngle < angle2) || (angle2 < angle1 && (centerAngle > angle1 || centerAngle < angle2)))
+                if ((centerAngle > LocalAngle1 && centerAngle < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (centerAngle > LocalAngle1 || centerAngle < LocalAngle2)))
                 {
                     return true;
                 }
@@ -278,7 +289,7 @@ namespace team5
 
                 float dist1 = Vector2.Dot(new Vector2(point1.X, point1.Y) - Position, Dir1);
                 float distPoly1 = Vector2.Dot(new Vector2(point1.X, point1.Y) - polygon[i], DirPoly);
-                if (dist1 < radius && dist1 > 0 && distPoly1 < lengthPoly && distPoly1 > 0)
+                if (dist1 < OccludedRadius && dist1 > 0 && distPoly1 < lengthPoly && distPoly1 > 0)
                 {
                     return true;
                 }
@@ -288,7 +299,7 @@ namespace team5
 
                 float dist2 = Vector2.Dot(new Vector2(point2.X, point2.Y) - Position, Dir2);
                 float distPoly2 = Vector2.Dot(new Vector2(point2.X, point2.Y) - polygon[i], DirPoly);
-                if (dist2 < radius && dist2 > 0 && distPoly2 < lengthPoly && distPoly2 > 0)
+                if (dist2 < OccludedRadius && dist2 > 0 && distPoly2 < lengthPoly && distPoly2 > 0)
                 {
                     return true;
                 }
@@ -303,7 +314,7 @@ namespace team5
 
                 float a = (p2 - p1).LengthSquared();
                 float b = 2*Vector2.Dot(p1,(p2-p1));
-                float c = p1.LengthSquared() - radius * radius;
+                float c = p1.LengthSquared() - OccludedRadius * OccludedRadius;
 
                 float Disc = b * b - 4 * a * c;
 
@@ -321,7 +332,7 @@ namespace team5
 
                         float angle = (float)Math.Atan2(intersect.Y, intersect.X);
 
-                        if ((angle > angle1 && angle < angle2) || (angle2 < angle1 && (angle > angle1 || angle < angle2)))
+                        if ((angle > LocalAngle1 && angle < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (angle > LocalAngle1 || angle < LocalAngle2)))
                         {
                             return true;
                         }
@@ -340,7 +351,7 @@ namespace team5
 
                         float angle = ConvertAngle((float)Math.Atan2(intersect.Y, intersect.X));
 
-                        if ((angle > angle1 && angle < angle2) || (angle2 < angle1 && (angle > angle1 || angle < angle2)))
+                        if ((angle > LocalAngle1 && angle < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (angle > LocalAngle1 || angle < LocalAngle2)))
                         {
                             return true;
                         }
@@ -354,7 +365,7 @@ namespace team5
 
                         float angle = ConvertAngle((float)Math.Atan2(intersect.Y, intersect.X));
 
-                        if ((angle > angle1 && angle < angle2) || (angle2 < angle1 && (angle > angle1 || angle < angle2)))
+                        if ((angle > LocalAngle1 && angle < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (angle > LocalAngle1 || angle < LocalAngle2)))
                         {
                             return true;
                         }
@@ -369,6 +380,26 @@ namespace team5
         
         public override void Update(GameTime gameTime, Chunk chunk)
         {
+            if (!ComputedOccludedRadius)
+            {
+                OccludedRadius = FullRadius;
+                if (chunk.IntersectLine(Position, 
+                    new Vector2(OccludedRadius * (float)Math.Cos(LocalAngle1), OccludedRadius * (float)Math.Sin(LocalAngle1)),
+                    1, out float location1))
+                {
+                    OccludedRadius = Math.Min(OccludedRadius, location1 * OccludedRadius);
+                    ComputedBB = false;
+                }
+
+                if (chunk.IntersectLine(Position,
+                    new Vector2(OccludedRadius * (float)Math.Cos(LocalAngle2), OccludedRadius * (float)Math.Sin(LocalAngle2)),
+                    1, out float location2))
+                {
+                    OccludedRadius = Math.Min(OccludedRadius, location2 * OccludedRadius);
+                    ComputedBB = false;
+                }
+            }
+
             base.Update(gameTime, chunk);
 
             if (!chunk.Level.Player.IsHiding)
@@ -382,6 +413,7 @@ namespace team5
 
         public override void Draw(GameTime gameTime)
         {
+            RecomputeBB();
             Game.ViewConeEngine.Draw(Position, Radius, Angle1, Angle2);
         }
     }
