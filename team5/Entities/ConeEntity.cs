@@ -9,24 +9,34 @@ namespace team5
 {
     class ConeEntity : Entity
     {
-        //Angles are specified counterclockwise.
+        /// <summary>The starting Angle of the cone (CCW)</summary>
         private float LocalAngle1;
+        /// <summary>The ending Angle of the cone (CCW)</summary>
         private float LocalAngle2;
+        /// <summary>The radius of the occluded Cone</summary>
         private float OccludedRadius;
+        /// <summary>The Radius of the complete unoccluded Cone.</summary>
         private float FullRadius;
+        /// <summary>The position of the starting edge of the cone.</summary>
         private Vector2 ConePoint1;
+        /// <summary>The position of the ending edge of the cone.</summary>
         private Vector2 ConePoint2;
+        /// <summary>A ray in the direction of the starting edge of the cone.</summary>
         private Vector2 Dir1;
+        /// <summary>A ray in the direction of the ending edge of the cone.</summary>
         private Vector2 Dir2;
+        /// <summary>The starting edge of the cone as a homogeneous line</summary>
         private Vector3 ConeLine1;
+        /// <summary>The ending edge of the cone as a homogeneous line</summary>
         private Vector3 ConeLine2;
+        /// <summary>Whether the tight bounding box has been computed</summary>
         private bool ComputedBB = false;
+        /// <summary>Whether the occlusion has been computed.</summary>
         private bool ComputedOccludedRadius = false;
-
-        private const bool usePreciseOcclusion = false;
 
         private RectangleF BoundingBox;
 
+        /// <summary>Clamps any angle into the [0,2pi] domain used by this class.</summary>
         public static float ConvertAngle(float angle)
         {
             angle = angle % (float)(2*Math.PI);
@@ -42,12 +52,14 @@ namespace team5
         {
         }
 
+        /// <summary>Changes the position of the cone center</summary>
         public void UpdatePosition(Vector2 position)
         {
             Position = position;
             ComputedBB = false;
         }
 
+        /// <summary>Set to change the full radius, get to get the occluded radius.</summary>
         public float Radius {
             get {
                 return OccludedRadius;
@@ -60,6 +72,7 @@ namespace team5
             }
         }
 
+        /// <summary>The starting Angle of the cone (CCW)</summary>
         public float Angle1
         {
             get
@@ -74,6 +87,7 @@ namespace team5
             }
         }
 
+        /// <summary>The ending Angle of the cone (CCW)</summary>
         public float Angle2
         {
             get
@@ -87,7 +101,8 @@ namespace team5
                 ComputedOccludedRadius = false;
             }
         }
-        
+
+        /// <summary>Sets the starting and ending angles of a cone by a direction and a width, specified in degrees.</summary>
         public void FromDegrees(float direction, float view)
         {
             double deg1 = (direction-view/2) % 360;
@@ -96,6 +111,7 @@ namespace team5
             Angle2 = (float)(deg2/180*Math.PI);
         }
 
+        /// <summary>Returns the direction of the cone, and the width, in degrees.</summary>
         public void ToDegrees(out float direction, out float view)
         {
             double diff = (LocalAngle2-LocalAngle1)/2;
@@ -103,7 +119,8 @@ namespace team5
             direction = (float)((LocalAngle2-diff)*180/Math.PI) % 360;
             view = (float)(diff*2*180/Math.PI) % 360;
         }
-        
+
+        /// <summary>The direction the cone is facing (as an angle)</summary>
         public float Middle
         {
             get
@@ -120,7 +137,8 @@ namespace team5
                 Angle2 = (float)((value + diff) % (2*Math.PI));
             }
         }
-        
+
+        /// <summary>The direction the cone is facing (as a binary direction (left/right))</summary>
         public float Direction
         {
             get
@@ -200,12 +218,12 @@ namespace team5
             ComputedBB = true;
         }
 
-
         public override RectangleF GetBoundingBox()
         {
             return new RectangleF(Position, new Vector2(OccludedRadius));
         }
 
+        /// <summary>Returns a copy of a tighter bounding box. Computing this is slightly more expensive than the regular bounding box, so intersection with that should be done first.</summary>
         public RectangleF GetTightBoundingBox()
         {
             if (!ComputedBB)

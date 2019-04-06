@@ -37,7 +37,10 @@ namespace team5
             Sprite.Add("idle", 0, 4, 1.0);
             Sprite.Add("run", 4, 10, 0.8);
         }
-        
+
+        /// <summary>
+        ///   Switches the AI state.
+        /// </summary>
         public void SetState(AIState state)
         {
             State = state;

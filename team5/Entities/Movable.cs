@@ -11,13 +11,16 @@ namespace team5
 {
     class Movable : BoxEntity
     {
+        /// <summary> The Velocity of this Entity </summary>
         public Vector2 Velocity = new Vector2();
+        /// <summary> Whether this Object is touching the ground </summary>
         protected bool Grounded = false;
 
         public Movable(Game1 game, Vector2 size):base(game, size)
         {
         }
 
+        /// <summary> Call to perform Swept AABB collision with sliding. Also simultaneously moves the object</summary>
         protected void HandleCollisions(float dt, Chunk chunk){
             int direction;
             float time;
@@ -34,7 +37,6 @@ namespace team5
                 }
                 if ((direction & Chunk.Up) != 0)
                 {
-                    // <Nicolas> This results in a strange rebound from the top. Why was this done?
                     float relVel = Velocity.Y - targetVel[0].Y;
                     Velocity.Y = targetVel[0].Y - (relVel / 4);
                     Position.Y = targetBB[0].Bottom - Size.Y;
