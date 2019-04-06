@@ -232,7 +232,7 @@ class Tileset{
     }
 
     use(){
-        console.log(this, "Using.");
+        console.log("Using", this);
         level.chunk.tileset = this;
         level.chunk.show();
         return this;
@@ -416,8 +416,18 @@ class Level{
 
     get chunk(){ return this.chunks[this.currentChunk]; }
     set chunk(chunk) {
-        var index = (chunk instanceof Chunk)? this.chunks.indexOf(chunk) : chunk;
+        var index = null;
+        if(chunk instanceof Chunk)
+            index = this.chunks.indexOf(chunk);
+        if(typeof chunk === 'string' || chunk instanceof String)
+            this.chunks.forEach((c,i) => {if(c.name == chunk) index = i;});
+        if(Number.isInteger(chunk))
+            index = chunk;
+        [].forEach.call(document.querySelectorAll("#chunks .chunk.selected"), (e)=>{
+            e.classList.remove("selected");});
+        document.querySelectorAll("#chunks .chunk")[index].classList.add("selected");
         this.currentChunk = index;
+        generateLayerList(this.chunk);
         return this.chunk.show();
     }
 
@@ -439,11 +449,44 @@ class Level{
         console.log("Using", this);
         level = this;
         this.chunk.use();
+        generateChunkList(this);
         return this;
     }
 }
 
 /// UI
+var generateLayerList = function(chunk){
+    var list = document.querySelector("#layers");
+    list.innerHTML = "";
+    for(var layer of level.pixels){
+        // FIXME
+    }
+};
+
+var generateChunkList = function(level){
+    var list = document.querySelector("#chunks");
+    list.innerHTML = "";
+    for(var chunk of level.chunks){
+        var entry = document.createElement("li");
+        entry.classList.add("chunk");
+        if(chunk == level.chunk) entry.classList.add("selected");
+        entry.dataset.id = chunk.name;
+        var label = document.createElement("label");
+        label.innerText = chunk.name;
+        var del = document.createElement("a");
+        var i = document.createElement("i");
+        i.classList.add("fas");
+        i.classList.add("fa-trash");
+        del.appendChild(i);
+        entry.appendChild(label);
+        entry.appendChild(del);
+        list.appendChild(entry);
+        
+        del.addEventListener("click", function(){level.delete(ev.target.parentNode.dataset.id);});
+        label.addEventListener("click", function(ev){level.chunk = ev.target.parentNode.dataset.id;});
+    }
+};
+
 var createSolidTileset = function(){
     var tileToRG = [[]];
     var RGToTile = {};
@@ -504,6 +547,20 @@ var editMapEvent = function(ev){
     }
 };
 
+var openTileset = function(){
+    var name = null;
+    return openFile(".png,image/png")
+        .then(input => {
+            name = input.files[0].name;
+            name = name.substr(0, name.lastIndexOf(".png"));
+            return loadFile(input, "data");
+        })
+        .then(data => loadImage(data))
+        .then(image => {
+            new Tileset({name: name, image: image}).use();
+        });
+};
+
 var newChunk = function(){
     var prompt = document.querySelector("#chunk-prompt");
     prompt.style.display = "block";
@@ -521,6 +578,7 @@ var newChunk = function(){
                         height: h,
                         tileset: tileset,
                     }));
+                generateChunkList(level);
             };
             if(prompt.querySelector("#chunk-tileset").value)
                 loadFile(prompt.querySelector("#chunk-tileset"))
@@ -603,6 +661,7 @@ var initEvents = function(){
     document.querySelector("#open-level").addEventListener("click", openLevel);
     document.querySelector("#save-level").addEventListener("click", saveLevel);
     document.querySelector("#new-chunk").addEventListener("click", newChunk);
+    document.querySelector("#open-tileset").addEventListener("click", openTileset);
     window.addEventListener("wheel", selectTileEvent);
     tilelist.addEventListener("click", selectTileEvent);
     tilemap.addEventListener("mousedown", function(ev){button = ev.button; editMapEvent(ev);});
