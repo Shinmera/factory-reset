@@ -8,11 +8,11 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/fontawesome.css" integrity="sha384-vd1e11sR28tEK9YANUtpIOdjGW14pS87bUBuOIoBILVWLFnS+MCX9T6MMf0VdPGq" crossorigin="anonymous">
   </head>
   <body>
-    <nav>
+    <header>
       <a id="new-level"><i class="fas fa-plus-square"></i> New Level</a>
       <a id="open-level"><i class="fas fa-folder-open"></i> Load Level</a>
       <a id="save-level"><i class="fas fa-save"></i> Save Level</a>
-    </nav>
+    </header>
     <main>
       <section class="sidebar">
         <div>
@@ -43,13 +43,13 @@
     </main>
     <footer>
       <div id="info">
+        <a class="load"><i class="fas fa-folder-open"></i></a>
         Tile: 
         <span id="selected">  0,  0</span>
         <span id="color">#00000000</span>
       </div>
       <canvas id="tilelist" width="512"></canvas>
     </footer>
-    <script type="text/javascript" src="editor.js"></script>
     <form class="prompt" id="level-prompt">
       <label for="level-name">Name:</label>
       <input id="level-name" type="text" placeholder="level" required /><br/>
@@ -72,5 +72,8 @@
       <input id="chunk-height" type="number" min="26" value="26" /><br/>
       <input type="submit" value="Create" />
     </form>
+
+    <script type="text/javascript" src="jszip.js"></script>
+    <script type="text/javascript" src="editor.js"></script>
   </body>
 </html>

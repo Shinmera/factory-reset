@@ -10,7 +10,12 @@
   :flex-direction column
   ((:or canvas img)
    :image-rendering pixelated)
-  (>nav
+  (a
+   :cursor pointer
+   :padding 0 2px)
+  ((:and a :hover)
+   :color (hex 0088EE))
+  (header
    :border-bottom 2px solid (hex 0088EE)
    (a
     :display inline-block
@@ -32,11 +37,6 @@
         :font-size 1.0em
         :background (hex 0088EE)
         :color (hex FFFFFF))
-    (a
-     :cursor pointer
-     :padding 0 2px)
-    ((:and a :hover)
-     :color (hex 0088EE))
     (>div
      :margin-bottom 1em)
     (ul

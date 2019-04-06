@@ -101,8 +101,7 @@ var isTileEmpty = function(data, x, y){
     return true;
 };
 
-var loadFile = function(input, callback){
-    var cb = callback;
+var loadFile = function(input, type){
     var f = input.files[0];
     var fr = new FileReader();
 
@@ -110,22 +109,23 @@ var loadFile = function(input, callback){
         fr.onload = function(){
             accept(fr.result);
         };
-        fr.readAsDataURL(f);
+        switch(type){
+        case "data": fr.readAsDataURL(f); break;
+        case "text": fr.readAsText(f); break;
+        case "binary": fr.readAsBinaryString(f); break;
+        case "array": fr.readAsArrayBuffer(f); break;
+        }
     });
 };
 
-var loadImage = function(input){
+var loadImage = function(data){
     var image = new Image();
-    
-    return loadFile(input)
-        .then(function(data){
-            return new Promise(function(accept){
-                image.onload = function(){
-                    accept(image);
-                };
-                image.src = data;
-            });
-        });
+    return new Promise(function(accept){
+        image.onload = function(){
+            accept(image);
+        };
+        image.src = data;
+    });
 };
 
 var openFile = function(type){
@@ -134,7 +134,7 @@ var openFile = function(type){
     input.accept = type;
 
     return new Promise(function(accept){
-        input.addActionListener("change", function(){
+        input.addEventListener("change", function(){
             accept(input);
         });
         input.click();
@@ -226,6 +226,7 @@ class Tileset{
     }
 
     show(){
+        console.log("Showing", this);
         listctx.drawImage(this.image, 0, 0);
         return this;
     }
@@ -244,14 +245,14 @@ class Chunk{
         this.name = init.name || "chunk";
         this.position = init.position || [0, 0];
         this.currentLayer = 0;
-        this.layers = init.layers || (init.pixels)? init.pixels.length : null || defaultLayers;
         this.tileset = init.tileset || level.defaultTileset;
         this.storyItems = init.storyItems || [];
         this.pixels = init.pixels;
         
         if(!this.pixels){
-            this.pixels = new Array(this.layers);
-            for(var i=0; i<this.pixels.length; i++){
+            var layers = init.layers || defaultLayers;
+            this.pixels = new Array(layers);
+            for(var i=0; i<layers; i++){
                 this.pixels[i] = new ImageData(init.width || minSize[0], init.height || minSize[1]);
                 this.pixels[i].show = true;
             }
@@ -260,6 +261,8 @@ class Chunk{
 
     get width(){ return this.pixels[0].width; }
     get height(){ return this.pixels[0].height; }
+    get layers(){ return this.pixels.length; }
+    get layer(){ return this.pixels[this.currentLayer]; }
     
     getTileset(layer){
         return (layer && 0 < layer)? this.tileset: solidset;
@@ -297,11 +300,13 @@ class Chunk{
     }
 
     clear(){
+        console.log("Clearing", this);
         tilemap.width = this.width*tileSize;
         tilemap.height = this.height*tileSize;
         mapctx.fillStyle = "#FFFFFF";
         mapctx.strokeStyle = "#DDDDDD";
         mapctx.fillRect(0, 0, tilemap.width, tilemap.height);
+        // FIXME: clear pixels
         for(var y=0; y<tilemap.height; y+=tileSize){
             mapctx.beginPath();
             mapctx.moveTo(0, y+0.5);
@@ -318,6 +323,7 @@ class Chunk{
     }
 
     show(){
+        console.log("Showing", this);
         tilemap.width = this.width*tileSize;
         tilemap.height = this.height*tileSize;
         mapctx.fillStyle = "#FFFFFF";
@@ -348,14 +354,14 @@ class Chunk{
     loadLayer(layer){
         layer = layer || this.currentLayer;
         return openFile(".png,image/png")
-            .then(function(input){
-                loadImage(input).then(function(image){
-                    var show = this.pixels.show;
-                    this.pixels[layer] = getImagePixels(image);
-                    this.pixels[layer].show = show;
-                    show();
-                });
-        });
+            .then(input => loadFile(input, "data"))
+            .then(data => loadImage(data))
+            .then(image => {
+                var show = this.pixels.show;
+                this.pixels[layer] = getImagePixels(image);
+                this.pixels[layer].show = show;
+                show();
+            });
     }
 
     edit(x, y, action, layer){
@@ -517,10 +523,9 @@ var newChunk = function(){
                     }));
             };
             if(prompt.querySelector("#chunk-tileset").value)
-                loadImage(prompt.querySelector("#chunk-tileset"))
-                .then(function(image){
-                    complete(new Tileset({image: image}));
-                });
+                loadFile(prompt.querySelector("#chunk-tileset"))
+                .then(data => loadImage(data))
+                .then(image => complete(new Tileset({image: image})));
             else
                 complete(null);
             ev.preventDefault();
@@ -538,15 +543,14 @@ var newLevel = function(){
             var name = prompt.querySelector("#level-name").value;
             var description = prompt.querySelector("#level-description").value;
             var startChase = prompt.querySelector("#level-startchase").value;
-            loadImage(prompt.querySelector("#level-tileset"))
-                .then(function(image){
-                    new Level({
-                        name: name,
-                        description: description,
-                        startChase: startChase,
-                        defaultTileset: new Tileset({image: image}),
-                    }).use();
-                });
+            loadFile(prompt.querySelector("#level-tileset"))
+                .then(data => loadImage(data))
+                .then(image => new Level({
+                    name: name,
+                    description: description,
+                    startChase: startChase,
+                    defaultTileset: new Tileset({image: image}),
+                }).use());
             ev.preventDefault();
         }
         return false;
@@ -554,18 +558,44 @@ var newLevel = function(){
 };
 
 var openLevel = function(){
-    return openFile(".json,text/json,application/json")
-        .then(function(input){
-            loadFile(input).then(function(data){
-                var json = JSON.parse(data);
-            });
-        });
+    return openFile(".zip,application/zip")
+        .then(input => loadFile(input, "array"))
+        .then(data => {
+            var zip = new JSZip();
+            var chunks = {};
+            return zip.loadAsync(data)
+                .then(zip => zip.file("level.json").async("string"))
+                .then(async data => {
+                    var json = JSON.parse(data);
+                    for(var i=0; i<json.chunks.length; i++){
+                        var chunk = json.chunks[i];
+                        chunk.pixels = [];
+                        chunk.tileset = solidset;
+                        for(var l=0; l<chunk.layers; l++){
+                            var base64 = await zip.file("chunks/"+chunk.name+"-"+l+".png").async("base64");
+                            var image = await loadImage("data:image/png;base64,"+base64);
+                            chunk.pixels[l] = getImagePixels(image);
+                        }
+                        json.chunks[i] = new Chunk(chunk);
+                    }
+                    return new Level(json).use();
+                });});
 };
 
 var saveLevel = function(){
-    var json = JSON.stringify(level.serialize());
-    var data = "data:text/json;charset=utf-8,"+encodeURIComponent(json);
-    return saveFile(data, level.name+".json");
+    var zip = new JSZip();
+    var chunks = zip.folder("chunks");
+    for(var chunk of level.chunks){
+        for(var l=0; l<chunk.layers; ++l){
+            var data = chunk.layerImage(l).replace(/.*?base64,/, "");
+            chunks.file(chunk.name+"-"+l+".png", data, {"base64":true});
+        }
+    }
+    zip.file("level.json", JSON.stringify(level.serialize()));
+    zip.generateAsync({type:"base64"}).then(function(data){
+        data = "data:application/zip;base64,"+data;
+        return saveFile(data, level.name+".zip");
+    });
 };
 
 var initEvents = function(){
