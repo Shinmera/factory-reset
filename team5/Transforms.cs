@@ -49,7 +49,12 @@ namespace team5
             {
                 return Set(Top*Matrix.CreateTranslation(by.X, by.Y, 0));
             }
-            
+
+            public Matrix Translate(Vector3 by)
+            {
+                return Set(Top * Matrix.CreateTranslation(by.X, by.Y, 0));
+            }
+
             public Matrix Scale(float by)
             {
                 return Set(Top*Matrix.CreateScale(by, by, 1));
@@ -108,7 +113,12 @@ namespace team5
         ///   Translate tho Model matrix by the given vector.
         /// </summary>
         public Matrix Translate(Vector2 by){ return ModelStack.Translate(by); }
-        
+
+        /// <summary>
+        ///   Translate tho Model matrix by the given vector.
+        /// </summary>
+        public Matrix Translate(Vector3 by) { return ModelStack.Translate(by); }
+
         /// <summary>
         ///   Scale the Model matrix by the given float in both X and Y.
         /// </summary>

@@ -7,7 +7,7 @@ namespace team5
     {
         private Game1 Game;
         private Player Player;
-        private Vector2 Position = new Vector2(0,0);
+        public Vector2 Position { get; private set; } = new Vector2(0, 0);
         private Vector2 Velocity = new Vector2(0,0);
         private Chunk ChunkInFocus;
         private RectangleF ChunkClamps;

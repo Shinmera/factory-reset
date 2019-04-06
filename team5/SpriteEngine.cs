@@ -72,7 +72,7 @@ namespace team5
             Draw(SolidTexture, new Vector4(0, 0, 1, 1));
             Game.Transforms.Pop();
         }
-        
+
         public void Draw(Vector4 rect)
         {
             Draw(new Vector2(rect.X, rect.Y), new Vector2(rect.Z, rect.W));

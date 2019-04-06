@@ -91,7 +91,22 @@ namespace team5
             Game.SpriteEngine.Draw(Texture, source);
             Game.Transforms.Pop();
         }
-        
+
+        public void DrawParallax(Vector2 position, float distance, Vector2 CameraCenter)
+        {
+            Vector2 relPos = position - CameraCenter;
+
+            Game.Transforms.Push();
+            Game.Transforms.Scale(Direction/distance, 1);
+            Game.Transforms.Translate((relPos / distance) + CameraCenter);
+            int width = (int)FrameSize.X;
+            int height = (int)FrameSize.Y;
+
+            Vector4 source = new Vector4(width * Frame, 0, width, height);
+            Game.SpriteEngine.Draw(Texture, source);
+            Game.Transforms.Pop();
+        }
+
         public void Draw()
         {
             Draw(new Vector2(0, 0));
