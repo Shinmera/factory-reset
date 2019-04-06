@@ -23,16 +23,20 @@
    :flex-grow 1
    :background (hex CCCCCC)
    ("#layers"
+    :min-width 150px
     :overflow-y auto
     :background white
     :border-right 2px solid (hex AAAAAA)
     (h2 :margin 0 :padding 0 :font-size 1.0em
         :background (hex AAAAAA))
-    (>li :display flex
-         (>label :flex-grow 1)))
+    (.layer
+     :display flex
+     (>label :flex-grow 1)
+     (>a :padding 0 2px)))
    ("#view"
     :flex-grow 1
     :padding 16px
+    :overflow scroll
     (>canvas
      :background (hex FFFFFF)
      :z-index 1)))
