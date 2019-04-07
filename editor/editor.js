@@ -758,6 +758,13 @@ var saveLevel = function(){
     });
 };
 
+var stopUnload = function (e) {
+    e.preventDefault();
+    var confirmationMessage = "Are you sure you want to leave? Unsaved progress will be lost.";
+    e.returnValue = confirmationMessage;
+    return confirmationMessage;
+};
+
 var initEvents = function(){
     document.querySelector("#new-level").addEventListener("click", newLevel);
     document.querySelector("#open-level").addEventListener("click", openLevel);
@@ -765,6 +772,8 @@ var initEvents = function(){
     document.querySelector("#new-chunk").addEventListener("click", newChunk);
     document.querySelector("#open-tileset").addEventListener("click", openTileset);
     window.addEventListener("wheel", selectTileEvent);
+    window.onbeforeunload = stopUnload;
+    window.addEventListener("beforeunload", stopUnload);
     tilelist.addEventListener("click", selectTileEvent);
     tilemap.addEventListener("mousedown", function(ev){button = ev.button; editMapEvent(ev);});
     tilemap.addEventListener("mousemove", editMapEvent);
@@ -787,6 +796,7 @@ var initCanvas = function(){
 
 var init = function(){
     console.log("Init.");
+    
     initEvents();
     initCanvas();
     
