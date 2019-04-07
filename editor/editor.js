@@ -328,12 +328,13 @@ class Chunk{
     }
 
     getLayer(layer){
-        return this.pixels[layer || this.currentLayer];
+        if(layer === undefined)layer = this.currentLayer;
+        return this.pixels[layer];
     }
     
     getTileset(layer){
-        layer = layer || this.currentLayer;
-        return (layer && 0 < layer)? this.tileset: solidset;
+        if(layer === undefined)layer = this.currentLayer;
+        return (0 < layer)? this.tileset: solidset;
     }
 
     drawPos(x, y){
@@ -405,7 +406,7 @@ class Chunk{
     }
 
     layerImage(layer){
-        layer = layer || this.currentLayer;
+        if(layer === undefined)layer = this.currentLayer;
         var pixels = this.pixels[layer];
         tempcanvas.width = pixels.width;
         tempcanvas.height = pixels.height;
@@ -414,13 +415,13 @@ class Chunk{
     }
 
     saveLayer(layer){
-        layer = layer || this.currentLayer;
+        if(layer === undefined)layer = this.currentLayer;
         var data = this.layerImage(layer);
         return saveFile(data, this.name+"-"+layer+".png");
     }
 
     loadLayer(layer){
-        layer = layer || this.currentLayer;
+        if(layer === undefined)layer = this.currentLayer;
         return openFile(".png,image/png")
             .then(input => loadFile(input, "data"))
             .then(data => loadImage(data))
@@ -434,7 +435,7 @@ class Chunk{
     }
 
     edit(x, y, action, layer){
-        layer = layer || this.currentLayer;
+        if(layer === undefined)layer = this.currentLayer;
         var pixels = this.pixels[layer];
         var pixelIndex = ((pixels.width*y)+x)*4;
         if(action === "place"){
@@ -719,13 +720,14 @@ var openLevel = function(){
         .then(input => loadFile(input, "array"))
         .then(data => {
             var zip = new JSZip();
-            var chunks = {};
+            var tileset = null;
             return zip.loadAsync(data)
                 .then(zip => zip.file("level.json").async("string"))
                 .then(async data => {
                     var json = JSON.parse(data);
                     for(var i=0; i<json.chunks.length; i++){
                         var chunk = json.chunks[i];
+                        tileset = chunk.tileset;
                         chunk.pixels = [];
                         chunk.tileset = solidset;
                         for(var l=0; l<chunk.layers; l++){
@@ -735,6 +737,7 @@ var openLevel = function(){
                         }
                         json.chunks[i] = new Chunk(chunk);
                     }
+                    alert("Please load the tileset \""+tileset+"\"");
                     return new Level(json).use();
                 });});
 };
