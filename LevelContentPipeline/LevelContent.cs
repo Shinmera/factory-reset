@@ -1,12 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Windows.Media.Imaging;
 
 namespace LevelContentPipeline
 {
     public class LevelContent
     {
-        public readonly Dictionary<string, BitmapSource> Textures = new Dictionary<string, BitmapSource>();
+        public readonly Dictionary<string, byte[]> Textures = new Dictionary<string, byte[]>();
         public String Json;
     }
 }

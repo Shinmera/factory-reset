@@ -1,5 +1,4 @@
-using Microsoft.Xna.Framework.Content.Pipeline;
-using System;
+﻿using Microsoft.Xna.Framework.Content.Pipeline;
 using System.IO;
 using System.IO.Compression;
 using System.Windows.Media.Imaging;
@@ -26,10 +25,11 @@ namespace LevelContentPipeline
                             level.Json = reader.ReadToEnd();
                         }
                     else if (entry.FullName.EndsWith(".png"))
-                        using (var textureStream = entry.Open())
+                        using (var pngStream = entry.Open())
+                        using (var memory = new MemoryStream())
                         {
-                            var bitmap = new PngBitmapDecoder(textureStream, BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.Default);
-                            level.Textures.Add(entry.Name, bitmap.Frames[0]);
+                            pngStream.CopyTo(memory);
+                            level.Textures.Add(entry.Name, memory.ToArray());
                         }
                     else
                         context.Logger.LogImportantMessage("Unknown file in archive: {0}", entry.FullName);

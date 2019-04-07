@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using System.IO;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 
@@ -20,14 +21,14 @@ namespace team5
             {
                 string name = input.ReadString();
                 int layer = input.ReadInt32();
-                int width = input.ReadInt32();
-                int height = input.ReadInt32();
-                byte[] data = input.ReadBytes(width*height*4);
-                Texture2D texture = new Texture2D(device, width, height);
-                texture.SetData(data);
-                foreach(var chunk in content.chunks)
-                    if(chunk.name.Equals(name))
-                        chunk.maps[layer] = texture;
+                byte[] data = input.ReadBytes(input.ReadInt32());
+                using (var memory = new MemoryStream(data))
+                {
+                    Texture2D texture = Texture2D.FromStream(device, memory);
+                    foreach (var chunk in content.chunks)
+                        if (chunk.name.Equals(name))
+                            chunk.maps[layer] = texture;
+                }
             }
             
             return content;

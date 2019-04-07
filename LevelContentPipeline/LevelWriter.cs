@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework.Content.Pipeline;
+﻿using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 
 namespace LevelContentPipeline
@@ -14,8 +14,7 @@ namespace LevelContentPipeline
             {
                 output.Write(texture.Chunk);
                 output.Write(texture.Layer);
-                output.Write(texture.Width);
-                output.Write(texture.Height);
+                output.Write(texture.Data.Length);
                 output.Write(texture.Data);
             }
         }
