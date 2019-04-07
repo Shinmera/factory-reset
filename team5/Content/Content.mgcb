@@ -10,6 +10,7 @@
 
 #-------------------------------- References --------------------------------#
 
+/reference:..\..\LevelContentPipeline\bin\Debug\LevelContentPipeline.dll
 
 #---------------------------------- Content ---------------------------------#
 
@@ -60,6 +61,11 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Chunks/TestChunk-overlay.png
+
+#begin Levels/test.zip
+/importer:LevelImporter
+/processor:LevelProcessor
+/build:Levels/test.zip
 
 #begin Shaders/cone.fx
 /importer:EffectImporter

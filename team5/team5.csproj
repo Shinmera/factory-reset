@@ -132,6 +132,8 @@
     <Compile Include="Entities\TileSpike.cs" />
     <Compile Include="Entities\TileType.cs" />
     <Compile Include="Level.cs" />
+    <Compile Include="LevelContent.cs" />
+    <Compile Include="LevelReader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -166,6 +168,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.3</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>12.0.1</Version>
     </PackageReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
