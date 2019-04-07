@@ -323,7 +323,7 @@ class Chunk{
         [].forEach.call(document.querySelectorAll("#chunks .chunk .layer.selected"), (e)=>{
             e.classList.remove("selected");});
         this.uiElement.querySelectorAll(".layer")[this.currentLayer].classList.add("selected");
-        this.getTileset(this.currentLayer).show();
+        this.getTileset().show();
         return this.currentLayer;
     }
 
@@ -332,6 +332,7 @@ class Chunk{
     }
     
     getTileset(layer){
+        layer = layer || this.currentLayer;
         return (layer && 0 < layer)? this.tileset: solidset;
     }
 
@@ -340,13 +341,13 @@ class Chunk{
         var empty = true;
         for(var l=0; l<this.pixels.length; l++){
             var pixels = this.pixels[l];
-            var tileset = this.getTileset(l);
             if(pixels.visible){
                 var r = pixels.data[pixelIndex+0];
                 var g = pixels.data[pixelIndex+1];
                 var a = pixels.data[pixelIndex+3];
                 if(0 < a){
                     empty = false;
+                    var tileset = this.getTileset(l);
                     var s = tileset.rgMap[(r<<8) + g];
                     mapctx.drawImage(tileset.image,
                                      s[0]*tileSize, s[1]*tileSize, tileSize, tileSize,
