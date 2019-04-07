@@ -21,6 +21,7 @@ namespace team5
             Targeting,
         };
 
+        private const float DroneSize = 12;
         private const float ViewSize = 60;
         private float Direction = 225;
         private readonly float PatrolSpeed = 50;
@@ -34,7 +35,7 @@ namespace team5
 
         private ConeEntity ViewCone;
 
-        public AerialDrone(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize*0.75F))
+        public AerialDrone(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize*0.375F))
         {
             Spawn = position;
             Position = position;
@@ -130,23 +131,44 @@ namespace team5
         }
 
         //TODO: Reduce curves as well.
-        static List<Vector2> FindReducedPath(Chunk chunk, List<Point> path)
+        List<Vector2> FindReducedPath(Chunk chunk, List<Point> path)
         {
             var ReducedPath = new List<Vector2>();
-
-            Point lastDir = new Point(0);
 
             if(path == null)
             {
                 return ReducedPath;
             }
 
-            for(int i = path.Count-1; i > 0; --i)
+            var lastDir = new Point(0);
+
+            ReducedPath.Add(new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y) + new Vector2(Chunk.TileSize / 2) + path[path.Count - 1].ToVector2() * Chunk.TileSize);
+
+            var lastPoint = ReducedPath.Last();
+
+            for (int i = path.Count-2; i > 0; --i)
             {
                 if(lastDir != path[i - 1] - path[i])
                 {
                     lastDir = path[i - 1] - path[i];
-                    ReducedPath.Add(new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y) + new Vector2(Chunk.TileSize/2) + path[i].ToVector2() * Chunk.TileSize);
+
+                    var tentativePoint = new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y) + new Vector2(Chunk.TileSize / 2) + path[i].ToVector2() * Chunk.TileSize;
+
+                    var dir = tentativePoint - ReducedPath.Last();
+                    var point1 = new Vector2(Math.Sign(dir.Y) * Size.X, -Math.Sign(dir.X) * Size.Y);
+                    var point2 = -point1;
+
+                    
+
+                    point1 += ReducedPath.Last();
+                    point2 += ReducedPath.Last();
+
+                    if(chunk.IntersectLine(point1, dir, 1, out float location1) || chunk.IntersectLine(point2, dir, 1, out float location2))
+                    {
+                        ReducedPath.Add(lastPoint);
+                    }
+
+                    lastPoint = tentativePoint;
                 }
             }
 
