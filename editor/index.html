@@ -15,27 +15,22 @@
     </header>
     <main>
       <section class="sidebar">
-        <div>
-          <h2>Layers:</h2>
-          <ul id="layers">
-            <li class="layer" data-id="0">
-              <label>Solids</label>
-              <a class="show"><i class="fas fa-eye"></i></a>
-              <a class="load"><i class="fas fa-folder-open"></i></a>
-              <a class="save"><i class="fas fa-save"></i></a>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h2>Chunks:</h2>
-          <ul id="chunks">
-            <li class="chunk" data-id="chunk">
+        <ul id="chunks">
+          <li class="chunk" data-id="chunk">
+            <div>
               <label>Chunk</label>
               <a><i class="fas fa-trash"></i></a>
-            </li>
-          </ul>
-          <a id="new-chunk"><i class="fas fa-plus-square"></i> Add Chunk</a>
-        </div>
+            </div>
+            <ul class="layers">
+              <li class="layer" data-id="0">
+                <label>Solids</label>
+                <a class="show"><i class="fas fa-eye"></i></a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <span></span>
+        <a id="new-chunk"><i class="fas fa-plus-square"></i> Add Chunk</a>
       </section>
       <section class="main">
         <canvas id="tilemap" width="0" height="0"></canvas>

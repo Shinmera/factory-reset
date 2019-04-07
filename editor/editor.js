@@ -149,6 +149,25 @@ var saveFile = function(data, filename){
     link.click();
 };
 
+var constructElement = function(tag, options){
+    var el = document.createElement(tag);
+    el.setAttribute("class", (options.classes||[]).join(" "));
+    if(options.text) el.innerText = options.text;
+    if(options.html) el.innerHTML = options.html;
+    for(var attr in (options.attributes||{})){
+        el.setAttribute(attr, options.attributes[attr]);
+    }
+    for(var data in (options.data||{})){
+        el.dataset[data] = options.data[data];
+    }
+    for(var tag in (options.elements||{})){
+        var content = options.elements[tag];
+        var sub = self.constructElement(content.tag || tag, content);
+        el.appendChild(sub);
+    }
+    return el;
+};
+
 /// Base classes
 class Tileset{
     constructor(init){
@@ -231,10 +250,13 @@ class Tileset{
         return this;
     }
 
-    use(){
-        console.log("Using", this);
-        level.chunk.tileset = this;
-        level.chunk.show();
+    use(force){
+        if(level.chunk.tileset != this || force){
+            console.log("Using", this);
+            level.chunk.tileset = this;
+            level.chunk.show();
+            this.show();
+        }
         return this;
     }
 }
@@ -254,15 +276,60 @@ class Chunk{
             this.pixels = new Array(layers);
             for(var i=0; i<layers; i++){
                 this.pixels[i] = new ImageData(init.width || minSize[0], init.height || minSize[1]);
-                this.pixels[i].show = true;
             }
+        }
+        for(var i=0; i<this.pixels.length; i++){
+            this.preprocess(this.pixels[i], i);
         }
     }
 
+    preprocess(pixels, i){
+        var self = this;
+        pixels.id = i;
+        pixels.visible = true;
+        pixels.show = function(){
+            pixels.visible = true;
+            var layer = self.uiElement.querySelector(".layer[data-id=\""+pixels.id+"\"]");
+            layer.querySelector(".show").style.display = "none";
+            layer.querySelector(".hide").style.display = "block";
+            self.show();
+        };
+        pixels.hide = function(){
+            pixels.visible = false;
+            var layer = self.uiElement.querySelector(".layer[data-id=\""+pixels.id+"\"]");
+            layer.querySelector(".show").style.display = "block";
+            layer.querySelector(".hide").style.display = "none";
+            self.show();
+        };
+        pixels.use = function(){
+            self.layer = pixels.id;
+        };
+        return pixels;
+    }
+
+    get uiElement(){ return document.querySelector("#chunks .chunk[data-id=\""+this.name+"\"]"); }
     get width(){ return this.pixels[0].width; }
     get height(){ return this.pixels[0].height; }
     get layers(){ return this.pixels.length; }
     get layer(){ return this.pixels[this.currentLayer]; }
+    set layer(layer){
+        var index = null;
+        if(layer instanceof ImageData)
+            index = this.pixels.indexOf(layer);
+        if(Number.isInteger(layer))
+            index = layer;
+        this.currentLayer = (index < 0)? 0 :(this.layers <= index)? this.layers-1 :index;
+        
+        [].forEach.call(document.querySelectorAll("#chunks .chunk .layer.selected"), (e)=>{
+            e.classList.remove("selected");});
+        this.uiElement.querySelectorAll(".layer")[this.currentLayer].classList.add("selected");
+        this.getTileset(this.currentLayer).show();
+        return this.currentLayer;
+    }
+
+    getLayer(layer){
+        return this.pixels[layer || this.currentLayer];
+    }
     
     getTileset(layer){
         return (layer && 0 < layer)? this.tileset: solidset;
@@ -274,7 +341,7 @@ class Chunk{
         for(var l=0; l<this.pixels.length; l++){
             var pixels = this.pixels[l];
             var tileset = this.getTileset(l);
-            if(pixels.show){
+            if(pixels.visible){
                 var r = pixels.data[pixelIndex+0];
                 var g = pixels.data[pixelIndex+1];
                 var a = pixels.data[pixelIndex+3];
@@ -359,6 +426,7 @@ class Chunk{
             .then(image => {
                 var show = this.pixels.show;
                 this.pixels[layer] = getImagePixels(image);
+                this.preprocess(pixels[layer]);
                 this.pixels[layer].show = show;
                 show();
             });
@@ -380,7 +448,7 @@ class Chunk{
             pixels.data[pixelIndex+3] = 0;
         }
         this.drawPos(x,y);
-        console.log(this, "Edited (",x,"x",y,")");
+        console.log("Edited",this,":",layer,"(",x,"x",y,")");
         return this;
     }
 
@@ -394,11 +462,23 @@ class Chunk{
         };
     }
 
-    use(){
-        console.log("Using", this);
-        level.chunk = this;
-        this.getTileset().show();
-        return this.show();
+    delete(){
+        console.log("Deleting", this);
+        var index = level.chunks.indexOf(this);
+        level.chunks.splice(index, 1);
+        this.uiElement.parentNode.removeChild(this.uiElement);
+        level.chunk = index;
+    }
+
+    use(force){
+        if(level.chunk != this || force){
+            console.log("Using", this);
+            level.chunk = this;
+            this.getTileset().show();
+            this.layer = this.currentLayer;
+            return this.show();
+        }
+        return this;
     }
 }
 
@@ -427,7 +507,6 @@ class Level{
             e.classList.remove("selected");});
         document.querySelectorAll("#chunks .chunk")[index].classList.add("selected");
         this.currentChunk = index;
-        generateLayerList(this.chunk);
         return this.chunk.show();
     }
 
@@ -445,45 +524,60 @@ class Level{
         };
     }
 
-    use(){
-        console.log("Using", this);
-        level = this;
-        this.chunk.use();
-        generateChunkList(this);
+    use(force){
+        if(level != this || force){
+            console.log("Using", this);
+            generateChunkList(this);
+            level = this;
+            this.chunk.use(true);
+        }
         return this;
     }
 }
 
 /// UI
-var generateLayerList = function(chunk){
-    var list = document.querySelector("#layers");
-    list.innerHTML = "";
-    for(var layer of level.pixels){
-        // FIXME
-    }
-};
-
 var generateChunkList = function(level){
     var list = document.querySelector("#chunks");
     list.innerHTML = "";
-    for(var chunk of level.chunks){
-        var entry = document.createElement("li");
-        entry.classList.add("chunk");
-        if(chunk == level.chunk) entry.classList.add("selected");
-        entry.dataset.id = chunk.name;
-        var label = document.createElement("label");
-        label.innerText = chunk.name;
-        var del = document.createElement("a");
-        var i = document.createElement("i");
-        i.classList.add("fas");
-        i.classList.add("fa-trash");
-        del.appendChild(i);
-        entry.appendChild(label);
-        entry.appendChild(del);
-        list.appendChild(entry);
+    for(let chunk of level.chunks){
+        let entry = constructElement("li",{
+            classes: ["chunk", (chunk == level.chunk)? "selected": ""],
+            data: {id: chunk.name},
+            elements: {
+                header: {elements: {
+                    label: {text: chunk.name},
+                    a1: {tag: "a", classes: ["change"], elements: {i: {classes: ["fas", "fa-fw", "fa-pen"]}}},
+                    a2: {tag: "a", classes: ["delete"], elements: {i: {classes: ["fas", "fa-fw", "fa-trash"]}}}
+                }},
+                ul: {classes: ["layers"]}
+            }
+        });
+        entry.querySelector("label").addEventListener("click", function(){chunk.use();});
+        entry.querySelector(".change").addEventListener("click", function(){editChunk(chunk);});
+        entry.querySelector(".delete").addEventListener("click", function(){chunk.delete();});
         
-        del.addEventListener("click", function(){level.delete(ev.target.parentNode.dataset.id);});
-        label.addEventListener("click", function(ev){level.chunk = ev.target.parentNode.dataset.id;});
+        var layers = entry.querySelector(".layers");
+        for(let layer of chunk.pixels){
+            let entry = constructElement("li", {
+                classes: ["layer", (chunk == level.chunk && layer == chunk.layer)? "selected" : ""],
+                data: {id: layer.id},
+                elements: {
+                    label: {text: layerNames[layer.id] || layer.id+""},
+                    a1: {tag: "a", classes: ["show"], elements: {i: {classes: ["fas", "fa-fw", "fa-eye-slash"]}}},
+                    a2: {tag: "a", classes: ["hide"], elements: {i: {classes: ["fas", "fa-fw", "fa-eye"]}}}
+                }
+            });
+            if(layer.visible)
+                entry.querySelector(".show").style.display = "none";
+            else
+                entry.querySelector(".hide").style.display = "none";
+            entry.querySelector("label").addEventListener("click", function(){layer.use();});
+            entry.querySelector(".show").addEventListener("click", function(){layer.show();});
+            entry.querySelector(".hide").addEventListener("click", function(){layer.hide();});
+            layers.appendChild(entry);
+        }
+        
+        list.appendChild(entry);
     }
 };
 
@@ -559,6 +653,10 @@ var openTileset = function(){
         .then(image => {
             new Tileset({name: name, image: image}).use();
         });
+};
+
+var editChunk = function(chunk){
+    // FIXME: Implement
 };
 
 var newChunk = function(){

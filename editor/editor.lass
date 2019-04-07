@@ -15,7 +15,7 @@
    :padding 0 2px)
   ((:and a :hover)
    :color (hex 0088EE))
-  (header
+  (>header
    :border-bottom 2px solid (hex 0088EE)
    (a
     :display inline-block
@@ -24,7 +24,7 @@
    ((:and a :hover)
     :background (hex 0088EE)
     :color (hex FFFFFF)))
-  (main
+  (>main
    :display flex
    :flex-grow 1
    :background (hex CCCCCC)
@@ -33,21 +33,33 @@
     :overflow-y auto
     :background white
     :border-right 2px solid (hex 0088EE)
-    (h2 :margin 0 :padding 0
-        :font-size 1.0em
-        :background (hex 0088EE)
-        :color (hex FFFFFF))
-    (>div
-     :margin-bottom 1em)
+    :display flex
+    :flex-direction column
+    (>span :flex-grow 1)
+    (h2
+     :margin 0 :padding 0
+     :font-size 1.0em
+     :background (hex 0088EE)
+     :color (hex FFFFFF))
     (ul
      :list-style none
-     :margin 0 :padding 0)
-    (li
-     :display flex
-     :border-left 4px solid transparent
-     (>label :flex-grow 1))
-    ((:and li .selected)
-     :border-color (hex 0088EE)))
+     :margin 0 :padding 0
+     (li
+      (label :flex-grow 1)))
+    (.chunk
+     :margin-bottom 1em
+     (header
+      :display flex)
+     (.layer
+      :border-left 4px solid transparent
+      :display flex)
+     ((:and .layer .selected)
+      :border-color (hex 0088EE)))
+    ((.chunk.selected header)
+     :background (hex 0088EE)
+     :color (hex FFFFFF)
+     ((:and a :hover)
+      :color (hex EE8800))))
    (.main
     :flex-grow 1
     :padding 16px
@@ -55,7 +67,7 @@
     (>canvas
      :background (hex FFFFFF)
      :z-index 1)))
-  (footer
+  (>footer
    :border-top 2px solid (hex 0088EE)
    :margin 0
    :padding 0
