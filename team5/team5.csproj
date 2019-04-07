@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="Camera.cs" />
     <Compile Include="Controller.cs" />
+    <Compile Include="Entities\AerialDrone.cs" />
     <Compile Include="Entities\BoxEntity.cs" />
     <Compile Include="Components\AnimatedSprite.cs" />
     <Compile Include="Entities\ConeEntity.cs" />

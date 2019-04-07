@@ -106,6 +106,7 @@ namespace team5
             {
                 entity.Position = SpawnPosition;
                 ((Player)entity).Velocity = new Vector2(0);
+                CallAll((GameObject x) => { if (x is Entity) ((Entity)x).Respawn(); });
             }
 
             if(entity is Pickup)
@@ -154,34 +155,39 @@ namespace team5
                 for(int x=0; x<Width; ++x)
                 {
                     uint tile = GetTile(x, y);
-                    switch(tile)
+
+                    if (Enum.IsDefined(typeof(Colors), tile))
                     {
-                        case (uint)Colors.PlayerStart: 
-                            SpawnPosition = new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
-                                                        y * TileSize + BoundingBox.Y + TileSize);
-                            break;
-                        // FIXME: this is way too verbose, factor out.
-                        case (uint)Colors.StaticCamera:
-                            NonCollidingEntities.Add(new StaticCamera(new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
-                                                                                  y * TileSize + BoundingBox.Y + TileSize / 2),
-                                                                      Game));
-                            break;
-                        case (uint)Colors.PivotCamera:
-                            NonCollidingEntities.Add(new PivotCamera(new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
-                                                                                 y * TileSize + BoundingBox.Y + TileSize / 2),
-                                                                      Game));
-                            break;
-                        case (uint)Colors.GroundDrone:
-                            NonCollidingEntities.Add(new GroundDrone(new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
-                                                                                 y * TileSize + BoundingBox.Y + TileSize),
-                                                                     Game));
-                            break;
-                        case (uint)Colors.Pickup:
-                            CollidingEntities.Add(new Pickup(new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
-                                                                         y * TileSize + BoundingBox.Y + TileSize / 2),
-                                                             Game));
-                            break;
+                        Vector2 position = new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
+                                                        y * TileSize + BoundingBox.Y + TileSize / 2);
+
+                        switch (tile)
+                        {
+                            case (uint)Colors.PlayerStart:
+                                SpawnPosition = new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
+                                                            y * TileSize + BoundingBox.Y + TileSize);
+                                break;
+                            // FIXME: this is way too verbose, factor out.
+                            case (uint)Colors.StaticCamera:
+                                NonCollidingEntities.Add(new StaticCamera(position, Game));
+                                break;
+                            case (uint)Colors.PivotCamera:
+                                NonCollidingEntities.Add(new PivotCamera(position, Game));
+                                break;
+                            case (uint)Colors.GroundDrone:
+                                NonCollidingEntities.Add(new GroundDrone(position, Game));
+                                break;
+                            case (uint)Colors.Pickup:
+                                CollidingEntities.Add(new Pickup(position, Game));
+                                break;
+                            case (uint)Colors.AerialDrone:
+                                NonCollidingEntities.Add(new AerialDrone(position, Game));
+                                break;
+                        }
                     }
+                    
+
+                    
                 }
             }
 

@@ -4,16 +4,158 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 
-namespace team5.Entities
+namespace team5
 {
     class AerialDrone : BoxEntity
     {
-        public AerialDrone(Game1 game, Vector2 size) : base(game, size)
+        /// <summary> The Velocity of this Entity </summary>
+        public Vector2 Velocity = new Vector2();
+
+        public enum AIState
         {
+            Patrolling,
+            Waiting,
+            Targeting,
+        };
+
+        private const float ViewSize = 60;
+        private float Direction = 225;
+        private readonly float PatrolSpeed = 50;
+
+        private AnimatedSprite Sprite;
+        private AIState State = AIState.Waiting;
+        private List<Vector2> Path;
+        private int NextNode;
+
+        private Vector2 Spawn;
+
+        private ConeEntity ViewCone;
+
+        public AerialDrone(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize*0.75F))
+        {
+            Spawn = position;
+            Position = position;
+            Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize, Chunk.TileSize));
+            ViewCone = new ConeEntity(game);
+            ViewCone.FromDegrees(225, 90);
+            ViewCone.Radius = Chunk.TileSize * 3;
+            ViewCone.UpdatePosition(position);
         }
 
-        static List<Point> FindPath(uint[] tiles, uint width, uint height, int startx, int starty, int targetx, int targety)
+        public void Target(Vector2 target, Chunk chunk)
+        {
+            int targetx = (int)Math.Floor((target.X - chunk.BoundingBox.X) / Chunk.TileSize);
+            int targety = (int)Math.Floor((target.Y - chunk.BoundingBox.Y) / Chunk.TileSize);
+
+            int startx = (int)Math.Floor((Position.X - chunk.BoundingBox.X) / Chunk.TileSize);
+            int starty = (int)Math.Floor((Position.Y - chunk.BoundingBox.Y) / Chunk.TileSize);
+
+            Path = FindReducedPath(chunk, FindPath(chunk, startx, starty, targetx, targety));
+
+            NextNode = 1;
+
+            State = AIState.Targeting;
+
+            if(Path.Count <= 1)
+            {
+                State = AIState.Waiting;
+            }
+        }
+
+        public override void Respawn()
+        {
+            Position = Spawn;
+            State = AIState.Waiting;
+        }
+
+        public override void Update(GameTime gameTime, Chunk chunk)
+        {
+
+            float dt = Game1.DeltaT;
+
+            switch (State)
+            {
+                case AIState.Patrolling:
+                    break;
+                case AIState.Waiting:
+                    Vector2 playerPos = chunk.Level.Player.Position;
+                    Velocity = new Vector2(0);
+                    Target(playerPos, chunk);
+                    break;
+                case AIState.Targeting:
+                    Vector2 dir = Path[NextNode] - Position;
+                    if(dir.LengthSquared() < 1F)
+                    {
+                        ++NextNode;
+                        if(NextNode >= Path.Count)
+                        {
+                            Vector2 playerPosT = chunk.Level.Player.Position;
+                            Target(playerPosT, chunk);
+                        }
+                    }
+                    else
+                    {
+                        Direction = (float)Math.Atan2(dir.Y, dir.X);
+                        Velocity = dir;
+                        Velocity.Normalize();
+                        Velocity *= PatrolSpeed;
+                    }
+                    break;
+            }
+
+            
+            Position += dt * Velocity;
+            ViewCone.UpdatePosition(Position);
+            ViewCone.Middle = Direction;
+            ViewCone.Update(gameTime, chunk);
+            base.Update(gameTime, chunk);
+        }
+
+        public override void LoadContent(ContentManager content)
+        {
+            Sprite.Texture = content.Load<Texture2D>("Textures/camera");
+            Sprite.Add("idle", 0, 4, 1.0);
+        }
+
+        public override void Draw(GameTime gameTime)
+        {
+            ViewCone.Draw(gameTime);
+            Game.Transforms.Push();
+            Game.Transforms.Rotate(ViewCone.Middle);
+            Sprite.Draw(Position);
+            Game.Transforms.Pop();
+        }
+
+        //TODO: Reduce curves as well.
+        static List<Vector2> FindReducedPath(Chunk chunk, List<Point> path)
+        {
+            var ReducedPath = new List<Vector2>();
+
+            Point lastDir = new Point(0);
+
+            if(path == null)
+            {
+                return ReducedPath;
+            }
+
+            for(int i = path.Count-1; i > 0; --i)
+            {
+                if(lastDir != path[i - 1] - path[i])
+                {
+                    lastDir = path[i - 1] - path[i];
+                    ReducedPath.Add(new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y) + new Vector2(Chunk.TileSize/2) + path[i].ToVector2() * Chunk.TileSize);
+                }
+            }
+
+            ReducedPath.Add(new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y) + new Vector2(Chunk.TileSize / 2) + path[0].ToVector2() * Chunk.TileSize);
+
+            return ReducedPath;
+        }
+
+        static List<Point> FindPath(Chunk chunk, int startx, int starty, int targetx, int targety)
         {
             var path = new List<Point>();
 
@@ -34,6 +176,11 @@ namespace team5.Entities
             var closedSet = new HashSet<Point>();
 
             var openSet = new SortedSet<Point>(Comparer<Point>.Create((Point x, Point y) => {
+                if (x == y)
+                {
+                    return 0;
+                }
+
                 if(!fScore.TryGetValue(x,out float scoreX))
                 {
                     scoreX = float.PositiveInfinity;
@@ -63,6 +210,7 @@ namespace team5.Entities
 
             while (openSet.Count > 0)
             {
+
                 Point current = openSet.First();
 
                 if(current.X == targetx && current.Y == targety)
@@ -78,16 +226,16 @@ namespace team5.Entities
                     for(int yoffset = -1; yoffset <= 1; ++yoffset)
                     {
                         Point neighbor = current + new Point(xoffset, yoffset);
-                        if ((xoffset == 0 && yoffset == 0) || neighbor.X < 0 || neighbor.X >= width || neighbor.Y < 0 || neighbor.Y >= height
-                            || tiles[(height - neighbor.Y - 1) * width + neighbor.X] == (uint)Chunk.Colors.SolidPlatform )
+                        if ((xoffset == 0 && yoffset == 0) || neighbor.X < 0 || neighbor.X >= chunk.Width || neighbor.Y < 0 || neighbor.Y >= chunk.Height
+                            || chunk.GetTile(neighbor.X,neighbor.Y) == (uint)Chunk.Colors.SolidPlatform)
                         {
                             continue;
                         }
 
                         if(Math.Abs(xoffset) + Math.Abs(yoffset) == 2)
                         {
-                            if(tiles[(height - current.Y + yoffset - 1) * width + current.X] == (uint)Chunk.Colors.SolidPlatform
-                                || tiles[(height - current.Y - 1) * width + current.X + xoffset] == (uint)Chunk.Colors.SolidPlatform)
+                            if(chunk.GetTile(current.X + xoffset, current.Y) == (uint)Chunk.Colors.SolidPlatform
+                                || chunk.GetTile(current.X, current.Y + yoffset) == (uint)Chunk.Colors.SolidPlatform)
                             {
                                 continue;
                             }
@@ -101,6 +249,9 @@ namespace team5.Entities
 
                         if (!openSet.Contains(neighbor))
                         {
+                            cameFrom.Add(neighbor, current);
+                            gScore.Add(neighbor, tentative_gScore);
+                            fScore.Add(neighbor, gScore[neighbor] + GetDist(neighbor.X, neighbor.Y, targetx, targety));
                             openSet.Add(neighbor);
                         } else {
                             bool found = gScore.TryGetValue(neighbor, out float neighborScore);
@@ -108,18 +259,14 @@ namespace team5.Entities
                             {
                                 continue;
                             }
-                        }
 
-                        if (cameFrom.ContainsKey(neighbor)) {
+                            openSet.Remove(neighbor);
+
                             cameFrom[neighbor] = current;
                             gScore[neighbor] = tentative_gScore;
                             fScore[neighbor] = gScore[neighbor] + GetDist(neighbor.X, neighbor.Y, targetx, targety);
-                        }
-                        else
-                        {
-                            cameFrom.Add(neighbor, current);
-                            gScore.Add(neighbor, tentative_gScore);
-                            fScore.Add(neighbor, gScore[neighbor] + GetDist(neighbor.X, neighbor.Y, targetx, targety));
+
+                            openSet.Add(neighbor);
                         }
                     }
                 }
@@ -130,10 +277,9 @@ namespace team5.Entities
 
         private static List<Point> ReconstructPath(Dictionary<Point, Point> cameFrom, Point current)
         {
-            var path = new List<Point>
-            {
-                current
-            };
+            var path = new List<Point>();
+
+            path.Add(current);
 
             while (cameFrom.ContainsKey(current))
             {

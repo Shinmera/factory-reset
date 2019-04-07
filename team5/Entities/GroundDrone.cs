@@ -22,12 +22,12 @@ namespace team5
 
         public GroundDrone(Vector2 position, Game1 game) : base( game, new Vector2(Chunk.TileSize/2, Chunk.TileSize))
         {
-            Position = position;
+            Position = position + new Vector2(0, Chunk.TileSize/2);
             Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize * 2, Chunk.TileSize * 2));
             ViewCone = new ConeEntity(game);
             ViewCone.Radius = Chunk.TileSize * 6;
             ViewCone.FromDegrees(0, 30);
-            ViewCone.UpdatePosition(position);
+            ViewCone.UpdatePosition(Position);
             Velocity = new Vector2(PatrolSpeed.X, PatrolSpeed.Y);
         }
 

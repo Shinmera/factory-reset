@@ -57,6 +57,7 @@ namespace team5
         {
             Position = position;
             ComputedBB = false;
+            ComputedOccludedRadius = false;
         }
 
         /// <summary>Set to change the full radius, get to get the occluded radius.</summary>
@@ -81,7 +82,7 @@ namespace team5
             }
             set
             {
-                LocalAngle1 = value;
+                LocalAngle1 = ConvertAngle(value);
                 ComputedBB = false;
                 ComputedOccludedRadius = false;
             }
@@ -96,7 +97,7 @@ namespace team5
             }
             set
             {
-                LocalAngle2 = value;
+                LocalAngle2 = ConvertAngle(value);
                 ComputedBB = false;
                 ComputedOccludedRadius = false;
             }
