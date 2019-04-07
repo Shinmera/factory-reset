@@ -65,7 +65,7 @@ namespace team5
             }
         }
 
-        public override void Respawn()
+        public override void Respawn(Chunk chunk)
         {
             Position = Spawn;
             State = AIState.Waiting;

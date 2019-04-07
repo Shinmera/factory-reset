@@ -309,6 +309,12 @@ namespace team5
             }
         }
 
+        public override void Respawn(Chunk chunk)
+        {
+            Velocity = new Vector2(0);
+            Position = chunk.SpawnPosition;
+        }
+
         public void Update(GameTime gameTime, int direction)
         {
             if (Controller.Quit)

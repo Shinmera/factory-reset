@@ -104,9 +104,7 @@ namespace team5
         {
             if (entity is Player)
             {
-                entity.Position = SpawnPosition;
-                ((Player)entity).Velocity = new Vector2(0);
-                CallAll((GameObject x) => { if (x is Entity) ((Entity)x).Respawn(); });
+                CallAll((GameObject x) => { if (x is Entity) ((Entity)x).Respawn(this); });
             }
 
             if(entity is Pickup)

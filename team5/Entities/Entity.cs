@@ -20,7 +20,7 @@ namespace team5
         /// </summary>
         public abstract RectangleF GetBoundingBox();
 
-        public virtual void Respawn()
+        public virtual void Respawn(Chunk chunk)
         {
 
         }
