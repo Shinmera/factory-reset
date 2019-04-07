@@ -32,6 +32,7 @@ namespace team5
         public const int TileSize = 16;
         public bool DrawSolids = false;
 
+        private Game1 Game;
         private readonly string TileSetName;
         public Texture2D[] Layers;
         public Vector2 SpawnPosition;
@@ -45,10 +46,10 @@ namespace team5
         private Player Player;
 
         public uint[] SolidTiles;
-        public Texture2D Tileset, Solidset;
+        private Texture2D Tileset, Solidset;
 
         static Dictionary<uint, TileType> tileObjects;
-
+        private String[] StoryItems; 
 
         //Viewcones, intelligence
         List<Entity> CollidingEntities = new List<Entity>();
@@ -62,7 +63,6 @@ namespace team5
         //things that will be removed at the end of the update (to ensure that collections are not modified during loops)
         List<Entity> PendingDeletion = new List<Entity>();
 
-        Game1 Game;
 
         public Chunk(Game1 game, Level level, LevelContent.Chunk chunk)
         {
@@ -80,6 +80,7 @@ namespace team5
             Position = new Vector2(chunk.position[0], chunk.position[1]);
             Layers = chunk.maps;
             TileSetName = chunk.tileset;
+            StoryItems = chunk.storyItems;
         }
         
         public void Activate(Player player)
