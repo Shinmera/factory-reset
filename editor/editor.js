@@ -202,7 +202,7 @@ class Tileset{
         for(var iy=0; iy<tileH; iy++){
             for(var ix=0; ix<tileW; ix++){
                 if(!isTileEmpty(pixels, ix, iy)){
-                    this.tileMap[ty][tx] = [ix, iy];
+                    this.tileMap[ty][tx] = [ix, iy, 0];
                     this.rgMap[(ix<<8) + iy] = [tx, ty];
                     tx++;
                     if(tilesPerRow <= tx){
@@ -451,6 +451,7 @@ class Chunk{
             console.log(tile);
             pixels.data[pixelIndex+0] = tile[0];
             pixels.data[pixelIndex+1] = tile[1];
+            pixels.data[pixelIndex+2] = tile[2];
             pixels.data[pixelIndex+3] = 255;
         }else if(action === "erase"){
             pixels.data[pixelIndex+0] = 0;
@@ -602,7 +603,7 @@ var createSolidTileset = function(){
         var g = (color & 0x0000FF00) >>>  8;
         var b = (color & 0x00FF0000) >>> 16;
         var a = (color & 0xFF000000) >>> 24;
-        tileToRG[0][x] = [r, g];
+        tileToRG[0][x] = [r, g, b];
         RGToTile[(r<<8)+g] = [x, 0];
         for(var i=y*tileSize; i<(y+1)*tileSize; i++){
             for(var j=x*tileSize; j<(x+1)*tileSize; j++){
@@ -737,7 +738,7 @@ var openLevel = function(){
                         var chunk = json.chunks[i];
                         tileset = chunk.tileset;
                         chunk.pixels = [];
-                        chunk.tileset = solidset;
+                        chunk.tileset = new Tileset({name: tileset});
                         for(var l=0; l<chunk.layers; l++){
                             var base64 = await zip.file("chunks/"+chunk.name+"-"+l+".png").async("base64");
                             var image = await loadImage("data:image/png;base64,"+base64);
