@@ -3,15 +3,18 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace team5
 {
     public class TilemapEngine
     {
         private Game1 Game;
+        private ContentManager Content;
         private VertexBuffer VertexBuffer;
         private IndexBuffer IndexBuffer;
         private Effect TileEffect;
+        private readonly Dictionary<String, Texture2D> SetCache = new Dictionary<String, Texture2D>();
         
         public TilemapEngine(Game1 game)
         {
@@ -20,6 +23,7 @@ namespace team5
         
         public void LoadContent(ContentManager content)
         {
+            Content = content;
             VertexPositionTexture[] vertices = new VertexPositionTexture[] 
             { 
                 new VertexPositionTexture(new Vector3(+1, -1, 0), new Vector2(1, 0)),
@@ -38,44 +42,15 @@ namespace team5
             
             // Create shader
             TileEffect = content.Load<Effect>("Shaders/tile");
+            
+            SetCache.Add("solid", CreateChunkTileset());
         }
         
-        
-        /// <summary>
-        ///   Create a debug tilemap texture that spans all possible tileset values.
-        /// </summary>
-        public Texture2D CreateDebugTilemap()
+        public Texture2D Tileset(string tileset)
         {
-            Texture2D tex = new Texture2D(Game.GraphicsDevice, 256, 256);
-            Color[] data = new Color[tex.Width*tex.Height];
-            for(int y=0; y<tex.Height; ++y)
-            {
-                for(int x=0; x<tex.Width; ++x)
-                {
-                    data[y*tex.Width+x] = new Color(x, y, 0);
-                }
-            }
-            tex.SetData(data);
-            return tex;
-        }
-        
-        /// <summary>
-        ///   Create a debug tileset texture that fills all possible tiles (256^2) with a unique gradient.
-        /// </summary>
-        public Texture2D CreateDebugTileset()
-        {
-            Texture2D tex = new Texture2D(Game.GraphicsDevice, 256*Chunk.TileSize, 256*Chunk.TileSize);
-            Color[] data = new Color[tex.Width*tex.Height];
-            for(int y=0; y<tex.Height; ++y)
-            {
-                for(int x=0; x<tex.Width; ++x)
-                {
-                    data[y*tex.Width+x] = new Color(0, x/Chunk.TileSize, y/Chunk.TileSize,
-                                                    ((x)%Chunk.TileSize)*256/Chunk.TileSize);
-                }
-            }
-            tex.SetData(data);
-            return tex;
+            if(!SetCache.ContainsKey(tileset))
+                SetCache.Add(tileset, Content.Load<Texture2D>("Textures/"+tileset));
+            return SetCache[tileset];
         }
         
         public Texture2D CreateChunkTileset()
@@ -111,8 +86,10 @@ namespace team5
 
         private async void SaveTexture(Texture2D tex)
         {
-            Windows.Storage.Pickers.FileSavePicker picker = new Windows.Storage.Pickers.FileSavePicker();
-            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+            Windows.Storage.Pickers.FileSavePicker picker = new Windows.Storage.Pickers.FileSavePicker
+            {
+                SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary
+            };
             picker.FileTypeChoices.Add("Portable Network Graphics", new[] { ".png" });
             picker.SuggestedFileName = "texture";
             Windows.Storage.StorageFile file = await picker.PickSaveFileAsync();

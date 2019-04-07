@@ -12,50 +12,53 @@ namespace team5
 {
     class Level
     {
-        public List<Chunk> Chunks;
-        public Chunk ActiveChunk;
+        public List<Chunk> Chunks = new List<Chunk>();
+        public Chunk ActiveChunk = null;
         public Player Player;
         public Camera Camera;
         public int collected = 0;
-
-
+        
+        public readonly string Name;
+        private readonly string Description;
+        
+        private readonly Game1 Game;
         private bool ChunkTrans = false;
-
-        private List<Chunk> TransitionChunks;
-        private int TransitionDirection;
+        private List<Chunk> TransitionChunks = new List<Chunk>();
+        private int TransitionDirection = 0;
         private Chunk LastActiveChunk;
         private Chunk TargetChunk;
         private int TransitionLingerCounter = 0;
         private const int TransitionLingerDuration = 20;
 
-        //TESTING ONLY
-        public Level(Game1 game)
+        public Level(Game1 game, string name)
         {
             Player = new Player(new Vector2(0, 0), game);
             Camera = new Camera(Player, game);
-
-            ActiveChunk = new Chunk(game, this, "Chunks/TestChunk", new Vector2(64*Chunk.TileSize, 64 * Chunk.TileSize));
-            ActiveChunk.Activate(Player);
-            LastActiveChunk = ActiveChunk;
-
-            Chunks = new List<Chunk>();
-            TransitionChunks = new List<Chunk>();
-            TransitionDirection = 0;
-            Chunks.Add(ActiveChunk);
-            Chunks.Add(new Chunk(game, this, "Chunks/TestChunk", new Vector2(192 * Chunk.TileSize, 64 * Chunk.TileSize)));
-            Chunks.Add(new Chunk(game, this, "Chunks/TestChunk", new Vector2(-64 * Chunk.TileSize, 64 * Chunk.TileSize)));
-            Chunks.Add(new Chunk(game, this, "Chunks/TestChunk2", new Vector2(10 * Chunk.TileSize, -10 * Chunk.TileSize)));
+            Game = game;
+            Name = name;
         }
         
         public void LoadContent(ContentManager content)
         {
-            foreach(Chunk chunk in Chunks)
+            var data = content.Load<LevelContent>("Levels/"+Name);
+            
+            foreach(var chunkdata in data.chunks)
             {
+                Chunk chunk = new Chunk(Game, this, chunkdata);
                 chunk.LoadContent(content);
+                Chunks.Add(chunk);
             }
+            
+            Player.LoadContent(content);
+            ActiveChunk = Chunks[data.startChunk];
+            ActiveChunk.Activate(Player);
+            LastActiveChunk = ActiveChunk;
             Player.Position = ActiveChunk.SpawnPosition;
-
+            
+            //  Force camera to be still
             Camera.UpdateChunk(ActiveChunk);
+            Camera.Position.X = Player.Position.X;
+            Camera.Position.Y = Player.Position.Y;
         }
         
         public void Resize(int width, int height)

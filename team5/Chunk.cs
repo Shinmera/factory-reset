@@ -30,10 +30,10 @@ namespace team5
         }
 
         public const int TileSize = 16;
-        private const bool DrawSolids = false;
+        public bool DrawSolids = false;
 
-        private readonly string TileMapName, TileSetName;
-        public Texture2D MapTexture, OverlayTexture;
+        private readonly string TileSetName;
+        public Texture2D[] Layers;
         public Vector2 SpawnPosition;
 
         public uint Width;
@@ -46,30 +46,26 @@ namespace team5
 
         public uint[] SolidTiles;
         public Texture2D Tileset, Solidset;
-        
 
         static Dictionary<uint, TileType> tileObjects;
 
 
         //Viewcones, intelligence
-        List<Entity> CollidingEntities;
+        List<Entity> CollidingEntities = new List<Entity>();
 
         //Enemies, background objects
-        List<Entity> NonCollidingEntities;
+        List<Entity> NonCollidingEntities = new List<Entity>();
 
         //things that will stop you like moving platforms (which are not part of the tileset)
-        List<Entity> SolidEntities;
+        List<Entity> SolidEntities = new List<Entity>();
 
         //things that will be removed at the end of the update (to ensure that collections are not modified during loops)
-        List<Entity> PendingDeletion;
+        List<Entity> PendingDeletion = new List<Entity>();
 
         Game1 Game;
 
-        public Chunk(Game1 game, Level level, string tileMap, Vector2 position)
+        public Chunk(Game1 game, Level level, LevelContent.Chunk chunk)
         {
-            TileMapName = tileMap;
-            TileSetName = "Textures/temptiles";
-
             tileObjects = new Dictionary<uint, TileType>
             {
                 { (uint)Colors.SolidPlatform, new TilePlatform(game) },
@@ -79,15 +75,11 @@ namespace team5
                 { (uint)Colors.HidingSpot, new TileHidingSpot(game) }
             };
 
-            SolidEntities = new List<Entity>();
-            NonCollidingEntities = new List<Entity>();
-            CollidingEntities = new List<Entity>();
-            PendingDeletion = new List<Entity>();
-
-            Position = position;
-
             Game = game;
             Level = level;
+            Position = new Vector2(chunk.position[0], chunk.position[1]);
+            Layers = chunk.maps;
+            TileSetName = chunk.tileset;
         }
         
         public void Activate(Player player)
@@ -134,18 +126,16 @@ namespace team5
 
         public void LoadContent(ContentManager content)
         {
-            MapTexture = content.Load<Texture2D>(TileMapName);
-            OverlayTexture = content.Load<Texture2D>(TileMapName+"-overlay");
-            Tileset = content.Load<Texture2D>(TileSetName);
-            Solidset = Game.TilemapEngine.CreateChunkTileset();
+            Tileset = Game.TilemapEngine.Tileset(TileSetName);
+            Solidset = Game.TilemapEngine.Tileset("solid");
 
-            Width = (uint)MapTexture.Width;
-            Height = (uint)MapTexture.Height;
+            Width = (uint)Layers[0].Width;
+            Height = (uint)Layers[0].Height;
             Size = new Vector2((Width*TileSize)/2, (Height*TileSize)/2);
             BoundingBox = new RectangleF(Position, Size);
 
             SolidTiles = new uint[Width * Height];
-            MapTexture.GetData<uint>(SolidTiles);
+            Layers[0].GetData<uint>(SolidTiles);
 
             // Scan through and populate
             for (int y=0; y<Height; ++y)
@@ -209,9 +199,13 @@ namespace team5
         public void Draw(GameTime gameTime)
         {
             if(DrawSolids)
-                Game.TilemapEngine.Draw(MapTexture, Solidset, new Vector2(BoundingBox.X, BoundingBox.Y));
-            Game.TilemapEngine.Draw(OverlayTexture, Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
+                Game.TilemapEngine.Draw(Layers[0], Solidset, new Vector2(BoundingBox.X, BoundingBox.Y));
+            Game.TilemapEngine.Draw(Layers[1], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
+            
             CallAll(x => x.Draw(gameTime));
+            
+            for(int i=2; i<Layers.Length; ++i)
+                Game.TilemapEngine.Draw(Layers[i], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
         }
 
         public const int Up =        0b00000001;

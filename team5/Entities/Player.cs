@@ -21,19 +21,17 @@ namespace team5
         private bool JumpKeyWasUp = false;
         private bool HideKeyWasUp = false;
         private bool HasWallJumped = false;
-        private bool HasDoubleJumped = false;
         private float LongJump = 0;
 
-        private float Gravity = 800;
-        private float MaxVel = 150;
-        private float AccelRate = 800;
-        private float DeaccelRate = 100;
-        private float ClimbSpeed = 70;
-        private float JumpSpeed = 150;
-        private float LongJumpSpeed = 250;
-        private float LongJumpTime = 15;
-        private Vector2 WallJumpVelocity = new Vector2(200, 200);
-        private float WallSlideFriction = 0.9F;
+        private readonly float Gravity = 800;
+        private readonly float MaxVel = 150;
+        private readonly float AccelRate = 800;
+        private readonly float DeaccelRate = 100;
+        private readonly float ClimbSpeed = 70;
+        private readonly float JumpSpeed = 150;
+        private readonly float LongJumpTime = 15;
+        private readonly Vector2 WallJumpVelocity = new Vector2(200, 200);
+        private readonly float WallSlideFriction = 0.9F;
 
         private bool QueueHide = false;
         private Vector2 HidingSpot;
@@ -137,7 +135,6 @@ namespace team5
             {
                 if (Grounded)
                 {
-                    HasDoubleJumped = false;
                     HasWallJumped = false;
                     if (jump)
                     {
@@ -259,7 +256,6 @@ namespace team5
 
                 if (Math.Abs(Position.X - HidingSpot.X) <= MaxVel * dt)
                 {
-                    HasDoubleJumped = false;
                     HasWallJumped = false;
                     QueueHide = false;
 

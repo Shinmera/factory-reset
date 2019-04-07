@@ -46,7 +46,7 @@ namespace team5
             TilemapEngine.LoadContent(Content);
             ViewConeEngine.LoadContent(Content);
 
-            Level = new Level(this);
+            Level = new Level(this, "test");
             Level.LoadContent(Content);
         }
         

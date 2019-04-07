@@ -7,11 +7,11 @@ namespace team5
     {
         private Game1 Game;
         private Player Player;
-        public Vector2 Position { get; private set; } = new Vector2(0, 0);
+        public Vector2 Position = new Vector2(0, 0);
         private Vector2 Velocity = new Vector2(0,0);
         private Chunk ChunkInFocus;
         private RectangleF ChunkClamps;
-        private float Zoom = 1.0f;
+        public float Zoom = 1.0f;
         private float ViewScale = 1.0f;
         // Target view half-size
         private Vector2 TargetSize = new Vector2(40, 26)*Chunk.TileSize/2.0f;
@@ -58,27 +58,9 @@ namespace team5
         {
             Vector2 intendedPosition = Player.Position;
             
-            // Lock intended position within chunk limits. 
-            // KLUDGE: Note that chunks are currently positioned by center of lower leftmost tile, 
-            //         which is inconsistent.
-            {
-                
-                Func<float, float, float, float> clamp = (l, x, u) => (x < l)? l : (u < x)? u : x;
-                /*
-                float lx = chunk.BoundingBox.X;
-                float ly = chunk.BoundingBox.Y;
-                float lw = chunk.Size.X;
-                float lh = chunk.Size.Y;
-                float cw = TargetSize.X;
-                float ch = TargetSize.Y;
-                
-                intendedPosition.X = clamp(lx + cw, intendedPosition.X, lx - cw + lw*2);
-                intendedPosition.Y = clamp(ly + ch, intendedPosition.Y, ly - ch + lh*2);
-                */
-
-                intendedPosition.X = clamp(ChunkClamps.Left, intendedPosition.X, ChunkClamps.Right);
-                intendedPosition.Y = clamp(ChunkClamps.Bottom, intendedPosition.Y, ChunkClamps.Top);
-            }
+            float clamp(float l, float x, float u) { return (x < l) ? l : (u < x) ? u : x; }
+            intendedPosition.X = clamp(ChunkClamps.Left, intendedPosition.X, ChunkClamps.Right);
+            intendedPosition.Y = clamp(ChunkClamps.Bottom, intendedPosition.Y, ChunkClamps.Top);
 
             // Ease towards intended position
             Vector2 direction = intendedPosition - Position;
