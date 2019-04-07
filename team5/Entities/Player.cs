@@ -279,13 +279,13 @@ namespace team5
             
 
             // Animations
-            if(IsClimbing)
+            if(IsClimbing || (Velocity.Y < 0 && (left != null || right != null)))
             {
                 Sprite.Play("climb");
                 // Force direction to face wall
                 if(left != null) Sprite.Direction = -1;
                 if(right != null) Sprite.Direction = +1;
-                if(Velocity.Y == 0) Sprite.Reset();
+                if(Velocity.Y == 0 || !Controller.Climb) Sprite.Reset();
             }
             else
             {
