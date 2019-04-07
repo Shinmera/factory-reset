@@ -17,21 +17,15 @@ namespace team5
         private readonly Vector2 extents = new Vector2(225, 315);
         private float EdgeTimer = 0;
         private float Velocity = RotationSpeed;
-        private Camera Camera;
         private AIState State = AIState.Turning;
         
         public PivotCamera(Vector2 position, Game1 game) : base(position, game)
         {
-            ViewCone.FromDegrees(extents.X, 32);
+            ViewCone.FromDegrees(extents.X, 48);
         }
         
         public override void Update(GameTime gameTime, Chunk chunk)
         {
-            if(Camera == null)
-            {
-                Camera = chunk.Level.Camera;
-            }
-
             float dt = Game1.DeltaT;
             float direction, view;
             ViewCone.ToDegrees(out direction, out view);
@@ -69,10 +63,7 @@ namespace team5
             ViewCone.Draw(gameTime);
             Game.Transforms.Push();
             Game.Transforms.Rotate(ViewCone.Middle);
-            if (Camera != null)
-            {
-                Sprite.DrawParallax(Position, 1.1F, Camera.Position);
-            }
+            Sprite.Draw(Position);
             Game.Transforms.Pop();
         }
     }

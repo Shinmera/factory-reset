@@ -14,7 +14,8 @@ namespace team5
             Position = position;
             Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize, Chunk.TileSize));
             ViewCone = new ConeEntity(game);
-            ViewCone.FromDegrees(225, 32);
+            // FIXME: Auto-rotate depending on wall
+            ViewCone.FromDegrees(225, 48);
             ViewCone.Radius = Chunk.TileSize * 10;
             ViewCone.UpdatePosition(position);
         }
