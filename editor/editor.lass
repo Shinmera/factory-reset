@@ -66,6 +66,7 @@
     :overflow scroll
     (>canvas
      :background (hex FFFFFF)
+     :border 1px solid black
      :z-index 1)))
   (>footer
    :border-top 2px solid (hex 0088EE)
