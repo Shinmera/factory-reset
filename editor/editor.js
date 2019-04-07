@@ -178,9 +178,13 @@ class Tileset{
         this.rgMap = init.rgMap || {};
         this.tileMap = init.tileMap || [];
         this.currentTile = [0, 0];
-        
-        if(init.image || init.pixels)
+
+        if(this.tileMap.length == 0 && (init.image || init.pixels))
             this.preprocess(init.image, init.pixels);
+        else{
+            this.image = init.image;
+            this.pixels = init.pixels;
+        }
     }
 
     preprocess(image, pixels){
@@ -212,7 +216,8 @@ class Tileset{
         // Then compute static, compressed image
         tempcanvas.width = this.tileMap[0].length*tileSize;
         tempcanvas.height = this.tileMap.length*tileSize;
-        var ctx = fillCheckerboard(tempcanvas);
+        var ctx = tempcanvas.getContext("2d");
+        ctx.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
         for(var iy=0; iy<this.tileMap.length; iy++){
             for(var ix=0; ix<this.tileMap[iy].length; ix++){
                 var rg = this.tileMap[iy][ix];
@@ -224,6 +229,7 @@ class Tileset{
         }
         this.pixels = ctx.getImageData(0, 0, tempcanvas.width, tempcanvas.height);
         this.image = new Image();
+        this.image.onload = ()=>{this.use(true);};
         this.image.src = tempcanvas.toDataURL();
         return this;
     }
@@ -246,6 +252,7 @@ class Tileset{
 
     show(){
         console.log("Showing", this);
+        fillCheckerboard(tilelist);
         listctx.drawImage(this.image, 0, 0);
         return this;
     }
@@ -441,6 +448,7 @@ class Chunk{
         if(action === "place"){
             var tileset = this.getTileset(layer);
             var tile = tileset.tileMap[tileset.selected[1]][tileset.selected[0]];
+            console.log(tile);
             pixels.data[pixelIndex+0] = tile[0];
             pixels.data[pixelIndex+1] = tile[1];
             pixels.data[pixelIndex+3] = 255;

@@ -199,13 +199,17 @@ namespace team5
         public void Draw(GameTime gameTime)
         {
             if(DrawSolids)
+            {
                 Game.TilemapEngine.Draw(Layers[0], Solidset, new Vector2(BoundingBox.X, BoundingBox.Y));
-            Game.TilemapEngine.Draw(Layers[1], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
-            
-            CallAll(x => x.Draw(gameTime));
-            
-            for(int i=2; i<Layers.Length; ++i)
-                Game.TilemapEngine.Draw(Layers[i], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
+                CallAll(x => x.Draw(gameTime));
+            }
+            else
+            {
+                Game.TilemapEngine.Draw(Layers[1], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
+                CallAll(x => x.Draw(gameTime));
+                for(int i=2; i<Layers.Length; ++i)
+                    Game.TilemapEngine.Draw(Layers[i], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
+            }
         }
 
         public const int Up =        0b00000001;

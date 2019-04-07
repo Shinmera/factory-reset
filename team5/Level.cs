@@ -56,9 +56,9 @@ namespace team5
             Player.Position = ActiveChunk.SpawnPosition;
             
             //  Force camera to be still
-            Camera.UpdateChunk(ActiveChunk);
             Camera.Position.X = Player.Position.X;
             Camera.Position.Y = Player.Position.Y;
+            Camera.UpdateChunk(ActiveChunk);
         }
         
         public void Resize(int width, int height)
