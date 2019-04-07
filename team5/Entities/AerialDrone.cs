@@ -54,7 +54,7 @@ namespace team5
             int startx = (int)Math.Floor((Position.X - chunk.BoundingBox.X) / Chunk.TileSize);
             int starty = (int)Math.Floor((Position.Y - chunk.BoundingBox.Y) / Chunk.TileSize);
 
-            Path = FindReducedPath(chunk, FindPath(chunk, startx, starty, targetx, targety));
+            Path = FindReducedPath(chunk, FindPath(chunk, startx, starty, targetx, targety), Size);
 
             NextNode = 1;
 
@@ -131,7 +131,7 @@ namespace team5
         }
 
         //TODO: Reduce curves as well.
-        List<Vector2> FindReducedPath(Chunk chunk, List<Point> path)
+        static List<Vector2> FindReducedPath(Chunk chunk, List<Point> path, Vector2 size)
         {
             var ReducedPath = new List<Vector2>();
 
@@ -155,7 +155,7 @@ namespace team5
                     var tentativePoint = new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y) + new Vector2(Chunk.TileSize / 2) + path[i].ToVector2() * Chunk.TileSize;
 
                     var dir = tentativePoint - ReducedPath.Last();
-                    var point1 = new Vector2(Math.Sign(dir.Y) * Size.X, -Math.Sign(dir.X) * Size.Y);
+                    var point1 = new Vector2(Math.Sign(dir.Y) * size.X, -Math.Sign(dir.X) * size.Y);
                     var point2 = -point1;
 
                     
