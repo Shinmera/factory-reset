@@ -394,10 +394,19 @@ class Chunk{
         return this;
     }
 
+    zoom(factor){
+        var ui = document.querySelector("#zoom");
+        ui.parentNode.querySelector("label").innerText = factor;
+        ui.value = factor;
+        tilemap.style.maxWidth = tilemap.style.minWidth = (tilemap.width*factor)+"px";
+        tilemap.style.maxHeight = tilemap.style.minHeight = (tilemap.height*factor)+"px";
+    }
+
     resize(width, height){
         for(var l=0; l<this.pixels.length; l++){
             this.pixels[l] = this.preprocess(resizePixels(this.pixels[l], width, height), l);
         }
+        zoomEvent();
         this.show();
         return this;
     }
@@ -674,11 +683,9 @@ var editMapEvent = function(ev){
     }
 };
 
-var zoomEvent = function(ev){
-    var zoom = parseFloat(ev.target.value);
-    ev.target.parentNode.querySelector("label").innerText = zoom;
-    tilemap.style.maxWidth = tilemap.style.minWidth = (tilemap.width*zoom)+"px";
-    tilemap.style.maxHeight = tilemap.style.minHeight = (tilemap.height*zoom)+"px";
+var zoomEvent = function(){
+    var zoom = parseFloat(document.querySelector("#zoom").value);
+    level.chunk.zoom(zoom);
 };
 
 var openTileset = function(){
