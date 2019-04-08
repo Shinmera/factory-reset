@@ -9,14 +9,13 @@ namespace team5
         protected AnimatedSprite Sprite;
         protected ConeEntity ViewCone;
         
-        public StaticCamera(Vector2 position, Game1 game) : base(game)
+        public StaticCamera(Vector2 position, float degrees, Game1 game) : base(game)
         {
             Position = position;
             Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize, Chunk.TileSize));
             ViewCone = new ConeEntity(game);
-            // FIXME: Auto-rotate depending on wall
-            ViewCone.FromDegrees(225, 48);
-            ViewCone.Radius = Chunk.TileSize * 10;
+            ViewCone.FromDegrees(degrees, 33);
+            ViewCone.Radius = Chunk.TileSize * 13;
             ViewCone.UpdatePosition(position);
         }
         

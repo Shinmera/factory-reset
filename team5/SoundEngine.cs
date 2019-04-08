@@ -88,7 +88,7 @@ namespace team5
             foreach(var sound in SoundCache.Keys.ToList())
             {
                 if(SoundCache[sound] == null)
-                    SoundCache[sound] = content.Load<SoundEffect>(sound);
+                    SoundCache[sound] = content.Load<SoundEffect>("Sounds/"+sound);
             }
         }
         
@@ -107,9 +107,6 @@ namespace team5
         
         public Sound Play(string effect, Vector2 position)
         {
-            if(!SoundCache.ContainsKey(effect))
-                SoundCache.Add(effect, Content.Load<SoundEffect>(effect));
-            
             return new Sound(this, SoundCache[effect], position);
         }
         

@@ -43,7 +43,7 @@ namespace team5
         /// <summary>Time passed since last animation frame</summary>
         private float TimeAccumulator = 0;
         /// <summary>The current Frame being rendered</summary>
-        private int Frame = 0;
+        public int Frame = 0;
         /// <summary>The animation currently being run</summary>
         private Animation Anim;
         /// <summary>A List of animations that can be rendered by this sprite</summary>

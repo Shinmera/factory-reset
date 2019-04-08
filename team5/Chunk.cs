@@ -157,9 +157,10 @@ namespace team5
                                                             y * TileSize + BoundingBox.Y + TileSize);
                                 break;
                             // FIXME: this is way too verbose, factor out.
-                            case (uint)Colors.StaticCamera:
-                                NonCollidingEntities.Add(new StaticCamera(position, Game));
-                                break;
+                            case (uint)Colors.StaticCamera:{
+                                bool left = (GetTile(x-1, y) == (uint)Colors.SolidPlatform);
+                                NonCollidingEntities.Add(new StaticCamera(position, (left)? 315 : 225, Game));
+                                break;}
                             case (uint)Colors.PivotCamera:
                                 NonCollidingEntities.Add(new PivotCamera(position, Game));
                                 break;

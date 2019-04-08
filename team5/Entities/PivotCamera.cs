@@ -14,14 +14,14 @@ namespace team5
         
         private const float EdgeWaitTime = 2;
         private const float RotationSpeed = 20;
-        private readonly Vector2 extents = new Vector2(225, 315);
+        private readonly Vector2 Extents = new Vector2(225, 315);
         private float EdgeTimer = 0;
         private float Velocity = RotationSpeed;
         private AIState State = AIState.Turning;
         
-        public PivotCamera(Vector2 position, Game1 game) : base(position, game)
+        public PivotCamera(Vector2 position, Game1 game) : base(position, 0, game)
         {
-            ViewCone.FromDegrees(extents.X, 48);
+            ViewCone.FromDegrees(Extents.X, 33);
         }
         
         public override void Update(GameTime gameTime, Chunk chunk)
@@ -33,7 +33,7 @@ namespace team5
             switch(State)
             {
                 case AIState.Turning:
-                    if(direction < extents.X || extents.Y < direction)
+                    if(direction < Extents.X || Extents.Y < direction)
                     {
                         Velocity = 0;
                         EdgeTimer = EdgeWaitTime;
@@ -45,7 +45,7 @@ namespace team5
                     if(EdgeTimer <= 0)
                     {
                         State = AIState.Turning;
-                        if(direction < extents.X)
+                        if(direction < Extents.X)
                             Velocity = +RotationSpeed;
                         else
                             Velocity = -RotationSpeed;
