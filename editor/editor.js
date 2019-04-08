@@ -90,6 +90,15 @@ var fillCheckerboard = function(canvas, ctx){
     return ctx;
 };
 
+var resizePixels = function(pixels, w, h){
+    tempcanvas.width = w;
+    tempcanvas.height = h;
+    var ctx = tempcanvas.getContext("2d");
+    // Deposit in lower left corner.
+    ctx.putImageData(pixels, 0, tempcanvas.height - pixels.height);
+    return ctx.getImageData(0, 0, tempcanvas.width, tempcanvas.height);
+};
+
 var isTileEmpty = function(data, x, y){
     for(var iy=y*tileSize; iy<(y+1)*tileSize; iy++){
         for(var ix=x*tileSize; ix<(x+1)*tileSize; ix++){
@@ -386,7 +395,11 @@ class Chunk{
     }
 
     resize(width, height){
-        // FIXME: implement this
+        for(var l=0; l<this.pixels.length; l++){
+            this.pixels[l] = this.preprocess(resizePixels(this.pixels[l], width, height), l);
+        }
+        this.show();
+        return this;
     }
 
     clear(){
