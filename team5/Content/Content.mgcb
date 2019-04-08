@@ -51,6 +51,12 @@
 /processorParam:DebugMode=Auto
 /build:Shaders/tile.fx
 
+#begin Sounds/Alert.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sounds/Alert.mp3
+
 #begin Sounds/fart.mp3
 /importer:Mp3Importer
 /processor:SoundEffectProcessor

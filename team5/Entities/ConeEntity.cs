@@ -321,7 +321,7 @@ namespace team5
             {
                 if (Collide(chunk.Level.Player, Game1.DeltaT, out int dirction, out float time, out bool corner))
                 {
-                    chunk.Die(chunk.Level.Player);
+                    chunk.Level.Alarm.Detected = true;
                 }
             }
         }

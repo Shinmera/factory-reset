@@ -30,12 +30,15 @@ namespace team5
         private int TransitionLingerCounter = 0;
         private const int TransitionLingerDuration = 20;
 
+        public Alarm Alarm;
+
         public Level(Game1 game, string name)
         {
             Player = new Player(new Vector2(0, 0), game);
             Camera = new Camera(Player, game);
             Game = game;
             Name = name;
+            Alarm = new Alarm(game);
         }
         
         public override void LoadContent(ContentManager content)
@@ -179,6 +182,7 @@ namespace team5
                     ActiveChunk.Update();
             }
 
+            Alarm.Update( ActiveChunk);
         }
 
         public override void Draw()
