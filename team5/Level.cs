@@ -107,6 +107,7 @@ namespace team5
 
                 if (ChunkTrans)
                 {
+                    TransitionLingerCounter = 0;
                     TargetChunk = null;
                     foreach (var chunk in Chunks)
                     {
@@ -192,7 +193,7 @@ namespace team5
                     return;
                 }
 
-                Player.Update(TransitionDirection);
+                Player.Update(TransitionDirection, TransitionLingerCounter);
             }
             else
             {

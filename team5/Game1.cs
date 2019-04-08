@@ -75,7 +75,7 @@ namespace team5
 
         public void StartLevel()
         {
-            Level = new Level(this, "test");
+            Level = new Level(this, "test2");
             Level.LoadContent(Content);
             SoundEngine.LoadContent(Content);
 

@@ -326,7 +326,7 @@ namespace team5
             Position = chunk.SpawnPosition;
         }
 
-        public void Update(int direction)
+        public void Update(int direction, int lingerCounter)
         {
             if (Controller.Quit)
                 Game.Exit();
@@ -340,16 +340,25 @@ namespace team5
             {
                 case Chunk.Left:
                     Velocity.Y = 0;
-                    if (-MaxVel < Velocity.X)
+                    if (lingerCounter > 0)
+                    {
+                        Velocity.X = 0;
+                    }
+                    else if (-MaxVel < Velocity.X)
                     {
                         // Allow quick turns on the ground
                         if (0 < Velocity.X && Grounded) Velocity.X = 0;
                         Velocity.X -= AccelRate * dt;
                     }
+
                     break;
                 case Chunk.Right:
                     Velocity.Y = 0;
-                    if (Velocity.X < MaxVel)
+                    if (lingerCounter > 0)
+                    {
+                        Velocity.X = 0;
+                    }
+                    else if (Velocity.X < MaxVel)
                     {
                         // Allow quick turns on the ground
                         if (Velocity.X < 0 && Grounded) Velocity.X = 0;
@@ -362,6 +371,8 @@ namespace team5
                 case Chunk.Up:
                     break;
             }
+
+
             if (0 < Velocity.Y)
                 Sprite.Play("jump");
             else if (Velocity.Y < 0)
