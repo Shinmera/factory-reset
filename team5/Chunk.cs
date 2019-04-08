@@ -328,7 +328,7 @@ namespace team5
             int x = (int)Math.Floor((point.X - BoundingBox.X) / TileSize);
             int y = (int)Math.Floor((point.Y - BoundingBox.Y) / TileSize);
 
-            if(x < -1 || x >= Width + 1 || y < 0 || y >= Height)
+            if(x < 0 || x >= Width || y < 0 || y >= Height)
             {
                 return null;
             }
