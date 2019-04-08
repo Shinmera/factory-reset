@@ -3,33 +3,98 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace team5
-{
+{   
+    /// <summary>
+    ///   See http://sol.gfxile.net/soloud/concepts3d.html#attenuation
+    ///   See https://docs.unrealengine.com/en-US/Engine/Audio/DistanceModelAttenuation
+    /// </summary>
+    using Attenuation = Func<float, float, float, float, float>;
+    public sealed class Attenuations{
+        /// <summary>
+        ///   Constant volume, meaning no distance attenuation.
+        /// </summary>
+        public static Attenuation None = (dist, min, max, roll)=>
+            1.0f;
+        
+        /// <summary>
+        ///   Inverse distance attenuation.
+        ///   The higher the rolloff, the steeper the volume drop.
+        ///   The rolloff factor should be above 1.
+        /// </summary>
+        public static Attenuation Inverse = (dist, min, max, roll)=>
+            min / (min+roll*(dist-min));
+        
+        /// <summary>
+        ///   Linear distance attenuation.
+        ///   The rolloff simply sets the maximal reduction in volume.
+        ///   The rolloff factor should be in [0, 1].
+        /// </summary>
+        public static Attenuation Linear = (dist, min, max, roll)=>
+            1.0f - roll * (dist-min) / (max-min);
+        
+        /// <summary>
+        ///   Exponential distance attenuation.
+        ///   The rolloff is the exponent factor.
+        ///   The rolloff factor should be above 1.
+        /// </summary>
+        public static Attenuation Exponential = (dist, min, max, roll)=>
+            (float)Math.Pow(dist / min, -roll);
+        
+        /// <summary>
+        ///   Inverse exponential distance attenuation.
+        ///   The higher the rolloff factor, the steeper the curve towards max.
+        ///   The rolloff factor should be above 1.
+        /// </summary>
+        public static Attenuation InverseExponential = (dist, min, max, roll)=>
+            1.0f - (float)Math.Pow((dist-min) / (max-min), roll);
+        
+        /// <summary>
+        ///   Inverse Logarithmic distance attenuation.
+        ///   The higher the rolloff factor, the steeper the curve.
+        ///   The rolloff factor should be above 1.
+        /// </summary>
+        public static Attenuation InverseLogarithmic = (dist, min, max, roll)=>
+            1.0f / (float)Math.Log(Math.Max(0.0000000001, Math.Min(0.9999999, (dist-min)/(max-min))), roll);
+    }
+    
     public class SoundEngine
     {
+        /// <summary>The range in which there is no panning and no attenuation.</summary>
+        public const float DeadZone = 1 * Chunk.TileSize;
+        /// <summary>The range in which sound is panned. Note the panning is always linear.</summary>
+        public const float MidRange = 2 * Chunk.TileSize;
+        /// <summary>The range up to which sound is audible.</summary>
+        public const float AudibleDistance = 40 * Chunk.TileSize;
+        /// <summary>The rolloff factor for the attenuation function.</summary>
+        public const float Rolloff = 1f;
+        /// <summary>The attenuation function used for sound distance volume scaling.</summary>
+        public static readonly Attenuation Attenuation = Attenuations.Exponential;
+        
+        public Vector2 Listener;
+        
         private Game1 Game;
         private ContentManager Content;
-        private AudioListener Listener;
         private readonly Dictionary<string, SoundEffect> SoundCache = new Dictionary<string, SoundEffect>();
         private readonly List<Sound> ActiveSounds = new List<Sound>();
         
         public class Sound
         {
-            private SoundEngine Parent;
+            private SoundEngine SoundEngine;
             readonly SoundEffect Effect;
             readonly SoundEffectInstance Instance;
-            readonly AudioEmitter Emitter;
+            public Vector2 Position;
 
-            public Sound(SoundEngine parent, SoundEffect effect, Vector2 position)
+            public Sound(SoundEngine soundEngine, SoundEffect effect, Vector2 position)
             {
-                Parent = parent;
+                SoundEngine = soundEngine;
                 Effect = effect;
                 Instance = effect.CreateInstance();
-                Emitter = new AudioEmitter();
                 Position = position;
                 Instance.Play();
-                Parent.ActiveSounds.Add(this);
+                SoundEngine.ActiveSounds.Add(this);
             }
             
             public bool Stopped
@@ -41,7 +106,7 @@ namespace team5
                     else if(Stopped)
                     {
                         Instance.Play();
-                        Parent.ActiveSounds.Add(this);
+                        SoundEngine.ActiveSounds.Add(this);
                     }
                 }
             }
@@ -61,31 +126,28 @@ namespace team5
                 set { Instance.IsLooped = value; }
             }
             
-            public Vector2 Position
-            {
-                get { return new Vector2(Emitter.Position.X, Emitter.Position.Y); }
-                set { 
-                    Emitter.Position = new Vector3(value.X, value.Y, 0);
-                    Update();
-                }
-            }
-            
             public void Update()
             {
-                Instance.Apply3D(Parent.Listener, Emitter);
+                float clamp(float l, float x, float u) { return (x < l) ? l : (u < x) ? u : x; }
+                
+                Vector2 direction = Position - SoundEngine.Listener;
+                float distance = clamp(DeadZone, direction.Length(), AudibleDistance);
+                float panFactor = clamp(0, (distance-DeadZone)/(MidRange-DeadZone), 1);
+                float attenuation = clamp(0, Attenuation(distance, DeadZone, AudibleDistance, Rolloff), 1);
+                
+                Instance.Volume = attenuation;
+                Instance.Pan = Math.Sign(direction.X)*panFactor;
             }
         }
         
         public SoundEngine(Game1 game)
         {
             Game = game;
-            SoundEffect.DistanceScale = 2000f;
         }
         
         public void LoadContent(ContentManager content)
         {
             Content = content;
-            Listener = new AudioListener();
             foreach(var sound in SoundCache.Keys.ToList())
             {
                 if(SoundCache[sound] == null){
@@ -121,7 +183,8 @@ namespace team5
         
         public void Update(Vector2 listener)   
         {
-            Listener.Position = new Vector3(listener.X, listener.Y, 100);
+            Listener.X = listener.X;
+            Listener.Y = listener.Y;
             ActiveSounds.RemoveAll(sound => {
                     sound.Update();
                     return sound.Stopped;
