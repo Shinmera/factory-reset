@@ -1,6 +1,7 @@
 (html
  :font-family sans-serif
  :font-size 12pt
+ :user-select none
  (body
   :height 100vh
   :width 100vw
@@ -62,25 +63,57 @@
       :color (hex EE8800))))
    (.main
     :flex-grow 1
-    :overflow scroll
+    :min-width 0
+    :min-height 0
     :display flex
-    (>canvas
-     :margin auto
+    :flex-direction column
+    (>header
+     :min-height 1.5em
+     :height 1.5em
+     :display flex
+     :align-items center
      :background (hex FFFFFF)
-     :border 1px solid black
-     :z-index 1)))
+     :border-bottom 2px solid (hex 0088EE)
+     (a
+      :display inline-block
+      :padding 0.3em
+      :cursor pointer)
+     ((:and a :hover)
+      :background (hex 0088EE)
+      :color (hex FFFFFF))
+     (.zoom
+      :margin-right auto
+      (label :font-family monospace))
+     (>div
+      :display flex
+      :align-items center))
+    (.tilemap
+     :flex-grow 1
+     :display flex
+     :overflow scroll
+     :min-width 0
+     :min-height 0
+     (>canvas
+      :margin auto
+      :background (hex FFFFFF)
+      :border 1px solid black
+      :z-index 1))
+    (>footer
+     :border-top 2px solid (hex 0088EE)
+     :margin 0
+     :padding 0
+     :min-height 128px
+     :max-height 30%
+     :overflow-y scroll
+     ("#info"
+      :background (hex FFFFFF)
+      :font-family monospace
+      (>* :white-space pre))
+     (>canvas
+      :width 100%))))
   (>footer
    :border-top 2px solid (hex 0088EE)
-   :margin 0
-   :padding 0
-   :min-height 128px
-   :max-height 30%
-   :overflow-y scroll
-   ("#info"
-    :font-family monospace
-    (>* :white-space pre))
-   (>canvas
-    :width 100%))
+   :overflow-y scroll)
   ("#prompts"
    :background (rgba 0 0 0 0.75)
    :-webkit-backdrop-filter "blur(5px)"
@@ -108,6 +141,7 @@
      :display inline-block
      :min-width 12em)
     (input
+     :input auto
      :border 1px solid (hex DDDDDD)
      :padding 0.2em 0.3em
      :margin 0.1em

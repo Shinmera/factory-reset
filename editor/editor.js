@@ -667,11 +667,18 @@ var selectTileEvent = function(ev){
 var button = 0;
 var editMapEvent = function(ev){
     if(ev.buttons){
-        var x = Math.floor(ev.offsetX/tileSize);
-        var y = Math.floor(ev.offsetY/tileSize);
+        var x = Math.floor(ev.offsetX/tilemap.clientWidth*tilemap.width/tileSize);
+        var y = Math.floor(ev.offsetY/tilemap.clientHeight*tilemap.height/tileSize);
         var action = (button == 2)? "erase" : "place";
         level.chunk.edit(x, y, action);
     }
+};
+
+var zoomEvent = function(ev){
+    var zoom = parseFloat(ev.target.value);
+    ev.target.parentNode.querySelector("label").innerText = zoom;
+    tilemap.style.maxWidth = tilemap.style.minWidth = (tilemap.width*zoom)+"px";
+    tilemap.style.maxHeight = tilemap.style.minHeight = (tilemap.height*zoom)+"px";
 };
 
 var openTileset = function(){
@@ -886,6 +893,7 @@ var initEvents = function(){
     document.querySelector("#open-level").addEventListener("click", openLevel);
     document.querySelector("#save-level").addEventListener("click", saveLevel);
     document.querySelector("#open-tileset").addEventListener("click", openTileset);
+    document.querySelector("#zoom").addEventListener("change", zoomEvent);
     window.addEventListener("wheel", selectTileEvent);
     window.onbeforeunload = stopUnload;
     window.addEventListener("beforeunload", stopUnload);
