@@ -364,6 +364,7 @@ class Chunk{
     }
 
     drawPos(x, y){
+        // FIXME: add layer transparency change to allow seethrough.
         var pixelIndex = ((this.width*y)+x)*4;
         var empty = true;
         for(var l=0; l<this.pixels.length; l++){
