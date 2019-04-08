@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
-using System.Linq;
 using System;
 
 namespace team5
@@ -63,11 +62,11 @@ namespace team5
     public class SoundEngine
     {
         /// <summary>The range in which there is no panning and no attenuation.</summary>
-        public const float DeadZone = 1 * Chunk.TileSize;
+        public const float DeadZone = 2 * Chunk.TileSize;
         /// <summary>The range in which sound is panned. Note the panning is always linear.</summary>
-        public const float MidRange = 2 * Chunk.TileSize;
+        public const float MidRange = 10 * Chunk.TileSize;
         /// <summary>The range up to which sound is audible.</summary>
-        public const float AudibleDistance = 40 * Chunk.TileSize;
+        public const float AudibleDistance = 50 * Chunk.TileSize;
         /// <summary>The rolloff factor for the attenuation function.</summary>
         public const float Rolloff = 1f;
         /// <summary>The attenuation function used for sound distance volume scaling.</summary>
@@ -85,14 +84,13 @@ namespace team5
             private SoundEngine SoundEngine;
             readonly SoundEffect Effect;
             readonly SoundEffectInstance Instance;
-            public Vector2 Position;
+            public Vector2 Position = new Vector2(0,0);
 
-            public Sound(SoundEngine soundEngine, SoundEffect effect, Vector2 position)
+            public Sound(SoundEngine soundEngine, SoundEffect effect)
             {
                 SoundEngine = soundEngine;
                 Effect = effect;
                 Instance = effect.CreateInstance();
-                Position = position;
                 Instance.Play();
                 SoundEngine.ActiveSounds.Add(this);
             }
@@ -138,6 +136,11 @@ namespace team5
                 Instance.Volume = attenuation;
                 Instance.Pan = Math.Sign(direction.X)*panFactor;
             }
+            
+            public void Dispose()
+            {
+                Instance.Dispose();
+            }
         }
         
         public SoundEngine(Game1 game)
@@ -148,18 +151,12 @@ namespace team5
         public void LoadContent(ContentManager content)
         {
             Content = content;
-            foreach(var sound in SoundCache.Keys.ToList())
-            {
-                if(SoundCache[sound] == null){
-                    SoundCache[sound] = content.Load<SoundEffect>("Sounds/"+sound);
-                }
-            }
         }
         
-        public void RequestForLoad(string effect)
+        public void Load(string effect)
         {
             if(!SoundCache.ContainsKey(effect))
-                SoundCache.Add(effect, null);
+                SoundCache.Add(effect, Content.Load<SoundEffect>("Sounds/"+effect));
         }
         
         public bool Paused
@@ -169,9 +166,16 @@ namespace team5
             }
         }
         
+        public Sound Play(string effect)
+        {
+            return new Sound(this, SoundCache[effect]);
+        }
+        
         public Sound Play(string effect, Vector2 position)
         {
-            return new Sound(this, SoundCache[effect], position);
+            return new Sound(this, SoundCache[effect]){
+                Position = position
+            };
         }
         
         public bool Listen(Vector2 position, out Vector2 source)
@@ -187,7 +191,12 @@ namespace team5
             Listener.Y = listener.Y;
             ActiveSounds.RemoveAll(sound => {
                     sound.Update();
-                    return sound.Stopped;
+                    if(sound.Stopped)
+                    {
+                        sound.Dispose();
+                        return true;
+                    }
+                    return false;
                 });
         }
     }

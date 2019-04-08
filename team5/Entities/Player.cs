@@ -60,7 +60,7 @@ namespace team5
             Sprite.Add("die",   28,  5, 0.5, 4);
             Sprite.Add("revive",33,  7, 1.0);
             
-            Game.SoundEngine.RequestForLoad("footstep");
+            Game.SoundEngine.Load("footstep");
         }
 
         public override void Draw()
@@ -292,9 +292,13 @@ namespace team5
             }
             else
             {
-                if(0 < Velocity.Y)
+                if(0 < Velocity.Y){
+                    if(Sprite.Frame == 14 && SoundFrame != Sprite.Frame){
+                        SoundFrame = Sprite.Frame;
+                        Game.SoundEngine.Play("footstep", Position);
+                    }
                     Sprite.Play("jump");
-                else if(Velocity.Y < 0)
+                }else if(Velocity.Y < 0)
                     Sprite.Play("fall");
                 else if(Velocity.X != 0){
                     Sprite.Play("run");
@@ -302,8 +306,10 @@ namespace team5
                         SoundFrame = Sprite.Frame;
                         Game.SoundEngine.Play("footstep", Position);
                     }
-                }else
+                }else{
+                    SoundFrame = 0;
                     Sprite.Play("idle");
+                }
                 // Base direction on movement
                 if (Velocity.X < 0)
                     Sprite.Direction = -1;

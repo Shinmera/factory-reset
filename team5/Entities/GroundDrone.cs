@@ -19,6 +19,7 @@ namespace team5
         private AIState State = AIState.Patrolling;
 
         private ConeEntity ViewCone;
+        private SoundEngine.Sound Sound;
 
         public GroundDrone(Vector2 position, Game1 game) : base( game, new Vector2(Chunk.TileSize/2, Chunk.TileSize))
         {
@@ -36,6 +37,9 @@ namespace team5
             Sprite.Texture = content.Load<Texture2D>("Textures/tempplayer");
             Sprite.Add("idle", 0, 4, 1.0);
             Sprite.Add("run", 4, 10, 0.8);
+            Game.SoundEngine.Load("submarine");
+            Sound = Game.SoundEngine.Play("submarine", Position);
+            Sound.Loop = true;
         }
 
         /// <summary>
@@ -63,6 +67,7 @@ namespace team5
 
             base.Update(chunk);
             Sprite.Update(dt);
+            Sound.Position = Position;
 
             switch(State)
             {

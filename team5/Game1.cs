@@ -57,12 +57,11 @@ namespace team5
             TilemapEngine.LoadContent(Content);
             ViewConeEngine.LoadContent(Content);
             TextEngine.LoadContent(Content);
+            SoundEngine.LoadContent(Content);
             
             /*
             Level = new Level(this, "test");
             Level.LoadContent(Content);
-            // Load later as Entities can register effects to load.
-            SoundEngine.LoadContent(Content);
             */
         }
         
