@@ -25,17 +25,17 @@ namespace team5
             Sprite.Add("idle", 0, 4, 1.0);
         }
         
-        public override void Update(GameTime gameTime, Chunk chunk)
+        public override void Update(Chunk chunk)
         {
             float dt = Game1.DeltaT;
             Sprite.Update(dt);
             ViewCone.UpdatePosition(Position);
-            ViewCone.Update(gameTime, chunk);
+            ViewCone.Update(chunk);
         }
         
-        public override void Draw(GameTime gameTime)
+        public override void Draw()
         {
-            ViewCone.Draw(gameTime);
+            ViewCone.Draw();
             Game.Transforms.Push();
             Game.Transforms.Rotate(ViewCone.Middle);
             Sprite.Draw(Position);

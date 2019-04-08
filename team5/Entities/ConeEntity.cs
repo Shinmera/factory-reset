@@ -293,7 +293,7 @@ namespace team5
 
      
         
-        public override void Update(GameTime gameTime, Chunk chunk)
+        public override void Update(Chunk chunk)
         {
             if (!ComputedOccludedRadius)
             {
@@ -315,7 +315,7 @@ namespace team5
                 }
             }
 
-            base.Update(gameTime, chunk);
+            base.Update(chunk);
 
             if (!chunk.Level.Player.IsHiding)
             {
@@ -326,7 +326,7 @@ namespace team5
             }
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw()
         {
             RecomputeBB();
             Game.ViewConeEngine.Draw(Position, Radius, Angle1, Angle2);

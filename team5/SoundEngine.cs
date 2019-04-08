@@ -7,14 +7,14 @@ using System.Linq;
 namespace team5
 {
     public class SoundEngine
-    {   
+    {
         private Game1 Game;
         private ContentManager Content;
         private AudioListener Listener;
         private readonly Dictionary<string, SoundEffect> SoundCache = new Dictionary<string, SoundEffect>();
         private readonly List<Sound> ActiveSounds = new List<Sound>();
         
-        public struct Sound
+        public class Sound
         {
             private SoundEngine Parent;
             readonly SoundEffect Effect;
@@ -79,6 +79,7 @@ namespace team5
         public SoundEngine(Game1 game)
         {
             Game = game;
+            SoundEffect.DistanceScale = 2000f;
         }
         
         public void LoadContent(ContentManager content)
@@ -87,8 +88,9 @@ namespace team5
             Listener = new AudioListener();
             foreach(var sound in SoundCache.Keys.ToList())
             {
-                if(SoundCache[sound] == null)
+                if(SoundCache[sound] == null){
                     SoundCache[sound] = content.Load<SoundEffect>("Sounds/"+sound);
+                }
             }
         }
         
@@ -119,7 +121,7 @@ namespace team5
         
         public void Update(Vector2 listener)   
         {
-            Listener.Position = new Vector3(listener.X, listener.Y, 0);
+            Listener.Position = new Vector3(listener.X, listener.Y, 100);
             ActiveSounds.RemoveAll(sound => {
                     sound.Update();
                     return sound.Stopped;

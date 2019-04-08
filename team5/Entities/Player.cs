@@ -22,6 +22,7 @@ namespace team5
         private bool HideKeyWasUp = false;
         private bool HasWallJumped = false;
         private float LongJump = 0;
+        private int SoundFrame = 0;
 
         private readonly float Gravity = 800;
         private readonly float MaxVel = 150;
@@ -58,14 +59,16 @@ namespace team5
             Sprite.Add("climb", 24,  4, 0.5);
             Sprite.Add("die",   28,  5, 0.5, 4);
             Sprite.Add("revive",33,  7, 1.0);
+            
+            Game.SoundEngine.RequestForLoad("footstep");
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw()
         {
             Sprite.Draw(Position);
         }
 
-        public override void Update(GameTime gameTime, Chunk chunk)
+        public override void Update(Chunk chunk)
         {
             if(Controller.Quit)
                 Game.Exit();
@@ -293,9 +296,13 @@ namespace team5
                     Sprite.Play("jump");
                 else if(Velocity.Y < 0)
                     Sprite.Play("fall");
-                else if(Velocity.X != 0)
+                else if(Velocity.X != 0){
                     Sprite.Play("run");
-                else
+                    if((Sprite.Frame == 5 || Sprite.Frame == 10) && SoundFrame != Sprite.Frame){
+                        SoundFrame = Sprite.Frame;
+                        Game.SoundEngine.Play("footstep", Position);
+                    }
+                }else
                     Sprite.Play("idle");
                 // Base direction on movement
                 if (Velocity.X < 0)
@@ -303,6 +310,8 @@ namespace team5
                 if (0 < Velocity.X)
                     Sprite.Direction = +1;
             }
+            
+            Game.SoundEngine.Update(Position);
         }
 
         public override void Respawn(Chunk chunk)
@@ -311,7 +320,7 @@ namespace team5
             Position = chunk.SpawnPosition;
         }
 
-        public void Update(GameTime gameTime, int direction)
+        public void Update(int direction)
         {
             if (Controller.Quit)
                 Game.Exit();

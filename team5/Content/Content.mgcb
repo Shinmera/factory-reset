@@ -37,6 +37,12 @@
 /processorParam:DebugMode=Auto
 /build:Shaders/tile.fx
 
+#begin Sounds/footstep.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/footstep.mp3
+
 #begin Textures/camera.png
 /importer:TextureImporter
 /processor:TextureProcessor

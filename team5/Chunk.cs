@@ -184,9 +184,9 @@ namespace team5
             CallAll(obj => obj.LoadContent(content));
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
-            CallAll(x => x.Update(gameTime, this));
+            CallAll(x => x.Update(this));
 
             PendingDeletion.ForEach(x => 
             {
@@ -198,17 +198,17 @@ namespace team5
             });
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw()
         {
             if(DrawSolids)
             {
                 Game.TilemapEngine.Draw(Layers[0], Solidset, new Vector2(BoundingBox.X, BoundingBox.Y));
-                CallAll(x => x.Draw(gameTime));
+                CallAll(x => x.Draw());
             }
             else
             {
                 Game.TilemapEngine.Draw(Layers[1], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
-                CallAll(x => x.Draw(gameTime));
+                CallAll(x => x.Draw());
                 for(int i=2; i<Layers.Length; ++i)
                     Game.TilemapEngine.Draw(Layers[i], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
             }

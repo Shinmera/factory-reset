@@ -28,7 +28,7 @@ namespace team5
         /// <summary>
         ///   Updates this object's physics/mechanics, with a reference to the chunk it's in.
         /// </summary>
-        public virtual void Update(GameTime gameTime, Chunk chunk)
+        public virtual void Update(Chunk chunk)
         {
 
         }
@@ -36,7 +36,7 @@ namespace team5
         /// <summary>
         ///   Draws this object.
         /// </summary>
-        public virtual void Draw(GameTime gameTime)
+        public virtual void Draw()
         {
 
         }

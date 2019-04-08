@@ -24,7 +24,7 @@ namespace team5
             ViewCone.FromDegrees(Extents.X, 33);
         }
         
-        public override void Update(GameTime gameTime, Chunk chunk)
+        public override void Update(Chunk chunk)
         {
             float dt = Game1.DeltaT;
             float direction, view;
@@ -55,16 +55,7 @@ namespace team5
             
             direction += Velocity*dt;
             ViewCone.FromDegrees(direction, view);
-            base.Update(gameTime, chunk);
-        }
-
-        public override void Draw(GameTime gameTime)
-        {
-            ViewCone.Draw(gameTime);
-            Game.Transforms.Push();
-            Game.Transforms.Rotate(ViewCone.Middle);
-            Sprite.Draw(Position);
-            Game.Transforms.Pop();
+            base.Update(chunk);
         }
     }
 }

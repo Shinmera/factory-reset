@@ -15,7 +15,7 @@ namespace team5
             Position = position;
         }
         
-        public override void Draw(GameTime gameTime)
+        public override void Draw()
         {
             Game.SpriteEngine.Draw(new Vector4(Position.X, Position.Y, Size.X, Size.Y));
         }

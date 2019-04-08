@@ -54,7 +54,7 @@ namespace team5
             return new RectangleF(Position, TargetSize).Intersects(target);
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             Vector2 intendedPosition = Player.Position;
             

@@ -26,10 +26,9 @@ namespace team5
             Sprite.Add("idle", 0, 1, 1.0);
         }
 
-        public override void Update(GameTime gameTime, Chunk chunk)
+        public override void Update(Chunk chunk)
         {
-            base.Update(gameTime, chunk);
-
+            base.Update(chunk);
 
             if (Collide(chunk.Level.Player, Game1.DeltaT, out int dirction, out float time, out bool corner))
             {
@@ -38,7 +37,7 @@ namespace team5
             }
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw()
         {
 
             Sprite.Draw(Position);

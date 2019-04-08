@@ -57,11 +57,11 @@ namespace team5
             }
         }
 
-        public override void Update(GameTime gameTime, Chunk chunk)
+        public override void Update(Chunk chunk)
         {
             float dt = Game1.DeltaT;
 
-            base.Update(gameTime, chunk);
+            base.Update(chunk);
             Sprite.Update(dt);
 
             switch(State)
@@ -117,12 +117,12 @@ namespace team5
             
             Position += dt * Velocity;
             ViewCone.UpdatePosition(Position);
-            ViewCone.Update(gameTime, chunk);
+            ViewCone.Update(chunk);
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw()
         {
-            ViewCone.Draw(gameTime);
+            ViewCone.Draw();
             Sprite.Draw(Position);
         }
     }

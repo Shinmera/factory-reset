@@ -68,17 +68,17 @@ namespace team5
         
         protected override void Update(GameTime gameTime)
         {
+            base.Update(gameTime);
             Transforms.Reset();
             Transforms.ResetView();
-            base.Update(gameTime);
-            Level.Update(gameTime);
+            Level.Update();
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
             base.Draw(gameTime);
-            Level.Draw(gameTime);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
+            Level.Draw();
         }
     }
 }

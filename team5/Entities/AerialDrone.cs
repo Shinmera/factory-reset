@@ -71,7 +71,7 @@ namespace team5
             State = AIState.Waiting;
         }
 
-        public override void Update(GameTime gameTime, Chunk chunk)
+        public override void Update(Chunk chunk)
         {
 
             float dt = Game1.DeltaT;
@@ -110,8 +110,8 @@ namespace team5
             Position += dt * Velocity;
             ViewCone.UpdatePosition(Position);
             ViewCone.Middle = Direction;
-            ViewCone.Update(gameTime, chunk);
-            base.Update(gameTime, chunk);
+            ViewCone.Update(chunk);
+            base.Update(chunk);
         }
 
         public override void LoadContent(ContentManager content)
@@ -120,9 +120,9 @@ namespace team5
             Sprite.Add("idle", 0, 4, 1.0);
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw()
         {
-            ViewCone.Draw(gameTime);
+            ViewCone.Draw();
             Game.Transforms.Push();
             Game.Transforms.Rotate(ViewCone.Middle);
             Sprite.Draw(Position);

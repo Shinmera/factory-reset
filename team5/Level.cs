@@ -66,15 +66,15 @@ namespace team5
             Camera.Resize(width, height);
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             if (!ChunkTrans)
             {
-                Camera.Update(gameTime);
+                Camera.Update();
             }
             else
             {
-                Camera.Update(gameTime);
+                Camera.Update();
             }
 
             RectangleF PlayerBB = Player.GetBoundingBox();
@@ -131,7 +131,7 @@ namespace team5
             if(ChunkTrans){
                 TransitionChunks.Clear();
 
-                TargetChunk.Update(gameTime);
+                TargetChunk.Update();
 
                 foreach (var chunk in Chunks){
                     if (PlayerBB.Intersects(chunk.BoundingBox)){
@@ -171,27 +171,27 @@ namespace team5
                     return;
                 }
 
-                Player.Update(gameTime, TransitionDirection);
+                Player.Update(TransitionDirection);
             }
             else
             {
                 if (ActiveChunk != null)
-                    ActiveChunk.Update(gameTime);
+                    ActiveChunk.Update();
             }
 
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw()
         {
             if (ChunkTrans)
             {
-                Player.Draw(gameTime);
+                Player.Draw();
             }
 
             foreach (Chunk chunk in Chunks){
                 if (Camera.IsVisible(chunk.BoundingBox))
                 {
-                    chunk.Draw(gameTime);
+                    chunk.Draw();
                 }
             }
         }
