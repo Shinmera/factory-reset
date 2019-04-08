@@ -9,7 +9,6 @@ namespace team5
 {
     public class TextEngine
     {
-        private SpriteFont Font;
         private SpriteBatch SpriteBatch;
         private Game1 Game;
         private List<Tuple<string, Vector2, Color, string>> QueuedText;
@@ -30,7 +29,7 @@ namespace team5
             Fonts = new Dictionary<string, SpriteFont>
             {
                 { "Arial", content.Load<SpriteFont>("Fonts/Arial") },
-                { "ArialLarge", content.Load<SpriteFont>("Fonts/ArialBoldLarge") }
+                { "ArialBoldLarge", content.Load<SpriteFont>("Fonts/ArialBoldLarge") }
             };
         }
 
@@ -45,11 +44,14 @@ namespace team5
 
             foreach (Tuple<string, Vector2, Color, string> text in QueuedText)
             {
-                SpriteBatch.DrawString(Font, text.Item1, text.Item2, text.Item3);
+                if(Fonts.TryGetValue(text.Item4, out SpriteFont font))
+                    SpriteBatch.DrawString(font, text.Item1, text.Item2, text.Item3);
             }
 
             SpriteBatch.End();
             Game.GraphicsDevice.RasterizerState = NoCull;
+
+            QueuedText.Clear();
         }
     }
 }

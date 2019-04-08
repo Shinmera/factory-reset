@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace team5
 {
-    class Level
+    class Level:Window
     {
         public List<Chunk> Chunks = new List<Chunk>();
         public Chunk ActiveChunk = null;
@@ -38,7 +38,7 @@ namespace team5
             Name = name;
         }
         
-        public void LoadContent(ContentManager content)
+        public override void LoadContent(ContentManager content)
         {
             var data = content.Load<LevelContent>("Levels/"+Name);
             
@@ -61,12 +61,12 @@ namespace team5
             Camera.UpdateChunk(ActiveChunk);
         }
         
-        public void Resize(int width, int height)
+        public override void Resize(int width, int height)
         {
             Camera.Resize(width, height);
         }
 
-        public void Update()
+        public override void Update()
         {
             if (!ChunkTrans)
             {
@@ -181,7 +181,7 @@ namespace team5
 
         }
 
-        public void Draw()
+        public override void Draw()
         {
             if (ChunkTrans)
             {

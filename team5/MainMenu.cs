@@ -10,11 +10,13 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace team5
 {
-    class MainMenu
+    class MainMenu:Window
     {
         private Game1 Game;
         private SpriteBatch SpriteBatch;
         private Controller Controller;
+
+        private Vector2 Size;
 
         private class Button
         {
@@ -40,7 +42,7 @@ namespace team5
             {
             }
 
-            public virtual void Draw(SpriteBatch batch, bool selected)
+            public virtual void Draw(SpriteBatch batch, Vector2 Center, bool selected)
             {
             }
         }
@@ -54,33 +56,34 @@ namespace team5
                 Label = label;
             }
 
-            public override void Draw(SpriteBatch batch, bool selected)
+            public override void Draw(SpriteBatch batch, Vector2 Center, bool selected)
             {
                 string font = selected ? "ArialBoldLarge" : "Arial";
-                Game.TextEngine.QueueText(Label, Location, Color.Black, font);
+                Game.TextEngine.QueueText(Label, Center+Location, Color.Black, font);
             }
         }
 
         private List<Button> Buttons;
         private Button ActiveButton;
 
-        public void Start() {
-
-        }
-
         public MainMenu(Game1 game)
         {
             Game = game;
             Buttons = new List<Button>();
 
-            Buttons.Add(new TextButton(game, new Vector2(), Start, "Start"));
+            Buttons.Add(new TextButton(game, new Vector2(0, -200), Game.StartLevel, "Start"));
 
-            Buttons.Add(new TextButton(game, new Vector2(), Game.Exit, "Start"));
+            Buttons.Add(new TextButton(game, new Vector2(0, 200), Game.Exit, "Quit"));
+
+            Buttons[1].Up = Buttons[0];
+            Buttons[0].Down = Buttons[1];
+
+            ActiveButton = Buttons[0];
 
             Controller = new Controller();
         }
 
-        public void Update()
+        public override void Update()
         {
             Controller.Update();
 
@@ -88,22 +91,65 @@ namespace team5
             {
                 ActiveButton.Action.Invoke();
             }
+            else
+            {
+                if (Controller.MoveLeft)
+                {
+                    if(ActiveButton.Left != null)
+                    {
+                        ActiveButton = ActiveButton.Left;
+                    }
+                }
+                if (Controller.MoveRight)
+                {
+                    if (ActiveButton.Right != null)
+                    {
+                        ActiveButton = ActiveButton.Right;
+                    }
+                }
+                if (Controller.MoveDown)
+                {
+                    if (ActiveButton.Down != null)
+                    {
+                        ActiveButton = ActiveButton.Down;
+                    }
+                }
+                if (Controller.MoveUp)
+                {
+                    if (ActiveButton.Up != null)
+                    {
+                        ActiveButton = ActiveButton.Up;
+                    }
+                }
+            }
+            
+            
         }
 
-        public void Draw()
+        public override void Draw()
         {
             Game.GraphicsDevice.Clear(Color.LightGray);
+
             foreach(Button button in Buttons)
             {
                 if (button != ActiveButton)
                 {
-                    button.Draw(SpriteBatch, false);
+                    button.Draw(SpriteBatch, Size, false);
                 }
                 else
                 {
-                    button.Draw(SpriteBatch, true);
+                    button.Draw(SpriteBatch, Size, true);
                 }
             }
+            Game.TextEngine.DrawText();
+        }
+
+        public override void Resize(int width, int height)
+        {
+            Size.X = width / 2F;
+            Size.Y = height / 2F;
+
+
         }
     }
 }
