@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -19,26 +17,46 @@ namespace team5
             Patrolling,
             Waiting,
             Targeting,
+            Returning,
+            Searching,
         };
 
         private const float DroneSize = 12;
         private const float ViewSize = 60;
-        private float Direction = 225;
-        private readonly float PatrolSpeed = 50;
+        private const float MinMovement = 50;
+        private const float Speed = 50;
+        private const float PatrolRange = 200;
+        private const float SearchRange = 200;
+        private const float SearchTime = 10;
+        private const float WaitTime = 5;
+        private const float WaitAngularVelocity = 0.375F * (float)Math.PI;
+        private const float TurnAngularVelocity = (float)Math.PI;
+        private const int WanderSearchAttempts = 10;
+
+        private Vector2 Spawn;
+
+        private ConeEntity ViewCone;
 
         private AnimatedSprite Sprite;
         private AIState State = AIState.Waiting;
         private List<Vector2> Path;
         private int NextNode;
 
-        private Vector2 Spawn;
+        private Vector2 TargetLocation;
+        private Vector2 WanderLocation;
 
-        private ConeEntity ViewCone;
+        private float StateTimer = 0;
+
+        private float Direction = 225;
+
+
 
         public AerialDrone(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize*0.375F))
         {
             Spawn = position;
             Position = position;
+            WanderLocation = Position;
+            TargetLocation = Position;
             Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize, Chunk.TileSize));
             ViewCone = new ConeEntity(game);
             ViewCone.FromDegrees(225, 90);
@@ -64,6 +82,135 @@ namespace team5
             {
                 State = AIState.Waiting;
             }
+
+            TargetLocation = target;
+        }
+
+        public void Search(Vector2 target)
+        {
+            StateTimer = 0;
+            TargetLocation = target;
+            State = AIState.Searching;
+        }
+
+        public void Return(Chunk chunk)
+        {
+            Target(Spawn, chunk);
+        }
+
+        public void Wait()
+        {
+            Velocity = new Vector2(0);
+            StateTimer = 0;
+            State = AIState.Waiting;
+        }
+
+        private bool MoveTo(Vector2 target)
+        {
+            Vector2 dir = (target - Position);
+
+            if (dir.LengthSquared() <= 4 * Game1.DeltaT * Game1.DeltaT * Velocity.LengthSquared())
+            {
+                return true;
+            }
+            else
+            {
+                float targetDirection = (float)Math.Atan2(dir.Y, dir.X);
+                if (ConeEntity.ConvertAngle(targetDirection - Direction) <= 2 * Game1.DeltaT * TurnAngularVelocity || ConeEntity.ConvertAngle(Direction - targetDirection) <= 2 * Game1.DeltaT * TurnAngularVelocity)
+                {
+                    Direction = targetDirection;
+                    Velocity = dir;
+                    Velocity.Normalize();
+                    if (float.IsNaN(Velocity.X) || float.IsNaN(Velocity.Y))
+                    {
+
+                        Velocity = new Vector2(0);
+                        return true;
+                    }
+                    Velocity *= Speed;
+                }
+                else
+                {
+                    if(ConeEntity.ConvertAngle(targetDirection - Direction) < Math.PI)
+                    {
+                        Direction += Game1.DeltaT * TurnAngularVelocity;
+                    }
+                    else
+                    {
+                        Direction -= Game1.DeltaT * TurnAngularVelocity;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private bool FindWander(Vector2 location, float distance, Chunk chunk)
+        {
+            float angle = (float)(Game.RNG.NextDouble() * 2 * Math.PI);
+
+            var dir = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+
+            Vector2 p1 = Position - location;
+            Vector2 p2 = p1 + dir;
+
+            float a = (p2 - p1).LengthSquared();
+            float b = 2 * Vector2.Dot(p1, (p2 - p1));
+            float c = p1.LengthSquared() - distance * distance;
+
+            float Disc = b * b - 4 * a * c;
+
+            if (Disc <= 0)
+            {
+                return false;
+            }
+            else
+            {
+                float t1 = (-b - (float)Math.Sqrt(Disc)) / (2 * a);
+                float t2 = (-b + (float)Math.Sqrt(Disc)) / (2 * a);
+
+                if(t1 <= 0 && t2 <= 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    float maxDist = t1 > 0 ? t1 : t2;
+
+                    var point1 = new Vector2(dir.Y, -dir.X);
+                    point1.Normalize();
+                    point1 *= DroneSize/2;
+                    var point2 = -point1;
+
+                    if (chunk.IntersectLine(Position + point1, dir,maxDist, out float distToIntersect1)){
+                        maxDist = distToIntersect1;
+                    }
+
+                    if (chunk.IntersectLine(Position + point2, dir, maxDist, out float distToIntersect2))
+                    {
+                        maxDist = distToIntersect2;
+                    }
+
+                    maxDist -= DroneSize / 2;
+
+                    if(maxDist < MinMovement)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        Vector2 tentativeWanderLocation = Position + ((float)Game.RNG.NextDouble() * (maxDist - MinMovement) + MinMovement) * dir;
+                        if (chunk.BoundingBox.Contains(tentativeWanderLocation)){
+                            WanderLocation = tentativeWanderLocation;
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
         }
 
         public override void Respawn(Chunk chunk)
@@ -75,40 +222,102 @@ namespace team5
         public override void Update(Chunk chunk)
         {
 
-            float dt = Game1.DeltaT;
-
             switch (State)
             {
                 case AIState.Patrolling:
+                    if (MoveTo(WanderLocation))
+                    {
+                        Wait();
+                    }
+                    break;
+                case AIState.Searching:
+                    if (MoveTo(WanderLocation))
+                    {
+                        FindWander(TargetLocation, PatrolRange, chunk);
+                    }
+
+                    StateTimer += Game1.DeltaT;
+                    if(StateTimer >= SearchTime)
+                    {
+                        Return(chunk);
+                    }
                     break;
                 case AIState.Waiting:
-                    Vector2 playerPos = chunk.Level.Player.Position;
-                    Velocity = new Vector2(0);
-                    Target(playerPos, chunk);
-                    break;
-                case AIState.Targeting:
-                    Vector2 dir = Path[NextNode] - Position;
-                    if(dir.LengthSquared() < 1F)
+                    StateTimer += Game1.DeltaT;
+                    if (StateTimer <= 0.05F * WaitTime)
                     {
-                        ++NextNode;
-                        if(NextNode >= Path.Count)
-                        {
-                            Vector2 playerPosT = chunk.Level.Player.Position;
-                            Target(playerPosT, chunk);
-                        }
+
+                    }
+                    if (StateTimer <= 0.25F * WaitTime)
+                    {
+                        Direction += Game1.DeltaT * WaitAngularVelocity;
+                    }
+                    else if (StateTimer <= 0.3F * WaitTime)
+                    {
+
+                    }
+                    else if (StateTimer <= 0.7F * WaitTime)
+                    {
+                        Direction -= Game1.DeltaT * WaitAngularVelocity;
+                    }
+                    else if (StateTimer <= 0.75F * WaitTime)
+                    {
+
+                    }
+                    else if (StateTimer <= 0.95F * WaitTime)
+                    {
+                        Direction += Game1.DeltaT * WaitAngularVelocity;
+                    }
+                    else if (StateTimer <= WaitTime)
+                    {
+
                     }
                     else
                     {
-                        Direction = (float)Math.Atan2(dir.Y, dir.X);
-                        Velocity = dir;
-                        Velocity.Normalize();
-                        Velocity *= PatrolSpeed;
+                        bool found = false;
+                        for (int i = 0; i < WanderSearchAttempts; ++i)
+                        {
+                            if (FindWander(Spawn, PatrolRange, chunk))
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found)
+                        {
+                            Return(chunk);
+                        }
+                        else
+                        {
+                            State = AIState.Patrolling;
+                        }
+                    }
+                    break;
+                case AIState.Targeting:
+                    if (MoveTo(Path[NextNode]))
+                    {
+                        ++NextNode;
+                        if (NextNode >= Path.Count)
+                        {
+                            Search(Path[NextNode - 1]);
+                        }
+                    }
+                    break;
+                case AIState.Returning:
+                    if (MoveTo(Path[NextNode]))
+                    {
+                        ++NextNode;
+                        if (NextNode >= Path.Count)
+                        {
+                            State = AIState.Waiting;
+                        }
                     }
                     break;
             }
 
             
-            Position += dt * Velocity;
+            Position += Game1.DeltaT * Velocity;
             ViewCone.UpdatePosition(Position);
             ViewCone.Middle = Direction;
             ViewCone.Update(chunk);
@@ -155,7 +364,9 @@ namespace team5
                     var tentativePoint = new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y) + new Vector2(Chunk.TileSize / 2) + path[i].ToVector2() * Chunk.TileSize;
 
                     var dir = tentativePoint - ReducedPath.Last();
-                    var point1 = new Vector2(Math.Sign(dir.Y) * size.X, -Math.Sign(dir.X) * size.Y);
+                    var point1 = new Vector2(dir.Y , -dir.X);
+                    point1.Normalize();
+                    point1 *= DroneSize;
                     var point2 = -point1;
 
                     

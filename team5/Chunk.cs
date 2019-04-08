@@ -171,7 +171,12 @@ namespace team5
                                 CollidingEntities.Add(new Pickup(position, Game));
                                 break;
                             case (uint)Colors.AerialDrone:
-                                NonCollidingEntities.Add(new AerialDrone(position, Game));
+                                var drone = new AerialDrone(position, Game);
+                                NonCollidingEntities.Add(drone);
+                                if(Player != null)
+                                {
+                                    drone.Target(Player.Position, this);
+                                }
                                 break;
                         }
                     }

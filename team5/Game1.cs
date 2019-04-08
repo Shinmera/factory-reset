@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -15,6 +16,7 @@ namespace team5
         public readonly SoundEngine SoundEngine;
         public readonly TextEngine TextEngine;
         public readonly Transforms Transforms = new Transforms();
+        public readonly Random RNG;
 
         Window ActiveWindow;
         MainMenu MainMenu;
@@ -30,6 +32,7 @@ namespace team5
             TextEngine = new TextEngine(this);
             DeviceManager.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
+            RNG = new Random();
 
             IsFixedTimeStep = true;
 

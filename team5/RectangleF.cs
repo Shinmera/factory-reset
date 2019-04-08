@@ -74,6 +74,14 @@ namespace team5
                 Y + Height > target.Y;
         }
 
+        public bool Contains(Vector2 point)
+        {
+            return point.X >= X
+                && point.X < X + Width
+                && point.Y >= Y
+                && point.Y < Y + Width;
+        }
+
         public List<Vector2> ToPolygon()
         {
             List<Vector2> res = new List<Vector2>(4);
