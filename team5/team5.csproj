@@ -135,6 +135,7 @@
     <Compile Include="Level.cs" />
     <Compile Include="LevelContent.cs" />
     <Compile Include="LevelReader.cs" />
+    <Compile Include="MainMenu.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="SpriteEngine.cs" />
     <Compile Include="TilemapEngine.cs" />
     <Compile Include="Transforms.cs" />
+    <Compile Include="TextEngine.cs" />
     <Compile Include="ViewConeEngine.cs" />
   </ItemGroup>
   <ItemGroup>

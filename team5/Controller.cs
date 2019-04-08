@@ -54,6 +54,9 @@ namespace team5
         public bool Quit => key.IsKeyDown(Keys.Escape)
             || pad.Buttons.Start == ButtonState.Pressed;
 
+        public bool Enter => key.IsKeyDown(Keys.Enter)
+            || Jump;
+
         public void Update()
         {
             key = Keyboard.GetState();

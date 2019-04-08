@@ -13,6 +13,7 @@ namespace team5
         public readonly TilemapEngine TilemapEngine;
         public readonly ViewConeEngine ViewConeEngine;
         public readonly SoundEngine SoundEngine;
+        public readonly TextEngine TextEngine;
         public readonly Transforms Transforms = new Transforms();
 
         Level Level;
@@ -24,6 +25,7 @@ namespace team5
             TilemapEngine = new TilemapEngine(this);
             ViewConeEngine = new ViewConeEngine(this);
             SoundEngine = new SoundEngine(this);
+            TextEngine = new TextEngine(this);
             DeviceManager.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
 
@@ -35,7 +37,7 @@ namespace team5
             base.Initialize();
             Window.ClientSizeChanged += (x, y) => { Resize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height); };
             Resize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
-            
+
             RasterizerState rs = new RasterizerState{ CullMode = CullMode.None };
             GraphicsDevice.RasterizerState = rs;
             DepthStencilState ds = new DepthStencilState{ DepthBufferEnable = false };
@@ -47,6 +49,8 @@ namespace team5
             SpriteEngine.LoadContent(Content);
             TilemapEngine.LoadContent(Content);
             ViewConeEngine.LoadContent(Content);
+            TextEngine.LoadContent(Content);
+            
 
             Level = new Level(this, "test");
             Level.LoadContent(Content);
