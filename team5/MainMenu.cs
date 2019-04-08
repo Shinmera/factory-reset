@@ -25,6 +25,7 @@ namespace team5
             public Button Up;
             public Button Down;
 
+            protected Vector2 Size;
             public Vector2 Location;
 
             public readonly Action Action;

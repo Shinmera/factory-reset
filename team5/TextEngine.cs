@@ -45,7 +45,11 @@ namespace team5
             foreach (Tuple<string, Vector2, Color, string> text in QueuedText)
             {
                 if(Fonts.TryGetValue(text.Item4, out SpriteFont font))
-                    SpriteBatch.DrawString(font, text.Item1, text.Item2, text.Item3);
+                {
+                    Vector2 size = font.MeasureString(text.Item1);
+                    SpriteBatch.DrawString(font, text.Item1, text.Item2-(size/2), text.Item3);
+                }
+                    
             }
 
             SpriteBatch.End();
