@@ -12,6 +12,7 @@ namespace team5
         public readonly SpriteEngine SpriteEngine;
         public readonly TilemapEngine TilemapEngine;
         public readonly ViewConeEngine ViewConeEngine;
+        public readonly SoundEngine SoundEngine;
         public readonly Transforms Transforms = new Transforms();
 
         Level Level;
@@ -22,6 +23,7 @@ namespace team5
             SpriteEngine = new SpriteEngine(this);
             TilemapEngine = new TilemapEngine(this);
             ViewConeEngine = new ViewConeEngine(this);
+            SoundEngine = new SoundEngine(this);
             DeviceManager.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
 
@@ -48,10 +50,13 @@ namespace team5
 
             Level = new Level(this, "test");
             Level.LoadContent(Content);
+            // Load later as Entities can register effects to load.
+            SoundEngine.LoadContent(Content);
         }
         
         protected override void UnloadContent()
         {
+            // FIXME: Should probably do this
         }
 
         protected void Resize(int width, int height)
