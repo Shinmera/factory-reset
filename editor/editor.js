@@ -903,8 +903,9 @@ var init = function(){
     initCanvas();
     
     createSolidTileset()
-        .then(function(tileset){
+        .then((tileset)=>{
             solidset = tileset;
+            new Level().use();
         });
 };
 
