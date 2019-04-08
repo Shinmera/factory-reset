@@ -15,22 +15,6 @@
     </header>
     <main>
       <section class="sidebar">
-        <ul id="chunks">
-          <li class="chunk" data-id="chunk">
-            <div>
-              <label>Chunk</label>
-              <a><i class="fas fa-trash"></i></a>
-            </div>
-            <ul class="layers">
-              <li class="layer" data-id="0">
-                <label>Solids</label>
-                <a class="show"><i class="fas fa-eye"></i></a>
-              </li>
-            </ul>
-          </li>
-        </ul>
-        <span></span>
-        <a id="new-chunk"><i class="fas fa-plus-square"></i> Add Chunk</a>
       </section>
       <section class="main">
         <canvas id="tilemap" width="0" height="0"></canvas>
@@ -45,29 +29,50 @@
       </div>
       <canvas id="tilelist" width="512"></canvas>
     </footer>
-    <form class="prompt" id="level-prompt">
-      <label for="level-name">Name:</label>
-      <input id="level-name" type="text" placeholder="level" required /><br/>
-      <label for="level-description">Description:</label>
-      <input id="level-description" type="text" placeholder="This level is about..." /><br/>
-      <label for="level-tileset">Default tileset:</label>
-      <input id="level-tileset" type="file" required /><br/>
-      <label for="level-startchase">Start with chase:</label>
-      <input id="level-startchase" type="checkbox" /><br/>
-      <input type="submit" value="Create" />
-    </form>
-    <form class="prompt" id="chunk-prompt">
-      <label for="chunk-name">Name:</label>
-      <input id="chunk-name" placeholder="chunk" required /><br/>
-      <label for="chunk-tileset">Tileset:</label>
-      <input id="chunk-tileset" type="file" /><br/>
-      <label for="chunk-width">Width:</label>
-      <input id="chunk-width" type="number" min="40" value="40" /><br/>
-      <label for="chunk-height">Height:</label>
-      <input id="chunk-height" type="number" min="26" value="26" /><br/>
-      <input type="submit" value="Create" />
-    </form>
-
+    <div id="prompts">
+      <form class="prompt level">
+        <div class="row">
+          <label for="level-name">Name:</label>
+          <input id="level-name" type="text" placeholder="level" pattern="[a-zA-Z0-9-]+" required />
+        </div>
+        <div class="row">
+          <label for="level-description">Description:</label>
+          <input id="level-description" type="text" placeholder="This level is about..." />
+        </div>
+        <div class="row">
+          <label for="level-tileset">Default tileset:</label>
+          <input id="level-tileset" type="file" />
+        </div>
+        <div class="row">
+          <label for="level-startchase">Start with chase:</label>
+          <input id="level-startchase" type="checkbox" />
+        </div>
+        <input type="submit" value="Ok" />
+      </form>
+      <form class="prompt chunk">
+        <div class="row">
+          <label for="chunk-name">Name:</label>
+          <input id="chunk-name" placeholder="chunk" pattern="[a-zA-Z0-9]+" required />
+        </div>
+        <div class="row">
+          <label for="chunk-tileset">Tileset:</label>
+          <input id="chunk-tileset" type="file" />
+        </div>
+        <div class="row">
+          <label for="chunk-width">Width:</label>
+          <input id="chunk-width" type="number" min="40" value="40" />
+        </div>
+        <div class="row">
+          <label for="chunk-height">Height:</label>
+          <input id="chunk-height" type="number" min="26" value="26" />
+        </div>
+        <input type="submit" value="Ok" />
+      </form>
+      <form class="prompt error">
+        <div class="message">An error occurred.</div>
+        <input type="submit" value="Ok" />
+      </form>
+    </div>
     <script type="text/javascript" src="jszip.js"></script>
     <script type="text/javascript" src="editor.js"></script>
   </body>

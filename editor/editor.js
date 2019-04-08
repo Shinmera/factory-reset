@@ -102,18 +102,25 @@ var isTileEmpty = function(data, x, y){
 };
 
 var loadFile = function(input, type){
-    var f = input.files[0];
-    var fr = new FileReader();
-
-    return new Promise(function(accept){
+    return new Promise(function(accept, reject){
+        if(input.files.length == 0) reject("No file selected.");
+        
+        var f = input.files[0];
+        var fr = new FileReader();
+        
         fr.onload = function(){
             accept(fr.result);
         };
+        fr.onabort = ()=>{reject("File loading got aborted.");};
+        fr.onerror = ()=>{reject("File loading failed.");};
+
+        console.log("Loading",f,"as",type);
         switch(type){
         case "data": fr.readAsDataURL(f); break;
         case "text": fr.readAsText(f); break;
         case "binary": fr.readAsBinaryString(f); break;
         case "array": fr.readAsArrayBuffer(f); break;
+        default: throw new Error("Invalid data type: "+type);
         }
     });
 };
@@ -314,7 +321,8 @@ class Chunk{
         return pixels;
     }
 
-    get uiElement(){ return document.querySelector("#chunks .chunk[data-id=\""+this.name+"\"]"); }
+    get index(){ return level.chunks.indexOf(this); }
+    get uiElement(){ return level.uiElement.querySelectorAll(".chunk")[this.index]; }
     get width(){ return this.pixels[0].width; }
     get height(){ return this.pixels[0].height; }
     get layers(){ return this.pixels.length; }
@@ -325,12 +333,14 @@ class Chunk{
             index = this.pixels.indexOf(layer);
         if(Number.isInteger(layer))
             index = layer;
-        this.currentLayer = (index < 0)? 0 :(this.layers <= index)? this.layers-1 :index;
+        index = (index < 0)? 0 :(this.layers <= index)? this.layers-1 :index;
         
-        [].forEach.call(document.querySelectorAll("#chunks .chunk .layer.selected"), (e)=>{
-            e.classList.remove("selected");});
-        this.uiElement.querySelectorAll(".layer")[this.currentLayer].classList.add("selected");
-        this.getTileset().show();
+        [].forEach.call(this.uiElement.querySelectorAll(".layer"), (e, i)=>{
+            if(i == index) e.classList.add("selected");
+            else           e.classList.remove("selected");});
+        this.currentLayer = index;
+        if(level.chunk != this) this.use();
+        else                    this.getTileset().show();
         return this.currentLayer;
     }
 
@@ -373,6 +383,10 @@ class Chunk{
             mapctx.stroke();
         }
         return this;
+    }
+
+    resize(width, height){
+        // FIXME: implement this
     }
 
     clear(){
@@ -419,26 +433,6 @@ class Chunk{
         tempcanvas.height = pixels.height;
         tempcanvas.getContext("2d").putImageData(pixels, 0, 0);
         return tempcanvas.toDataURL("image/png");
-    }
-
-    saveLayer(layer){
-        if(layer === undefined)layer = this.currentLayer;
-        var data = this.layerImage(layer);
-        return saveFile(data, this.name+"-"+layer+".png");
-    }
-
-    loadLayer(layer){
-        if(layer === undefined)layer = this.currentLayer;
-        return openFile(".png,image/png")
-            .then(input => loadFile(input, "data"))
-            .then(data => loadImage(data))
-            .then(image => {
-                var show = this.pixels.show;
-                this.pixels[layer] = getImagePixels(image);
-                this.preprocess(pixels[layer]);
-                this.pixels[layer].show = show;
-                show();
-            });
     }
 
     edit(x, y, action, layer){
@@ -505,6 +499,7 @@ class Level{
         this.currentChunk = 0;
     }
 
+    get uiElement(){ return document.querySelector(".sidebar"); }
     get chunk(){ return this.chunks[this.currentChunk]; }
     set chunk(chunk) {
         var index = null;
@@ -514,9 +509,11 @@ class Level{
             this.chunks.forEach((c,i) => {if(c.name == chunk) index = i;});
         if(Number.isInteger(chunk))
             index = chunk;
-        [].forEach.call(document.querySelectorAll("#chunks .chunk.selected"), (e)=>{
-            e.classList.remove("selected");});
-        document.querySelectorAll("#chunks .chunk")[index].classList.add("selected");
+        index = (index < 0)? 0 : (this.chunks.length <= index)? this.chunks.length-1 : index;
+        
+        [].forEach.call(this.uiElement.querySelectorAll(".chunk"), (e, i)=>{
+            if(i == index) e.classList.add("selected");
+            else           e.classList.remove("selected");});
         this.currentChunk = index;
         return this.chunk.show();
     }
@@ -538,8 +535,8 @@ class Level{
     use(force){
         if(level != this || force){
             console.log("Using", this);
-            generateChunkList(this);
             level = this;
+            generateSidebar(this);
             this.chunk.use(true);
         }
         return this;
@@ -547,13 +544,24 @@ class Level{
 }
 
 /// UI
-var generateChunkList = function(level){
-    var list = document.querySelector("#chunks");
-    list.innerHTML = "";
+var generateSidebar = function(level){
+    var ui = level.uiElement;
+    ui.innerHTML = "";
+    var entry = constructElement("header",{
+        elements: {
+            label: {text: level.name},
+            a1: {tag: "a", classes: ["change"], elements: {i: {classes: ["fas", "fa-fw", "fa-pen"]}}},
+            a2: {tag: "a", classes: ["create"], elements: {i: {classes: ["fas", "fa-fw", "fa-plus"]}}}
+        }
+    });
+    entry.querySelector(".change").addEventListener("click", function(){editLevel(level);});
+    entry.querySelector(".create").addEventListener("click", function(){newChunk(level);});
+    
+    var list = constructElement("ul",{id: "chunks"});
     for(let chunk of level.chunks){
         let entry = constructElement("li",{
             classes: ["chunk", (chunk == level.chunk)? "selected": ""],
-            data: {id: chunk.name},
+            data: {id: chunk.index},
             elements: {
                 header: {elements: {
                     label: {text: chunk.name},
@@ -586,10 +594,11 @@ var generateChunkList = function(level){
             entry.querySelector(".show").addEventListener("click", function(){layer.show();});
             entry.querySelector(".hide").addEventListener("click", function(){layer.hide();});
             layers.appendChild(entry);
-        }
-        
+        }    
         list.appendChild(entry);
     }
+    ui.appendChild(entry);
+    ui.appendChild(list);
 };
 
 var createSolidTileset = function(){
@@ -663,19 +672,15 @@ var openTileset = function(){
         .then(data => loadImage(data))
         .then(image => {
             new Tileset({name: name, image: image}).use();
-        });
+        })
+        .catch((e)=>{showPrompt(".prompt.error", e);});
 };
 
-var editChunk = function(chunk){
-    // FIXME: Implement
-};
-
-var newChunk = function(){
-    var prompt = document.querySelector("#chunk-prompt");
-    prompt.style.display = "block";
-    prompt.querySelector("input[type=submit]").onclick = function(ev){
-        if(prompt.checkValidity()){
-            prompt.style.display = "none";
+var newChunk = function(level){
+    return showPrompt(".prompt.chunk", {
+        "#chunk-height": 26,
+        "#chunk-width": 40})
+        .then((prompt)=>{
             var name = prompt.querySelector("#chunk-name").value;
             var w = parseInt(prompt.querySelector("#chunk-width").value);
             var h = parseInt(prompt.querySelector("#chunk-height").value);
@@ -687,41 +692,75 @@ var newChunk = function(){
                         height: h,
                         tileset: tileset,
                     }));
-                generateChunkList(level);
+                generateSidebar(level);
+                return level.chunks[level.chunks.length-1];
             };
             if(prompt.querySelector("#chunk-tileset").value)
-                loadFile(prompt.querySelector("#chunk-tileset"))
+                return loadFile(prompt.querySelector("#chunk-tileset"), "data")
                 .then(data => loadImage(data))
-                .then(image => complete(new Tileset({image: image})));
+                .then(image => complete(new Tileset({image: image})))
+                .catch((e)=>{showPrompt(".prompt.error", e);});
             else
-                complete(null);
-            ev.preventDefault();
-        }
-        return false;
-    };
+                return complete(null);});
+};
+
+var editChunk = function(chunk){
+    return showPrompt(".prompt.chunk", {
+        "#chunk-name": chunk.name,
+        "#chunk-width": chunk.width,
+        "#chunk-height": chunk.height})
+        .then((prompt)=>{
+            chunk.name = prompt.querySelector("#chunk-name").value;
+            chunk.resize(parseInt(prompt.querySelector("#chunk-width").value),
+                         parseInt(prompt.querySelector("#chunk-height").value));
+            chunk.uiElement.querySelector("header label").innerText = chunk.name;
+            if(prompt.querySelector("#chunk-tileset").value)
+                return loadFile(prompt.querySelector("#chunk-tileset"), "data")
+                .then(data => loadImage(data))
+                .then(image => chunk.tileset = new Tileset({image: image}))
+                .catch((e)=>{showPrompt(".prompt.error", e);});
+            else
+                return chunk;
+        });
 };
 
 var newLevel = function(){
-    var prompt = document.querySelector("#level-prompt");
-    prompt.style.display = "block";
-    prompt.querySelector("input[type=submit]").onclick = function(ev){
-        if(prompt.checkValidity()){
-            prompt.style.display = "none";
+    return showPrompt(".prompt.level")
+        .then((prompt)=>{
             var name = prompt.querySelector("#level-name").value;
             var description = prompt.querySelector("#level-description").value;
-            var startChase = prompt.querySelector("#level-startchase").value;
-            loadFile(prompt.querySelector("#level-tileset"))
+            var startChase = prompt.querySelector("#level-startchase").checked;
+            return loadFile(prompt.querySelector("#level-tileset"), "data")
                 .then(data => loadImage(data))
                 .then(image => new Level({
                     name: name,
                     description: description,
                     startChase: startChase,
                     defaultTileset: new Tileset({image: image}),
-                }).use());
-            ev.preventDefault();
-        }
-        return false;
-    };
+                }).use())
+                .catch((e)=>{showPrompt(".prompt.error", e);});});
+};
+
+var editLevel = function(){
+    return showPrompt(".prompt.level", {
+        "#level-name": level.name,
+        "#level-description": level.description,
+        "#level-startchase": (level.startChase)? "checked": ""})
+        .then((prompt)=>{
+            level.name = prompt.querySelector("#level-name").value;
+            level.description = prompt.querySelector("#level-description").value;
+            level.startChase = prompt.querySelector("#level-startchase").checked;
+            level.uiElement.querySelector("header label").innerText = level.name;
+            if(prompt.querySelector("#level-tileset").value)
+                return loadFile(prompt.querySelector("#level-tileset"), "data")
+                .then(data => loadImage(data), (e)=>{showPrompt(".prompt.error", e);})
+                .then(image => { level.defaultTileset = new Tileset({image: image});
+                                 return level;
+                               })
+                .catch((e)=>{showPrompt(".prompt.error", e);});
+            else
+                return level;
+        });
 };
 
 var openLevel = function(){
@@ -748,7 +787,8 @@ var openLevel = function(){
                     }
                     alert("Please load the tileset \""+tileset+"\"");
                     return new Level(json).use();
-                });});
+                })
+                .catch((e)=>{showPrompt(".prompt.error", e);});});
 };
 
 var saveLevel = function(){
@@ -767,7 +807,61 @@ var saveLevel = function(){
     });
 };
 
-var stopUnload = function (e) {
+var showPrompt = function(id, defaults){
+    defaults = defaults || {};
+    var prompts = document.querySelector("#prompts");
+    var prompt = prompts.querySelector(id);
+    var ok = prompt.querySelector("input[type=submit]");
+    if(typeof defaults === 'string' || defaults instanceof String){
+        prompt.querySelector(".message").innerText = defaults;
+        defaults = {};
+    }
+    return new Promise((accept, reject) =>{
+        var fail, succeed;
+        var cleanup = ()=>{
+            prompts.style.display = "none";
+            prompt.style.display = "none";
+            prompts.removeEventListener("click", fail);
+            window.removeEventListener("keyup", fail);
+            ok.removeEventListener("click", succeed);
+        };
+        fail = (ev)=>{
+            if((ev instanceof KeyboardEvent && ev.key == "Escape")
+               || (ev instanceof MouseEvent && ev.target == prompts)){
+                cleanup();
+                if(reject)reject(prompt, ev);
+            }
+        };
+        succeed = (ev)=>{
+            if(prompt.checkValidity()){
+                cleanup();
+                accept(prompt, ev);
+            }
+            ev.preventDefault();
+            return false;
+        };
+        prompts.addEventListener("click", fail);
+        window.addEventListener("keyup", fail);
+        ok.addEventListener("click", succeed);
+
+        [].forEach.call(prompt.querySelectorAll("input"), (el)=>{
+            switch(el.getAttribute("type")){
+            case "checkbox": el.checked = false; break;
+            case "submit": break;
+            default: el.value = ""; break;
+            }
+        });
+        for(var selector in defaults){
+            prompt.querySelector(selector).value = defaults[selector];
+        }
+        
+        prompt.style.display = "block";
+        prompts.style.display = "flex";
+        prompt.querySelector("input").focus();
+    });
+};
+
+var stopUnload = function(e){
     e.preventDefault();
     var confirmationMessage = "Are you sure you want to leave? Unsaved progress will be lost.";
     e.returnValue = confirmationMessage;
@@ -778,7 +872,6 @@ var initEvents = function(){
     document.querySelector("#new-level").addEventListener("click", newLevel);
     document.querySelector("#open-level").addEventListener("click", openLevel);
     document.querySelector("#save-level").addEventListener("click", saveLevel);
-    document.querySelector("#new-chunk").addEventListener("click", newChunk);
     document.querySelector("#open-tileset").addEventListener("click", openTileset);
     window.addEventListener("wheel", selectTileEvent);
     window.onbeforeunload = stopUnload;
@@ -812,7 +905,6 @@ var init = function(){
     createSolidTileset()
         .then(function(tileset){
             solidset = tileset;
-            new Level().use();
         });
 };
 

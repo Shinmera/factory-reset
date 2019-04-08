@@ -1,5 +1,5 @@
 (html
- :font-family monospace
+ :font-family sans-serif
  :font-size 12pt
  (body
   :height 100vh
@@ -41,18 +41,18 @@
      :font-size 1.0em
      :background (hex 0088EE)
      :color (hex FFFFFF))
+    (header
+     :display flex
+     (label :flex-grow 1))
     (ul
      :list-style none
-     :margin 0 :padding 0
-     (li
-      (label :flex-grow 1)))
+     :margin 0 :padding 0)
     (.chunk
-     :margin-bottom 1em
-     (header
-      :display flex)
+     :margin 0.5em 0
      (.layer
       :border-left 4px solid transparent
-      :display flex)
+      :display flex
+      (label :flex-grow 1))
      ((:and .layer .selected)
       :border-color (hex 0088EE)))
     ((.chunk.selected header)
@@ -76,19 +76,45 @@
    :max-height 30%
    :overflow-y scroll
    ("#info"
+    :font-family monospace
     (>* :white-space pre))
    (>canvas
     :width 100%))
-  (.prompt
-   :display none
-   :background (hex FFFFFF)
-   :border 2px solid (hex AAAAAA)
-   :padding 0.3em
+  ("#prompts"
+   :background (rgba 0 0 0 0.5)
    :position fixed
-   :top 10vh
-   :left (calc (- 50vw 4em))
-   (label
-    :display inline-block
-    :min-width 12em)
-   (input[type=submit]
-    :width 100%))))
+   :top 0 :right 0 :bottom 0 :left 0
+   :display none
+   :align-items flex-start
+   :justify-content center
+   (.prompt.error
+    :border-color (hex FF5555)
+    :box-shadow 0 0 50px (hex FF5555)
+    (.message :margin 1em))
+   (.prompt
+    :display none
+    :background (hex FFFFFF)
+    :margin 10vh
+    :border 2px solid (hex AAAAAA)
+    :padding 0.3em
+    (.row
+     :display flex
+     (input :flex-grow 1))
+    (label
+     :display inline-block
+     :min-width 12em)
+    (input
+     :border 1px solid (hex DDDDDD)
+     :padding 0.2em 0.3em
+     :margin 0.1em
+     :background (hex F8F8F8))
+    ((:and input :focus)
+     :border-color (hex 0088EE)
+     :outline none)
+    ((:and input :invalid)
+     :border-bottom 1px solid (hex FF5555))
+    (input[type=submit]
+     :width 100%
+     :cursor pointer)
+    ((:and input[type=submit] :hover)
+     :background (hex DDDDDD))))))
