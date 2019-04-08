@@ -277,7 +277,7 @@ namespace team5
             JumpKeyWasUp = !Controller.Jump;
             
             // Now that all movement has been updated, check for collisions
-            HandleCollisions(dt, chunk);
+            HandleCollisions(dt, chunk, true);
 
             
 
@@ -326,7 +326,7 @@ namespace team5
             Position = chunk.SpawnPosition;
         }
 
-        public void Update(int direction, int lingerCounter)
+        public void Update(int direction, int lingerCounter, Chunk targetChunk)
         {
             if (Controller.Quit)
                 Game.Exit();
@@ -339,7 +339,6 @@ namespace team5
             switch (direction)
             {
                 case Chunk.Left:
-                    Velocity.Y = 0;
                     if (lingerCounter > 0)
                     {
                         Velocity.X = 0;
@@ -353,7 +352,6 @@ namespace team5
 
                     break;
                 case Chunk.Right:
-                    Velocity.Y = 0;
                     if (lingerCounter > 0)
                     {
                         Velocity.X = 0;
@@ -366,12 +364,14 @@ namespace team5
                     }
                     break;
                 case Chunk.Down:
-                    Velocity.Y -= dt * Gravity;
                     break;
                 case Chunk.Up:
                     break;
             }
 
+            Velocity.Y -= dt * Gravity;
+
+            HandleCollisions(dt, targetChunk, false);
 
             if (0 < Velocity.Y)
                 Sprite.Play("jump");
@@ -386,8 +386,6 @@ namespace team5
                 Sprite.Direction = -1;
             if (0 < Velocity.X)
                 Sprite.Direction = +1;
-
-            Position += Velocity * dt;
         }
     }
 }

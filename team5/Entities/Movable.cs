@@ -21,7 +21,7 @@ namespace team5
         }
 
         /// <summary> Call to perform Swept AABB collision with sliding. Also simultaneously moves the object</summary>
-        protected void HandleCollisions(float dt, Chunk chunk){
+        protected void HandleCollisions(float dt, Chunk chunk, bool clampX){
             int direction;
             float time;
             RectangleF[] targetBB;
@@ -58,8 +58,11 @@ namespace team5
             }
             Position += Velocity * dt;
 
-            Position.X = Math.Min(chunk.BoundingBox.Right - Size.X, Position.X);
-            Position.X = Math.Max(chunk.BoundingBox.Left + Size.X, Position.X);
+            if (clampX)
+            {
+                Position.X = Math.Min(chunk.BoundingBox.Right - Size.X, Position.X);
+                Position.X = Math.Max(chunk.BoundingBox.Left + Size.X, Position.X);
+            }
         }
     }
 }

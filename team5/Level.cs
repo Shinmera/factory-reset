@@ -28,7 +28,7 @@ namespace team5
         private Chunk LastActiveChunk;
         private Chunk TargetChunk;
         private int TransitionLingerCounter = 0;
-        private const int TransitionLingerDuration = 20;
+        private const int TransitionLingerDuration = 40;
 
         public Alarm Alarm;
 
@@ -84,12 +84,12 @@ namespace team5
 
             if (!ChunkTrans)
             {
-                if (PlayerBB.Right + Game1.DeltaT * Player.Velocity.X >= ActiveChunk.BoundingBox.Right && Player.Velocity.X > 0)
+                if (PlayerBB.Right + Game1.DeltaT * Player.Velocity.X > ActiveChunk.BoundingBox.Right && Player.Velocity.X > 0)
                 {
                     TransitionDirection = Chunk.Right;
                     ChunkTrans = true;
                 }
-                else if (PlayerBB.Left + Game1.DeltaT * Player.Velocity.X <= ActiveChunk.BoundingBox.Left && Player.Velocity.X < 0)
+                else if (PlayerBB.Left + Game1.DeltaT * Player.Velocity.X < ActiveChunk.BoundingBox.Left && Player.Velocity.X < 0)
                 {
                     TransitionDirection = Chunk.Left;
                     ChunkTrans = true;
@@ -111,8 +111,8 @@ namespace team5
                     TargetChunk = null;
                     foreach (var chunk in Chunks)
                     {
-                        PlayerBB.X += 2 * Game1.DeltaT * Player.Velocity.X;
-                        PlayerBB.Width += Math.Abs(2 * Game1.DeltaT * Player.Velocity.X);
+                        PlayerBB.X += Math.Min(0,Game1.DeltaT * Player.Velocity.X);
+                        PlayerBB.Width += Math.Abs(Game1.DeltaT * Player.Velocity.X);
                         if (PlayerBB.Intersects(chunk.BoundingBox))
                         {
                             if(chunk != ActiveChunk)
@@ -125,28 +125,31 @@ namespace team5
                     if (TargetChunk == null)
                     {
                         TargetChunk = LastActiveChunk;
-                        if(TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right)
+                        if (TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right)
+                        {
+                            ChunkTrans = false;
+                        }
+                    }
+                    if (ChunkTrans)
+                    {
+                        if ((TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right) &&
+                            TargetChunk.CollideSolid(Player, Game1.DeltaT, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetvel))
                         {
                             ChunkTrans = false;
                         }
                         else
                         {
+                            if (TransitionDirection == Chunk.Up)
+                            {
+                                Player.Velocity.Y = 500;
+                            }
+                            Player.Position.X += Player.Velocity.X * Game1.DeltaT;
                             ActiveChunk.Deactivate();
                             LastActiveChunk = ActiveChunk;
                             ActiveChunk = null;
+                            Camera.UpdateChunk(TargetChunk);
                         }
                     }
-                    else
-                    {
-                        if(TransitionDirection == Chunk.Up)
-                        {
-                            Player.Velocity.Y = 250;
-                        }
-                        ActiveChunk.Deactivate();
-                        LastActiveChunk = ActiveChunk;
-                        ActiveChunk = null;
-                    }
-                    Camera.UpdateChunk(TargetChunk);
                 }
             }
 
@@ -193,15 +196,16 @@ namespace team5
                     return;
                 }
 
-                Player.Update(TransitionDirection, TransitionLingerCounter);
+                Player.Update(TransitionDirection, TransitionLingerCounter,TargetChunk);
             }
             else
             {
                 if (ActiveChunk != null)
+                {
                     ActiveChunk.Update();
-            }
-
-            Alarm.Update( ActiveChunk);
+                    Alarm.Update(ActiveChunk);
+                }
+            } 
         }
 
         public override void Draw()
