@@ -14,7 +14,7 @@ namespace team5
         private VertexBuffer VertexBuffer;
         private IndexBuffer IndexBuffer;
         private Effect TileEffect;
-        private readonly Dictionary<String, Texture2D> SetCache = new Dictionary<String, Texture2D>();
+        private readonly Dictionary<string, Texture2D> SetCache = new Dictionary<string, Texture2D>();
         
         public TilemapEngine(Game1 game)
         {
