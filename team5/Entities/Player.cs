@@ -341,7 +341,21 @@ namespace team5
                 case Chunk.Left:
                     if (lingerCounter > 0)
                     {
-                        Velocity.X = 0;
+                        if (Grounded)
+                        {
+                            Velocity.X = 0;
+                        }
+                        else
+                        {
+                            if(-AccelRate * 0.5F * dt > Velocity.X)
+                            {
+                                Velocity.X += AccelRate*0.5F * dt;
+                            }
+                            else
+                            {
+                                Velocity.X = 0;
+                            }
+                        }
                     }
                     else if (-MaxVel < Velocity.X)
                     {
@@ -354,7 +368,21 @@ namespace team5
                 case Chunk.Right:
                     if (lingerCounter > 0)
                     {
-                        Velocity.X = 0;
+                        if (Grounded)
+                        {
+                            Velocity.X = 0;
+                        }
+                        else
+                        {
+                            if (AccelRate * 0.5F * dt < Velocity.X)
+                            {
+                                Velocity.X -= AccelRate*0.5F * dt;
+                            }
+                            else
+                            {
+                                Velocity.X = 0;
+                            }
+                        }
                     }
                     else if (Velocity.X < MaxVel)
                     {
