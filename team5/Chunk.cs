@@ -117,9 +117,28 @@ namespace team5
 
         public uint GetTile(int x, int y)
         {
-            if(x < 0 || x >= Width || y < 0 || y >= Height)
+            if(x < -1 || x >= Width+1)
             {
                 throw new IndexOutOfRangeException("No such tile exists");
+            }
+
+            if (x < 0 || x >= Width)
+            {
+                var pos = new Vector2(BoundingBox.X + x * TileSize + TileSize / 2, BoundingBox.Y + y * TileSize + TileSize / 2);
+                foreach(var chunk in Level.Chunks)
+                {
+                    if (chunk.BoundingBox.Contains(pos))
+                    {
+                        return (uint)Colors.Empty;
+                    }
+
+                    return (uint)Colors.SolidPlatform;
+                }
+            }
+
+            if(y < 0 || y >= Height)
+            {
+                return (uint)Colors.Empty;
             }
 
             return SolidTiles[(Height - y - 1)*Width + x];
@@ -306,10 +325,10 @@ namespace team5
                     return entity;
             }
 
-            int x = (int)((point.X - BoundingBox.X) / TileSize);
-            int y = (int)((point.Y - BoundingBox.Y) / TileSize);
+            int x = (int)Math.Floor((point.X - BoundingBox.X) / TileSize);
+            int y = (int)Math.Floor((point.Y - BoundingBox.Y) / TileSize);
 
-            if(x < 0 || x >= Width || y < 0 || y >= Height)
+            if(x < -1 || x >= Width + 1 || y < 0 || y >= Height)
             {
                 return null;
             }
@@ -484,9 +503,9 @@ namespace team5
             motionBB.Width = sourceBB.Width + Math.Abs(sourceMotion.X);
             motionBB.Height = sourceBB.Height + Math.Abs(sourceMotion.Y);
 
-            int minX = (int)Math.Max(Math.Floor((motionBB.Left - BoundingBox.X) / TileSize),0);
+            int minX = (int)Math.Max(Math.Floor((motionBB.Left - BoundingBox.X) / TileSize),-1);
             int minY = (int)Math.Max(Math.Floor((motionBB.Bottom - BoundingBox.Y) / TileSize),0);
-            int maxX = (int)Math.Min(Math.Floor((motionBB.Right - BoundingBox.X) / TileSize) + 1, Width);
+            int maxX = (int)Math.Min(Math.Floor((motionBB.Right - BoundingBox.X) / TileSize) + 1, Width+1);
             int maxY = (int)Math.Min(Math.Floor((motionBB.Top - BoundingBox.Y) / TileSize) + 1, Height);
 
             if (source is Movable)
