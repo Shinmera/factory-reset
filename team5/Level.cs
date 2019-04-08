@@ -110,6 +110,8 @@ namespace team5
                     TargetChunk = null;
                     foreach (var chunk in Chunks)
                     {
+                        PlayerBB.X += 2 * Game1.DeltaT * Player.Velocity.X;
+                        PlayerBB.Width += Math.Abs(2 * Game1.DeltaT * Player.Velocity.X);
                         if (PlayerBB.Intersects(chunk.BoundingBox))
                         {
                             if(chunk != ActiveChunk)
