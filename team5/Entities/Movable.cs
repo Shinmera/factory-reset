@@ -57,6 +57,9 @@ namespace team5
                 dt = (1 - time) * dt;
             }
             Position += Velocity * dt;
+
+            Position.X = Math.Min(chunk.BoundingBox.Right - Size.X, Position.X);
+            Position.X = Math.Max(chunk.BoundingBox.Left + Size.X, Position.X);
         }
     }
 }

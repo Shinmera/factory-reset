@@ -84,23 +84,22 @@ namespace team5
 
             if (!ChunkTrans)
             {
-                if (PlayerBB.Right > ActiveChunk.BoundingBox.Right && Player.Velocity.X > 0)
+                if (PlayerBB.Right + Game1.DeltaT * Player.Velocity.X >= ActiveChunk.BoundingBox.Right && Player.Velocity.X > 0)
                 {
                     TransitionDirection = Chunk.Right;
                     ChunkTrans = true;
                 }
-                else if (PlayerBB.Left < ActiveChunk.BoundingBox.Left && Player.Velocity.X < 0)
+                else if (PlayerBB.Left + Game1.DeltaT * Player.Velocity.X <= ActiveChunk.BoundingBox.Left && Player.Velocity.X < 0)
                 {
                     TransitionDirection = Chunk.Left;
                     ChunkTrans = true;
                 }
-                else if (PlayerBB.Top > ActiveChunk.BoundingBox.Top && Player.Velocity.Y > 0)
+                else if (PlayerBB.Top >= ActiveChunk.BoundingBox.Top && Player.Velocity.Y > 0)
                 {
                     TransitionDirection = Chunk.Up;
-                    Player.Velocity.Y = 250;
                     ChunkTrans = true;
                 }
-                else if (PlayerBB.Bottom < ActiveChunk.BoundingBox.Bottom && Player.Velocity.Y < 0)
+                else if (PlayerBB.Bottom <= ActiveChunk.BoundingBox.Bottom && Player.Velocity.Y < 0)
                 {
                     TransitionDirection = Chunk.Down;
                     ChunkTrans = true;
@@ -108,6 +107,7 @@ namespace team5
 
                 if (ChunkTrans)
                 {
+                    TargetChunk = null;
                     foreach (var chunk in Chunks)
                     {
                         if (PlayerBB.Intersects(chunk.BoundingBox))
@@ -119,13 +119,29 @@ namespace team5
                         }
                     }
 
-                    ActiveChunk.Deactivate();
-                    LastActiveChunk = ActiveChunk;
-                    ActiveChunk = null;
-
                     if (TargetChunk == null)
                     {
                         TargetChunk = LastActiveChunk;
+                        if(TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right)
+                        {
+                            ChunkTrans = false;
+                        }
+                        else
+                        {
+                            ActiveChunk.Deactivate();
+                            LastActiveChunk = ActiveChunk;
+                            ActiveChunk = null;
+                        }
+                    }
+                    else
+                    {
+                        if(TransitionDirection == Chunk.Up)
+                        {
+                            Player.Velocity.Y = 250;
+                        }
+                        ActiveChunk.Deactivate();
+                        LastActiveChunk = ActiveChunk;
+                        ActiveChunk = null;
                     }
                     Camera.UpdateChunk(TargetChunk);
                 }
