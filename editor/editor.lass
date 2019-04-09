@@ -56,7 +56,7 @@
       (label :flex-grow 1))
      ((:and .layer .selected)
       :border-color (hex 0088EE)))
-    ((.chunk.selected header)
+    ((:or (.chunk.selected header) >header.selected)
      :background (hex 0088EE)
      :color (hex FFFFFF)
      ((:and a :hover)

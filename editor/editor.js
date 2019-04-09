@@ -408,6 +408,7 @@ class Chunk{
         for(var l=0; l<this.pixels.length; l++){
             this.pixels[l] = this.preprocess(resizePixels(this.pixels[l], width, height), l);
         }
+        generateLevelmap(level);
         zoomEvent();
         this.show();
         return this;
@@ -579,6 +580,7 @@ var generateSidebar = function(level){
             a2: {tag: "a", classes: ["create"], elements: {i: {classes: ["fas", "fa-fw", "fa-plus"]}}}
         }
     });
+    entry.querySelector("label").addEventListener("click", function(){toggleLevel(level);});
     entry.querySelector(".change").addEventListener("click", function(){editLevel(level);});
     entry.querySelector(".create").addEventListener("click", function(){newChunk(level);});
     
@@ -636,9 +638,9 @@ var generateLevelmap = function(level){
         return [ ev.clientX - bounds.left, ev.clientY - bounds.top ];
     };
 
-    var updatePosition = (entry, position)=>{
-        entry.style.left = ui.clientWidth/2 + position[0] + "px";
-        entry.style.top = ui.clientHeight/2 + position[1] + "px";
+    var updatePosition = (entry, chunk)=>{
+        entry.style.left = ui.clientWidth/2 + chunk.position[0] - chunk.width/2 + "px";
+        entry.style.bottom = ui.clientHeight/2 + chunk.position[1] - chunk.height/2 + "px";
     };
     
     for(let chunk of level.chunks){
@@ -657,26 +659,65 @@ var generateLevelmap = function(level){
                     entry: entry};
         });
 
-        updatePosition(entry, chunk.position);
+        updatePosition(entry, chunk);
         ui.appendChild(entry);
     }
     
     ui.addEventListener("mousemove", function(ev){
         if(drag){
             var newPos = evPos(ev);
-            var dPos = [ newPos[0]-drag.mouse[0], newPos[1]-drag.mouse[1] ];
+            var dPos = [ newPos[0]-drag.mouse[0], drag.mouse[1]-newPos[1] ];
             drag.chunk.position[0] = drag.position[0] + dPos[0];
             drag.chunk.position[1] = drag.position[1] + dPos[1];
-            updatePosition(drag.entry, drag.chunk.position);
+            updatePosition(drag.entry, drag.chunk);
         }
     });
     
     ui.addEventListener("mouseup", function(ev){
         if(drag){
+            // Push out of other blocks.
+            for(var chunk of level.chunks){
+                if(chunk == drag.chunk) continue;
+                var l = chunk.position[0] - chunk.width/2 - drag.chunk.width/2;
+                var r = chunk.position[0] + chunk.width/2 + drag.chunk.width/2;
+                var d = chunk.position[1] - chunk.height/2 - drag.chunk.height/2;
+                var u = chunk.position[1] + chunk.height/2 + drag.chunk.height/2;
+                if(l < drag.chunk.position[0] && drag.chunk.position[0] < r
+                   && d < drag.chunk.position[1] && drag.chunk.position[1] < u){
+                    if(Math.abs(drag.chunk.position[0] - chunk.position[0])
+                       < Math.abs(drag.chunk.position[1] - chunk.position[1])){
+                        if(drag.chunk.position[1] < chunk.position[1])
+                            drag.chunk.position[1] = d;
+                        else
+                            drag.chunk.position[1] = u;
+                    }else{
+                        if(drag.chunk.position[0] < chunk.position[0])
+                            drag.chunk.position[0] = l;
+                        else
+                            drag.chunk.position[0] = r;
+                    }
+                }
+            }
+            updatePosition(drag.entry, drag.chunk);
             console.log("Moved",drag.chunk,"to",drag.chunk.position);
             drag = null;
         }
     });
+};
+
+var toggleLevel = function(level){
+    var tilemap = document.querySelector(".main>section.tilemap");
+    var levelmap = document.querySelector(".main>section.levelmap");
+    if(levelmap.style.display == "none"){
+        level.uiElement.querySelector("header").classList.add("selected");
+        levelmap.style.display = "block";
+        tilemap.style.display = "none";
+        generateLevelmap(level);
+    }else{
+        level.uiElement.querySelector("header").classList.remove("selected");
+        levelmap.style.display = "none";
+        tilemap.style.display = "flex";
+    }
 };
 
 var createSolidTileset = function(){
