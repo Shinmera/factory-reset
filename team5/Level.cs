@@ -62,6 +62,8 @@ namespace team5
             Camera.Position.X = Player.Position.X;
             Camera.Position.Y = Player.Position.Y;
             Camera.UpdateChunk(ActiveChunk);
+            //Alarm sound
+            Alarm.LoadContent(content);
         }
         
         public override void Resize(int width, int height)

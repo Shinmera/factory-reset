@@ -41,7 +41,7 @@ namespace team5
 
                     break;
                 case AlarmState.Raised:
-
+                    Game.SoundEngine.Play("Alert");
                     break;
                 case AlarmState.Alert:
 
