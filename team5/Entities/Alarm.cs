@@ -62,7 +62,6 @@ namespace team5
             float dt = Game1.DeltaT;
             float textX = Game.GraphicsDevice.Viewport.Width / 2;
             float textY = Game.GraphicsDevice.Viewport.Height / 6;
-            Debug.WriteLine(textX);
             
             switch (State)
             {
