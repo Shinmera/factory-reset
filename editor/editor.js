@@ -485,7 +485,7 @@ class Chunk{
     serialize(){
         return {
             name: this.name,
-            position: this.position,
+            position: [ this.position[0]*tileSize, this.position[1]*tileSize ],
             layers: this.layers,
             tileset: this.tileset.name,
             storyItems: this.storyItems
@@ -793,6 +793,7 @@ var editMapEvent = function(ev){
 var zoomEvent = function(){
     var zoom = parseFloat(document.querySelector("#zoom").value);
     level.chunk.zoom(zoom);
+    // FIXME: Zoom level overview too
 };
 
 var openTileset = function(){
@@ -911,6 +912,7 @@ var openLevel = function(){
                     for(var i=0; i<json.chunks.length; i++){
                         var chunk = json.chunks[i];
                         tileset = chunk.tileset;
+                        chunk.position = [ chunk.position[0]/tileSize, chunk.position[1]/tileSize ];
                         chunk.pixels = [];
                         chunk.tileset = new Tileset({name: tileset});
                         for(var l=0; l<chunk.layers; l++){
