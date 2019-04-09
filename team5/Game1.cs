@@ -51,7 +51,9 @@ namespace team5
             DepthStencilState ds = new DepthStencilState{ DepthBufferEnable = false };
             GraphicsDevice.DepthStencilState = ds;
 
-
+            // Stop the B button bullshit
+            Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested +=
+                (sender, ev) => { ev.Handled = true; };
         }
 
         protected override void LoadContent()
