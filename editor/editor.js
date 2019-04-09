@@ -647,7 +647,11 @@ var generateLevelmap = function(level){
         let entry = constructElement("canvas",{
             classes: ["chunk"],
             data: {id: chunk.index},
-            attributes: {width: chunk.width, height: chunk.height}
+            attributes: {
+                width: chunk.width,
+                height: chunk.height,
+                title: chunk.name
+            }
         });
         var ctx = entry.getContext("2d");
         ctx.putImageData(chunk.getLayer(0), 0, 0);
@@ -675,26 +679,32 @@ var generateLevelmap = function(level){
     
     ui.addEventListener("mouseup", function(ev){
         if(drag){
-            // Push out of other blocks.
-            for(var chunk of level.chunks){
-                if(chunk == drag.chunk) continue;
-                var l = chunk.position[0] - chunk.width/2 - drag.chunk.width/2;
-                var r = chunk.position[0] + chunk.width/2 + drag.chunk.width/2;
-                var d = chunk.position[1] - chunk.height/2 - drag.chunk.height/2;
-                var u = chunk.position[1] + chunk.height/2 + drag.chunk.height/2;
-                if(l < drag.chunk.position[0] && drag.chunk.position[0] < r
-                   && d < drag.chunk.position[1] && drag.chunk.position[1] < u){
-                    if(Math.abs(drag.chunk.position[0] - chunk.position[0])
-                       < Math.abs(drag.chunk.position[1] - chunk.position[1])){
-                        if(drag.chunk.position[1] < chunk.position[1])
-                            drag.chunk.position[1] = d;
-                        else
-                            drag.chunk.position[1] = u;
-                    }else{
-                        if(drag.chunk.position[0] < chunk.position[0])
-                            drag.chunk.position[0] = l;
-                        else
-                            drag.chunk.position[0] = r;
+            // Push out of other blocks repeatedly until we no longer get collisions.
+            var found = true;
+            while(found){
+                found = false;
+                for(var chunk of level.chunks){
+                    if(chunk == drag.chunk) continue;
+                    var l = chunk.position[0] - chunk.width/2 - drag.chunk.width/2;
+                    var r = chunk.position[0] + chunk.width/2 + drag.chunk.width/2;
+                    var d = chunk.position[1] - chunk.height/2 - drag.chunk.height/2;
+                    var u = chunk.position[1] + chunk.height/2 + drag.chunk.height/2;
+                    if(l < drag.chunk.position[0] && drag.chunk.position[0] < r
+                       && d < drag.chunk.position[1] && drag.chunk.position[1] < u){
+                        if(Math.abs(drag.chunk.position[0] - chunk.position[0])
+                           < Math.abs(drag.chunk.position[1] - chunk.position[1])){
+                            if(drag.chunk.position[1] < chunk.position[1])
+                                drag.chunk.position[1] = d;
+                            else
+                                drag.chunk.position[1] = u;
+                        }else{
+                            if(drag.chunk.position[0] < chunk.position[0])
+                                drag.chunk.position[0] = l;
+                            else
+                                drag.chunk.position[0] = r;
+                        }
+                        found = true;
+                        break;
                     }
                 }
             }
