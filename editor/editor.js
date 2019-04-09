@@ -21,6 +21,7 @@ const layerNames = ["Solids", "Background", "Ground", "Foreground", "Special"];
 const minSize = [40,26];
 var tilemap = document.querySelector("#tilemap");
 var tilelist = document.querySelector("#tilelist");
+var levelmap = document.querySelector("#levelmap");
 var listctx, mapctx;
 // Virtual
 var tempcanvas = document.createElement("canvas");
@@ -560,6 +561,7 @@ class Level{
             console.log("Using", this);
             level = this;
             generateSidebar(this);
+            generateLevelmap(this);
             this.chunk.use(true);
         }
         return this;
@@ -622,6 +624,59 @@ var generateSidebar = function(level){
     }
     ui.appendChild(entry);
     ui.appendChild(list);
+};
+
+var generateLevelmap = function(level){
+    var ui = levelmap;
+    ui.innerHTML = "";
+
+    var drag = null;
+    var evPos = (ev)=>{
+        var bounds = ui.getBoundingClientRect();
+        return [ ev.clientX - bounds.left, ev.clientY - bounds.top ];
+    };
+
+    var updatePosition = (entry, position)=>{
+        entry.style.left = ui.clientWidth/2 + position[0] + "px";
+        entry.style.top = ui.clientHeight/2 + position[1] + "px";
+    };
+    
+    for(let chunk of level.chunks){
+        let entry = constructElement("canvas",{
+            classes: ["chunk"],
+            data: {id: chunk.index},
+            attributes: {width: chunk.width, height: chunk.height}
+        });
+        var ctx = entry.getContext("2d");
+        ctx.putImageData(chunk.getLayer(0), 0, 0);
+
+        entry.addEventListener("mousedown", function(ev){
+            drag = {mouse: evPos(ev),
+                    chunk: chunk,
+                    position: [ chunk.position[0], chunk.position[1] ],
+                    entry: entry};
+        });
+
+        updatePosition(entry, chunk.position);
+        ui.appendChild(entry);
+    }
+    
+    ui.addEventListener("mousemove", function(ev){
+        if(drag){
+            var newPos = evPos(ev);
+            var dPos = [ newPos[0]-drag.mouse[0], newPos[1]-drag.mouse[1] ];
+            drag.chunk.position[0] = drag.position[0] + dPos[0];
+            drag.chunk.position[1] = drag.position[1] + dPos[1];
+            updatePosition(drag.entry, drag.chunk.position);
+        }
+    });
+    
+    ui.addEventListener("mouseup", function(ev){
+        if(drag){
+            console.log("Moved",drag.chunk,"to",drag.chunk.position);
+            drag = null;
+        }
+    });
 };
 
 var createSolidTileset = function(){
@@ -721,6 +776,7 @@ var newChunk = function(level){
                         tileset: tileset,
                     }));
                 generateSidebar(level);
+                generateLevelmap(level);
                 return level.chunks[level.chunks.length-1];
             };
             if(prompt.querySelector("#chunk-tileset").value)
