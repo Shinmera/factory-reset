@@ -72,7 +72,7 @@ namespace team5
             int startx = (int)Math.Floor((Position.X - chunk.BoundingBox.X) / Chunk.TileSize);
             int starty = (int)Math.Floor((Position.Y - chunk.BoundingBox.Y) / Chunk.TileSize);
 
-            Path = FindReducedPath(chunk, FindPath(chunk, startx, starty, targetx, targety), Size);
+            Path = FindReducedPath(chunk, FindPath(chunk, startx, starty, target), Size);
 
             NextNode = 1;
 
@@ -340,7 +340,7 @@ namespace team5
         }
 
         //TODO: Reduce curves as well.
-        static List<Vector2> FindReducedPath(Chunk chunk, List<Point> path, Vector2 size)
+        static List<Vector2> FindReducedPath(Chunk chunk, List<Vector2> path, Vector2 size)
         {
             var ReducedPath = new List<Vector2>();
 
@@ -349,9 +349,9 @@ namespace team5
                 return ReducedPath;
             }
 
-            var lastDir = new Point(0);
+            var lastDir = new Vector2(0);
 
-            ReducedPath.Add(new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y) + new Vector2(Chunk.TileSize / 2) + path[path.Count - 1].ToVector2() * Chunk.TileSize);
+            ReducedPath.Add(new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y) + new Vector2(Chunk.TileSize / 2) + path[path.Count - 1]);
 
             var lastPoint = ReducedPath.Last();
 
@@ -361,15 +361,13 @@ namespace team5
                 {
                     lastDir = path[i - 1] - path[i];
 
-                    var tentativePoint = new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y) + new Vector2(Chunk.TileSize / 2) + path[i].ToVector2() * Chunk.TileSize;
+                    var tentativePoint = new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y) + new Vector2(Chunk.TileSize / 2) + path[i];
 
                     var dir = tentativePoint - ReducedPath.Last();
                     var point1 = new Vector2(dir.Y , -dir.X);
                     point1.Normalize();
                     point1 *= DroneSize;
                     var point2 = -point1;
-
-                    
 
                     point1 += ReducedPath.Last();
                     point2 += ReducedPath.Last();
@@ -383,13 +381,16 @@ namespace team5
                 }
             }
 
-            ReducedPath.Add(new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y) + new Vector2(Chunk.TileSize / 2) + path[0].ToVector2() * Chunk.TileSize);
+            ReducedPath.Add(new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y) + new Vector2(Chunk.TileSize / 2) + path[0]);
 
             return ReducedPath;
         }
 
-        static List<Point> FindPath(Chunk chunk, int startx, int starty, int targetx, int targety)
+        static List<Vector2> FindPath(Chunk chunk, int startx, int starty, Vector2 target)
         {
+            int targetx = (int)Math.Floor((target.X - chunk.BoundingBox.X) / Chunk.TileSize);
+            int targety = (int)Math.Floor((target.Y - chunk.BoundingBox.Y) / Chunk.TileSize);
+
             var path = new List<Point>();
 
             float sqrt2 = (float)Math.Sqrt(2);
@@ -448,7 +449,8 @@ namespace team5
 
                 if(current.X == targetx && current.Y == targety)
                 {
-                    return ReconstructPath(cameFrom, current);
+                    List<Vector2> pathToTile = ReconstructPath(cameFrom, current, chunk);
+                    pathToTile[pathToTile.Count-1] = target;
                 }
 
                 openSet.Remove(current);
@@ -508,16 +510,18 @@ namespace team5
             return null;
         }
 
-        private static List<Point> ReconstructPath(Dictionary<Point, Point> cameFrom, Point current)
+        private static List<Vector2> ReconstructPath(Dictionary<Point, Point> cameFrom, Point current, Chunk chunk)
         {
-            var path = new List<Point>();
+            var path = new List<Vector2>();
 
-            path.Add(current);
+            Vector2 offset = -new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y);
+
+            path.Add(current.ToVector2()*Chunk.TileSize + offset);
 
             while (cameFrom.ContainsKey(current))
             {
                 current = cameFrom[current];
-                path.Add(current);
+                path.Add(current.ToVector2()*Chunk.TileSize + offset);
             }
 
             return path;
