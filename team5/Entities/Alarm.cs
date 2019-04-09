@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics;
+using System;
 
 namespace team5
 {
@@ -18,18 +19,24 @@ namespace team5
 
         private AlarmState State = AlarmState.Clear;
 
-        private float AlarmTime = 5;
+        private float AlarmTime = 20;
         private float AlertTime = 1;
         private float Timer = 0;
 
+        //drawing the hud
+        private SpriteFont font;
+        private TextEngine TextEngine;
+
         public Alarm(Game1 game) : base( game)
         {
+            TextEngine = game.TextEngine;
 
         }
 
         public override void LoadContent(ContentManager content)
         {
             Game.SoundEngine.Load("Alert");
+            Game.TextEngine.LoadContent(content);
         }
 
         public void SetState(AlarmState state )
@@ -53,7 +60,10 @@ namespace team5
         public override void Update(Chunk chunk)
         {
             float dt = Game1.DeltaT;
-
+            float textX = Game.GraphicsDevice.Viewport.Width / 2;
+            float textY = Game.GraphicsDevice.Viewport.Height / 6;
+            Debug.WriteLine(textX);
+            
             switch (State)
             {
                 case AlarmState.Clear:
@@ -65,7 +75,9 @@ namespace team5
                     break;
                 case AlarmState.Raised: 
                     Timer -= dt;
-                    if(Timer <= 0)
+
+                    TextEngine.QueueText(  (Math.Floor( Timer)).ToString(), new Vector2(textX, textY), Color.Red, "Arial");
+                    if (Timer <= 0)
                     {
                         Detected = false;
                         chunk.Die(chunk.Level.Player);
@@ -90,7 +102,10 @@ namespace team5
 
         public override void Draw()
         {
-            base.Draw();
+            Game.Transforms.PushView();
+            Game.Transforms.ResetView();
+            Game.TextEngine.DrawText();
+            Game.Transforms.PopView();
         }
 
     }

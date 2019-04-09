@@ -216,6 +216,7 @@ namespace team5
             {
                 Player.Draw();
             }
+            Alarm.Draw();
 
             foreach (Chunk chunk in Chunks){
                 if (Camera.IsVisible(chunk.BoundingBox))

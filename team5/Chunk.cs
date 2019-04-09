@@ -220,9 +220,9 @@ namespace team5
         }
 
         public const int Up =        0b00000001;
-        public const int Right =    0b00000010;
-        public const int Down =        0b00000100;
-        public const int Left =        0b00001000;
+        public const int Right =     0b00000010;
+        public const int Down =      0b00000100;
+        public const int Left =      0b00001000;
 
         public bool AtHidingSpot(Movable source, out Vector2 location)
         {
