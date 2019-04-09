@@ -155,21 +155,24 @@
     :padding 0.3em
     (.row
      :display flex
-     (input :flex-grow 1))
+     ((:or input textarea) :flex-grow 1))
     (label
      :display inline-block
      :min-width 12em)
-    (input
+    ((:or input textarea)
      :input auto
+     :width 30em
      :border 1px solid (hex DDDDDD)
      :padding 0.2em 0.3em
      :margin 0.1em
      :background (hex F8F8F8)
      :color black)
-    ((:and input :focus)
+    (textarea
+     :min-height 5em)
+    ((:and (:or input tetxarea) :focus)
      :border-color (hex 0088EE)
      :outline none)
-    ((:and input :invalid)
+    ((:and (:or input tetxarea) :invalid)
      :border-bottom 1px solid (hex FF5555))
     (input[type=submit]
      :width 100%
