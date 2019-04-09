@@ -163,7 +163,10 @@ var saveFile = function(data, filename){
     data = data.replace(/data:.*?;/, "data:application/octet-stream;");
     link.setAttribute("download", filename || "file.dat");
     link.setAttribute("href", data);
+    link.setAttribute("style", "display:none");
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
 };
 
 var constructElement = function(tag, options){
