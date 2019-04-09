@@ -120,8 +120,9 @@
      :border-top 2px solid (hex 0088EE)
      :margin 0
      :padding 0
+     :flex-shrink 0
      :min-height 128px
-     :max-height 30%
+     :max-height 20%
      :overflow-y scroll
      ("#info"
       :background (hex FFFFFF)
