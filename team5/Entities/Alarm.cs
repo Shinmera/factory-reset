@@ -63,8 +63,7 @@ namespace team5
                         SetState(AlarmState.Raised);
                     }
                     break;
-                case AlarmState.Raised:
-                    Debug.WriteLine("Alarm Raised"); 
+                case AlarmState.Raised: 
                     Timer -= dt;
                     if(Timer <= 0)
                     {
@@ -79,7 +78,6 @@ namespace team5
                     }
                     break;
                 case AlarmState.Alert:
-                    Debug.WriteLine("Alert mode");
                     Timer -= dt;
                     if(Timer <= 0)
                     {
