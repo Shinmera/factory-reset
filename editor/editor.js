@@ -27,6 +27,7 @@ var listctx, mapctx;
 var tempcanvas = document.createElement("canvas");
 var solidset = null;
 var level = null;
+var zoom = 1.0;
 
 /// Helper functions
 var pad = function(string, length, char){
@@ -642,8 +643,8 @@ var generateLevelmap = function(level){
     };
 
     var updatePosition = (entry, chunk)=>{
-        entry.style.left = ui.clientWidth/2 + chunk.position[0] - chunk.width/2 + "px";
-        entry.style.bottom = ui.clientHeight/2 + chunk.position[1] - chunk.height/2 + "px";
+        entry.style.left = ui.clientWidth/2 + (chunk.position[0]-chunk.width/2)*zoom + "px";
+        entry.style.bottom = ui.clientHeight/2 + (chunk.position[1]-chunk.height/2)*zoom + "px";
     };
     
     for(let chunk of level.chunks){
@@ -651,8 +652,8 @@ var generateLevelmap = function(level){
             classes: ["chunk"],
             data: {id: chunk.index},
             attributes: {
-                width: chunk.width,
-                height: chunk.height,
+                width: chunk.width*zoom,
+                height: chunk.height*zoom,
                 title: chunk.name
             }
         });
@@ -673,7 +674,7 @@ var generateLevelmap = function(level){
     ui.addEventListener("mousemove", function(ev){
         if(drag){
             var newPos = evPos(ev);
-            var dPos = [ newPos[0]-drag.mouse[0], drag.mouse[1]-newPos[1] ];
+            var dPos = [ (newPos[0]-drag.mouse[0])/zoom, (drag.mouse[1]-newPos[1])/zoom ];
             drag.chunk.position[0] = drag.position[0] + dPos[0];
             drag.chunk.position[1] = drag.position[1] + dPos[1];
             updatePosition(drag.entry, drag.chunk);
@@ -794,9 +795,9 @@ var editMapEvent = function(ev){
 };
 
 var zoomEvent = function(){
-    var zoom = parseFloat(document.querySelector("#zoom").value);
+    zoom = parseFloat(document.querySelector("#zoom").value);
     level.chunk.zoom(zoom);
-    // FIXME: Zoom level overview too
+    generateLevelmap(level);
 };
 
 var openTileset = function(){
