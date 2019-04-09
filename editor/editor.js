@@ -173,6 +173,7 @@ var saveFile = function(data, filename){
 var constructElement = function(tag, options){
     var el = document.createElement(tag);
     el.setAttribute("class", (options.classes||[]).join(" "));
+    if(options.id) el.setAttribute("id", options.id);
     if(options.text) el.innerText = options.text;
     if(options.html) el.innerHTML = options.html;
     for(var attr in (options.attributes||{})){
@@ -315,6 +316,7 @@ class Chunk{
         var self = this;
         pixels.id = i;
         pixels.visible = true;
+        pixels.opacity = 1.0;
         pixels.show = function(){
             pixels.visible = true;
             var layer = self.uiElement.querySelector(".layer[data-id=\""+pixels.id+"\"]");
@@ -352,6 +354,8 @@ class Chunk{
         [].forEach.call(this.uiElement.querySelectorAll(".layer"), (e, i)=>{
             if(i == index) e.classList.add("selected");
             else           e.classList.remove("selected");});
+        level.uiElement.querySelector("#opacity").value = this.pixels[index].opacity;
+        
         this.currentLayer = index;
         if(level.chunk != this) this.use();
         else                    this.getTileset().show();
@@ -369,7 +373,6 @@ class Chunk{
     }
 
     drawPos(x, y){
-        // FIXME: add layer transparency change to allow seethrough.
         var pixelIndex = ((this.width*y)+x)*4;
         var empty = true;
         for(var l=0; l<this.pixels.length; l++){
@@ -382,6 +385,7 @@ class Chunk{
                     empty = false;
                     var tileset = this.getTileset(l);
                     var s = tileset.rgMap[(r<<8) + g];
+                    mapctx.globalAlpha = pixels.opacity;
                     mapctx.drawImage(tileset.image,
                                      s[0]*tileSize, s[1]*tileSize, tileSize, tileSize,
                                      x*tileSize, y*tileSize, tileSize, tileSize);
@@ -587,6 +591,15 @@ var generateSidebar = function(level){
     entry.querySelector("label").addEventListener("click", function(){toggleLevel(level);});
     entry.querySelector(".change").addEventListener("click", function(){editLevel(level);});
     entry.querySelector(".create").addEventListener("click", function(){newChunk(level);});
+
+    var opacity = constructElement("input",{
+        id: "opacity",
+        attributes: {type: "range",min: 0.0, max: 1.0, step: 0.1}
+    });
+    opacity.addEventListener("change", function(){
+        level.chunk.layer.opacity = parseFloat(opacity.value);
+        level.chunk.show();
+    });
     
     var list = constructElement("ul",{id: "chunks"});
     for(let chunk of level.chunks){
@@ -629,6 +642,7 @@ var generateSidebar = function(level){
         list.appendChild(entry);
     }
     ui.appendChild(entry);
+    ui.appendChild(opacity);
     ui.appendChild(list);
 };
 

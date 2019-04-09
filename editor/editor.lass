@@ -44,16 +44,27 @@
      :color (hex FFFFFF))
     (header
      :display flex
-     (label :flex-grow 1))
+     :align-items center
+     (label
+      :flex-grow 1
+      :font-weight bold
+      :cursor pointer
+      :padding 0.2em))
+    (>header
+     :padding 0.2em 0
+     :border-bottom 1px solid (hex DDDDDD)
+     (label :font-size 1.2em))
     (ul
      :list-style none
      :margin 0 :padding 0)
     (.chunk
-     :margin 0.5em 0
+     :margin-bottom 1em
+     :border-top 1px solid (hex DDDDDD)
      (.layer
       :border-left 4px solid transparent
       :display flex
-      (label :flex-grow 1))
+      (label :flex-grow 1
+             :cursor pointer))
      ((:and .layer .selected)
       :border-color (hex 0088EE)))
     ((:or (.chunk.selected header) >header.selected)
