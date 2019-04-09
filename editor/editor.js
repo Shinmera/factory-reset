@@ -822,10 +822,17 @@ var openTileset = function(){
             return loadFile(input, "data");
         })
         .then(data => loadImage(data))
+        .catch((e)=>{showPrompt(".prompt.error", e);})
         .then(image => {
-            new Tileset({name: name, image: image}).use();
-        })
-        .catch((e)=>{showPrompt(".prompt.error", e);});
+            var tileset = new Tileset({name: name, image: image});
+            for(var chunk of level.chunks){
+                if(chunk.tileset.name == name){
+                    chunk.tileset = tileset;
+                    if(level.chunk == chunk) chunk.show();
+                }
+            }
+            return tileset.use();
+        });
 };
 
 var newChunk = function(level){
@@ -924,6 +931,7 @@ var openLevel = function(){
             var tileset = null;
             return zip.loadAsync(data)
                 .then(zip => zip.file("level.json").async("string"))
+                .catch((e)=>{showPrompt(".prompt.error", e);})
                 .then(async data => {
                     var json = JSON.parse(data);
                     for(var i=0; i<json.chunks.length; i++){
@@ -941,8 +949,7 @@ var openLevel = function(){
                     }
                     alert("Please load the tileset \""+tileset+"\"");
                     return new Level(json).use();
-                })
-                .catch((e)=>{showPrompt(".prompt.error", e);});});
+                });});
 };
 
 var saveLevel = function(){
