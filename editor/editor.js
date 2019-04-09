@@ -928,7 +928,7 @@ var openLevel = function(){
         .then(input => loadFile(input, "array"))
         .then(data => {
             var zip = new JSZip();
-            var tileset = null;
+            var tilesets = [];
             return zip.loadAsync(data)
                 .then(zip => zip.file("level.json").async("string"))
                 .catch((e)=>{showPrompt(".prompt.error", e);})
@@ -936,10 +936,10 @@ var openLevel = function(){
                     var json = JSON.parse(data);
                     for(var i=0; i<json.chunks.length; i++){
                         var chunk = json.chunks[i];
-                        tileset = chunk.tileset;
+                        if(tilesets.indexOf(chunk.tileset) < 0) tilesets.push(chunk.tileset);
                         chunk.position = [ chunk.position[0]/tileSize, chunk.position[1]/tileSize ];
                         chunk.pixels = [];
-                        chunk.tileset = new Tileset({name: tileset});
+                        chunk.tileset = new Tileset({name: chunk.tileset});
                         for(var l=0; l<chunk.layers; l++){
                             var base64 = await zip.file("chunks/"+chunk.name+"-"+l+".png").async("base64");
                             var image = await loadImage("data:image/png;base64,"+base64);
@@ -947,7 +947,7 @@ var openLevel = function(){
                         }
                         json.chunks[i] = new Chunk(chunk);
                     }
-                    alert("Please load the tileset \""+tileset+"\"");
+                    alert("Please load the tilesets \""+tilesets.join("\", \"")+"\"");
                     return new Level(json).use();
                 });});
 };
