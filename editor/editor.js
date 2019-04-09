@@ -404,20 +404,12 @@ class Chunk{
         return this;
     }
 
-    zoom(factor){
-        var ui = document.querySelector("#zoom");
-        ui.parentNode.querySelector("label").innerText = factor;
-        ui.value = factor;
-        tilemap.style.maxWidth = tilemap.style.minWidth = (tilemap.width*factor)+"px";
-        tilemap.style.maxHeight = tilemap.style.minHeight = (tilemap.height*factor)+"px";
-    }
-
     resize(width, height){
         for(var l=0; l<this.pixels.length; l++){
             this.pixels[l] = this.preprocess(resizePixels(this.pixels[l], width, height), l);
         }
         this.show();
-        zoomEvent();
+        level.zoom(zoom);
         return this;
     }
 
@@ -548,6 +540,16 @@ class Level{
             else           e.classList.remove("selected");});
         this.currentChunk = index;
         return this.chunk.show();
+    }
+    
+    zoom(factor){
+        var ui = document.querySelector("#zoom");
+        ui.parentNode.querySelector("label").innerText = factor.toFixed(1);
+        ui.value = factor;
+        tilemap.style.maxWidth = tilemap.style.minWidth = (tilemap.width*factor)+"px";
+        tilemap.style.maxHeight = tilemap.style.minHeight = (tilemap.height*factor)+"px";
+        zoom = factor;
+        generateLevelmap(level);
     }
 
     serialize(){
@@ -688,8 +690,8 @@ var generateLevelmap = function(level){
         if(drag){
             var newPos = evPos(ev);
             var dPos = [ (newPos[0]-drag.mouse[0])/zoom, (drag.mouse[1]-newPos[1])/zoom ];
-            drag.chunk.position[0] = drag.position[0] + dPos[0];
-            drag.chunk.position[1] = drag.position[1] + dPos[1];
+            drag.chunk.position[0] = drag.position[0] + Math.round(dPos[0]);
+            drag.chunk.position[1] = drag.position[1] + Math.round(dPos[1]);
             updatePosition(drag.entry, drag.chunk);
         }
     });
@@ -808,9 +810,7 @@ var editMapEvent = function(ev){
 };
 
 var zoomEvent = function(){
-    zoom = parseFloat(document.querySelector("#zoom").value);
-    level.chunk.zoom(zoom);
-    generateLevelmap(level);
+    level.zoom(parseFloat(document.querySelector("#zoom").value));
 };
 
 var openTileset = function(){
@@ -1028,6 +1028,7 @@ var initEvents = function(){
     document.querySelector("#save-level").addEventListener("click", saveLevel);
     document.querySelector("#open-tileset").addEventListener("click", openTileset);
     document.querySelector("#zoom").addEventListener("change", zoomEvent);
+    document.querySelector("label[for=zoom]").addEventListener("dblclick", ()=> level.zoom(1.0));
     window.addEventListener("wheel", selectTileEvent);
     window.onbeforeunload = stopUnload;
     window.addEventListener("beforeunload", stopUnload);
