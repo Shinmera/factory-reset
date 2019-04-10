@@ -34,6 +34,10 @@ namespace team5
         /// <summary>Whether the occlusion has been computed.</summary>
         private bool ComputedOccludedRadius = false;
 
+        private SortedDictionary<float, Tuple<float,float>> OcclusionList;
+
+        private const float MaxFanAngle = (float)Math.PI/10;
+
         private RectangleF BoundingBox;
 
         /// <summary>Clamps any angle into the [0,2pi] domain used by this class.</summary>
@@ -46,6 +50,40 @@ namespace team5
             }
 
             return angle;
+        }
+
+        public static bool IntersectCircle(Vector2 p1, Vector2 p2, float radius, Vector2 center, out float t)
+        {
+            var relP1 = p1 - center;
+            var relP2 = p2 - center;
+
+            float a = (relP2 - relP1).LengthSquared();
+            float b = 2 * Vector2.Dot(relP1, (relP2 - relP1));
+            float c = relP1.LengthSquared() - radius * radius;
+
+            float Disc = b * b - 4 * a * c;
+
+            t = -1;
+
+            if (Disc <= 0)
+            {
+                return false;
+            }
+            else
+            {
+                float t1 = (-b - (float)Math.Sqrt(Disc)) / (2 * a);
+                float t2 = (-b + (float)Math.Sqrt(Disc)) / (2 * a);
+
+                if ((t1 < 0|| t1 >1) && (t2 < 0 || t2 > 1))
+                {
+                    return false;
+                }
+                else
+                {
+                    t = Math.Min(t1,t2);
+                    return true;
+                }
+            }
         }
 
         public ConeEntity(Game1 game) : base(game)
@@ -221,12 +259,6 @@ namespace team5
 
         public override RectangleF GetBoundingBox()
         {
-            return new RectangleF(Position, new Vector2(OccludedRadius));
-        }
-
-        /// <summary>Returns a copy of a tighter bounding box. Computing this is slightly more expensive than the regular bounding box, so intersection with that should be done first.</summary>
-        public RectangleF GetTightBoundingBox()
-        {
             if (!ComputedBB)
             {
                 RecomputeBB();
@@ -257,12 +289,7 @@ namespace team5
             Movable source = (Movable)entity;
             RectangleF sourceBB = source.GetBoundingBox();
 
-            if (!ComputedBB && !sourceBB.Intersects(GetBoundingBox()))
-            {
-                return false;
-            }
-
-            if (!sourceBB.Intersects(GetTightBoundingBox()))
+            if (!sourceBB.Intersects(GetBoundingBox()))
             {
                 return false;
             }
@@ -291,7 +318,41 @@ namespace team5
             return false;
         }
 
-     
+        public void ComputeOcclusion(Chunk chunk)
+        {
+            if(!ComputedBB) RecomputeBB();
+            var Lines = chunk.BuildLOSHelper(BoundingBox, Position, FullRadius, Dir1, Dir2, out var angles);
+
+            OcclusionList = new SortedDictionary<float, Tuple<float, float>>();
+
+            OcclusionList.Add(0, new Tuple<float,float>(FullRadius,FullRadius));
+            bool outofRange = true;
+
+            foreach(var Point in Lines)
+            {
+                Vector2 dir = Point.Key - Position;
+
+                if (dir.LengthSquared() < FullRadius * FullRadius)
+                {
+                    float lastAngle = OcclusionList.Last().Key;
+                    float dist = (angles[Point.Key] - lastAngle);
+
+                    if (outofRange && dist > MaxFanAngle)
+                    {
+                        int segments = (int)Math.Ceiling(dist / MaxFanAngle);
+
+                        float portion = dist / segments;
+
+                        for (float f = lastAngle; f < angles[Point.Key] - portion / 2; f += portion)
+                        {
+                            OcclusionList.Add(f, new Tuple<float, float>(FullRadius, FullRadius));
+                        }
+                    }
+
+                    chunk.IntersectLine(Position, dir, 1, out float location);
+                }
+            }
+        }
         
         public override void Update(Chunk chunk)
         {

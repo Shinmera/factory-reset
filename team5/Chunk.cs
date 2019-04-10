@@ -268,6 +268,146 @@ namespace team5
             return true;
         }
 
+        //Dictionary is point to cw/ccw line
+        public SortedDictionary<Vector2,Tuple<Vector2,Vector2>> BuildLOSHelper(RectangleF BoundingBox, Vector2 pos, float radius, Vector2 dir1, Vector2 dir2, out Dictionary<Vector2,float> angles)
+        {
+            float radiusSqr = radius * radius;
+            float Cross2(Vector2 x1, Vector2 x2) => x1.X * x2.Y - x1.Y * x2.X;
+
+            bool acute = Cross2(dir1, dir2) > 0;
+
+            float startingangle = ConeEntity.ConvertAngle((float)Math.Atan2(dir1.Y, dir1.X));
+            float endingangle = ConeEntity.ConvertAngle((float)Math.Atan2(dir2.Y, dir2.X));
+
+            var localAngles = new Dictionary<Vector2, float>();
+
+            bool inRange(Vector2 p)
+            {
+                Vector2 dirp = p - pos;
+                return dirp.LengthSquared() <= radiusSqr && localAngles[p] > 0 && localAngles[p] > endingangle-startingangle;
+            }
+
+            var points = new SortedDictionary<Vector2, Tuple<Vector2, Vector2>>(Comparer<Vector2>.Create((Vector2 p1, Vector2 p2) => {
+                var angle1 = localAngles[p1];
+                var angle2 = localAngles[p2];
+                if(angle1 == angle2)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return angle1 < angle2 ? -1 : 1;
+                }
+            }));
+
+            int minX = (int)Math.Max(Math.Floor((BoundingBox.Left - BoundingBox.X) / TileSize), 0);
+            int minY = (int)Math.Max(Math.Floor((BoundingBox.Bottom - BoundingBox.Y) / TileSize), 0);
+            int maxX = (int)Math.Min(Math.Floor((BoundingBox.Right - BoundingBox.X) / TileSize) + 1, Width);
+            int maxY = (int)Math.Min(Math.Floor((BoundingBox.Top - BoundingBox.Y) / TileSize) + 1, Height);
+
+            var offset = new Vector2(BoundingBox.X, BoundingBox.Y);
+
+            for(int x = minX; x < maxX; ++x)
+            {
+                for(int y = minY; y < maxY; ++y)
+                {
+                    if(GetTile(x,y) == (uint)Colors.SolidPlatform || GetTile(x,y) == (uint)Colors.BackgroundWall)
+                    {
+                        Vector2 tilePosition = offset + new Vector2(x + 0.5F, y + 0.5F) * TileSize;
+                        var dir = pos - tilePosition;
+                        var cornerOffset = new Vector2(dir.X > 0 ? 1 : -1, dir.Y > 0 ? 1 : -1);
+
+                        Vector2 dircorner = dir + new Vector2(TileSize/2,TileSize/2) + cornerOffset * TileSize / 2;
+
+                        if(Math.Sign(dir.X) == Math.Sign(dircorner.X)
+                            && !(GetTile((int)cornerOffset.X + x, y) == (uint)Colors.SolidPlatform 
+                            || GetTile((int)cornerOffset.X + x, y) == (uint)Colors.BackgroundWall))
+                        {
+                            Vector2 point1;
+                            Vector2 point2;
+                            if (cornerOffset.X == cornerOffset.Y)
+                            {
+                                point1 = tilePosition + cornerOffset * TileSize / 2;
+                                point2 = tilePosition + new Vector2(cornerOffset.X, -cornerOffset.Y) * TileSize / 2;
+                            }
+                            else
+                            {
+                                point2 = tilePosition + cornerOffset * TileSize / 2;
+                                point1 = tilePosition + new Vector2(cornerOffset.X, -cornerOffset.Y) * TileSize / 2;
+                            }
+
+                            if (!points.ContainsKey(point1))
+                            {
+                                localAngles[point1] = ConeEntity.ConvertAngle((float)Math.Atan2(point1.Y - pos.Y, point1.X - pos.X) - startingangle);
+                            }
+
+                            if (!points.ContainsKey(point2))
+                            {
+                                localAngles[point2] = ConeEntity.ConvertAngle((float)Math.Atan2(point2.Y - pos.Y, point2.X - pos.X) - startingangle);
+                            }
+
+                            if (inRange(point1) || inRange(point2))
+                            {
+                                if(!inRange(point1) || !inRange(point2))
+                                {
+                                    if(!ConeEntity.IntersectCircle(point1,point2, radius, pos, out float t))
+                                    { 
+                                        
+                                    }
+                                }
+                                var point1Entry = points.ContainsKey(point1) ? points[point1].Item1 : new Vector2(float.NaN);
+                                var point2Entry = points.ContainsKey(point2) ? points[point2].Item2 : new Vector2(float.NaN);
+
+                                points[point1] = new Tuple<Vector2, Vector2>(point1Entry, point2);
+                                points[point2] = new Tuple<Vector2, Vector2>(point1, point2Entry);
+                            }
+                        }
+
+                        if (Math.Sign(dir.Y) == Math.Sign(dircorner.Y)
+                            && !(GetTile(x, (int)cornerOffset.Y + y) == (uint)Colors.SolidPlatform
+                            || GetTile(x, (int)cornerOffset.Y + y) == (uint)Colors.BackgroundWall))
+                        {
+                            Vector2 point1;
+                            Vector2 point2;
+                            if (cornerOffset.X == cornerOffset.Y)
+                            {
+                                point2 = tilePosition + cornerOffset * TileSize / 2;
+                                point1 = tilePosition + new Vector2(-cornerOffset.X, cornerOffset.Y) * TileSize / 2;
+                            }
+                            else
+                            {
+                                point1 = tilePosition + cornerOffset * TileSize / 2;
+                                point2 = tilePosition + new Vector2(-cornerOffset.X, cornerOffset.Y) * TileSize / 2;
+                            }
+
+                            if (!points.ContainsKey(point1))
+                            {
+                                localAngles[point1] = ConeEntity.ConvertAngle((float)Math.Atan2(point1.Y - pos.Y, point1.X - pos.X) - startingangle);
+                            }
+
+                            if (!points.ContainsKey(point2))
+                            {
+                                localAngles[point2] = ConeEntity.ConvertAngle((float)Math.Atan2(point2.Y - pos.Y, point2.X - pos.X) - startingangle);
+                            }
+
+                            if (inRange(point1) || inRange(point2))
+                            {
+                                var point1Entry = points.ContainsKey(point1) ? points[point1].Item1 : new Vector2(float.NaN);
+                                var point2Entry = points.ContainsKey(point2) ? points[point2].Item2 : new Vector2(float.NaN);
+
+                                points[point1] = new Tuple<Vector2, Vector2>(point1Entry, point2);
+                                points[point2] = new Tuple<Vector2, Vector2>(point1, point2Entry);
+                            }
+                        }
+                    }
+                }
+            }
+
+            angles = localAngles;
+
+            return points;
+        }
+
         public List<TileType> TouchingNonSolidTile(Movable source)
         {
             var result = new List<TileType>();

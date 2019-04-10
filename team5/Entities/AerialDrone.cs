@@ -154,63 +154,44 @@ namespace team5
             Vector2 p1 = Position - location;
             Vector2 p2 = p1 + dir;
 
-            float a = (p2 - p1).LengthSquared();
-            float b = 2 * Vector2.Dot(p1, (p2 - p1));
-            float c = p1.LengthSquared() - distance * distance;
+            if(!ConeEntity.IntersectCircle(p1,p2, distance, location, out float maxDist))
+            {
+                return false;
+            }
 
-            float Disc = b * b - 4 * a * c;
+            var point1 = new Vector2(dir.Y, -dir.X);
+            point1.Normalize();
+            point1 *= DroneSize/2;
+            var point2 = -point1;
 
-            if (Disc <= 0)
+            if (chunk.IntersectLine(Position + point1, dir, maxDist, out float distToIntersect1)){
+                maxDist = distToIntersect1;
+            }
+
+            if (chunk.IntersectLine(Position + point2, dir, maxDist, out float distToIntersect2))
+            {
+                maxDist = distToIntersect2;
+            }
+
+            maxDist -= DroneSize / 2;
+
+            if(maxDist < MinMovement)
             {
                 return false;
             }
             else
             {
-                float t1 = (-b - (float)Math.Sqrt(Disc)) / (2 * a);
-                float t2 = (-b + (float)Math.Sqrt(Disc)) / (2 * a);
-
-                if(t1 <= 0 && t2 <= 0)
-                {
-                    return false;
+                Vector2 tentativeWanderLocation = Position + ((float)Game.RNG.NextDouble() * (maxDist - MinMovement) + MinMovement) * dir;
+                if (chunk.BoundingBox.Contains(tentativeWanderLocation)){
+                    WanderLocation = tentativeWanderLocation;
+                    return true;
                 }
                 else
                 {
-                    float maxDist = t1 > 0 ? t1 : t2;
-
-                    var point1 = new Vector2(dir.Y, -dir.X);
-                    point1.Normalize();
-                    point1 *= DroneSize/2;
-                    var point2 = -point1;
-
-                    if (chunk.IntersectLine(Position + point1, dir,maxDist, out float distToIntersect1)){
-                        maxDist = distToIntersect1;
-                    }
-
-                    if (chunk.IntersectLine(Position + point2, dir, maxDist, out float distToIntersect2))
-                    {
-                        maxDist = distToIntersect2;
-                    }
-
-                    maxDist -= DroneSize / 2;
-
-                    if(maxDist < MinMovement)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        Vector2 tentativeWanderLocation = Position + ((float)Game.RNG.NextDouble() * (maxDist - MinMovement) + MinMovement) * dir;
-                        if (chunk.BoundingBox.Contains(tentativeWanderLocation)){
-                            WanderLocation = tentativeWanderLocation;
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
+                    return false;
                 }
             }
+                
         }
 
         public override void Respawn(Chunk chunk)
@@ -514,7 +495,7 @@ namespace team5
         {
             var path = new List<Vector2>();
 
-            Vector2 offset = -new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y);
+            Vector2 offset = new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y);
 
             path.Add(current.ToVector2()*Chunk.TileSize + offset);
 
