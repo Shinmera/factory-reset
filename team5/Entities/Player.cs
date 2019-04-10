@@ -94,7 +94,13 @@ namespace team5
                                                                Position.Y-Size.Y-1));
             Object rightCorner= chunk.CollidePoint(new Vector2(Position.X+Size.X+1,
                                                                Position.Y-Size.Y-1));
-            
+
+            if (chunk.CollidePoint(new Vector2(Position.X - Size.X,
+                                                         Position.Y)) != null)
+            {
+                bool wrong = true;
+            }
+
             // Apply gravity
             Velocity.Y -= dt * Gravity;
 
@@ -279,10 +285,14 @@ namespace team5
             // Now that all movement has been updated, check for collisions
             HandleCollisions(dt, chunk, true);
 
-            
+            if (chunk.CollidePoint(new Vector2(Position.X - Size.X,
+                                             Position.Y)) != null)
+            {
+                bool wrong = true;
+            }
 
             // Animations
-            if(IsClimbing || (Velocity.Y < 0 && (left != null || right != null)))
+            if (IsClimbing || (Velocity.Y < 0 && (left != null || right != null)))
             {
                 Sprite.Play("climb");
                 // Force direction to face wall

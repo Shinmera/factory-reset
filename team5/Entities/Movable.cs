@@ -52,6 +52,12 @@ namespace team5
                     Position.X = targetBB[1].Left - Size.X;
                 }
 
+                if (chunk.CollidePoint(new Vector2((Position+ Velocity * time * dt).X - Size.X,
+                                             (Position + Velocity * time * dt).Y)) != null)
+                {
+                    bool wrong = chunk.CollideSolid(this, dt, out direction, out time, out targetBB, out targetVel);
+                }
+
                 Position += Velocity * time * dt;
 
                 dt = (1 - time) * dt;

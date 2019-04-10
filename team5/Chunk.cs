@@ -619,15 +619,15 @@ namespace team5
             RectangleF sourceBB = source.GetBoundingBox();
             Vector2 sourceMotion = ((source is Movable) ? ((Movable)source).Velocity : new Vector2()) * timestep;
 
-            motionBB.X = sourceBB.X + (float)Math.Min(0.0, sourceMotion.X);
-            motionBB.Y = sourceBB.Y + (float)Math.Min(0.0, sourceMotion.Y);
+            motionBB.X = sourceBB.X + (float)Math.Min(0.0F, sourceMotion.X);
+            motionBB.Y = sourceBB.Y + (float)Math.Min(0.0F, sourceMotion.Y);
             motionBB.Width = sourceBB.Width + Math.Abs(sourceMotion.X);
             motionBB.Height = sourceBB.Height + Math.Abs(sourceMotion.Y);
 
-            int minX = (int)Math.Max(Math.Floor((motionBB.Left - BoundingBox.X) / TileSize),0);
-            int minY = (int)Math.Max(Math.Floor((motionBB.Bottom - BoundingBox.Y) / TileSize),0);
-            int maxX = (int)Math.Min(Math.Floor((motionBB.Right - BoundingBox.X) / TileSize) + 1, Width);
-            int maxY = (int)Math.Min(Math.Floor((motionBB.Top - BoundingBox.Y) / TileSize) + 1, Height);
+            int minX = (int)Math.Max(Math.Floor((motionBB.Left - BoundingBox.X - 1) / TileSize), 0);
+            int minY = (int)Math.Max(Math.Floor((motionBB.Bottom - BoundingBox.Y - 1) / TileSize), 0);
+            int maxX = (int)Math.Min(Math.Floor((motionBB.Right - BoundingBox.X + 1) / TileSize) + 1, Width);
+            int maxY = (int)Math.Min(Math.Floor((motionBB.Top - BoundingBox.Y + 1) / TileSize) + 1, Height);
 
             if (source is Movable)
             {

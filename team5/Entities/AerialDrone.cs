@@ -66,6 +66,8 @@ namespace team5
 
         public void Target(Vector2 target, Chunk chunk)
         {
+            Velocity = new Vector2();
+
             int targetx = (int)Math.Floor((target.X - chunk.BoundingBox.X) / Chunk.TileSize);
             int targety = (int)Math.Floor((target.Y - chunk.BoundingBox.Y) / Chunk.TileSize);
 
