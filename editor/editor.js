@@ -447,6 +447,7 @@ class Chunk{
                 this.drawPos(x, y);
             }
         }
+        level.zoom(zoom);
         return this;
     }
 
