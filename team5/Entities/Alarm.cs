@@ -16,7 +16,9 @@ namespace team5
         };
 
         public bool Detected = false;
+        //For Drone behavior
         public Vector2 LastKnowPos;
+        public bool Drones = false;
 
         private AlarmState State = AlarmState.Clear;
 
@@ -43,6 +45,7 @@ namespace team5
         public void SendDrones(Vector2 pos)
         {
             LastKnowPos = pos;
+            Drones = true;
         }
 
         public void SetState(AlarmState state )

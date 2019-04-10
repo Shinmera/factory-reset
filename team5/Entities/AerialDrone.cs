@@ -222,13 +222,10 @@ namespace team5
         public override void Update(Chunk chunk)
         {
             Velocity = new Vector2();
-            if (chunk.Level.Alarm.Detected)
+            if (chunk.Level.Alarm.Drones)
             {
                 Target(chunk.Level.Alarm.LastKnowPos, chunk);
-                if (Position == chunk.Level.Alarm.LastKnowPos)
-                {
-                    State = AIState.Searching;
-                }
+                chunk.Level.Alarm.Drones = false;
             }
 
             switch (State)
