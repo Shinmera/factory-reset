@@ -52,7 +52,7 @@ namespace team5
             return angle;
         }
 
-        public static bool IntersectCircle(Vector2 p1, Vector2 p2, float radius, Vector2 center, out float t)
+        public static bool IntersectCircle(Vector2 p1, Vector2 p2, float radius, Vector2 center, float maxT, out float t)
         {
             var relP1 = p1 - center;
             var relP2 = p2 - center;
@@ -74,12 +74,21 @@ namespace team5
                 float t1 = (-b - (float)Math.Sqrt(Disc)) / (2 * a);
                 float t2 = (-b + (float)Math.Sqrt(Disc)) / (2 * a);
 
-                if ((t1 < 0|| t1 >1) && (t2 < 0 || t2 > 1))
+                if ((t1 < 0|| t1 > maxT) && (t2 < 0 || t2 > maxT))
                 {
                     return false;
                 }
                 else
                 {
+                    if(t1 < 0)
+                    {
+                        t1 = float.PositiveInfinity;
+                    }
+
+                    if(t2 < 0)
+                    {
+                        t2 = float.PositiveInfinity;
+                    }
                     t = Math.Min(t1,t2);
                     return true;
                 }

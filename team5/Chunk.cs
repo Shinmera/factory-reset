@@ -173,10 +173,6 @@ namespace team5
                             case (uint)Colors.AerialDrone:
                                 var drone = new AerialDrone(position, Game);
                                 NonCollidingEntities.Add(drone);
-                                if(Player != null)
-                                {
-                                    drone.Target(Player.Position, this);
-                                }
                                 break;
                         }
                     }
@@ -350,7 +346,7 @@ namespace team5
                             {
                                 if(!inRange(point1) || !inRange(point2))
                                 {
-                                    if(!ConeEntity.IntersectCircle(point1,point2, radius, pos, out float t))
+                                    if(!ConeEntity.IntersectCircle(point1,point2, radius, pos, 1, out float t))
                                     { 
                                         
                                     }

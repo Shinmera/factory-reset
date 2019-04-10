@@ -21,16 +21,17 @@ namespace team5
             Searching,
         };
 
-        private const float DroneSize = 12;
+        private const float DroneSize = 7;
         private const float ViewSize = 60;
-        private const float MinMovement = 50;
-        private const float Speed = 50;
+        private const float MinMovement = 30;
+        private const float PatrolSpeed = 50;
+        private const float TargetSpeed = 150;
         private const float PatrolRange = 200;
         private const float SearchRange = 200;
-        private const float SearchTime = 10;
+        private const float SearchTime = 15;
         private const float WaitTime = 5;
         private const float WaitAngularVelocity = 0.375F * (float)Math.PI;
-        private const float TurnAngularVelocity = (float)Math.PI;
+        private const float TurnAngularVelocity = 2*(float)Math.PI;
         private const int WanderSearchAttempts = 10;
 
         private Vector2 Spawn;
@@ -44,7 +45,8 @@ namespace team5
 
         private Vector2 TargetLocation;
         private Vector2 WanderLocation;
-
+        private Vector2 LastTarget;
+        
         private float StateTimer = 0;
 
         private float Direction = 225;
@@ -66,6 +68,11 @@ namespace team5
 
         public void Target(Vector2 target, Chunk chunk)
         {
+            if(State == AIState.Targeting && (TargetLocation-target).LengthSquared() < Chunk.TileSize*Chunk.TileSize*16 && Path.Count > 2)
+            {
+                return;
+            }
+
             Velocity = new Vector2();
 
             int targetx = (int)Math.Floor((target.X - chunk.BoundingBox.X) / Chunk.TileSize);
@@ -74,44 +81,52 @@ namespace team5
             int startx = (int)Math.Floor((Position.X - chunk.BoundingBox.X) / Chunk.TileSize);
             int starty = (int)Math.Floor((Position.Y - chunk.BoundingBox.Y) / Chunk.TileSize);
 
-            Path = FindReducedPath(chunk, FindPath(chunk, startx, starty, target), Size);
+            var newPath = FindReducedPath(chunk, FindPath(chunk, startx, starty, target), Size);
 
-            NextNode = 1;
-
-            State = AIState.Targeting;
-
-            if(Path.Count <= 1)
+            if (newPath.Count <= 1)
             {
-                State = AIState.Waiting;
-            }
 
-            TargetLocation = target;
+            }
+            else {
+                Path = newPath;
+
+                NextNode = 1;
+
+                State = AIState.Targeting;
+
+                TargetLocation = target;
+            }
         }
 
-        public void Search(Vector2 target)
+        public void Search(Vector2 target, Chunk chunk)
         {
+            Path = null;
             StateTimer = 0;
             TargetLocation = target;
+            WanderLocation = target;
+            FindWander(TargetLocation, SearchRange, chunk);
             State = AIState.Searching;
         }
 
         public void Return(Chunk chunk)
         {
             Target(Spawn, chunk);
+            State = AIState.Returning;
         }
 
         public void Wait()
         {
+            Path = null;
             Velocity = new Vector2(0);
             StateTimer = 0;
             State = AIState.Waiting;
         }
 
-        private bool MoveTo(Vector2 target)
+        private bool MoveTo(Vector2 target, float speed)
         {
             Vector2 dir = (target - Position);
 
-            if (dir.LengthSquared() <= 4 * Game1.DeltaT * Game1.DeltaT * Velocity.LengthSquared())
+            if (dir.LengthSquared() <= 4 * Game1.DeltaT * Game1.DeltaT * speed * speed)
             {
                 return true;
             }
@@ -129,7 +144,7 @@ namespace team5
                         Velocity = new Vector2(0);
                         return true;
                     }
-                    Velocity *= Speed;
+                    Velocity *= speed;
                 }
                 else
                 {
@@ -153,17 +168,17 @@ namespace team5
 
             var dir = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
 
-            Vector2 p1 = Position - location;
+            Vector2 p1 = Position;
             Vector2 p2 = p1 + dir;
 
-            if(!ConeEntity.IntersectCircle(p1,p2, distance, location, out float maxDist))
+            if(!ConeEntity.IntersectCircle(p1,p2, distance, location, float.PositiveInfinity, out float maxDist))
             {
                 return false;
             }
 
             var point1 = new Vector2(dir.Y, -dir.X);
             point1.Normalize();
-            point1 *= DroneSize/2;
+            point1 *= DroneSize;
             var point2 = -point1;
 
             if (chunk.IntersectLine(Position + point1, dir, maxDist, out float distToIntersect1)){
@@ -175,7 +190,7 @@ namespace team5
                 maxDist = distToIntersect2;
             }
 
-            maxDist -= DroneSize / 2;
+            maxDist -= DroneSize;
 
             if(maxDist < MinMovement)
             {
@@ -198,24 +213,31 @@ namespace team5
 
         public override void Respawn(Chunk chunk)
         {
+
             Position = Spawn;
             State = AIState.Waiting;
         }
 
         public override void Update(Chunk chunk)
         {
+            Velocity = new Vector2();
+            if (chunk.Level.Alarm.Detected)
+            {
+                Target(chunk.Level.Player.Position, chunk);
+            }
 
             switch (State)
             {
                 case AIState.Patrolling:
-                    if (MoveTo(WanderLocation))
+                    if (MoveTo(WanderLocation, PatrolSpeed))
                     {
                         Wait();
                     }
                     break;
                 case AIState.Searching:
-                    if (MoveTo(WanderLocation))
+                    if (MoveTo(WanderLocation, PatrolSpeed))
                     {
+                        Velocity = new Vector2(0);
                         FindWander(TargetLocation, PatrolRange, chunk);
                     }
 
@@ -278,22 +300,27 @@ namespace team5
                     }
                     break;
                 case AIState.Targeting:
-                    if (MoveTo(Path[NextNode]))
+                    if (MoveTo(Path[NextNode], TargetSpeed))
                     {
+                        Velocity = new Vector2();
                         ++NextNode;
                         if (NextNode >= Path.Count)
                         {
-                            Search(Path[NextNode - 1]);
+                            Search(Path[NextNode - 1], chunk);
+                        }
+                        else
+                        {
+                            MoveTo(Path[NextNode], TargetSpeed);
                         }
                     }
                     break;
                 case AIState.Returning:
-                    if (MoveTo(Path[NextNode]))
+                    if (MoveTo(Path[NextNode], PatrolSpeed))
                     {
                         ++NextNode;
                         if (NextNode >= Path.Count)
                         {
-                            State = AIState.Waiting;
+                            Wait();
                         }
                     }
                     break;
@@ -323,50 +350,61 @@ namespace team5
         }
 
         //TODO: Reduce curves as well.
-        static List<Vector2> FindReducedPath(Chunk chunk, List<Vector2> path, Vector2 size)
+        public List<Vector2> FindReducedPath(Chunk chunk, List<Vector2> path, Vector2 size)
         {
-            var ReducedPath = new List<Vector2>();
+            var reducedPath = new List<Vector2>();
 
             if(path == null)
             {
-                return ReducedPath;
+                return reducedPath;
             }
 
             var lastDir = new Vector2(0);
 
-            ReducedPath.Add(new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y) + new Vector2(Chunk.TileSize / 2) + path[path.Count - 1]);
+            reducedPath.Add(Position);
 
-            var lastPoint = ReducedPath.Last();
+            Vector2 lastPoint = reducedPath.Last();
 
-            for (int i = path.Count-2; i > 0; --i)
+            for (int i = path.Count-1; i > 0; --i)
             {
+                /*
                 if(lastDir != path[i - 1] - path[i])
                 {
                     lastDir = path[i - 1] - path[i];
+                    */
+                    var tentativePoint = path[i];
 
-                    var tentativePoint = new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y) + new Vector2(Chunk.TileSize / 2) + path[i];
-
-                    var dir = tentativePoint - ReducedPath.Last();
+                    var dir = tentativePoint - reducedPath.Last();
                     var point1 = new Vector2(dir.Y , -dir.X);
                     point1.Normalize();
                     point1 *= DroneSize;
                     var point2 = -point1;
 
-                    point1 += ReducedPath.Last();
-                    point2 += ReducedPath.Last();
+                    point1 += reducedPath.Last();
+                    point2 += reducedPath.Last();
+                    
 
                     if(chunk.IntersectLine(point1, dir, 1, out float location1) || chunk.IntersectLine(point2, dir, 1, out float location2))
                     {
-                        ReducedPath.Add(lastPoint);
+                        if (Path != null && Path.Contains(lastPoint))
+                        {
+                            reducedPath = new List<Vector2>();
+                            for (int p = NextNode - 1; p < Path.Count; ++i)
+                            {
+                                reducedPath.Add(Path[p]);
+                                return reducedPath;
+                            }
+                        }
+                        reducedPath.Add(lastPoint);
                     }
 
                     lastPoint = tentativePoint;
-                }
+                //}
             }
 
-            ReducedPath.Add(new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y) + new Vector2(Chunk.TileSize / 2) + path[0]);
+            reducedPath.Add( path[0]);
 
-            return ReducedPath;
+            return reducedPath;
         }
 
         static List<Vector2> FindPath(Chunk chunk, int startx, int starty, Vector2 target)
@@ -432,8 +470,7 @@ namespace team5
 
                 if(current.X == targetx && current.Y == targety)
                 {
-                    List<Vector2> pathToTile = ReconstructPath(cameFrom, current, chunk);
-                    pathToTile[pathToTile.Count-1] = target;
+                    return ReconstructPath(cameFrom, current, chunk, target);
                 }
 
                 openSet.Remove(current);
@@ -493,11 +530,13 @@ namespace team5
             return null;
         }
 
-        private static List<Vector2> ReconstructPath(Dictionary<Point, Point> cameFrom, Point current, Chunk chunk)
+        private static List<Vector2> ReconstructPath(Dictionary<Point, Point> cameFrom, Point current, Chunk chunk, Vector2 FirstPoint)
         {
             var path = new List<Vector2>();
 
-            Vector2 offset = new Vector2(chunk.BoundingBox.X, chunk.BoundingBox.Y);
+            Vector2 offset = new Vector2(chunk.BoundingBox.X + Chunk.TileSize/2, chunk.BoundingBox.Y + Chunk.TileSize/2);
+
+            path.Add(FirstPoint);
 
             path.Add(current.ToVector2()*Chunk.TileSize + offset);
 
