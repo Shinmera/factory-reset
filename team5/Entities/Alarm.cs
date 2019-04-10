@@ -75,7 +75,7 @@ namespace team5
                 case AlarmState.Raised: 
                     Timer -= dt;
 
-                    TextEngine.QueueText(  (Math.Floor( Timer)).ToString(), new Vector2(textX, textY), Color.Red, "Arial");
+                    TextEngine.QueueText((Math.Floor(Timer)).ToString(), new Vector2(textX, textY), Color.Red);
                     if (Timer <= 0)
                     {
                         Detected = false;

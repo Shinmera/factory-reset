@@ -17,7 +17,7 @@ with.
     Size is a float value, measured in points. Modify this value to change
     the size of the font.
     -->
-    <Size>42</Size>
+    <Size>100</Size>
 
     <!--
     Spacing is a float value, measured in pixels. Modify this value to change
@@ -54,17 +54,9 @@ with.
     -->
     <CharacterRegions>
       <CharacterRegion>
-        <Start>&#32;</Start>
-        <End>&#32;</End>
+        <Start>32</Start>
+        <End>126</End>
       </CharacterRegion>
     </CharacterRegions>
-    <!--
-    ResourceFiles control the charaters which will be in the font. It does this
-    by scanning the text in each of the resource files and adding those specific
-    characters to the font. 
-    -->
-    <ResourceFiles>
-        <!-- <Resx>Strings.resx</Resx> -->
-    </ResourceFiles>
   </Asset>
 </XnaContent>

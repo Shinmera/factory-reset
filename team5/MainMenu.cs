@@ -59,8 +59,7 @@ namespace team5
 
             public override void Draw(SpriteBatch batch, Vector2 Center, bool selected)
             {
-                string font = selected ? "ArialBoldLarge" : "Arial";
-                Game.TextEngine.QueueText(Label, Center+Location, Color.Black, font);
+                Game.TextEngine.QueueText(Label, Center+Location, (selected)? 48 : 24, TextEngine.Orientation.Center);
             }
         }
 

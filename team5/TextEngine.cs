@@ -50,8 +50,7 @@ namespace team5
             Fonts = new Dictionary<string, SpriteFont>
             {
                 { DefaultFont, content.Load<SpriteFont>("Fonts/"+DefaultFont) },
-                { "Arial", content.Load<SpriteFont>("Fonts/Arial") },
-                { "ArialBoldLarge", content.Load<SpriteFont>("Fonts/ArialBoldLarge") }
+                { "Arial", content.Load<SpriteFont>("Fonts/Arial") }
             };
         }
 
@@ -60,27 +59,32 @@ namespace team5
             Vector2 pos = new Vector2(position.X, position.Y);
             SpriteFont font = Fonts[fontName];
             Vector2 size = font.MeasureString(text);
+            float scale = sizePx / size.Y;
             // Update position based on text size.
             switch(horizontal)
             {
-                case Orientation.Left:   break;
-                case Orientation.Right:  pos.X -= size.X; break;
-                case Orientation.Center:  pos.X -= size.X/2; break;
+                case Orientation.Left: break;
+                case Orientation.Right: pos.X -= size.X*scale; break;
+                case Orientation.Center: pos.X -= size.X/2*scale; break;
                 default: throw new ArgumentException(String.Format("{0} is not a valid horizontal orientation.", horizontal));
             }
             switch(vertical)
             {
                 case Orientation.Bottom: break;
-                case Orientation.Top:    pos.Y -= size.Y; break;
-                case Orientation.Center:  pos.Y -= size.Y/2; break;
+                case Orientation.Top: pos.Y -= size.Y*scale; break;
+                case Orientation.Center: pos.Y -= size.Y/2*scale; break;
                 default: throw new ArgumentException(String.Format("{0} is not a valid vertical orientation.", vertical));
             }
             
-            QueuedText.Add(new Text(text, position, color, font, sizePx / size.Y));
+            QueuedText.Add(new Text(text, pos, color, font, scale));
         }
         
         public void QueueText(string text, Vector2 position, string fontName=DefaultFont, float sizePx=DefaultSize, Orientation horizontal=Orientation.Left, Orientation vertical=Orientation.Bottom){
             QueueText(text, position, Color.Black, fontName, sizePx, horizontal, vertical);
+        }
+        
+        public void QueueText(string text, Vector2 position, float sizePx, Orientation horizontal=Orientation.Left, Orientation vertical=Orientation.Bottom){
+            QueueText(text, position, Color.Black, DefaultFont, sizePx, horizontal, vertical);
         }
 
         public void DrawText()
