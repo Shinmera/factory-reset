@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics;
 
 namespace team5
 {
@@ -223,7 +224,11 @@ namespace team5
             Velocity = new Vector2();
             if (chunk.Level.Alarm.Detected)
             {
-                Target(chunk.Level.Player.Position, chunk);
+                Target(chunk.Level.Alarm.LastKnowPos, chunk);
+                if (Position == chunk.Level.Alarm.LastKnowPos)
+                {
+                    State = AIState.Searching;
+                }
             }
 
             switch (State)

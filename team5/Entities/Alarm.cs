@@ -16,6 +16,7 @@ namespace team5
         };
 
         public bool Detected = false;
+        public Vector2 LastKnowPos;
 
         private AlarmState State = AlarmState.Clear;
 
@@ -37,6 +38,11 @@ namespace team5
         {
             Game.SoundEngine.Load("Alert");
             Game.TextEngine.LoadContent(content);
+        }
+
+        public void SendDrones(Vector2 pos)
+        {
+            LastKnowPos = pos;
         }
 
         public void SetState(AlarmState state )
