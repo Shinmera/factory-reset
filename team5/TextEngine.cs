@@ -9,9 +9,30 @@ namespace team5
 {
     public class TextEngine
     {
+        private struct Text
+        {
+            public string String;
+            public SpriteFont Font;
+            public Vector2 Position;
+            public Color Color;
+            public float Scale;
+
+            public Text(string text, Vector2 position, Color color, SpriteFont font, float scale) {
+                String = text; Position = position; Color = color; Font = font; Scale = scale;
+            }
+        };
+        
+        public enum Orientation{
+            Left, Top,
+            Right, Bottom,
+            Center,
+        };
+        
+        private const string DefaultFont = "ethnocentric";
+        private const float DefaultSize = 24;
         private SpriteBatch SpriteBatch;
         private Game1 Game;
-        private List<Tuple<string, Vector2, Color, string>> QueuedText;
+        private List<Text> QueuedText;
         private readonly RasterizerState NoCull;
 
         private Dictionary<string, SpriteFont> Fonts;
@@ -20,7 +41,7 @@ namespace team5
         {
             Game = game;
             NoCull = new RasterizerState { CullMode = CullMode.None };
-            QueuedText = new List<Tuple<string, Vector2, Color, string>>();
+            QueuedText = new List<Text>();
         }
 
         public void LoadContent(ContentManager content)
@@ -28,28 +49,47 @@ namespace team5
             SpriteBatch = new SpriteBatch(Game.GraphicsDevice);
             Fonts = new Dictionary<string, SpriteFont>
             {
+                { DefaultFont, content.Load<SpriteFont>("Fonts/"+DefaultFont) },
                 { "Arial", content.Load<SpriteFont>("Fonts/Arial") },
                 { "ArialBoldLarge", content.Load<SpriteFont>("Fonts/ArialBoldLarge") }
             };
         }
 
-        public void QueueText(string str, Vector2 position, Color color, string font)
+        public void QueueText(string text, Vector2 position, Color color, string fontName=DefaultFont, float sizePx=DefaultSize, Orientation horizontal=Orientation.Left, Orientation vertical=Orientation.Bottom)
         {
-            QueuedText.Add(new Tuple<string,Vector2,Color, string>(str, position, color, font));
+            Vector2 pos = new Vector2(position.X, position.Y);
+            SpriteFont font = Fonts[fontName];
+            Vector2 size = font.MeasureString(text);
+            // Update position based on text size.
+            switch(horizontal)
+            {
+                case Orientation.Left:   break;
+                case Orientation.Right:  pos.X -= size.X; break;
+                case Orientation.Center:  pos.X -= size.X/2; break;
+                default: throw new ArgumentException(String.Format("{0} is not a valid horizontal orientation.", horizontal));
+            }
+            switch(vertical)
+            {
+                case Orientation.Bottom: break;
+                case Orientation.Top:    pos.Y -= size.Y; break;
+                case Orientation.Center:  pos.Y -= size.Y/2; break;
+                default: throw new ArgumentException(String.Format("{0} is not a valid vertical orientation.", vertical));
+            }
+            
+            QueuedText.Add(new Text(text, position, color, font, sizePx / size.Y));
+        }
+        
+        public void QueueText(string text, Vector2 position, string fontName=DefaultFont, float sizePx=DefaultSize, Orientation horizontal=Orientation.Left, Orientation vertical=Orientation.Bottom){
+            QueueText(text, position, Color.Black, fontName, sizePx, horizontal, vertical);
         }
 
         public void DrawText()
         {
             SpriteBatch.Begin();
 
-            foreach (Tuple<string, Vector2, Color, string> text in QueuedText)
+            foreach(Text text in QueuedText)
             {
-                if(Fonts.TryGetValue(text.Item4, out SpriteFont font))
-                {
-                    Vector2 size = font.MeasureString(text.Item1);
-                    SpriteBatch.DrawString(font, text.Item1, text.Item2-(size/2), text.Item3);
-                }
-                    
+                SpriteBatch.DrawString(text.Font, text.String, text.Position, text.Color, 0, Vector2.Zero, text.Scale, SpriteEffects.None, 0);
             }
 
             SpriteBatch.End();
