@@ -28,6 +28,13 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/ArialBoldLarge.spritefont
 
+#begin Fonts/ethnocentric.spritefont
+/importer:FontDescriptionImporter
+/processor:LocalizedFontProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/ethnocentric.spritefont
+
 #begin Levels/test.zip
 /importer:LevelImporter
 /processor:LevelProcessor
