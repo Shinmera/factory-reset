@@ -264,8 +264,12 @@ namespace team5
             return true;
         }
 
+
+        public const int ClockWise = 0b01;
+        public const int CounterClockWise = 0b10;
+
         //Dictionary is point to cw/ccw line
-        public SortedDictionary<Vector2,Tuple<Vector2,Vector2>> BuildLOSHelper(RectangleF BoundingBox, Vector2 pos, float radius, Vector2 dir1, Vector2 dir2, out Dictionary<Vector2,float> angles)
+        public SortedDictionary<float,Tuple<Vector2,Vector2>> BuildLOSHelper(RectangleF boundingBox, Vector2 pos, float radius, Vector2 dir1, Vector2 dir2)
         {
             float radiusSqr = radius * radius;
             float Cross2(Vector2 x1, Vector2 x2) => x1.X * x2.Y - x1.Y * x2.X;
@@ -274,49 +278,53 @@ namespace team5
 
             float startingangle = ConeEntity.ConvertAngle((float)Math.Atan2(dir1.Y, dir1.X));
             float endingangle = ConeEntity.ConvertAngle((float)Math.Atan2(dir2.Y, dir2.X));
+            float anglerange = ConeEntity.ConvertAngle(endingangle - startingangle);
 
-            var localAngles = new Dictionary<Vector2, float>();
+            float getAngle(Vector2 p)
+            {
+                return ConeEntity.ConvertAngle((float)Math.Atan2(p.Y - pos.Y, p.X - pos.X) - startingangle);
+            }
+
+            bool inCone(Vector2 p)
+            {
+                return inRange(p) && inAngle(p);
+            }
 
             bool inRange(Vector2 p)
             {
                 Vector2 dirp = p - pos;
-                return dirp.LengthSquared() <= radiusSqr && localAngles[p] > 0 && localAngles[p] > endingangle-startingangle;
+                return dirp.LengthSquared() <= radiusSqr;
             }
 
-            var points = new SortedDictionary<Vector2, Tuple<Vector2, Vector2>>(Comparer<Vector2>.Create((Vector2 p1, Vector2 p2) => {
-                var angle1 = localAngles[p1];
-                var angle2 = localAngles[p2];
-                if(angle1 == angle2)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return angle1 < angle2 ? -1 : 1;
-                }
-            }));
+            bool inAngle(Vector2 p)
+            {
+                float angle = getAngle(p);
+                return angle > 0 && angle < anglerange;
+            }
 
-            int minX = (int)Math.Max(Math.Floor((BoundingBox.Left - BoundingBox.X) / TileSize), 0);
-            int minY = (int)Math.Max(Math.Floor((BoundingBox.Bottom - BoundingBox.Y) / TileSize), 0);
-            int maxX = (int)Math.Min(Math.Floor((BoundingBox.Right - BoundingBox.X) / TileSize) + 1, Width);
-            int maxY = (int)Math.Min(Math.Floor((BoundingBox.Top - BoundingBox.Y) / TileSize) + 1, Height);
+            var points = new SortedDictionary<float, Tuple<Vector2, Vector2>>();
+
+            int minX = (int)Math.Max(Math.Floor((boundingBox.Left - BoundingBox.X) / TileSize), 0);
+            int minY = (int)Math.Max(Math.Floor((boundingBox.Bottom - BoundingBox.Y) / TileSize), 0);
+            int maxX = (int)Math.Min(Math.Floor((boundingBox.Right - BoundingBox.X) / TileSize) + 1, Width);
+            int maxY = (int)Math.Min(Math.Floor((boundingBox.Top - BoundingBox.Y) / TileSize) + 1, Height);
 
             var offset = new Vector2(BoundingBox.X, BoundingBox.Y);
 
-            for(int x = minX; x < maxX; ++x)
+            for (int x = minX; x < maxX; ++x)
             {
-                for(int y = minY; y < maxY; ++y)
+                for (int y = minY; y < maxY; ++y)
                 {
-                    if(GetTile(x,y) == (uint)Colors.SolidPlatform || GetTile(x,y) == (uint)Colors.BackgroundWall)
+                    if (GetTile(x, y) == (uint)Colors.SolidPlatform || GetTile(x, y) == (uint)Colors.BackgroundWall)
                     {
                         Vector2 tilePosition = offset + new Vector2(x + 0.5F, y + 0.5F) * TileSize;
                         var dir = pos - tilePosition;
                         var cornerOffset = new Vector2(dir.X > 0 ? 1 : -1, dir.Y > 0 ? 1 : -1);
 
-                        Vector2 dircorner = dir + new Vector2(TileSize/2,TileSize/2) + cornerOffset * TileSize / 2;
+                        Vector2 dircorner = dir + new Vector2(TileSize / 2, TileSize / 2) + cornerOffset * TileSize / 2;
 
-                        if(Math.Sign(dir.X) == Math.Sign(dircorner.X)
-                            && !(GetTile((int)cornerOffset.X + x, y) == (uint)Colors.SolidPlatform 
+                        if (Math.Sign(dir.X) == Math.Sign(dircorner.X)
+                            && !(GetTile((int)cornerOffset.X + x, y) == (uint)Colors.SolidPlatform
                             || GetTile((int)cornerOffset.X + x, y) == (uint)Colors.BackgroundWall))
                         {
                             Vector2 point1;
@@ -332,30 +340,58 @@ namespace team5
                                 point1 = tilePosition + new Vector2(cornerOffset.X, -cornerOffset.Y) * TileSize / 2;
                             }
 
-                            if (!points.ContainsKey(point1))
-                            {
-                                localAngles[point1] = ConeEntity.ConvertAngle((float)Math.Atan2(point1.Y - pos.Y, point1.X - pos.X) - startingangle);
-                            }
+                            float angle1 = ConeEntity.ConvertAngle((float)Math.Atan2(point1.Y - pos.Y, point1.X - pos.X) - startingangle);
 
-                            if (!points.ContainsKey(point2))
-                            {
-                                localAngles[point2] = ConeEntity.ConvertAngle((float)Math.Atan2(point2.Y - pos.Y, point2.X - pos.X) - startingangle);
-                            }
+                            float angle2 = ConeEntity.ConvertAngle((float)Math.Atan2(point2.Y - pos.Y, point2.X - pos.X) - startingangle);
 
-                            if (inRange(point1) || inRange(point2))
+                            if (inCone(point1) || inCone(point2))
                             {
-                                if(!inRange(point1) || !inRange(point2))
+                                if (!inAngle(point1))
                                 {
-                                    if(!ConeEntity.IntersectCircle(point1,point2, radius, pos, 1, out float t))
-                                    { 
-                                        
+                                    angle1 = angle1 - 2 * (float)Math.PI;
+                                }
+                                if (!inRange(point1) || !inRange(point2))
+                                {
+                                    if (ConeEntity.IntersectCircle(point1, point2, radius, pos, 1, out float t))
+                                    {
+                                        Vector2 newPoint = point1 + (point2 - point1) * t;
+
+                                        if (!inRange(point1))
+                                        {
+                                            point1 = newPoint;
+                                            angle1 = ConeEntity.ConvertAngle((float)Math.Atan2(point1.Y - pos.Y, point1.X - pos.X) - startingangle);
+                                        }
+                                        else
+                                        {
+                                            point2 = newPoint;
+                                            angle2 = ConeEntity.ConvertAngle((float)Math.Atan2(point2.Y - pos.Y, point2.X - pos.X) - startingangle);
+                                        }
                                     }
                                 }
-                                var point1Entry = points.ContainsKey(point1) ? points[point1].Item1 : new Vector2(float.NaN);
-                                var point2Entry = points.ContainsKey(point2) ? points[point2].Item2 : new Vector2(float.NaN);
 
-                                points[point1] = new Tuple<Vector2, Vector2>(point1Entry, point2);
-                                points[point2] = new Tuple<Vector2, Vector2>(point1, point2Entry);
+                                if (points.TryGetValue(angle1, out var point1Entry) && point1Entry.Item1 != point1)
+                                {
+                                    if ((point1 - pos).LengthSquared() < (point1Entry.Item2 - pos).LengthSquared())
+                                    {
+                                        points[angle1] = new Tuple<Vector2, Vector2>(point1, point2);
+                                    }
+                                }
+                                else
+                                {
+                                    points[angle1] = new Tuple<Vector2, Vector2>(point1, point2);
+                                }
+
+                                if (points.TryGetValue(angle2, out var point2Entry) && point2Entry.Item1 != point2)
+                                {
+                                    if ((point2 - pos).LengthSquared() < (point2Entry.Item2 - pos).LengthSquared())
+                                    {
+                                        points[angle1] = new Tuple<Vector2, Vector2>(point2, new Vector2(float.NaN)); ;
+                                    }
+                                }
+                                else
+                                {
+                                    points[angle2] = new Tuple<Vector2, Vector2>(point2, new Vector2(float.NaN));
+                                }
                             }
                         }
 
@@ -376,31 +412,63 @@ namespace team5
                                 point2 = tilePosition + new Vector2(-cornerOffset.X, cornerOffset.Y) * TileSize / 2;
                             }
 
-                            if (!points.ContainsKey(point1))
-                            {
-                                localAngles[point1] = ConeEntity.ConvertAngle((float)Math.Atan2(point1.Y - pos.Y, point1.X - pos.X) - startingangle);
-                            }
+                            float angle1 = ConeEntity.ConvertAngle((float)Math.Atan2(point1.Y - pos.Y, point1.X - pos.X) - startingangle);
 
-                            if (!points.ContainsKey(point2))
-                            {
-                                localAngles[point2] = ConeEntity.ConvertAngle((float)Math.Atan2(point2.Y - pos.Y, point2.X - pos.X) - startingangle);
-                            }
+                            float angle2 = ConeEntity.ConvertAngle((float)Math.Atan2(point2.Y - pos.Y, point2.X - pos.X) - startingangle);
 
-                            if (inRange(point1) || inRange(point2))
+                            if (inCone(point1) || inCone(point2))
                             {
-                                var point1Entry = points.ContainsKey(point1) ? points[point1].Item1 : new Vector2(float.NaN);
-                                var point2Entry = points.ContainsKey(point2) ? points[point2].Item2 : new Vector2(float.NaN);
+                                if (!inAngle(point1))
+                                {
+                                    angle1 = angle1 - 2 * (float)Math.PI;
+                                }
+                                if (!inRange(point1) || !inRange(point2))
+                                {
+                                    if (ConeEntity.IntersectCircle(point1, point2, radius, pos, 1, out float t))
+                                    {
+                                        Vector2 newPoint = point1 + (point2 - point1) * t;
 
-                                points[point1] = new Tuple<Vector2, Vector2>(point1Entry, point2);
-                                points[point2] = new Tuple<Vector2, Vector2>(point1, point2Entry);
+                                        if (!inRange(point1))
+                                        {
+                                            point1 = newPoint;
+                                            angle1 = ConeEntity.ConvertAngle((float)Math.Atan2(point1.Y - pos.Y, point1.X - pos.X) - startingangle);
+                                        }
+                                        else
+                                        {
+                                            point2 = newPoint;
+                                            angle2 = ConeEntity.ConvertAngle((float)Math.Atan2(point2.Y - pos.Y, point2.X - pos.X) - startingangle);
+                                        }
+                                    }
+                                }
+
+                                if (points.TryGetValue(angle1, out var point1Entry) && point1Entry.Item1 != point1)
+                                {
+                                    if ((point1 - pos).LengthSquared() < (point1Entry.Item2 - pos).LengthSquared())
+                                    {
+                                        points[angle1] = new Tuple<Vector2, Vector2>(point1, point2);
+                                    }
+                                }
+                                else
+                                {
+                                    points[angle1] = new Tuple<Vector2, Vector2>(point1, point2);
+                                }
+
+                                if (points.TryGetValue(angle2, out var point2Entry) && point2Entry.Item1 != point2)
+                                {
+                                    if ((point2 - pos).LengthSquared() < (point2Entry.Item2 - pos).LengthSquared())
+                                    {
+                                        points[angle2] = new Tuple<Vector2, Vector2>(point2, new Vector2(float.NaN)); ;
+                                    }
+                                }
+                                else
+                                {
+                                    points[angle2] = new Tuple<Vector2, Vector2>(point2, new Vector2(float.NaN));
+                                }
                             }
                         }
                     }
                 }
             }
-
-            angles = localAngles;
-
             return points;
         }
 
