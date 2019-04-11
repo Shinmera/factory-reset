@@ -577,7 +577,10 @@ namespace team5
 
             AddOcclusionValue(ConvertAngle(Angle2 - Angle1), newTuple(closestPointEnd, closestPointEnd));
 
-            Triangles.Capacity = (OcclusionValues.Count - 1) * 3;
+            Triangles = new List<Vector2>
+            {
+                Capacity = (OcclusionValues.Count - 1) * 3
+            };
 
             for (int i = 0; i < OcclusionValues.Count - 1; ++i)
             {
