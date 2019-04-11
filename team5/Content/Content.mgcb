@@ -44,6 +44,12 @@
 /processorParam:DebugMode=Auto
 /build:Shaders/cone.fx
 
+#begin Shaders/redTriangle.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/redTriangle.fx
+
 #begin Shaders/sprite.fx
 /importer:EffectImporter
 /processor:EffectProcessor

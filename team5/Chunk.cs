@@ -381,11 +381,11 @@ namespace team5
                                     points[angle1] = new Tuple<Vector2, Vector2>(point1, point2);
                                 }
 
-                                if (points.TryGetValue(angle2, out var point2Entry) && point2Entry.Item1 != point2)
+                                if (points.TryGetValue(angle2, out var point2Entry))
                                 {
-                                    if ((point2 - pos).LengthSquared() < (point2Entry.Item2 - pos).LengthSquared())
+                                    if (point2Entry.Item1 != point2 && (point2 - pos).LengthSquared() < (point2Entry.Item2 - pos).LengthSquared())
                                     {
-                                        points[angle1] = new Tuple<Vector2, Vector2>(point2, new Vector2(float.NaN)); ;
+                                        points[angle2] = new Tuple<Vector2, Vector2>(point2, new Vector2(float.NaN)); ;
                                     }
                                 }
                                 else
@@ -453,9 +453,9 @@ namespace team5
                                     points[angle1] = new Tuple<Vector2, Vector2>(point1, point2);
                                 }
 
-                                if (points.TryGetValue(angle2, out var point2Entry) && point2Entry.Item1 != point2)
+                                if (points.TryGetValue(angle2, out var point2Entry))
                                 {
-                                    if ((point2 - pos).LengthSquared() < (point2Entry.Item2 - pos).LengthSquared())
+                                    if (point2Entry.Item1 != point2 && (point2 - pos).LengthSquared() < (point2Entry.Item2 - pos).LengthSquared())
                                     {
                                         points[angle2] = new Tuple<Vector2, Vector2>(point2, new Vector2(float.NaN)); ;
                                     }

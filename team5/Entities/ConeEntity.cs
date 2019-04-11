@@ -37,8 +37,14 @@ namespace team5
         private List<Tuple<Vector2,Vector2,float,float>> OcclusionValues;
         public List<Vector2> Triangles;
 
+        private const float MaxFanAngle = (float)Math.PI / 20;
+
         private void AddOcclusionValue(float angle, Tuple<Vector2, Vector2, float, float> occlusionValue)
         {
+            if(angle > ConvertAngle(Angle2-Angle1) + 0.001F)
+            {
+                bool Wrong = true;
+            }
             OcclusionAngles.Add(angle);
             OcclusionValues.Add(occlusionValue);
         }
@@ -67,7 +73,7 @@ namespace team5
             }
         }
 
-        private const float MaxFanAngle = (float)Math.PI/10;
+        
 
         private RectangleF BoundingBox;
 
@@ -134,12 +140,12 @@ namespace team5
         public void UpdatePosition(Vector2 position)
         {
             Position = position;
-            if (Math.Abs(Position.X % 1) < 0.001F || 1 - Math.Abs(Position.X % 1) < 0.001F) {
-                position.X += 0.002F;
+            if (Math.Abs(Position.X % 1) < 0.01F || 1 - Math.Abs(Position.X % 1) < 0.01F) {
+                Position.X += 0.02F;
             }
-            if(Math.Abs(Position.Y % 1) < 0.001F || 1 - Math.Abs(Position.Y % 1) < 0.001F)
+            if(Math.Abs(Position.Y % 1) < 0.01F || 1 - Math.Abs(Position.Y % 1) < 0.01F)
             {
-                position.Y += 0.002F;
+                Position.Y += 0.02F;
             }
             ComputedBB = false;
             ComputedOccludedRadius = false;
@@ -268,12 +274,12 @@ namespace team5
 
             if ((Math.PI * 0.5F > LocalAngle1 && Math.PI * 0.5F < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (Math.PI * 0.5F > LocalAngle1 || Math.PI * 0.5F < LocalAngle2)))
             {
-                yvals.Add(Position.Y - Radius);
+                yvals.Add(Position.Y + Radius);
             }
 
             if ((Math.PI * 1.5F > LocalAngle1 && Math.PI * 1.5F < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (Math.PI * 1.5F > LocalAngle1 || Math.PI * 1.5F < LocalAngle2)))
             {
-                yvals.Add(Position.Y + Radius);
+                yvals.Add(Position.Y - Radius);
             }
 
 
@@ -375,24 +381,13 @@ namespace team5
 
         public void ComputeOcclusion(Chunk chunk)
         {
-            if(!ComputedBB) RecomputeBB();
-            var points = chunk.BuildLOSHelper(BoundingBox, Position, Radius, Dir1, Dir2);
-
-            OcclusionAngles = new List<float>();
-            OcclusionValues = new List<Tuple<Vector2, Vector2,float,float>>();
-
-            //OcclusionList.Add(0, new Tuple<float,float>(FullRadius,FullRadius));
-
-            bool outofAngle = true;
-            bool addedEnd = false;
-
-            Tuple<Vector2, Vector2> closestLine = null;
-            Vector3 closestLineHomo = new Vector3(float.NaN);
 
             Tuple<Vector2, Vector2, float, float> newTuple(Vector2 a, Vector2 b)
             {
-                float dista = (a - Position).LengthSquared();
-                float distb = (b - Position).LengthSquared();
+                a = a - Position;
+                b = b - Position;
+                float dista = a.LengthSquared();
+                float distb = b.LengthSquared();
                 return newTuple4(a, b, dista, distb);
             }
 
@@ -401,201 +396,298 @@ namespace team5
                 return new Tuple<Vector2, Vector2, float, float>(a, b, c, d);
             }
 
-            foreach (var point in points)
+            OcclusionAngles = new List<float>();
+            OcclusionValues = new List<Tuple<Vector2, Vector2, float, float>>();
+
+            int x = (int)Math.Floor((Position.X - chunk.BoundingBox.X) / Chunk.TileSize);
+            int y = (int)Math.Floor((Position.Y - chunk.BoundingBox.Y) / Chunk.TileSize);
+
+            if (chunk.GetTile(x, y) == (uint)Chunk.Colors.BackgroundWall)
             {
-                float angle = point.Key;
-                if (angle < 0)
-                {
-                    if(closestLine != null)
-                    {
-                        if (!IsCloserThanLine(closestLineHomo, point.Value.Item1, Position, out Vector2 closestPoint))
-                        {
-                            continue;
-                        }
-                    }
+                AddOcclusionValue(0, newTuple(Position, Position));
+                AddOcclusionValue(ConvertAngle(Angle2 - Angle1), newTuple(Position, Position));
 
-                    if (float.IsNaN(point.Value.Item2.X))
-                    {
-                        throw new InvalidOperationException("LOSHelper produced invalid structure"); 
-                    }
-
-                    closestLine = new Tuple<Vector2, Vector2>(point.Value.Item1, point.Value.Item2);
-                    closestLineHomo = Vector3.Cross(new Vector3(closestLine.Item1, 1), new Vector3(closestLine.Item2, 1));
-                }
-                else
-                {
-                    if(angle > ConvertAngle(Angle2 - Angle1))
-                    {
-
-
-                        break;
-                    }
-
-                    if (outofAngle && angle >= 0)
-                    {
-                        outofAngle = false;
-
-                        if (angle > 0)
-                        {
-                            Vector2 closestPoint = ConePoint1;
-                            if (closestLine != null)
-                            {
-                                if(!IsCloserThanLine(closestLineHomo, ConePoint1, Position, out Vector2 linePoint))
-                                {
-                                    closestPoint = linePoint;
-                                }
-                            }
-
-
-                            AddOcclusionValue(0, newTuple(closestPoint, closestPoint));
-                        }
-
-                        /**
-                        if (angle == 0)
-                            
-                        {
-                            if(point.Value.Item2 == closestLine.Item2)
-                            {
-                                closestLine = null;
-                            }
-                            if(IsCloserThanLine(closestLineHomo, point.Key, Position, out Vector2 closestPoint))
-                            {
-                                if (float.IsNaN(point.Value.Item2.X))
-                                {
-                                    Vector2 CCWshift = new Vector2(point.Key.Y, -point.Key.X) * 0.0001F;
-                                    chunk.IntersectLine(Position, point.Key + CCWshift - Position, float.PositiveInfinity, out float location);
-                                    closestPoint = 
-                                }
-                            }
-
-                            float dist = (closestPoint - Position).LengthSquared();
-                            AddOcclusionValue(angle, newTuple(closestPoint, closestPoint, dist, dist));
-                        }
-                        */
-                    }
-
-                    if(closestLine != null && point.Value.Item1 == closestLine.Item2)
-                    {
-                        if (float.IsNaN(point.Value.Item2.X))
-                        {
-                            closestLine = null;
-                        }
-                        else
-                        {
-                            AddOcclusionValue(angle, newTuple(point.Value.Item1, point.Value.Item1));
-                            closestLine = new Tuple<Vector2, Vector2>(point.Value.Item1, point.Value.Item2);
-                            closestLineHomo = Vector3.Cross(new Vector3(closestLine.Item1, 1), new Vector3(closestLine.Item2, 1));
-                            continue;
-                        }
-                    }
-
-                    if(closestLine == null)
-                    {
-                        Vector2 dir = point.Value.Item1 - Position;
-                        dir.Normalize();
-                        Vector2 CCWoffset = new Vector2(dir.Y, -dir.X) * 0.001F;
-
-                        if (!chunk.IntersectLine(Position, dir - CCWoffset, LocalRadius, out float locationCW))
-                        {
-                            locationCW = LocalRadius;
-                        }
-                        if (!chunk.IntersectLine(Position, dir + CCWoffset, LocalRadius, out float locationCCW))
-                        {
-                            locationCCW = LocalRadius;
-                        }
-                        Vector2 CW = Position + dir * locationCW;
-                        Vector2 CCW = Position + dir * locationCCW;
-
-                        if((CCW - point.Value.Item1).LengthSquared() < 1F && !float.IsNaN(point.Value.Item2.X))
-                        {
-                            closestLine = new Tuple<Vector2, Vector2>(point.Value.Item1, point.Value.Item2);
-                            closestLineHomo = Vector3.Cross(new Vector3(closestLine.Item1, 1), new Vector3(closestLine.Item2, 1));
-                        }
-
-                        AddOcclusionValue(angle, newTuple4(CW, CCW, locationCW* locationCW, locationCCW*locationCW));
-                    }
-                    else
-                    {
-                        if(IsCloserThanLine(closestLineHomo, point.Value.Item1, Position, out Vector2 linePoint))
-                        {
-                            closestLine = new Tuple<Vector2, Vector2>(point.Value.Item1, point.Value.Item2);
-                            closestLineHomo = Vector3.Cross(new Vector3(closestLine.Item1, 1), new Vector3(closestLine.Item2, 1));
-
-                            AddOcclusionValue(angle, newTuple(linePoint, point.Value.Item1));
-                        }
-                    }
-                }
-
-
-
-                /**
-                Vector2 dir = point.Value.Item1 - Position;
-
-                if (dir.LengthSquared() < FullRadius * FullRadius)
-                {
-                    float lastAngle = OcclusionList.Last().Key;
-                    float dist = (angles[point.Key] - lastAngle);
-
-                    if (outofRange && dist > MaxFanAngle)
-                    {
-                        int segments = (int)Math.Ceiling(dist / MaxFanAngle);
-
-                        float portion = dist / segments;
-
-                        for (float f = lastAngle; f < angles[point.Key] - portion / 2; f += portion)
-                        {
-                            OcclusionList.Add(f, new Tuple<float, float>(FullRadius, FullRadius));
-                        }
-                    }
-
-                    chunk.IntersectLine(Position, dir, 1, out float location);
-                }
-                 */
-            }
-
-            if (outofAngle)
-            {
-                AddOcclusionValue(0, newTuple(ConePoint1,ConePoint1));
-            }
-
-            Vector2 closestPointEnd = ConePoint2;
-            if (closestLine != null)
-            {
-                if (!IsCloserThanLine(closestLineHomo, ConePoint2, Position, out Vector2 linePoint))
-                {
-                    closestPointEnd = linePoint;
-                }
             }
             else
             {
-                if (chunk.IntersectLine(Position, Dir2, LocalRadius, out float distIntersect))
+
+                if (!ComputedBB) RecomputeBB();
+                var points = chunk.BuildLOSHelper(BoundingBox, Position, Radius, Dir1, Dir2);
+
+                
+
+                //OcclusionList.Add(0, new Tuple<float,float>(FullRadius,FullRadius));
+
+                bool outofAngle = true;
+
+                Tuple<Vector2, Vector2> closestLine = null;
+                Vector3 closestLineHomo = new Vector3(float.NaN);
+
+
+
+                foreach (var point in points)
                 {
-                    closestPointEnd = Position + Dir2 * distIntersect;
+                    float angle = point.Key;
+                    if (angle < 0)
+                    {
+                        if (closestLine != null)
+                        {
+                            if (!IsCloserThanLine(closestLineHomo, point.Value.Item1, Position, out Vector2 closestPoint))
+                            {
+                                continue;
+                            }
+                        }
+
+                        if (float.IsNaN(point.Value.Item2.X))
+                        {
+                            throw new InvalidOperationException("LOSHelper produced invalid structure");
+                        }
+
+                        closestLine = new Tuple<Vector2, Vector2>(point.Value.Item1, point.Value.Item2);
+                        closestLineHomo = Vector3.Cross(new Vector3(closestLine.Item1, 1), new Vector3(closestLine.Item2, 1));
+                    }
+                    else
+                    {
+                        if (angle > ConvertAngle(Angle2 - Angle1))
+                        {
+                            break;
+                        }
+
+                        if (outofAngle && angle >= 0)
+                        {
+                            outofAngle = false;
+
+                            if (angle > 0)
+                            {
+                                Vector2 closestPoint = ConePoint1;
+                                if (closestLine != null && !IsCloserThanLine(closestLineHomo, ConePoint1, Position, out Vector2 linePoint))
+                                {
+                                    closestPoint = linePoint;
+                                    AddOcclusionValue(0, newTuple(closestPoint, closestPoint));
+                                }
+                                else
+                                {
+                                    AddOcclusionValue(0, newTuple4(closestPoint - Position, closestPoint - Position, LocalRadius * LocalRadius, LocalRadius * LocalRadius));
+                                }
+
+
+
+                            }
+
+                            /**
+                            if (angle == 0)
+                                
+                            {
+                                if(point.Value.Item2 == closestLine.Item2)
+                                {
+                                    closestLine = null;
+                                }
+                                if(IsCloserThanLine(closestLineHomo, point.Key, Position, out Vector2 closestPoint))
+                                {
+                                    if (float.IsNaN(point.Value.Item2.X))
+                                    {
+                                        Vector2 CCWshift = new Vector2(point.Key.Y, -point.Key.X) * 0.0001F;
+                                        chunk.IntersectLine(Position, point.Key + CCWshift - Position, float.PositiveInfinity, out float location);
+                                        closestPoint = 
+                                    }
+                                }
+
+                                float dist = (closestPoint - Position).LengthSquared();
+                                AddOcclusionValue(angle, newTuple(closestPoint, closestPoint, dist, dist));
+                            }
+                            */
+                        }
+
+                        if (closestLine != null && point.Value.Item1 == closestLine.Item2)
+                        {
+                            if (float.IsNaN(point.Value.Item2.X))
+                            {
+                                closestLine = null;
+                            }
+                            else
+                            {
+                                AddOcclusionValue(angle, newTuple(point.Value.Item1, point.Value.Item1));
+                                closestLine = new Tuple<Vector2, Vector2>(point.Value.Item1, point.Value.Item2);
+                                closestLineHomo = Vector3.Cross(new Vector3(closestLine.Item1, 1), new Vector3(closestLine.Item2, 1));
+                                continue;
+                            }
+                        }
+
+                        if (closestLine == null)
+                        {
+                            Vector2 dir = point.Value.Item1 - Position;
+                            dir.Normalize();
+                            Vector2 CCWoffset = new Vector2(-dir.Y, dir.X) * 0.001F;
+
+                            if (!chunk.IntersectLine(Position, dir - CCWoffset, LocalRadius, out float locationCW))
+                            {
+                                locationCW = LocalRadius;
+                            }
+                            if (!chunk.IntersectLine(Position, dir + CCWoffset, LocalRadius, out float locationCCW))
+                            {
+                                locationCCW = LocalRadius;
+                            }
+                            Vector2 CW = dir * locationCW;
+                            Vector2 CCW = dir * locationCCW;
+
+                            if ((Position + CCW - point.Value.Item1).LengthSquared() < 1F && !float.IsNaN(point.Value.Item2.X))
+                            {
+                                closestLine = new Tuple<Vector2, Vector2>(point.Value.Item1, point.Value.Item2);
+                                closestLineHomo = Vector3.Cross(new Vector3(closestLine.Item1, 1), new Vector3(closestLine.Item2, 1));
+                            }
+
+                            AddOcclusionValue(angle, newTuple4(CW, CCW, locationCW * locationCW, locationCCW * locationCCW));
+                        }
+                        else
+                        {
+                            if (IsCloserThanLine(closestLineHomo, point.Value.Item1, Position, out Vector2 linePoint))
+                            {
+                                closestLine = new Tuple<Vector2, Vector2>(point.Value.Item1, point.Value.Item2);
+                                closestLineHomo = Vector3.Cross(new Vector3(closestLine.Item1, 1), new Vector3(closestLine.Item2, 1));
+
+                                AddOcclusionValue(angle, newTuple(linePoint, point.Value.Item1));
+                            }
+                        }
+                    }
+
+
+
+                    /**
+                    Vector2 dir = point.Value.Item1 - Position;
+
+                    if (dir.LengthSquared() < FullRadius * FullRadius)
+                    {
+                        float lastAngle = OcclusionList.Last().Key;
+                        float dist = (angles[point.Key] - lastAngle);
+
+                        if (outofRange && dist > MaxFanAngle)
+                        {
+                            int segments = (int)Math.Ceiling(dist / MaxFanAngle);
+
+                            float portion = dist / segments;
+
+                            for (float f = lastAngle; f < angles[point.Key] - portion / 2; f += portion)
+                            {
+                                OcclusionList.Add(f, new Tuple<float, float>(FullRadius, FullRadius));
+                            }
+                        }
+
+                        chunk.IntersectLine(Position, dir, 1, out float location);
+                    }
+                     */
                 }
 
-            }
+                if (outofAngle)
+                {
+                    AddOcclusionValue(0, newTuple4(ConePoint1 - Position, ConePoint1 - Position, LocalRadius * LocalRadius, LocalRadius * LocalRadius));
+                }
 
-            AddOcclusionValue(ConvertAngle(Angle2 - Angle1), newTuple(closestPointEnd, closestPointEnd));
+                bool maxRangeEnd = true;
+
+                Vector2 closestPointEnd = ConePoint2;
+                if (closestLine != null)
+                {
+                    if (!IsCloserThanLine(closestLineHomo, ConePoint2, Position, out Vector2 linePoint))
+                    {
+                        closestPointEnd = linePoint;
+                        maxRangeEnd = false;
+                    }
+                }
+                else
+                {
+                    if (chunk.IntersectLine(Position, Dir2, LocalRadius, out float distIntersect))
+                    {
+                        closestPointEnd = Position + Dir2 * distIntersect;
+                        maxRangeEnd = false;
+                    }
+                }
+
+                if (maxRangeEnd)
+                {
+                    AddOcclusionValue(ConvertAngle(Angle2 - Angle1), newTuple4(closestPointEnd - Position, closestPointEnd - Position, LocalRadius * LocalRadius, LocalRadius * LocalRadius));
+
+                }
+                else
+                {
+                    AddOcclusionValue(ConvertAngle(Angle2 - Angle1), newTuple(closestPointEnd, closestPointEnd));
+                }
+            }
 
             Triangles = new List<Vector2>
             {
                 Capacity = (OcclusionValues.Count - 1) * 3
             };
 
-            for (int i = 0; i < OcclusionValues.Count - 1; ++i)
+            bool maxRange = OcclusionValues[0].Item4 == (LocalRadius * LocalRadius);
+            float lastmaxRangeAngle = 0;
+            Triangles.Add(new Vector2());
+            Triangles.Add(OcclusionValues[0].Item2);
+
+            for (int i = 1; i < OcclusionValues.Count - 1; ++i)
             {
-                Triangles.Add(Position);
+                if (Math.Abs(OcclusionValues[i].Item3 - (LocalRadius * LocalRadius)) < 1)
+                {
+                    if (maxRange)
+                    {
+                        if (OcclusionAngles[i] - lastmaxRangeAngle > MaxFanAngle)
+                        {
+                            int newFans = (int)Math.Ceiling((OcclusionAngles[i] - lastmaxRangeAngle) / MaxFanAngle);
+                            float length = (OcclusionAngles[i] - lastmaxRangeAngle) / newFans;
+                            for (int fan = 1; fan < newFans; ++fan)
+                            {
+                                float fanAngle = fan * length + lastmaxRangeAngle + Angle1;
+                                Vector2 fanVertex = new Vector2(Radius * (float)Math.Cos(fanAngle), Radius * (float)Math.Sin(fanAngle));
+                                Triangles.Add(fanVertex);
+                                Triangles.Add(new Vector2());
+                                Triangles.Add(fanVertex);
+                            }
+                        }
+                    }
+                }
+                if (OcclusionValues[i].Item4 == (LocalRadius * LocalRadius))
+                {
+                    maxRange = true;
+                    lastmaxRangeAngle = OcclusionAngles[i];
+                }
+                else
+                {
+                    maxRange = false;
+                }
+
+                
+                Triangles.Add(OcclusionValues[i].Item1);
+                Triangles.Add(new Vector2());
                 Triangles.Add(OcclusionValues[i].Item2);
-                Triangles.Add(OcclusionValues[i + 1].Item1);
             }
+
+            if (maxRange)
+            {
+                if (OcclusionAngles.Last() - lastmaxRangeAngle > MaxFanAngle)
+                {
+                    int newFans = (int)Math.Ceiling((OcclusionAngles.Last() - lastmaxRangeAngle) / MaxFanAngle);
+                    float length = (OcclusionAngles.Last() - lastmaxRangeAngle) / newFans;
+                    for (int fan = 1; fan < newFans; ++fan)
+                    {
+                        float fanAngle = fan * length + lastmaxRangeAngle + Angle1;
+                        Vector2 fanVertex = new Vector2(Radius * (float)Math.Cos(fanAngle), Radius * (float)Math.Sin(fanAngle));
+                        Triangles.Add(fanVertex);
+                        Triangles.Add(new Vector2());
+                        Triangles.Add(fanVertex);
+                    }
+                }
+            }
+
+            Triangles.Add(OcclusionValues.Last().Item1);
+
+            ComputedOccludedRadius = true;
         }
         
         public override void Update(Chunk chunk)
         {
             if (!ComputedOccludedRadius)
             {
-                ComputedOccludedRadius = true;
                 ComputeOcclusion(chunk);
+                
                 /*
                 OccludedRadius = FullRadius;
                 if (chunk.IntersectLine(Position, 
@@ -630,8 +722,10 @@ namespace team5
 
         public override void Draw()
         {
-            RecomputeBB();
-            Game.ViewConeEngine.Draw(Position, Radius, Angle1, Angle2);
+            if (ComputedOccludedRadius)
+            {
+                Game.ViewConeEngine.DrawTriangles(Position, Triangles);
+            }
         }
 
         /*

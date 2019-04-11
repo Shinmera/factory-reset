@@ -14,7 +14,9 @@ namespace team5
     {
         public Game1 Game;
         private VertexBuffer VertexBuffer;
+        private VertexBuffer TriangleVertexBuffer;
         private Effect ConeEffect;
+        private Effect TriangleEffect;
         private const int Triangles = 5;
 
         public ViewConeEngine(Game1 game)
@@ -33,6 +35,7 @@ namespace team5
             VertexBuffer.SetData(vertices);
             // Create shader
             ConeEffect = content.Load<Effect>("Shaders/cone");
+            TriangleEffect = content.Load<Effect>("Shaders/redTriangle");
         }
 
         public void Draw(float radius, float angle1, float angle2)
@@ -55,12 +58,48 @@ namespace team5
                 device.DrawPrimitives(PrimitiveType.TriangleList, 0, Triangles);
             }
         }
-        
+
+
+        public void DrawTriangles(List<Vector2> triangles)
+        {
+            GraphicsDevice device = Game.GraphicsDevice;
+
+            TriangleEffect.CurrentTechnique = TriangleEffect.Techniques["Triangle"];
+            TriangleEffect.Parameters["projectionMatrix"].SetValue(Game.Transforms.ProjectionMatrix);
+            TriangleEffect.Parameters["viewMatrix"].SetValue(Game.Transforms.ViewMatrix);
+            TriangleEffect.Parameters["modelMatrix"].SetValue(Game.Transforms.ModelMatrix);
+
+            VertexPosition[] vertices = new VertexPosition[triangles.Count];
+            for (int i = 0; i < vertices.Length; i++)
+                vertices[i] = new VertexPosition(new Vector3(triangles[i], 0));
+
+            TriangleVertexBuffer = new VertexBuffer(Game.GraphicsDevice, VertexPosition.VertexDeclaration,
+                                            triangles.Count * 3, BufferUsage.None);
+            TriangleVertexBuffer.SetData(vertices);
+            // Create shader
+
+            device.SetVertexBuffer(TriangleVertexBuffer);
+            device.BlendState = BlendState.AlphaBlend;
+            foreach (EffectPass pass in TriangleEffect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                device.DrawPrimitives(PrimitiveType.TriangleList, 0, triangles.Count/3);
+            }
+        }
+
         public void Draw(Vector2 position, float radius, float angle1, float angle2)
         {
             Game.Transforms.Push();
             Game.Transforms.Translate(position);
             Draw(radius, angle1, angle2);
+            Game.Transforms.Pop();
+        }
+
+        public void DrawTriangles(Vector2 position, List<Vector2> triangles)
+        {
+            Game.Transforms.Push();
+            Game.Transforms.Translate(position);
+            DrawTriangles(triangles);
             Game.Transforms.Pop();
         }
     }
