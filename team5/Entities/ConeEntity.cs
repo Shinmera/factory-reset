@@ -140,12 +140,12 @@ namespace team5
         public void UpdatePosition(Vector2 position)
         {
             Position = position;
-            if (Math.Abs(Position.X % 1) < 0.01F || 1 - Math.Abs(Position.X % 1) < 0.01F) {
-                Position.X += 0.02F;
+            if (Math.Abs(Position.X % 8) < 0.5F || 1 - Math.Abs(Position.X % 8) < 0.5F) {
+                Position.X += 1F;
             }
-            if(Math.Abs(Position.Y % 1) < 0.01F || 1 - Math.Abs(Position.Y % 1) < 0.01F)
+            if(Math.Abs(Position.Y % 8) < 0.5F || 1 - Math.Abs(Position.Y % 8) < 0.5F)
             {
-                Position.Y += 0.02F;
+                Position.Y += 1F;
             }
             ComputedBB = false;
             ComputedOccludedRadius = false;
@@ -467,7 +467,15 @@ namespace team5
                                 }
                                 else
                                 {
-                                    AddOcclusionValue(0, newTuple4(closestPoint - Position, closestPoint - Position, LocalRadius * LocalRadius, LocalRadius * LocalRadius));
+                                    if (!chunk.IntersectLine(Position, Dir1, LocalRadius, out float locationDir1))
+                                    {
+                                        locationDir1 = LocalRadius;
+                                    }
+                                    else
+                                    {
+                                        closestPoint = Position + Dir1 * locationDir1;
+                                    }
+                                    AddOcclusionValue(0, newTuple4(closestPoint - Position, closestPoint - Position, locationDir1 * locationDir1, locationDir1 * locationDir1));
                                 }
 
 

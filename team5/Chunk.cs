@@ -299,7 +299,7 @@ namespace team5
             bool inAngle(Vector2 p)
             {
                 float angle = getAngle(p);
-                return angle > 0 && angle < anglerange;
+                return angle >= 0 && angle <= anglerange;
             }
 
             var points = new SortedDictionary<float, Tuple<Vector2, Vector2>>();
@@ -532,11 +532,11 @@ namespace team5
 
             Vector2 relEnd = Dir * length + relSource;
 
-            int minX = (int)Math.Max(Math.Floor(Math.Min(relSource.X, relEnd.X) / TileSize), 0);
-            int minY = (int)Math.Max(Math.Floor(Math.Min(relSource.Y, relEnd.Y) / TileSize), 0);
+            int minX = (int)Math.Max(Math.Floor((Math.Min(relSource.X, relEnd.X)-1) / TileSize), 0);
+            int minY = (int)Math.Max(Math.Floor((Math.Min(relSource.Y, relEnd.Y)-1) / TileSize), 0);
 
-            int maxX = (int)Math.Min(Math.Floor(Math.Max(relSource.X, relEnd.X) / TileSize) + 1, Width);
-            int maxY = (int)Math.Min(Math.Floor(Math.Max(relSource.Y, relEnd.Y) / TileSize) + 1, Height);
+            int maxX = (int)Math.Min(Math.Floor((Math.Max(relSource.X, relEnd.X)+1) / TileSize) + 1, Width);
+            int maxY = (int)Math.Min(Math.Floor((Math.Max(relSource.Y, relEnd.Y)+1) / TileSize) + 1, Height);
 
             float prevLength = 0;
             float nextLength = 0;
@@ -608,7 +608,7 @@ namespace team5
 
                         location = (yPos - relSource.Y) / Dir.Y;
 
-                        if (location < length)
+                        if (location <= length)
                         {
                             return true;
                         }
