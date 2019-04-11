@@ -586,7 +586,7 @@ namespace team5
             {
                 Triangles.Add(Position);
                 Triangles.Add(OcclusionValues[i].Item2);
-                Triangles.Add(OcclusionValues[i - 1].Item1);
+                Triangles.Add(OcclusionValues[i + 1].Item1);
             }
         }
         
