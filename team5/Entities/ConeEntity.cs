@@ -32,6 +32,8 @@ namespace team5
         /// <summary>Whether the occlusion has been computed.</summary>
         private bool ComputedOccludedRadius = false;
 
+        private RectangleF BoundingBox;
+
         //We need to use two seperate lists for this because apparently binary search is only implemented in lists. WTF.
         private List<float> OcclusionAngles;
         private List<Tuple<Vector2,Vector2,float,float>> OcclusionValues;
@@ -69,10 +71,6 @@ namespace team5
             }
         }
 
-        public Entity parent;
-        
-
-        private RectangleF BoundingBox;
 
         /// <summary>Clamps any angle into the [0,2pi] domain used by this class.</summary>
         public static float ConvertAngle(float angle)
@@ -393,8 +391,8 @@ namespace team5
                 return new Tuple<Vector2, Vector2, float, float>(a, b, c, d);
             }
 
-            OcclusionAngles = new List<float>();
-            OcclusionValues = new List<Tuple<Vector2, Vector2, float, float>>();
+            OcclusionAngles.Clear();
+            OcclusionValues.Clear();
 
             int x = (int)Math.Floor((Position.X - chunk.BoundingBox.X) / Chunk.TileSize);
             int y = (int)Math.Floor((Position.Y - chunk.BoundingBox.Y) / Chunk.TileSize);
@@ -409,7 +407,7 @@ namespace team5
                 if (!ComputedBB) RecomputeBB();
                 var points = chunk.BuildLOSHelper(BoundingBox, Position, Radius, Dir1, Dir2);
 
-                bool outofAngle = true;
+                bool atBeginning = true;
 
                 Tuple<Vector2, Vector2> closestLine = null;
                 Vector3 closestLineHomo = new Vector3(float.NaN);
@@ -417,34 +415,17 @@ namespace team5
                 foreach (var point in points)
                 {
                     float angle = point.Key;
-                    if (angle < 0)
-                    {
-                        if (closestLine != null)
-                        {
-                            if (!IsCloserThanLine(closestLineHomo, point.Value.Item1, Position, out Vector2 closestPoint))
-                            {
-                                continue;
-                            }
-                        }
 
-                        if (float.IsNaN(point.Value.Item2.X))
-                        {
-                            throw new InvalidOperationException("LOSHelper produced invalid structure");
-                        }
-
-                        closestLine = new Tuple<Vector2, Vector2>(point.Value.Item1, point.Value.Item2);
-                        closestLineHomo = Vector3.Cross(new Vector3(closestLine.Item1, 1), new Vector3(closestLine.Item2, 1));
-                    }
-                    else
+                    if(angle >= 0)
                     {
                         if (angle > ConvertAngle(Angle2 - Angle1))
                         {
                             break;
                         }
 
-                        if (outofAngle && angle >= 0)
+                        if (atBeginning && angle >= 0)
                         {
-                            outofAngle = false;
+                            atBeginning = false;
 
                             if (angle > 0)
                             {
@@ -458,8 +439,6 @@ namespace team5
                                     closestPoint = Position + Dir1 * locationDir1;
                                 }
                                 AddOcclusionValue(0, newTuple4(closestPoint - Position, closestPoint - Position, locationDir1 * locationDir1, locationDir1 * locationDir1));
-
-                                closestLine = null;
                             }
                         }
 
@@ -522,7 +501,7 @@ namespace team5
                     }
                 }
 
-                if (outofAngle)
+                if (atBeginning)
                 {
                     Vector2 closestPoint = ConePoint1;
                     if (!chunk.IntersectLine(Position, Dir1, LocalRadius, out float locationDir1))
@@ -557,10 +536,16 @@ namespace team5
                 }
             }
 
-            Triangles = new List<Vector2>
-            {
-                Capacity = (OcclusionValues.Count - 1) * 3
-            };
+            ComputeTriangles();
+
+            ComputedOccludedRadius = true;
+        }
+        
+        public void ComputeTriangles()
+        {
+            Triangles.Clear();
+
+            Triangles.Capacity = Math.Max((OcclusionValues.Count - 1) * 3,Triangles.Capacity);
 
             bool maxRange = OcclusionValues[0].Item4 == (LocalRadius * LocalRadius);
             float lastmaxRangeAngle = 0;
@@ -598,7 +583,7 @@ namespace team5
                     maxRange = false;
                 }
 
-                
+
                 Triangles.Add(OcclusionValues[i].Item1);
                 Triangles.Add(new Vector2());
                 Triangles.Add(OcclusionValues[i].Item2);
@@ -623,9 +608,9 @@ namespace team5
 
             Triangles.Add(OcclusionValues.Last().Item1);
 
-            ComputedOccludedRadius = true;
+
         }
-        
+
         public override void Update(Chunk chunk)
         {
             if (!ComputedOccludedRadius)

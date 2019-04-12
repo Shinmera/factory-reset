@@ -63,7 +63,6 @@ namespace team5
             ViewCone.FromDegrees(225, 90);
             ViewCone.Radius = Chunk.TileSize * 3;
             ViewCone.UpdatePosition(position);
-            ViewCone.parent = this;
         }
 
         public void Target(Vector2 target, Chunk chunk)
