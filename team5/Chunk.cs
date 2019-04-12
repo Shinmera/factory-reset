@@ -321,7 +321,7 @@ namespace team5
                         var dir = pos - tilePosition;
                         var cornerOffset = new Vector2(dir.X > 0 ? 1 : -1, dir.Y > 0 ? 1 : -1);
 
-                        Vector2 dircorner = dir + new Vector2(TileSize / 2, TileSize / 2) + cornerOffset * TileSize / 2;
+                        Vector2 dircorner = dir - new Vector2(TileSize / 2, TileSize / 2) - cornerOffset * TileSize / 2;
 
                         if (Math.Sign(dir.X) == Math.Sign(dircorner.X)
                             && !(GetTile((int)cornerOffset.X + x, y) == (uint)Colors.SolidPlatform
@@ -359,12 +359,12 @@ namespace team5
                                         if (!inRange(point1))
                                         {
                                             point1 = newPoint;
-                                            angle1 = ConeEntity.ConvertAngle((float)Math.Atan2(point1.Y - pos.Y, point1.X - pos.X) - startingangle);
+                                            angle1 = ConeEntity.ConvertAngle((float)Math.Atan2(newPoint.Y - pos.Y, newPoint.X - pos.X) - startingangle);
                                         }
                                         else
                                         {
                                             point2 = newPoint;
-                                            angle2 = ConeEntity.ConvertAngle((float)Math.Atan2(point2.Y - pos.Y, point2.X - pos.X) - startingangle);
+                                            angle2 = ConeEntity.ConvertAngle((float)Math.Atan2(newPoint.Y - pos.Y, newPoint.X - pos.X) - startingangle);
                                         }
                                     }
                                 }
@@ -431,12 +431,12 @@ namespace team5
                                         if (!inRange(point1))
                                         {
                                             point1 = newPoint;
-                                            angle1 = ConeEntity.ConvertAngle((float)Math.Atan2(point1.Y - pos.Y, point1.X - pos.X) - startingangle);
+                                            angle1 = ConeEntity.ConvertAngle((float)Math.Atan2(newPoint.Y - pos.Y, newPoint.X - pos.X) - startingangle);
                                         }
                                         else
                                         {
                                             point2 = newPoint;
-                                            angle2 = ConeEntity.ConvertAngle((float)Math.Atan2(point2.Y - pos.Y, point2.X - pos.X) - startingangle);
+                                            angle2 = ConeEntity.ConvertAngle((float)Math.Atan2(newPoint.Y - pos.Y, newPoint.X - pos.X) - startingangle);
                                         }
                                     }
                                 }

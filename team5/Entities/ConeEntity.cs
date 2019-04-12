@@ -527,20 +527,22 @@ namespace team5
                             dir.Normalize();
                             Vector2 CCWoffset = new Vector2(-dir.Y, dir.X) * 0.001F;
 
-                            if (!chunk.IntersectLine(Position, dir - CCWoffset, LocalRadius, out float locationCW))
+                            if (!chunk.IntersectLine(Position, dir - CCWoffset, LocalRadius, out float locationCW) || Math.Abs(locationCW - LocalRadius) < 1F)
                             {
                                 locationCW = LocalRadius;
                             }
-                            if (!chunk.IntersectLine(Position, dir + CCWoffset, LocalRadius, out float locationCCW))
+                            if (!chunk.IntersectLine(Position, dir + CCWoffset, LocalRadius, out float locationCCW) || Math.Abs(locationCCW - LocalRadius) < 1F)
                             {
                                 locationCCW = LocalRadius;
                             }
                             Vector2 CW = dir * locationCW;
                             Vector2 CCW = dir * locationCCW;
 
-                            if ((Position + CCW - point.Value.Item1).LengthSquared() < 1F)
+                            if ((Position + CW - point.Value.Item1).LengthSquared() < 1F)
                             {
                                 CW = point.Value.Item1 - Position;
+                            }
+                            if ((Position + CCW - point.Value.Item1).LengthSquared() < 1F) {
                                 if (!float.IsNaN(point.Value.Item2.X)){
                                     CCW = point.Value.Item1 - Position;
                                     closestLine = new Tuple<Vector2, Vector2>(point.Value.Item1, point.Value.Item2);

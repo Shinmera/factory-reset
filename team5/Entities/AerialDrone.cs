@@ -25,14 +25,14 @@ namespace team5
         private const float DroneSize = 7;
         private const float ViewSize = 60;
         private const float MinMovement = 30;
-        private const float PatrolSpeed = 50;
+        private const float PatrolSpeed = 10;
         private const float TargetSpeed = 150;
         private const float PatrolRange = 200;
         private const float SearchRange = 200;
         private const float SearchTime = 15;
         private const float WaitTime = 5;
         private const float WaitAngularVelocity = 0.375F * (float)Math.PI;
-        private const float TurnAngularVelocity = 2*(float)Math.PI;
+        private const float TurnAngularVelocity = 0.5F*(float)Math.PI;
         private const int WanderSearchAttempts = 10;
 
         private Vector2 Spawn;
@@ -374,33 +374,44 @@ namespace team5
                 {
                     lastDir = path[i - 1] - path[i];
                     */
-                    var tentativePoint = path[i];
+                var tentativePoint = path[i];
 
-                    var dir = tentativePoint - reducedPath.Last();
-                    var point1 = new Vector2(dir.Y , -dir.X);
-                    point1.Normalize();
-                    point1 *= DroneSize;
-                    var point2 = -point1;
+                var dir = tentativePoint - reducedPath.Last();
+                var point1 = new Vector2(dir.Y , -dir.X);
+                point1.Normalize();
+                point1 *= DroneSize;
+                var point2 = -point1;
 
-                    point1 += reducedPath.Last();
-                    point2 += reducedPath.Last();
+                point1 += reducedPath.Last();
+                point2 += reducedPath.Last();
                     
 
-                    if(chunk.IntersectLine(point1, dir, 1, out float location1) || chunk.IntersectLine(point2, dir, 1, out float location2))
+                if(chunk.IntersectLine(point1, dir, 1, out float location1) || chunk.IntersectLine(point2, dir, 1, out float location2))
+                {
+
+                    if (Path != null)
                     {
-                        if (Path != null && Path.Contains(lastPoint))
+                        int node = Path.FindIndex(NextNode, x => x == lastPoint);
+                        if (node != -1)
                         {
                             reducedPath = new List<Vector2>();
-                            for (int p = NextNode - 1; p < Path.Count; ++i)
+                            for (int p = NextNode - 1; p < node; ++i)
                             {
                                 reducedPath.Add(Path[p]);
-                                return reducedPath;
                             }
                         }
+                        else
+                        {
+                            reducedPath.Add(lastPoint);
+                        }
+                    }
+                    else
+                    {
                         reducedPath.Add(lastPoint);
                     }
+                }
 
-                    lastPoint = tentativePoint;
+                lastPoint = tentativePoint;
                 //}
             }
 
