@@ -10,46 +10,71 @@ namespace team5
 {
     class AerialDrone : BoxEntity
     {
-        /// <summary> The Velocity of this Entity </summary>
-        public Vector2 Velocity = new Vector2();
-
         public enum AIState
         {
+            //Wanders around the spawn
             Patrolling,
+            //Waits, while rotating its camera
             Waiting,
+            //Moving towards a target location
             Targeting,
+            //Returning to spawn
             Returning,
+            //Wandering around a target location
             Searching,
         };
 
+        /// <summary> The range of the viewcone</summary>
         private const float ViewSize = 60;
+        /// <summary> The minimum distance the drone will move in one wander segment</summary>
         private const float MinMovement = 30;
+        /// <summary> The speed of the drone while patrolling</summary>
         private const float PatrolSpeed = 50;
+        /// <summary> The speed of the drone while actively searching the area</summary>
         private const float SearchSpeed = 80;
+        /// <summary> The speed of the drone when moving towards a target</summary>
         private const float TargetSpeed = 150;
-        private const float PatrolRange = 200;
-        private const float SearchRange = 100;
+        /// <summary> How far the drone will patrol from its spawn location</summary>
+        private const float PatrolRange = 160;
+        /// <summary> How far away from a target location the drone will search</summary>
+        private const float SearchRange = 160;
+        /// <summary> How long the drone will search before giving up (obsolete by deactivation via alarm)</summary>
         private const float SearchTime = 20;
+        /// <summary> How long the drone will wait before wandering to a new spot (in patrol mode)</summary>
         private const float WaitTime = 5;
+        /// <summary> How fast the drone turns during idling</summary>
         private const float WaitAngularVelocity = 0.375F * (float)Math.PI;
+        /// <summary> How fast the drone turns to reach a new location</summary>
         private const float TurnAngularVelocity = 2F*(float)Math.PI;
-        private const int WanderSearchAttempts = 10;
+        /// <summary> The amount of times the drone will attempt to find a new location to wander to before giving up and returning to spawn.</summary>
+        private const int WanderSearchAttempts = 15;
 
+        /// <summary> The Velocity of this Entity </summary>
+        public Vector2 Velocity = new Vector2();
+
+        /// <summary> Spawn and patrol location of this drone</summary>
         private Vector2 Spawn;
 
+        /// <summary> The viewcone of this drone</summary>
         private ConeEntity ViewCone;
 
+        /// <summary> Sprite used to draw this drone</summary>
         private AnimatedSprite Sprite;
+        /// <summary> Current AI State</summary>
         public AIState State = AIState.Waiting;
+        /// <summary> Current path the drone is taking towards the target location (if the state is targeting)</summary>
         private List<Vector2> Path;
+        /// <summary> The node this drone is heading towards next on the path</summary>
         private int NextNode;
 
+        /// <summary> Location the drone is pathfinding towards</summary>
         private Vector2 TargetLocation;
+        /// <summary> Next place the drone is heading towards as part of a search or patrol</summary>
         private Vector2 WanderLocation;
-        
+        /// <summary> Timer used to control state transitions (like waiting)</summary>
         private float StateTimer = 0;
-
-        private float Direction = 225;
+        /// <summary> The direction this drone is currently facing</summary>
+        private float Direction = 0;
 
         public AerialDrone(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize/2))
         {
@@ -59,11 +84,12 @@ namespace team5
             TargetLocation = Position;
             Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize, Chunk.TileSize));
             ViewCone = new ConeEntity(game);
-            ViewCone.FromDegrees(225, 90);
+            ViewCone.FromDegrees(270, 90);
             ViewCone.Radius = Chunk.TileSize * 3;
             ViewCone.UpdatePosition(position);
         }
 
+        /// <summary> Sets the state to targeting and pathfinds towards the target location, then searches after it reaches it.</summary>
         public void Target(Vector2 target, Chunk chunk)
         {
             if(State == AIState.Targeting && (TargetLocation-target).LengthSquared() < Chunk.TileSize*Chunk.TileSize*16 && Path.Count > 2)
@@ -95,7 +121,7 @@ namespace team5
                 TargetLocation = target;
             }
         }
-
+        /// <summary> Wanders around a target location without waiting between new wanders</summary>
         public void Search(Vector2 target, Chunk chunk)
         {
             Path = null;
@@ -105,13 +131,13 @@ namespace team5
             FindWander(TargetLocation, SearchRange, chunk);
             State = AIState.Searching;
         }
-
+        /// <summary> Pathfinds back to the spawn</summary>
         public void Return(Chunk chunk)
         {
             Target(Spawn, chunk);
             State = AIState.Returning;
         }
-
+        /// <summary> Waits, swiveling the camera back and forth</summary>
         public void Wait()
         {
             Path = null;
@@ -119,7 +145,10 @@ namespace team5
             StateTimer = 0;
             State = AIState.Waiting;
         }
-
+        /// <summary> 
+        ///     Rotates towards the target, then moves to it, for one tick.
+        /// </summary>
+        /// <returns> true if the drone is at the target.</returns>
         private bool MoveTo(Vector2 target, float speed)
         {
             Vector2 dir = (target - Position);
@@ -159,7 +188,8 @@ namespace team5
 
             return false;
         }
-
+        /// <summary> Sets the wander location randomly. Has a high chance to fail; must be called repeatedly to guarantee success.</summary>
+        /// <returns> true if a valid location has been found.</returns>
         private bool FindWander(Vector2 location, float distance, Chunk chunk)
         {
             float angle = (float)(Game.RNG.NextDouble() * 2 * Math.PI);
@@ -244,7 +274,19 @@ namespace team5
                     if (MoveTo(WanderLocation, SearchSpeed))
                     {
                         Velocity = new Vector2(0);
-                        FindWander(TargetLocation, PatrolRange, chunk);
+                        bool foundSearch = false;
+                        for (int i = 0; i < WanderSearchAttempts; ++i)
+                        {
+                            if (FindWander(TargetLocation, PatrolRange, chunk))
+                            {
+                                foundSearch = true;
+                                break;
+                            }
+                        }
+                        if (!foundSearch)
+                        {
+                            Target(TargetLocation, chunk);
+                        }
                     }
 
                     StateTimer += Game1.DeltaT;
@@ -362,7 +404,7 @@ namespace team5
             Game.Transforms.Pop();
         }
 
-        //TODO: Reduce curves as well.
+        
         public List<Vector2> FindReducedPath(Chunk chunk, List<Vector2> path, Vector2 size)
         {
             var reducedPath = new List<Vector2>();
@@ -380,11 +422,6 @@ namespace team5
 
             for (int i = path.Count-1; i > 0; --i)
             {
-                /*
-                if(lastDir != path[i - 1] - path[i])
-                {
-                    lastDir = path[i - 1] - path[i];
-                    */
                 var tentativePoint = path[i];
 
                 var dir = tentativePoint - reducedPath.Last();
@@ -423,7 +460,6 @@ namespace team5
                 }
 
                 lastPoint = tentativePoint;
-                //}
             }
 
             reducedPath.Add( path[0]);

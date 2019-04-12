@@ -9,74 +9,13 @@ namespace team5
 {
     class ConeEntity : Entity
     {
-        /// <summary>The starting Angle of the cone (CCW)</summary>
-        private float LocalAngle1;
-        /// <summary>The ending Angle of the cone (CCW)</summary>
-        private float LocalAngle2;
-        /// <summary>The Radius of the complete unoccluded Cone.</summary>
-        private float LocalRadius;
-        /// <summary>The position of the starting edge of the cone.</summary>
-        private Vector2 ConePoint1;
-        /// <summary>The position of the ending edge of the cone.</summary>
-        private Vector2 ConePoint2;
-        /// <summary>A ray in the direction of the starting edge of the cone.</summary>
-        private Vector2 Dir1;
-        /// <summary>A ray in the direction of the ending edge of the cone.</summary>
-        private Vector2 Dir2;
-        /// <summary>The starting edge of the cone as a homogeneous line</summary>
-        private Vector3 ConeLine1;
-        /// <summary>The ending edge of the cone as a homogeneous line</summary>
-        private Vector3 ConeLine2;
-        /// <summary>Whether the tight bounding box has been computed</summary>
-        private bool ComputedBB = false;
-        /// <summary>Whether the occlusion has been computed.</summary>
-        private bool ComputedOccludedRadius = false;
-
-        private RectangleF BoundingBox;
-
-        //We need to use two seperate lists for this because apparently binary search is only implemented in lists. WTF.
-        private List<float> OcclusionAngles;
-        private List<Tuple<Vector2,Vector2,float,float>> OcclusionValues;
-        public List<Vector2> Triangles;
-
-        private const float MaxFanAngle = (float)Math.PI / 20;
-
-        private void AddOcclusionValue(float angle, Tuple<Vector2, Vector2, float, float> occlusionValue)
-        {
-            OcclusionAngles.Add(angle);
-            OcclusionValues.Add(occlusionValue);
-        }
-
-        private float GetDistConstraint(float angle)
-        {
-            angle = ConvertAngle(angle - Angle1);
-            int index = OcclusionAngles.BinarySearch(angle);
-            if(index > 0)
-            {
-                float dist = Math.Max(OcclusionValues[index].Item3, OcclusionValues[index].Item4);
-                return dist;
-            }
-            else
-            {
-                if(index == 0)
-                {
-                    throw new Exception("OcclusionList has been improperly constructed");
-                }
-
-                index = ~index;
-
-                float interp = (angle - OcclusionAngles[index - 1])/(OcclusionAngles[index] - OcclusionAngles[index - 1]);
-
-                return (1 - interp) * OcclusionValues[index - 1].Item4 + interp * OcclusionValues[index].Item3;
-            }
-        }
-
+        #region Static functions
 
         /// <summary>Clamps any angle into the [0,2pi] domain used by this class.</summary>
         public static float ConvertAngle(float angle)
         {
-            angle = angle % (float)(2*Math.PI);
-            if(angle < 0)
+            angle = angle % (float)(2 * Math.PI);
+            if (angle < 0)
             {
                 angle += (float)(2 * Math.PI);
             }
@@ -84,6 +23,15 @@ namespace team5
             return angle;
         }
 
+        /// <summary>
+        ///     Computes the intersection of a ray with a circle. 
+        /// </summary>
+        /// <param name="p1">ray origin</param>
+        /// <param name="p2">ray target (not direction)</param>
+        /// <param name="radius"> radius of the circle</param>
+        /// <param name="center"> center of the circle</param>
+        /// <param name="maxT"> max length of the ray (as a factor of p2-p1). Will never test negative values.</param>
+        /// <param name="t"> the location of the intersection if it occurs.</param>
         public static bool IntersectCircle(Vector2 p1, Vector2 p2, float radius, Vector2 center, float maxT, out float t)
         {
             var relP1 = p1 - center;
@@ -106,26 +54,84 @@ namespace team5
                 float t1 = (-b - (float)Math.Sqrt(Disc)) / (2 * a);
                 float t2 = (-b + (float)Math.Sqrt(Disc)) / (2 * a);
 
-                if ((t1 < 0|| t1 > maxT) && (t2 < 0 || t2 > maxT))
+                if ((t1 < 0 || t1 > maxT) && (t2 < 0 || t2 > maxT))
                 {
                     return false;
                 }
                 else
                 {
-                    if(t1 < 0)
+                    if (t1 < 0)
                     {
                         t1 = float.PositiveInfinity;
                     }
 
-                    if(t2 < 0)
+                    if (t2 < 0)
                     {
                         t2 = float.PositiveInfinity;
                     }
-                    t = Math.Min(t1,t2);
+                    t = Math.Min(t1, t2);
                     return true;
                 }
             }
         }
+
+        private static bool IsCloserThanLine(Vector3 line, Vector2 point, Vector2 source, out Vector2 linePoint)
+        {
+            Vector3 toSource = Vector3.Cross(new Vector3(point, 1), new Vector3(source, 1));
+            Vector3 intersect = Vector3.Cross(line, toSource);
+            linePoint = new Vector2(intersect.X / intersect.Z, intersect.Y / intersect.Z);
+
+            return (point - source).LengthSquared() < (linePoint - source).LengthSquared();
+        }
+
+        #endregion
+
+        #region Private cone values
+
+        /// <summary>The starting Angle of the cone (CCW)</summary>
+        private float LocalAngle1;
+        /// <summary>The ending Angle of the cone (CCW)</summary>
+        private float LocalAngle2;
+        /// <summary>The Radius of the complete unoccluded Cone.</summary>
+        private float LocalRadius;
+        /// <summary>The position of the starting edge of the cone.</summary>
+        private Vector2 ConePoint1;
+        /// <summary>The position of the ending edge of the cone.</summary>
+        private Vector2 ConePoint2;
+        /// <summary>A ray in the direction of the starting edge of the cone.</summary>
+        private Vector2 Dir1;
+        /// <summary>A ray in the direction of the ending edge of the cone.</summary>
+        private Vector2 Dir2;
+        /// <summary>The starting edge of the cone as a homogeneous line</summary>
+        private Vector3 ConeLine1;
+        /// <summary>The ending edge of the cone as a homogeneous line</summary>
+        private Vector3 ConeLine2;
+        /// <summary>Current bounding box of this cone.</summary>
+        private RectangleF BoundingBox;
+        /// <summary>Whether the tight bounding box has been computed</summary>
+        private bool ComputedBB = false;
+        /// <summary>Whether the occlusion has been computed.</summary>
+        private bool ComputedOccludedRadius = false;
+
+        #endregion
+
+        #region Occlusion values
+
+        /// <summary>List of angles in the depthmap of the cone. Used for binary search (as dictionaries don't have it)</summary>
+        private List<float> OcclusionAngles;
+        /// <summary>
+        ///     List of depths. Format is CW location, CCW location, CW depth, CCW depth. 
+        ///     Former used for rendering, latter for collisions.
+        /// </summary>
+        private List<Tuple<Vector2,Vector2,float,float>> OcclusionValues;
+        /// <summary>List of Triangles occluded by terrain. Used for rendering.</summary>
+        public List<Vector2> Triangles;
+        /// <summary>Maximum angle before fanning is performed to render a smooth cone (in the event where occlusion does not occur)</summary>
+        private const float MaxFanAngle = (float)Math.PI / 20;
+
+        #endregion
+
+        #region Constructors
 
         public ConeEntity(Game1 game) : base(game)
         {
@@ -133,120 +139,44 @@ namespace team5
             OcclusionValues = new List<Tuple<Vector2, Vector2, float, float>>();
             Triangles = new List<Vector2>();
         }
+        
+        #endregion
 
-        /// <summary>Changes the position of the cone center</summary>
-        public void UpdatePosition(Vector2 position)
+        #region Private methods
+
+        /// <summary>Adds a depth entry. No sorting is performed, must be called in order.</summary>
+        private void AddOcclusionValue(float angle, Tuple<Vector2, Vector2, float, float> occlusionValue)
         {
-            Position = position;
-            if (Math.Abs(Position.X % 1) < 0.01F || 1 - Math.Abs(Position.X % 1) < 0.01F) {
-                Position.X += 0.02F;
-            }
-            if(Math.Abs(Position.Y % 1) < 0.01F || 1 - Math.Abs(Position.Y % 1) < 0.01F)
-            {
-                Position.Y += 0.02F;
-            }
-            ComputedBB = false;
-            ComputedOccludedRadius = false;
+            OcclusionAngles.Add(angle);
+            OcclusionValues.Add(occlusionValue);
         }
 
-        /// <summary>Set to change the full radius, get to get the occluded radius.</summary>
-        public float Radius {
-            get {
-                return LocalRadius;
-            }
-            set {
-                LocalRadius = value;
-                ComputedBB = false;
-                ComputedOccludedRadius = false;
-            }
-        }
-
-        /// <summary>The starting Angle of the cone (CCW)</summary>
-        public float Angle1
+        /// <summary>Returns the approximate distance to the occlusion at a specific angle.</summary>
+        private float GetDistConstraint(float angle)
         {
-            get
+            angle = ConvertAngle(angle - Angle1);
+            int index = OcclusionAngles.BinarySearch(angle);
+            if (index > 0)
             {
-                return LocalAngle1;
+                float dist = Math.Max(OcclusionValues[index].Item3, OcclusionValues[index].Item4);
+                return dist;
             }
-            set
+            else
             {
-                LocalAngle1 = ConvertAngle(value);
-                ComputedBB = false;
-                ComputedOccludedRadius = false;
+                if (index == 0)
+                {
+                    throw new Exception("OcclusionList has been improperly constructed");
+                }
+
+                index = ~index;
+
+                float interp = (angle - OcclusionAngles[index - 1]) / (OcclusionAngles[index] - OcclusionAngles[index - 1]);
+
+                return (1 - interp) * OcclusionValues[index - 1].Item4 + interp * OcclusionValues[index].Item3;
             }
         }
 
-        /// <summary>The ending Angle of the cone (CCW)</summary>
-        public float Angle2
-        {
-            get
-            {
-                return LocalAngle2;
-            }
-            set
-            {
-                LocalAngle2 = ConvertAngle(value);
-                ComputedBB = false;
-                ComputedOccludedRadius = false;
-            }
-        }
-
-        /// <summary>Sets the starting and ending angles of a cone by a direction and a width, specified in degrees.</summary>
-        public void FromDegrees(float direction, float view)
-        {
-            double deg1 = (direction-view/2) % 360;
-            double deg2 = (direction+view/2) % 360;
-            Angle1 = (float)(deg1/180*Math.PI);
-            Angle2 = (float)(deg2/180*Math.PI);
-        }
-
-        /// <summary>Returns the direction of the cone, and the width, in degrees.</summary>
-        public void ToDegrees(out float direction, out float view)
-        {
-            double diff = (LocalAngle2-LocalAngle1)/2;
-            if(LocalAngle2 < LocalAngle1) diff += Math.PI;
-            direction = (float)((LocalAngle2-diff)*180/Math.PI) % 360;
-            view = (float)(diff*2*180/Math.PI) % 360;
-        }
-
-        /// <summary>The direction the cone is facing (as an angle)</summary>
-        public float Middle
-        {
-            get
-            {
-                double diff = (LocalAngle2-LocalAngle1)/2;
-                if(LocalAngle2 < LocalAngle1) diff += Math.PI;
-                return (float)(LocalAngle2-diff);
-            }
-            set
-            {
-                double diff = (LocalAngle2-LocalAngle1)/2;
-                if(LocalAngle2 < LocalAngle1) diff += Math.PI;
-                Angle1 = (float)((value - diff) % (2*Math.PI));
-                Angle2 = (float)((value + diff) % (2*Math.PI));
-            }
-        }
-
-        /// <summary>The direction the cone is facing (as a binary direction (left/right))</summary>
-        public float Direction
-        {
-            get
-            {
-                double diff = (LocalAngle2-LocalAngle1)/2;
-                if(LocalAngle2 < LocalAngle1) diff += Math.PI;
-                double mid = LocalAngle2-diff;
-                return ((Math.PI*3)/2 < mid || mid < Math.PI/2) ? +1 : -1;
-            }
-            set
-            {
-                if(value == Direction) return;
-                double mid = Middle;
-                mid = Math.PI - mid;
-                if(mid < 0) mid += 2*Math.PI;
-                Middle = (float)mid;
-            }
-        }
-
+        /// <summary>Recomputes the bounding box based on angles.</summary>
         private void RecomputeBB()
         {
             if (ComputedBB)
@@ -260,12 +190,12 @@ namespace team5
             xvals.Add(Position.X);
             yvals.Add(Position.Y);
 
-            if(LocalAngle2 < LocalAngle1)
+            if (LocalAngle2 < LocalAngle1)
             {
                 xvals.Add(Position.X + Radius);
             }
 
-            if((Math.PI > LocalAngle1 && Math.PI < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (Math.PI > LocalAngle1 || Math.PI < LocalAngle2)))
+            if ((Math.PI > LocalAngle1 && Math.PI < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (Math.PI > LocalAngle1 || Math.PI < LocalAngle2)))
             {
                 xvals.Add(Position.X - Radius);
             }
@@ -307,77 +237,8 @@ namespace team5
             ComputedBB = true;
         }
 
-        public override RectangleF GetBoundingBox()
-        {
-            if (!ComputedBB)
-            {
-                RecomputeBB();
-            }
-            return BoundingBox;
-        }
-        
-        public override bool Contains(Vector2 point)
-        {
-            point = point - Position;
-            float r2 = point.LengthSquared();
-            float phi = ConvertAngle((float)Math.Atan2(point.Y, point.X));
-            return ((phi > LocalAngle1 && phi < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (phi > LocalAngle1 || phi < LocalAngle2)))
-                && r2 <= GetDistConstraint(phi);
-        }
-
-        public override bool Collide(Entity entity, float timestep, out int direction, out float time, out bool corner)
-        {
-            corner = false;
-            direction = 0;
-            time = -1;
-
-            if (!(entity is Movable))
-            {
-                return false;
-            }
-
-            Movable source = (Movable)entity;
-            RectangleF sourceBB = source.GetBoundingBox();
-
-            if (!sourceBB.Intersects(GetBoundingBox()))
-            {
-                return false;
-            }
-
-            List<Vector2> points = new List<Vector2>(8)
-            {
-                new Vector2(sourceBB.Left, sourceBB.Top),
-                new Vector2(sourceBB.Left, sourceBB.Bottom),
-                new Vector2(sourceBB.Right, sourceBB.Top),
-                new Vector2(sourceBB.Right, sourceBB.Bottom),
-                new Vector2(sourceBB.Left, source.Position.Y),
-                new Vector2(sourceBB.Right, source.Position.Y),
-                new Vector2(source.Position.X, sourceBB.Top),
-                new Vector2(source.Position.X, sourceBB.Bottom)
-            };
-
-            foreach(var point in points)
-            {
-                if (Contains(point))
-                {
-                    time = 0;
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private static bool IsCloserThanLine(Vector3 line, Vector2 point, Vector2 source, out Vector2 linePoint)
-        {
-            Vector3 toSource = Vector3.Cross(new Vector3(point, 1), new Vector3(source, 1));
-            Vector3 intersect = Vector3.Cross(line, toSource);
-            linePoint = new Vector2(intersect.X / intersect.Z, intersect.Y / intersect.Z);
-
-            return (point - source).LengthSquared() < (linePoint - source).LengthSquared();
-        }
-
-        public void ComputeOcclusion(Chunk chunk)
+        /// <summary>Computes the occlusion of the view cone by solids</summary>
+        private void ComputeOcclusion(Chunk chunk)
         {
 
             Tuple<Vector2, Vector2, float, float> newTuple(Vector2 a, Vector2 b)
@@ -419,7 +280,7 @@ namespace team5
                 {
                     float angle = point.Key;
 
-                    if(angle >= 0)
+                    if (angle >= 0)
                     {
                         if (angle > ConvertAngle(Angle2 - Angle1))
                         {
@@ -481,8 +342,10 @@ namespace team5
                             {
                                 CW = point.Value.Item1 - Position;
                             }
-                            if ((Position + CCW - point.Value.Item1).LengthSquared() < 1F) {
-                                if (!float.IsNaN(point.Value.Item2.X)){
+                            if ((Position + CCW - point.Value.Item1).LengthSquared() < 1F)
+                            {
+                                if (!float.IsNaN(point.Value.Item2.X))
+                                {
                                     CCW = point.Value.Item1 - Position;
                                     closestLine = new Tuple<Vector2, Vector2>(point.Value.Item1, point.Value.Item2);
                                     closestLineHomo = Vector3.Cross(new Vector3(closestLine.Item1, 1), new Vector3(closestLine.Item2, 1));
@@ -543,12 +406,13 @@ namespace team5
 
             ComputedOccludedRadius = true;
         }
-        
-        public void ComputeTriangles()
+
+        /// <summary>Computes the triangles for drawing the occluded cone.</summary>
+        private void ComputeTriangles()
         {
             Triangles.Clear();
 
-            Triangles.Capacity = Math.Max((OcclusionValues.Count - 1) * 3,Triangles.Capacity);
+            Triangles.Capacity = Math.Max((OcclusionValues.Count - 1) * 3, Triangles.Capacity);
 
             bool maxRange = OcclusionValues[0].Item4 == (LocalRadius * LocalRadius);
             float lastmaxRangeAngle = 0;
@@ -614,6 +478,193 @@ namespace team5
 
         }
 
+        #endregion
+
+        #region Public cone values
+
+        /// <summary>Set to change the full radius, get to get the occluded radius.</summary>
+        public float Radius {
+            get {
+                return LocalRadius;
+            }
+            set {
+                LocalRadius = value;
+                ComputedBB = false;
+                ComputedOccludedRadius = false;
+            }
+        }
+
+        /// <summary>The starting Angle of the cone (CCW)</summary>
+        public float Angle1
+        {
+            get
+            {
+                return LocalAngle1;
+            }
+            set
+            {
+                LocalAngle1 = ConvertAngle(value);
+                ComputedBB = false;
+                ComputedOccludedRadius = false;
+            }
+        }
+
+        /// <summary>The ending Angle of the cone (CCW)</summary>
+        public float Angle2
+        {
+            get
+            {
+                return LocalAngle2;
+            }
+            set
+            {
+                LocalAngle2 = ConvertAngle(value);
+                ComputedBB = false;
+                ComputedOccludedRadius = false;
+            }
+        }
+
+        /// <summary>The direction the cone is facing (as an angle)</summary>
+        public float Middle
+        {
+            get
+            {
+                double diff = (LocalAngle2-LocalAngle1)/2;
+                if(LocalAngle2 < LocalAngle1) diff += Math.PI;
+                return (float)(LocalAngle2-diff);
+            }
+            set
+            {
+                double diff = (LocalAngle2-LocalAngle1)/2;
+                if(LocalAngle2 < LocalAngle1) diff += Math.PI;
+                Angle1 = (float)((value - diff) % (2*Math.PI));
+                Angle2 = (float)((value + diff) % (2*Math.PI));
+            }
+        }
+
+        /// <summary>The direction the cone is facing (as a binary direction (left/right))</summary>
+        public float Direction
+        {
+            get
+            {
+                double diff = (LocalAngle2-LocalAngle1)/2;
+                if(LocalAngle2 < LocalAngle1) diff += Math.PI;
+                double mid = LocalAngle2-diff;
+                return ((Math.PI*3)/2 < mid || mid < Math.PI/2) ? +1 : -1;
+            }
+            set
+            {
+                if(value == Direction) return;
+                double mid = Middle;
+                mid = Math.PI - mid;
+                if(mid < 0) mid += 2*Math.PI;
+                Middle = (float)mid;
+            }
+        }
+
+        #endregion
+
+        #region Public methods
+
+        /// <summary>Changes the position of the cone center</summary>
+        public void UpdatePosition(Vector2 position)
+        {
+            Position = position;
+            if (Math.Abs(Position.X % 1) < 0.01F || 1 - Math.Abs(Position.X % 1) < 0.01F)
+            {
+                Position.X += 0.02F;
+            }
+            if (Math.Abs(Position.Y % 1) < 0.01F || 1 - Math.Abs(Position.Y % 1) < 0.01F)
+            {
+                Position.Y += 0.02F;
+            }
+            ComputedBB = false;
+            ComputedOccludedRadius = false;
+        }
+
+        /// <summary>Sets the starting and ending angles of a cone by a direction and a width, specified in degrees.</summary>
+        public void FromDegrees(float direction, float view)
+        {
+            double deg1 = (direction - view / 2) % 360;
+            double deg2 = (direction + view / 2) % 360;
+            Angle1 = (float)(deg1 / 180 * Math.PI);
+            Angle2 = (float)(deg2 / 180 * Math.PI);
+        }
+
+        /// <summary>Returns the direction of the cone, and the width, in degrees.</summary>
+        public void ToDegrees(out float direction, out float view)
+        {
+            double diff = (LocalAngle2 - LocalAngle1) / 2;
+            if (LocalAngle2 < LocalAngle1) diff += Math.PI;
+            direction = (float)((LocalAngle2 - diff) * 180 / Math.PI) % 360;
+            view = (float)(diff * 2 * 180 / Math.PI) % 360;
+        }
+
+        #endregion
+
+        #region Overrides
+
+        public override RectangleF GetBoundingBox()
+        {
+            if (!ComputedBB)
+            {
+                RecomputeBB();
+            }
+            return BoundingBox;
+        }
+        
+        public override bool Contains(Vector2 point)
+        {
+            point = point - Position;
+            float r2 = point.LengthSquared();
+            float phi = ConvertAngle((float)Math.Atan2(point.Y, point.X));
+            return ((phi > LocalAngle1 && phi < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (phi > LocalAngle1 || phi < LocalAngle2)))
+                && r2 <= GetDistConstraint(phi);
+        }
+
+        public override bool Collide(Entity entity, float timestep, out int direction, out float time, out bool corner)
+        {
+            corner = false;
+            direction = 0;
+            time = -1;
+
+            if (!(entity is Movable))
+            {
+                return false;
+            }
+
+            Movable source = (Movable)entity;
+            RectangleF sourceBB = source.GetBoundingBox();
+
+            if (!sourceBB.Intersects(GetBoundingBox()))
+            {
+                return false;
+            }
+
+            List<Vector2> points = new List<Vector2>(8)
+            {
+                new Vector2(sourceBB.Left, sourceBB.Top),
+                new Vector2(sourceBB.Left, sourceBB.Bottom),
+                new Vector2(sourceBB.Right, sourceBB.Top),
+                new Vector2(sourceBB.Right, sourceBB.Bottom),
+                new Vector2(sourceBB.Left, source.Position.Y),
+                new Vector2(sourceBB.Right, source.Position.Y),
+                new Vector2(source.Position.X, sourceBB.Top),
+                new Vector2(source.Position.X, sourceBB.Bottom)
+            };
+
+            foreach(var point in points)
+            {
+                if (Contains(point))
+                {
+                    time = 0;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public override void Update(Chunk chunk)
         {
             if (!ComputedOccludedRadius)
@@ -636,5 +687,6 @@ namespace team5
             if (ComputedOccludedRadius)
                 Game.ViewConeEngine.DrawTriangles(Position, Triangles);
         }
+        #endregion
     }
 }

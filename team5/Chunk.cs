@@ -289,11 +289,6 @@ namespace team5
                 return ConeEntity.ConvertAngle((float)Math.Atan2(p.Y - pos.Y, p.X - pos.X) - startingangle);
             }
 
-            bool inCone(Vector2 p)
-            {
-                return inRange(p) && inAngle(p);
-            }
-
             bool inRange(Vector2 p)
             {
                 Vector2 dirp = p - pos;
