@@ -460,23 +460,15 @@ namespace team5
                             if (angle > 0)
                             {
                                 Vector2 closestPoint = ConePoint1;
-                                if (closestLine != null && !IsCloserThanLine(closestLineHomo, ConePoint1, Position, out Vector2 linePoint))
+                                if (!chunk.IntersectLine(Position, Dir1, LocalRadius, out float locationDir1))
                                 {
-                                    closestPoint = linePoint;
-                                    AddOcclusionValue(0, newTuple(closestPoint, closestPoint));
+                                    locationDir1 = LocalRadius;
                                 }
                                 else
                                 {
-                                    if (!chunk.IntersectLine(Position, Dir1, LocalRadius, out float locationDir1))
-                                    {
-                                        locationDir1 = LocalRadius;
-                                    }
-                                    else
-                                    {
-                                        closestPoint = Position + Dir1 * locationDir1;
-                                    }
-                                    AddOcclusionValue(0, newTuple4(closestPoint - Position, closestPoint - Position, locationDir1 * locationDir1, locationDir1 * locationDir1));
+                                    closestPoint = Position + Dir1 * locationDir1;
                                 }
+                                AddOcclusionValue(0, newTuple4(closestPoint - Position, closestPoint - Position, locationDir1 * locationDir1, locationDir1 * locationDir1));
 
 
 
@@ -599,21 +591,11 @@ namespace team5
                 bool maxRangeEnd = true;
 
                 Vector2 closestPointEnd = ConePoint2;
-                if (closestLine != null)
+
+                if (chunk.IntersectLine(Position, Dir2, LocalRadius, out float distIntersect))
                 {
-                    if (!IsCloserThanLine(closestLineHomo, ConePoint2, Position, out Vector2 linePoint))
-                    {
-                        closestPointEnd = linePoint;
-                        maxRangeEnd = false;
-                    }
-                }
-                else
-                {
-                    if (chunk.IntersectLine(Position, Dir2, LocalRadius, out float distIntersect))
-                    {
-                        closestPointEnd = Position + Dir2 * distIntersect;
-                        maxRangeEnd = false;
-                    }
+                    closestPointEnd = Position + Dir2 * distIntersect;
+                    maxRangeEnd = false;
                 }
 
                 if (maxRangeEnd)

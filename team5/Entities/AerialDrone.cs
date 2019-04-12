@@ -26,9 +26,9 @@ namespace team5
         private const float ViewSize = 60;
         private const float MinMovement = 30;
         private const float PatrolSpeed = 10;
-        private const float TargetSpeed = 150;
+        private const float TargetSpeed = 20;
         private const float PatrolRange = 200;
-        private const float SearchRange = 200;
+        private const float SearchRange = 100;
         private const float SearchTime = 15;
         private const float WaitTime = 5;
         private const float WaitAngularVelocity = 0.375F * (float)Math.PI;
