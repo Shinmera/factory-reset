@@ -42,7 +42,7 @@ namespace team5
 
         public Player(Vector2 position, Game1 game):base(game, new Vector2(Chunk.TileSize/2, Chunk.TileSize))
         {
-            Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize*2, Chunk.TileSize*2));
+            Sprite = new AnimatedSprite(null, game, new Vector2(32, 40));
 
             this.Position = position;
 
@@ -51,21 +51,21 @@ namespace team5
         
         public override void LoadContent(ContentManager content)
         {
-            Sprite.Texture = content.Load<Texture2D>("Textures/tempplayer");
-            Sprite.Add("idle",   0,  4, 1.0);
-            Sprite.Add("run",    4, 10, 0.8);
-            Sprite.Add("jump",  14,  6, 0.5, 5);
-            Sprite.Add("fall",  20,  4, 0.5, 3);
-            Sprite.Add("climb", 24,  4, 0.5);
-            Sprite.Add("die",   28,  5, 0.5, 4);
-            Sprite.Add("revive",33,  7, 1.0);
+            Sprite.Texture = content.Load<Texture2D>("Textures/player");
+            Sprite.Add("idle",   0,  6, 1.0);
+            Sprite.Add("run",    6, 16, 0.8);
+            Sprite.Add("climb", 22,  6, 1.0);
+            Sprite.Add("jump",  28,  6, 1.0, 5);
+            Sprite.Add("fall",  34,  2, 0.2);
+            Sprite.Add("hide",  36,  4, 0.5, 3);
+            Sprite.Add("die",   40,  8, 1.0, 7);
             
             Game.SoundEngine.Load("footstep");
         }
 
         public override void Draw()
         {
-            Sprite.Draw(Position);
+            Sprite.Draw(Position+new Vector2(0, 4));
         }
 
         public override void Update(Chunk chunk)
@@ -300,10 +300,14 @@ namespace team5
                 if(right != null) Sprite.Direction = +1;
                 if(Velocity.Y == 0 || !Controller.Climb) Sprite.Reset();
             }
+            else if(IsHiding || QueueHide)
+            {
+                Sprite.Play("hide");
+            }
             else
             {
                 if(0 < Velocity.Y){
-                    if(Sprite.Frame == 14 && SoundFrame != Sprite.Frame){
+                    if(Sprite.Frame == 28 && SoundFrame != Sprite.Frame){
                         SoundFrame = Sprite.Frame;
                         Game.SoundEngine.Play("footstep", Position);
                     }
@@ -312,7 +316,7 @@ namespace team5
                     Sprite.Play("fall");
                 else if(Velocity.X != 0){
                     Sprite.Play("run");
-                    if((Sprite.Frame == 5 || Sprite.Frame == 10) && SoundFrame != Sprite.Frame){
+                    if((Sprite.Frame == 10 || Sprite.Frame == 18) && SoundFrame != Sprite.Frame){
                         SoundFrame = Sprite.Frame;
                         Game.SoundEngine.Play("footstep", Position);
                     }

@@ -108,11 +108,11 @@ namespace team5
 
         private void CallAll(Action<GameObject> func)
         {
+            if (Player != null)
+                func.Invoke(Player);
             SolidEntities.ForEach(func);
             NonCollidingEntities.ForEach(func);
             CollidingEntities.ForEach(func);
-            if (Player != null)
-                func.Invoke(Player);
         }
 
         public uint GetTile(int x, int y)
