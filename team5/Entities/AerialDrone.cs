@@ -228,7 +228,7 @@ namespace team5
                 Target(chunk.Level.Alarm.LastKnowPos, chunk);
                 chunk.Level.Alarm.Drones = false;
             }
-
+            
             switch (State)
             {
                 case AIState.Patrolling:
@@ -328,8 +328,15 @@ namespace team5
                     }
                     break;
             }
+            if (!chunk.Level.Player.IsHiding)
+            {
+                if (ViewCone.Collide(chunk.Level.Player, Game1.DeltaT, out int direction, out float time, out bool corner))
+                {
+                    chunk.Level.Alarm.Detected = false;
+                    chunk.Die(chunk.Level.Player);
+                }
+            }
 
-            
             Position += Game1.DeltaT * Velocity;
             ViewCone.UpdatePosition(Position);
             ViewCone.Middle = Direction;

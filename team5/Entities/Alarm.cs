@@ -12,13 +12,13 @@ namespace team5
         {
             Clear,
             Raised,
-            Alert,
         };
 
         public bool Detected = false;
         //For Drone behavior
         public Vector2 LastKnowPos;
         public bool Drones = false;
+        public bool Killzone = false;
 
         private AlarmState State = AlarmState.Clear;
 
@@ -59,9 +59,6 @@ namespace team5
                 case AlarmState.Raised:
                     Game.SoundEngine.Play("Alert");
                     break;
-                case AlarmState.Alert:
-
-                    break;
             }
 
         }
@@ -71,35 +68,22 @@ namespace team5
             float dt = Game1.DeltaT;
             float textX = Game.GraphicsDevice.Viewport.Width / 2;
             float textY = Game.GraphicsDevice.Viewport.Height / 6;
-            
+
             switch (State)
             {
                 case AlarmState.Clear:
+                    
                     if (Detected)
                     {
                         Timer = AlarmTime;
                         SetState(AlarmState.Raised);
                     }
                     break;
-                case AlarmState.Raised: 
+                case AlarmState.Raised:
                     Timer -= dt;
 
                     TextEngine.QueueText((Math.Floor(Timer)).ToString(), new Vector2(textX, textY), Color.Red);
                     if (Timer <= 0)
-                    {
-                        Detected = false;
-                        chunk.Die(chunk.Level.Player);
-                        SetState(AlarmState.Clear);
-                    }
-                    if (chunk.Level.Player.IsHiding)
-                    {
-                        Timer = AlertTime;
-                        SetState(AlarmState.Alert);
-                    }
-                    break;
-                case AlarmState.Alert:
-                    Timer -= dt;
-                    if(Timer <= 0)
                     {
                         Detected = false;
                         SetState(AlarmState.Clear);
@@ -112,6 +96,7 @@ namespace team5
         {
             Game.Transforms.PushView();
             Game.Transforms.ResetView();
+            if ( Detected)
             Game.TextEngine.DrawText();
             Game.Transforms.PopView();
         }

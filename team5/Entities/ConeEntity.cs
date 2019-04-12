@@ -722,7 +722,12 @@ namespace team5
                 {
                     chunk.Level.Alarm.Detected = true;
                     chunk.Level.Alarm.SendDrones(chunk.Level.Player.Position);
+
+                    if (chunk.Level.Alarm.Killzone)
+                        chunk.Die(chunk.Level.Player);
                 }
+                
+
             }
         }
 
