@@ -328,6 +328,7 @@ namespace team5
                     }
                     break;
             }
+
             if (!chunk.Level.Player.IsHiding)
             {
                 if (ViewCone.Collide(chunk.Level.Player, Game1.DeltaT, out int direction, out float time, out bool corner))

@@ -42,9 +42,11 @@ namespace team5
             Game.TextEngine.LoadContent(content);
         }
 
+
         public void SendDrones(Vector2 pos)
         {
             LastKnowPos = pos;
+            Timer = AlarmTime;
             Drones = true;
         }
 
