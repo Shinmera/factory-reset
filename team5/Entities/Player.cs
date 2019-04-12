@@ -53,12 +53,12 @@ namespace team5
         {
             Sprite.Texture = content.Load<Texture2D>("Textures/player");
             Sprite.Add("idle",   0,  6, 1.0);
-            Sprite.Add("run",    6, 16, 0.8);
-            Sprite.Add("climb", 22,  6, 1.0);
-            Sprite.Add("jump",  28,  6, 1.0, 5);
-            Sprite.Add("fall",  34,  2, 0.2);
-            Sprite.Add("hide",  36,  4, 0.5, 3);
-            Sprite.Add("die",   40,  8, 1.0, 7);
+            Sprite.Add("run",    6, 22, 0.8);
+            Sprite.Add("climb", 22, 34, 1.0);
+            Sprite.Add("hide",  34, 38, 0.5, 37);
+            Sprite.Add("die",   38, 46, 1.0, 45);
+            Sprite.Add("jump",  46, 49, 0.5, 48);
+            Sprite.Add("fall",  49, 54, 0.2, 51);
             
             Game.SoundEngine.Load("footstep");
         }
@@ -307,7 +307,7 @@ namespace team5
             else
             {
                 if(0 < Velocity.Y){
-                    if(Sprite.Frame == 28 && SoundFrame != Sprite.Frame){
+                    if(Sprite.Frame == 46 && SoundFrame != Sprite.Frame){
                         SoundFrame = Sprite.Frame;
                         Game.SoundEngine.Play("footstep", Position);
                     }

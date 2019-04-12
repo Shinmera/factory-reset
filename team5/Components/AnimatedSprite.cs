@@ -21,13 +21,13 @@ namespace team5
             /// <summary>The next animation to transition to when this one is done, or -1 to loop the animation</summary>
             public int Next;
             
-            public Animation(string name, int start, int frames, double duration, int loopOffset = 0, int next = -1)
+            public Animation(string name, int start, int stop, double duration, int loopStart = 0, int next = -1)
             {
                 Name = name;
                 Start = start;
-                End = start+frames;
-                FrameTime = (float)(duration/frames);
-                LoopStart = start+loopOffset; 
+                End = stop;
+                FrameTime = (float)(duration/(stop-start));
+                LoopStart = (loopStart < 0)? start : loopStart;
                 Next = next;
             }
         }
@@ -65,9 +65,9 @@ namespace team5
         /// <summary>
         ///   Add an animation for this sprite to render.
         /// </summary>
-        public void Add(string name, int start, int frames, double duration, int loopOffset = 0, int next = -1)
+        public void Add(string name, int start, int stop, double duration, int loopStart = -1, int next = -1)
         {
-            Animations.Add(new Animation(name, start, frames, duration, loopOffset, next));
+            Animations.Add(new Animation(name, start, stop, duration, loopStart, next));
             if(Animations.Count == 1) Anim = Animations[0];
         }
 
