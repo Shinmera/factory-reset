@@ -140,12 +140,12 @@ namespace team5
         public void UpdatePosition(Vector2 position)
         {
             Position = position;
-            if (Math.Abs(Position.X % 8) < 0.5F || 1 - Math.Abs(Position.X % 8) < 0.5F) {
-                Position.X += 1F;
+            if (Math.Abs(Position.X % 8) < 0.01F || 1 - Math.Abs(Position.X % 8) < 0.01F) {
+                Position.X += 0.02F;
             }
-            if(Math.Abs(Position.Y % 8) < 0.5F || 1 - Math.Abs(Position.Y % 8) < 0.5F)
+            if(Math.Abs(Position.Y % 8) < 0.01F || 1 - Math.Abs(Position.Y % 8) < 0.01F)
             {
-                Position.Y += 1F;
+                Position.Y += 0.02F;
             }
             ComputedBB = false;
             ComputedOccludedRadius = false;
