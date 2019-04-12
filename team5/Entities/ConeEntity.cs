@@ -9,7 +9,7 @@ namespace team5
 {
     class ConeEntity : Entity
     {
-        #region Static functions
+        #region Static Functions
 
         /// <summary>Clamps any angle into the [0,2pi] domain used by this class.</summary>
         public static float ConvertAngle(float angle)
@@ -86,7 +86,7 @@ namespace team5
 
         #endregion
 
-        #region Private cone values
+        #region Private Cone Fields
 
         /// <summary>The starting Angle of the cone (CCW)</summary>
         private float LocalAngle1;
@@ -115,7 +115,7 @@ namespace team5
 
         #endregion
 
-        #region Occlusion values
+        #region Private Occlusion Fields
 
         /// <summary>List of angles in the depthmap of the cone. Used for binary search (as dictionaries don't have it)</summary>
         private List<float> OcclusionAngles;
@@ -125,7 +125,7 @@ namespace team5
         /// </summary>
         private List<Tuple<Vector2,Vector2,float,float>> OcclusionValues;
         /// <summary>List of Triangles occluded by terrain. Used for rendering.</summary>
-        public List<Vector2> Triangles;
+        private List<Vector2> Triangles;
         /// <summary>Maximum angle before fanning is performed to render a smooth cone (in the event where occlusion does not occur)</summary>
         private const float MaxFanAngle = (float)Math.PI / 20;
 
@@ -142,7 +142,7 @@ namespace team5
         
         #endregion
 
-        #region Private methods
+        #region Private Methods
 
         /// <summary>Adds a depth entry. No sorting is performed, must be called in order.</summary>
         private void AddOcclusionValue(float angle, Tuple<Vector2, Vector2, float, float> occlusionValue)
@@ -480,7 +480,7 @@ namespace team5
 
         #endregion
 
-        #region Public cone values
+        #region Public Cone Accessors
 
         /// <summary>Set to change the full radius, get to get the occluded radius.</summary>
         public float Radius {
@@ -564,7 +564,7 @@ namespace team5
 
         #endregion
 
-        #region Public methods
+        #region Public Methods
 
         /// <summary>Changes the position of the cone center</summary>
         public void UpdatePosition(Vector2 position)
