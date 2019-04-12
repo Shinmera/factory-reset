@@ -8,7 +8,8 @@ namespace team5
 {
     class Chunk
     {
-        public Level Level;
+
+        #region Constants and Enums
 
         // IMPORTANT: Identifiers need to be unique in the GGRR range
         //            Or there will be collisions in the debug visualisation.
@@ -30,10 +31,35 @@ namespace team5
         }
 
         public const int TileSize = 16;
-        public bool DrawSolids = false;
+
+        public const int Up = 0b00000001;
+        public const int Right = 0b00000010;
+        public const int Down = 0b00000100;
+        public const int Left = 0b00001000;
+
+        #endregion
+
+        #region Private Fields
 
         private Game1 Game;
         private readonly string TileSetName;
+
+        private Player Player;
+
+        private Texture2D Tileset, Solidset;
+
+        private string[] StoryItems;
+
+        private Dictionary<uint, TileType> tileObjects;
+
+        #endregion
+
+        #region Public Fields
+
+        public Level Level;
+
+        public bool DrawSolids = false;
+
         public Texture2D[] Layers;
         public Vector2 SpawnPosition;
 
@@ -43,13 +69,7 @@ namespace team5
         public Vector2 Size;
         public RectangleF BoundingBox;
 
-        private Player Player;
-
         public uint[] SolidTiles;
-        private Texture2D Tileset, Solidset;
-
-        static Dictionary<uint, TileType> tileObjects;
-        private String[] StoryItems; 
 
         //Viewcones, intelligence
         List<Entity> CollidingEntities = new List<Entity>();
@@ -63,6 +83,9 @@ namespace team5
         //things that will be removed at the end of the update (to ensure that collections are not modified during loops)
         List<Entity> PendingDeletion = new List<Entity>();
 
+        #endregion
+
+        #region Constructors
 
         public Chunk(Game1 game, Level level, LevelContent.Chunk chunk)
         {
@@ -82,7 +105,24 @@ namespace team5
             TileSetName = chunk.tileset;
             StoryItems = chunk.storyItems;
         }
-        
+
+        #endregion
+
+        #region Private Methods
+
+        private void CallAll(Action<GameObject> func)
+        {
+            if (Player != null)
+                func.Invoke(Player);
+            SolidEntities.ForEach(func);
+            NonCollidingEntities.ForEach(func);
+            CollidingEntities.ForEach(func);
+        }
+
+        #endregion
+
+        #region Public Procedures
+
         public void Activate(Player player)
         {
             Player = player;
@@ -110,23 +150,34 @@ namespace team5
             }
         }
 
-        private void CallAll(Action<GameObject> func)
+        public void Update()
         {
-            if (Player != null)
-                func.Invoke(Player);
-            SolidEntities.ForEach(func);
-            NonCollidingEntities.ForEach(func);
-            CollidingEntities.ForEach(func);
+            CallAll(x => x.Update(this));
+
+            PendingDeletion.ForEach(x =>
+            {
+                if (!CollidingEntities.Remove(x))
+                {
+                    if (!NonCollidingEntities.Remove(x))
+                        SolidEntities.Remove(x);
+                }
+            });
         }
 
-        public uint GetTile(int x, int y)
+        public void Draw()
         {
-            if(x < 0 || x >= Width || y < 0 || y >= Height)
+            if (DrawSolids)
             {
-                throw new IndexOutOfRangeException("No such tile exists");
+                Game.TilemapEngine.Draw(Layers[0], Solidset, new Vector2(BoundingBox.X, BoundingBox.Y));
+                CallAll(x => x.Draw());
             }
-
-            return SolidTiles[(Height - y - 1)*Width + x];
+            else
+            {
+                Game.TilemapEngine.Draw(Layers[1], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
+                CallAll(x => x.Draw());
+                for (int i = 2; i < Layers.Length; ++i)
+                    Game.TilemapEngine.Draw(Layers[i], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
+            }
         }
 
         public void LoadContent(ContentManager content)
@@ -136,16 +187,16 @@ namespace team5
 
             Width = (uint)Layers[0].Width;
             Height = (uint)Layers[0].Height;
-            Size = new Vector2((Width*TileSize)/2, (Height*TileSize)/2);
+            Size = new Vector2((Width * TileSize) / 2, (Height * TileSize) / 2);
             BoundingBox = new RectangleF(Position, Size);
 
             SolidTiles = new uint[Width * Height];
             Layers[0].GetData<uint>(SolidTiles);
 
             // Scan through and populate
-            for (int y=0; y<Height; ++y)
+            for (int y = 0; y < Height; ++y)
             {
-                for(int x=0; x<Width; ++x)
+                for (int x = 0; x < Width; ++x)
                 {
                     uint tile = GetTile(x, y);
 
@@ -161,10 +212,12 @@ namespace team5
                                                             y * TileSize + BoundingBox.Y + TileSize);
                                 break;
                             // FIXME: this is way too verbose, factor out.
-                            case (uint)Colors.StaticCamera:{
-                                bool left = (GetTile(x-1, y) == (uint)Colors.SolidPlatform);
-                                NonCollidingEntities.Add(new StaticCamera(position, (left)? 315 : 225, Game));
-                                break;}
+                            case (uint)Colors.StaticCamera:
+                                {
+                                    bool left = (GetTile(x - 1, y) == (uint)Colors.SolidPlatform);
+                                    NonCollidingEntities.Add(new StaticCamera(position, (left) ? 315 : 225, Game));
+                                    break;
+                                }
                             case (uint)Colors.PivotCamera:
                                 NonCollidingEntities.Add(new PivotCamera(position, Game));
                                 break;
@@ -180,49 +233,47 @@ namespace team5
                                 break;
                         }
                     }
-                    
 
-                    
+
+
                 }
             }
 
             CallAll(obj => obj.LoadContent(content));
         }
 
-        public void Update()
+        public void ForEachCollidingTile(Movable source, Action<TileType> action)
         {
-            CallAll(x => x.Update(this));
+            var sourceBB = source.GetBoundingBox();
 
-            PendingDeletion.ForEach(x => 
+            int minX = (int)Math.Max(Math.Floor((sourceBB.Left - BoundingBox.X) / TileSize), 0);
+            int minY = (int)Math.Max(Math.Floor((sourceBB.Bottom - BoundingBox.Y) / TileSize), 0);
+            int maxX = (int)Math.Min(Math.Floor((sourceBB.Right - BoundingBox.X) / TileSize) + 1, Width);
+            int maxY = (int)Math.Min(Math.Floor((sourceBB.Top - BoundingBox.Y) / TileSize) + 1, Height);
+
+            for (int x = minX; x < maxX; ++x)
             {
-                if (!CollidingEntities.Remove(x))
+                for (int y = minY; y < maxY; ++y)
                 {
-                    if (!NonCollidingEntities.Remove(x))
-                        SolidEntities.Remove(x);
+                    if (tileObjects.ContainsKey(GetTile(x, y)))
+                        action(tileObjects[GetTile(x, y)]);
                 }
-            });
+            }
         }
 
-        public void Draw()
+        #endregion
+
+        #region Public Functions
+
+        public uint GetTile(int x, int y)
         {
-            if(DrawSolids)
+            if(x < 0 || x >= Width || y < 0 || y >= Height)
             {
-                Game.TilemapEngine.Draw(Layers[0], Solidset, new Vector2(BoundingBox.X, BoundingBox.Y));
-                CallAll(x => x.Draw());
+                throw new IndexOutOfRangeException("No such tile exists");
             }
-            else
-            {
-                Game.TilemapEngine.Draw(Layers[1], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
-                CallAll(x => x.Draw());
-                for(int i=2; i<Layers.Length; ++i)
-                    Game.TilemapEngine.Draw(Layers[i], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
-            }
-        }
 
-        public const int Up =        0b00000001;
-        public const int Right =     0b00000010;
-        public const int Down =      0b00000100;
-        public const int Left =      0b00001000;
+            return SolidTiles[(Height - y - 1)*Width + x];
+        }
 
         public bool AtHidingSpot(Movable source, out Vector2 location)
         {
@@ -241,12 +292,12 @@ namespace team5
             {
                 for (int y = minY; y < maxY; ++y)
                 {
-                    if(GetTile(x,y) == (uint)Colors.HidingSpot)
+                    if (GetTile(x, y) == (uint)Colors.HidingSpot)
                     {
                         Vector2 tilePos = new Vector2(x * TileSize + BoundingBox.X + TileSize / 2, y * TileSize + BoundingBox.Y + TileSize / 2);
 
-                        float sqrdist = (tilePos-source.Position).LengthSquared();
-                        if(sqrdist < closestSqr)
+                        float sqrdist = (tilePos - source.Position).LengthSquared();
+                        if (sqrdist < closestSqr)
                         {
                             closestSqr = sqrdist;
                             xpos = x;
@@ -256,24 +307,20 @@ namespace team5
                 }
             }
 
-            if(closestSqr == float.PositiveInfinity)
+            if (closestSqr == float.PositiveInfinity)
             {
                 location = new Vector2(-1, -1);
                 return false;
             }
 
-            while (GetTile(xpos, --ypos) == (uint)Colors.HidingSpot);
+            while (GetTile(xpos, --ypos) == (uint)Colors.HidingSpot) ;
 
-            location = new Vector2(xpos * TileSize + BoundingBox.X + TileSize / 2, (ypos+1) * TileSize + BoundingBox.Y + TileSize / 2);
+            location = new Vector2(xpos * TileSize + BoundingBox.X + TileSize / 2, (ypos + 1) * TileSize + BoundingBox.Y + TileSize / 2);
             return true;
         }
 
-
-        public const int ClockWise = 0b01;
-        public const int CounterClockWise = 0b10;
-
         //Dictionary is point to cw/ccw line
-        public SortedDictionary<float,Tuple<Vector2,Vector2>> BuildLOSHelper(RectangleF boundingBox, Vector2 pos, float radius, Vector2 dir1, Vector2 dir2)
+        public SortedDictionary<float, Tuple<Vector2, Vector2>> BuildLOSHelper(RectangleF boundingBox, Vector2 pos, float radius, Vector2 dir1, Vector2 dir2)
         {
             float radiusSqr = radius * radius;
             float Cross2(Vector2 x1, Vector2 x2) => x1.X * x2.Y - x1.Y * x2.X;
@@ -469,25 +516,6 @@ namespace team5
                 }
             }
             return points;
-        }
-
-        public void ForEachCollidingTile(Movable source, Action<TileType> action)
-        {
-            var sourceBB = source.GetBoundingBox();
-
-            int minX = (int)Math.Max(Math.Floor((sourceBB.Left - BoundingBox.X) / TileSize), 0);
-            int minY = (int)Math.Max(Math.Floor((sourceBB.Bottom - BoundingBox.Y) / TileSize), 0);
-            int maxX = (int)Math.Min(Math.Floor((sourceBB.Right - BoundingBox.X) / TileSize) + 1, Width);
-            int maxY = (int)Math.Min(Math.Floor((sourceBB.Top - BoundingBox.Y) / TileSize) + 1, Height);
-
-            for (int x = minX; x < maxX; ++x)
-            {
-                for (int y = minY; y < maxY; ++y)
-                {
-                    if (tileObjects.ContainsKey(GetTile(x, y)))
-                        action(tileObjects[GetTile(x, y)]);
-                }
-            }
         }
 
         public GameObject CollidePoint(Vector2 point)
@@ -748,5 +776,7 @@ namespace team5
 
             return false;
         }
+
+        #endregion
     }
 }
