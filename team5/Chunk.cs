@@ -526,7 +526,7 @@ namespace team5
             return null;
         }
         
-        public bool IntersectLine(Vector2 Source, Vector2 Dir, float length, out float location)
+        public bool IntersectLine(Vector2 Source, Vector2 Dir, float length, out float location, bool backgroundwall = true)
         {
             Vector2 relSource = Source - new Vector2(BoundingBox.X, BoundingBox.Y);
 
@@ -582,7 +582,7 @@ namespace team5
 
                 for(int y = (Dir.Y > 0 ? localMinY : (localMaxY - 1)); y < localMaxY && y >= localMinY; y += yincrement)
                 {
-                    if(GetTile(x,y) == (uint)Colors.SolidPlatform || GetTile(x, y) == (uint)Colors.BackgroundWall)
+                    if(GetTile(x,y) == (uint)Colors.SolidPlatform || (backgroundwall && GetTile(x, y) == (uint)Colors.BackgroundWall))
                     {
                         if(y == (Dir.Y > 0 ? localMinY : (localMaxY - 1)))
                         {

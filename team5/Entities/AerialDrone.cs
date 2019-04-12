@@ -27,7 +27,7 @@ namespace team5
         private const float MinMovement = 30;
         private const float PatrolSpeed = 50;
         private const float SearchSpeed = 100;
-        private const float TargetSpeed = 15;
+        private const float TargetSpeed = 150;
         private const float PatrolRange = 200;
         private const float SearchRange = 100;
         private const float SearchTime = 15;
@@ -183,11 +183,11 @@ namespace team5
             point1 *= DroneSize;
             var point2 = -point1;
 
-            if (chunk.IntersectLine(Position + point1, dir, maxDist, out float distToIntersect1)){
+            if (chunk.IntersectLine(Position + point1, dir, maxDist, out float distToIntersect1, false)){
                 maxDist = distToIntersect1;
             }
 
-            if (chunk.IntersectLine(Position + point2, dir, maxDist, out float distToIntersect2))
+            if (chunk.IntersectLine(Position + point2, dir, maxDist, out float distToIntersect2, false))
             {
                 maxDist = distToIntersect2;
             }
