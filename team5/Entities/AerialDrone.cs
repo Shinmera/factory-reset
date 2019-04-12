@@ -51,7 +51,7 @@ namespace team5
 
         private float Direction = 225;
 
-        public AerialDrone(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize))
+        public AerialDrone(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize/2))
         {
             Spawn = position;
             Position = position;
