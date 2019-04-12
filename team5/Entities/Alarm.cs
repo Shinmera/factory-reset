@@ -18,7 +18,6 @@ namespace team5
         //For Drone behavior
         public Vector2 LastKnowPos;
         public bool Drones = false;
-        public bool Killzone = false;
 
         private AlarmState State = AlarmState.Clear;
 

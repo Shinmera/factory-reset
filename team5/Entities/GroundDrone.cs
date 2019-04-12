@@ -119,6 +119,15 @@ namespace team5
                 Sprite.Direction = +1;
             
             ViewCone.Direction = Sprite.Direction;
+
+            { // Kill if touched.
+                if (!chunk.Level.Player.IsHiding
+                    && this.Collide(chunk.Level.Player, Game1.DeltaT, out int direction, out float time, out bool corner))
+                {
+                    chunk.Level.Alarm.Detected = false;
+                    chunk.Level.Player.Kill();
+                }
+            }
             
             Position += dt * Velocity;
             ViewCone.UpdatePosition(Position);

@@ -52,7 +52,7 @@ namespace team5
 
         private float Direction = 225;
 
-        public AerialDrone(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize*0.375F))
+        public AerialDrone(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize))
         {
             Spawn = position;
             Position = position;
@@ -327,9 +327,9 @@ namespace team5
                     break;
             }
 
-            if (!chunk.Level.Player.IsHiding)
-            {
-                if (ViewCone.Collide(chunk.Level.Player, Game1.DeltaT, out int direction, out float time, out bool corner))
+            { // Kill if touched.
+                if (!chunk.Level.Player.IsHiding
+                    && this.Collide(chunk.Level.Player, Game1.DeltaT, out int direction, out float time, out bool corner))
                 {
                     chunk.Level.Alarm.Detected = false;
                     chunk.Level.Player.Kill();

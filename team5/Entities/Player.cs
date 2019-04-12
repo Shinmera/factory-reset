@@ -83,6 +83,8 @@ namespace team5
                 DeathTimer -= dt;
                 if(DeathTimer <= 0)
                     chunk.Die(this);
+                if(Grounded)
+                    Velocity.X = 0;
             }
 
             bool hide = Controller.Hide && HideKeyWasUp;
