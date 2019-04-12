@@ -25,11 +25,11 @@ namespace team5
         private const float ViewSize = 60;
         private const float MinMovement = 30;
         private const float PatrolSpeed = 50;
-        private const float SearchSpeed = 100;
+        private const float SearchSpeed = 80;
         private const float TargetSpeed = 150;
         private const float PatrolRange = 200;
         private const float SearchRange = 100;
-        private const float SearchTime = 15;
+        private const float SearchTime = 20;
         private const float WaitTime = 5;
         private const float WaitAngularVelocity = 0.375F * (float)Math.PI;
         private const float TurnAngularVelocity = 2F*(float)Math.PI;
@@ -235,6 +235,12 @@ namespace team5
                     }
                     break;
                 case AIState.Searching:
+                    if (!chunk.Level.Alarm.Detected)
+                    {
+                        Return(chunk);
+                        break;
+                    }
+
                     if (MoveTo(WanderLocation, SearchSpeed))
                     {
                         Velocity = new Vector2(0);

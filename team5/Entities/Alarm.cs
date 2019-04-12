@@ -67,8 +67,6 @@ namespace team5
         public override void Update(Chunk chunk)
         {
             float dt = Game1.DeltaT;
-            float textX = Game.GraphicsDevice.Viewport.Width / 2;
-            float textY = Game.GraphicsDevice.Viewport.Height / 6;
 
             switch (State)
             {
@@ -82,8 +80,6 @@ namespace team5
                     break;
                 case AlarmState.Raised:
                     Timer -= dt;
-
-                    TextEngine.QueueText((Math.Floor(Timer)).ToString(), new Vector2(textX, textY), Color.Red);
                     if (Timer <= 0)
                     {
                         Detected = false;
@@ -97,8 +93,13 @@ namespace team5
         {
             Game.Transforms.PushView();
             Game.Transforms.ResetView();
-            if ( Detected)
-            Game.TextEngine.DrawText();
+            if (Detected)
+            {
+                float textX = Game.GraphicsDevice.Viewport.Width / 2;
+                float textY = Game.GraphicsDevice.Viewport.Height / 6;
+                TextEngine.QueueText((Math.Floor(Timer)).ToString(), new Vector2(textX, textY), Color.Red);
+                Game.TextEngine.DrawText();
+            }
             Game.Transforms.PopView();
         }
 
