@@ -471,7 +471,7 @@ namespace team5
                                 }
                                 AddOcclusionValue(0, newTuple4(closestPoint - Position, closestPoint - Position, locationDir1 * locationDir1, locationDir1 * locationDir1));
 
-
+                                closestLine = null;
 
                             }
 
@@ -586,7 +586,16 @@ namespace team5
 
                 if (outofAngle)
                 {
-                    AddOcclusionValue(0, newTuple4(ConePoint1 - Position, ConePoint1 - Position, LocalRadius * LocalRadius, LocalRadius * LocalRadius));
+                    Vector2 closestPoint = ConePoint1;
+                    if (!chunk.IntersectLine(Position, Dir1, LocalRadius, out float locationDir1))
+                    {
+                        locationDir1 = LocalRadius;
+                    }
+                    else
+                    {
+                        closestPoint = Position + Dir1 * locationDir1;
+                    }
+                    AddOcclusionValue(0, newTuple4(closestPoint - Position, closestPoint - Position, locationDir1 * locationDir1, locationDir1 * locationDir1));
                 }
 
                 bool maxRangeEnd = true;
