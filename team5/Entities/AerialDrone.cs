@@ -25,8 +25,9 @@ namespace team5
         private const float DroneSize = 7;
         private const float ViewSize = 60;
         private const float MinMovement = 30;
-        private const float PatrolSpeed = 10;
-        private const float TargetSpeed = 20;
+        private const float PatrolSpeed = 50;
+        private const float SearchSpeed = 100;
+        private const float TargetSpeed = 150;
         private const float PatrolRange = 200;
         private const float SearchRange = 100;
         private const float SearchTime = 15;
@@ -40,13 +41,12 @@ namespace team5
         private ConeEntity ViewCone;
 
         private AnimatedSprite Sprite;
-        private AIState State = AIState.Waiting;
+        public AIState State = AIState.Waiting;
         private List<Vector2> Path;
         private int NextNode;
 
         private Vector2 TargetLocation;
         private Vector2 WanderLocation;
-        private Vector2 LastTarget;
         
         private float StateTimer = 0;
 
@@ -65,6 +65,7 @@ namespace team5
             ViewCone.FromDegrees(225, 90);
             ViewCone.Radius = Chunk.TileSize * 3;
             ViewCone.UpdatePosition(position);
+            ViewCone.parent = this;
         }
 
         public void Target(Vector2 target, Chunk chunk)
@@ -237,7 +238,7 @@ namespace team5
                     }
                     break;
                 case AIState.Searching:
-                    if (MoveTo(WanderLocation, PatrolSpeed))
+                    if (MoveTo(WanderLocation, SearchSpeed))
                     {
                         Velocity = new Vector2(0);
                         FindWander(TargetLocation, PatrolRange, chunk);

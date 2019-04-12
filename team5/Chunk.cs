@@ -321,7 +321,7 @@ namespace team5
                         var dir = pos - tilePosition;
                         var cornerOffset = new Vector2(dir.X > 0 ? 1 : -1, dir.Y > 0 ? 1 : -1);
 
-                        Vector2 dircorner = dir - new Vector2(TileSize / 2, TileSize / 2) - cornerOffset * TileSize / 2;
+                        Vector2 dircorner = dir - cornerOffset * TileSize / 2;
 
                         if (Math.Sign(dir.X) == Math.Sign(dircorner.X)
                             && !(GetTile((int)cornerOffset.X + x, y) == (uint)Colors.SolidPlatform
@@ -344,7 +344,7 @@ namespace team5
 
                             float angle2 = ConeEntity.ConvertAngle((float)Math.Atan2(point2.Y - pos.Y, point2.X - pos.X) - startingangle);
 
-                            if (inCone(point1) || inCone(point2))
+                            if ((inAngle(point1) || inAngle(point2)) && (inRange(point1) || inRange(point2)))
                             {
                                 if (!inAngle(point1))
                                 {
@@ -416,7 +416,7 @@ namespace team5
 
                             float angle2 = ConeEntity.ConvertAngle((float)Math.Atan2(point2.Y - pos.Y, point2.X - pos.X) - startingangle);
 
-                            if (inCone(point1) || inCone(point2))
+                            if ((inAngle(point1) || inAngle(point2)) && (inRange(point1) || inRange(point2)))
                             {
                                 if (!inAngle(point1))
                                 {

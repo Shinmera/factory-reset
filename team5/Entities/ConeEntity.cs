@@ -73,6 +73,7 @@ namespace team5
             }
         }
 
+        public Entity parent;
         
 
         private RectangleF BoundingBox;
@@ -140,10 +141,10 @@ namespace team5
         public void UpdatePosition(Vector2 position)
         {
             Position = position;
-            if (Math.Abs(Position.X % 8) < 0.01F || 1 - Math.Abs(Position.X % 8) < 0.01F) {
+            if (Math.Abs(Position.X % 1) < 0.01F || 1 - Math.Abs(Position.X % 1) < 0.01F) {
                 Position.X += 0.02F;
             }
-            if(Math.Abs(Position.Y % 8) < 0.01F || 1 - Math.Abs(Position.Y % 8) < 0.01F)
+            if(Math.Abs(Position.Y % 1) < 0.01F || 1 - Math.Abs(Position.Y % 1) < 0.01F)
             {
                 Position.Y += 0.02F;
             }
