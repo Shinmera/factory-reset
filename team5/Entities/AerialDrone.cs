@@ -395,7 +395,7 @@ namespace team5
                         if (node != -1)
                         {
                             reducedPath = new List<Vector2>();
-                            for (int p = NextNode - 1; p < node; ++i)
+                            for (int p = NextNode - 1; p < node; ++p)
                             {
                                 reducedPath.Add(Path[p]);
                             }
