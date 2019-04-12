@@ -14,7 +14,6 @@ namespace team5
     {
         public Game1 Game;
         private VertexBuffer VertexBuffer;
-        private VertexBuffer TriangleVertexBuffer;
         private Effect ConeEffect;
         private Effect TriangleEffect;
         private const int Triangles = 5;
@@ -73,17 +72,12 @@ namespace team5
             for (int i = 0; i < vertices.Length; i++)
                 vertices[i] = new VertexPosition(new Vector3(triangles[i], 0));
 
-            TriangleVertexBuffer = new VertexBuffer(Game.GraphicsDevice, VertexPosition.VertexDeclaration,
-                                            triangles.Count * 3, BufferUsage.None);
-            TriangleVertexBuffer.SetData(vertices);
-            // Create shader
-
-            device.SetVertexBuffer(TriangleVertexBuffer);
             device.BlendState = BlendState.AlphaBlend;
             foreach (EffectPass pass in TriangleEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                device.DrawPrimitives(PrimitiveType.TriangleList, 0, triangles.Count/3);
+                device.DrawUserPrimitives(PrimitiveType.TriangleList, vertices, 0, vertices.Length/3,
+                                          VertexPosition.VertexDeclaration);
             }
         }
 

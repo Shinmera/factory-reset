@@ -35,7 +35,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 
 float4 MainPS(VertexShaderOutput input) : COLOR0
 {
-    return float4(1, 0, 0, 0.5);
+    return float4(1, 0, 0, 0.3);
 }
 
 technique Triangle
