@@ -538,10 +538,14 @@ namespace team5
                             Vector2 CW = dir * locationCW;
                             Vector2 CCW = dir * locationCCW;
 
-                            if ((Position + CCW - point.Value.Item1).LengthSquared() < 1F && !float.IsNaN(point.Value.Item2.X))
+                            if ((Position + CCW - point.Value.Item1).LengthSquared() < 1F)
                             {
-                                closestLine = new Tuple<Vector2, Vector2>(point.Value.Item1, point.Value.Item2);
-                                closestLineHomo = Vector3.Cross(new Vector3(closestLine.Item1, 1), new Vector3(closestLine.Item2, 1));
+                                CW = point.Value.Item1 - Position;
+                                if (!float.IsNaN(point.Value.Item2.X)){
+                                    CCW = point.Value.Item1 - Position;
+                                    closestLine = new Tuple<Vector2, Vector2>(point.Value.Item1, point.Value.Item2);
+                                    closestLineHomo = Vector3.Cross(new Vector3(closestLine.Item1, 1), new Vector3(closestLine.Item2, 1));
+                                }
                             }
 
                             AddOcclusionValue(angle, newTuple4(CW, CCW, locationCW * locationCW, locationCCW * locationCCW));
