@@ -129,6 +129,9 @@ namespace team5
 
         public ConeEntity(Game1 game) : base(game)
         {
+            OcclusionAngles = new List<float>();
+            OcclusionValues = new List<Tuple<Vector2, Vector2, float, float>>();
+            Triangles = new List<Vector2>();
         }
 
         /// <summary>Changes the position of the cone center</summary>

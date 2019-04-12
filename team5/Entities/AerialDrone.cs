@@ -22,7 +22,6 @@ namespace team5
             Searching,
         };
 
-        private const float DroneSize = 7;
         private const float ViewSize = 60;
         private const float MinMovement = 30;
         private const float PatrolSpeed = 50;
@@ -177,10 +176,11 @@ namespace team5
 
             var point1 = new Vector2(dir.Y, -dir.X);
             point1.Normalize();
-            point1 *= DroneSize;
+            point1 *= Size.X;
             var point2 = -point1;
 
-            if (chunk.IntersectLine(Position + point1, dir, maxDist, out float distToIntersect1, false)){
+            if (chunk.IntersectLine(Position + point1, dir, maxDist, out float distToIntersect1, false))
+            {
                 maxDist = distToIntersect1;
             }
 
@@ -189,7 +189,7 @@ namespace team5
                 maxDist = distToIntersect2;
             }
 
-            maxDist -= DroneSize;
+            maxDist -= Size.X;
 
             if(maxDist < MinMovement)
             {
@@ -385,7 +385,7 @@ namespace team5
                 var dir = tentativePoint - reducedPath.Last();
                 var point1 = new Vector2(dir.Y , -dir.X);
                 point1.Normalize();
-                point1 *= DroneSize;
+                point1 *= Size.X;
                 var point2 = -point1;
 
                 point1 += reducedPath.Last();
