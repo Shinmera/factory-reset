@@ -95,9 +95,13 @@ namespace team5
 
         public void Die(Entity entity)
         {
+
             if (entity is Player)
             {
                 CallAll((GameObject x) => { if (x is Entity) ((Entity)x).Respawn(this); });
+                //reset the alarm behavior
+                Level.Alarm.Detected = false;
+                Level.Alarm.Drones = false;
             }
 
             if(entity is Pickup)

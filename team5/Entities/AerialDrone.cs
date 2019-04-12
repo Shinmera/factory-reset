@@ -336,7 +336,6 @@ namespace team5
                 if (!chunk.Level.Player.IsHiding
                     && GetBoundingBox().Intersects(chunk.Level.Player.GetBoundingBox()))
                 {
-                    chunk.Level.Alarm.Detected = false;
                     chunk.Level.Player.Kill();
                 }
             }
