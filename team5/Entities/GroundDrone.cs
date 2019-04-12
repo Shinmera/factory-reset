@@ -122,7 +122,7 @@ namespace team5
 
             { // Kill if touched.
                 if (!chunk.Level.Player.IsHiding
-                    && this.Collide(chunk.Level.Player, Game1.DeltaT, out int direction, out float time, out bool corner))
+                    && GetBoundingBox().Intersects(chunk.Level.Player.GetBoundingBox()))
                 {
                     chunk.Level.Alarm.Detected = false;
                     chunk.Level.Player.Kill();
