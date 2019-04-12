@@ -41,10 +41,6 @@ namespace team5
 
         private void AddOcclusionValue(float angle, Tuple<Vector2, Vector2, float, float> occlusionValue)
         {
-            if(angle > ConvertAngle(Angle2-Angle1) + 0.001F)
-            {
-                bool Wrong = true;
-            }
             OcclusionAngles.Add(angle);
             OcclusionValues.Add(occlusionValue);
         }
@@ -407,24 +403,16 @@ namespace team5
             {
                 AddOcclusionValue(0, newTuple(Position, Position));
                 AddOcclusionValue(ConvertAngle(Angle2 - Angle1), newTuple(Position, Position));
-
             }
             else
             {
-
                 if (!ComputedBB) RecomputeBB();
                 var points = chunk.BuildLOSHelper(BoundingBox, Position, Radius, Dir1, Dir2);
-
-                
-
-                //OcclusionList.Add(0, new Tuple<float,float>(FullRadius,FullRadius));
 
                 bool outofAngle = true;
 
                 Tuple<Vector2, Vector2> closestLine = null;
                 Vector3 closestLineHomo = new Vector3(float.NaN);
-
-
 
                 foreach (var point in points)
                 {
@@ -472,31 +460,7 @@ namespace team5
                                 AddOcclusionValue(0, newTuple4(closestPoint - Position, closestPoint - Position, locationDir1 * locationDir1, locationDir1 * locationDir1));
 
                                 closestLine = null;
-
                             }
-
-                            /**
-                            if (angle == 0)
-                                
-                            {
-                                if(point.Value.Item2 == closestLine.Item2)
-                                {
-                                    closestLine = null;
-                                }
-                                if(IsCloserThanLine(closestLineHomo, point.Key, Position, out Vector2 closestPoint))
-                                {
-                                    if (float.IsNaN(point.Value.Item2.X))
-                                    {
-                                        Vector2 CCWshift = new Vector2(point.Key.Y, -point.Key.X) * 0.0001F;
-                                        chunk.IntersectLine(Position, point.Key + CCWshift - Position, float.PositiveInfinity, out float location);
-                                        closestPoint = 
-                                    }
-                                }
-
-                                float dist = (closestPoint - Position).LengthSquared();
-                                AddOcclusionValue(angle, newTuple(closestPoint, closestPoint, dist, dist));
-                            }
-                            */
                         }
 
                         if (closestLine != null && point.Value.Item1 == closestLine.Item2)
@@ -556,32 +520,6 @@ namespace team5
                             }
                         }
                     }
-
-
-
-                    /**
-                    Vector2 dir = point.Value.Item1 - Position;
-
-                    if (dir.LengthSquared() < FullRadius * FullRadius)
-                    {
-                        float lastAngle = OcclusionList.Last().Key;
-                        float dist = (angles[point.Key] - lastAngle);
-
-                        if (outofRange && dist > MaxFanAngle)
-                        {
-                            int segments = (int)Math.Ceiling(dist / MaxFanAngle);
-
-                            float portion = dist / segments;
-
-                            for (float f = lastAngle; f < angles[point.Key] - portion / 2; f += portion)
-                            {
-                                OcclusionList.Add(f, new Tuple<float, float>(FullRadius, FullRadius));
-                            }
-                        }
-
-                        chunk.IntersectLine(Position, dir, 1, out float location);
-                    }
-                     */
                 }
 
                 if (outofAngle)
@@ -691,28 +629,7 @@ namespace team5
         public override void Update(Chunk chunk)
         {
             if (!ComputedOccludedRadius)
-            {
                 ComputeOcclusion(chunk);
-                
-                /*
-                OccludedRadius = FullRadius;
-                if (chunk.IntersectLine(Position, 
-                    new Vector2(OccludedRadius * (float)Math.Cos(LocalAngle1), OccludedRadius * (float)Math.Sin(LocalAngle1)),
-                    1, out float location1))
-                {
-                    OccludedRadius = Math.Min(OccludedRadius, location1 * OccludedRadius);
-                    ComputedBB = false;
-                }
-
-                if (chunk.IntersectLine(Position,
-                    new Vector2(OccludedRadius * (float)Math.Cos(LocalAngle2), OccludedRadius * (float)Math.Sin(LocalAngle2)),
-                    1, out float location2))
-                {
-                    OccludedRadius = Math.Min(OccludedRadius, location2 * OccludedRadius);
-                    ComputedBB = false;
-                }
-                */
-            }
 
             base.Update(chunk);
 
@@ -724,177 +641,15 @@ namespace team5
                     chunk.Level.Alarm.SendDrones(chunk.Level.Player.Position);
 
                     if (chunk.Level.Alarm.Killzone)
-                        chunk.Die(chunk.Level.Player);
+                        chunk.Level.Player.Kill();
                 }
-                
-
             }
         }
 
         public override void Draw()
         {
             if (ComputedOccludedRadius)
-            {
                 Game.ViewConeEngine.DrawTriangles(Position, Triangles);
-            }
         }
-
-        /*
-        // <Nicolas> This also seems super complicated for what it has to do.
-        //           Wouldn't it just be sufficient to test the four corner points of the BoxEntity
-        //           against the cone by translating them to polar coordinates and then checking range?
-        public bool CollideObsolete(Entity entity, float timestep, out int direction, out float time, out bool corner)
-        {
-            corner = false;
-            direction = 0;
-            time = -1;
-
-            if (!(entity is Movable))
-            {
-                return false;
-            }
-
-            Movable source = (Movable)entity;
-
-            RectangleF motionBB;
-
-            RectangleF sourceBB = source.GetBoundingBox();
-            Vector2 sourceMotion = source.Velocity * timestep;
-
-            var center = new Vector2((source.GetBoundingBox().Left + source.GetBoundingBox().Right) * 0.5F, (source.GetBoundingBox().Top + source.GetBoundingBox().Bottom) * 0.5F);
-
-            center -= Position;
-
-            motionBB.X = sourceBB.X + (int)Math.Floor(Math.Min(0.0, sourceMotion.X));
-            motionBB.Y = sourceBB.Y + (int)Math.Floor(Math.Min(0.0, sourceMotion.Y));
-            motionBB.Width = sourceBB.Width + (int)Math.Ceiling(Math.Max(0.0, sourceMotion.X));
-            motionBB.Height = sourceBB.Height + (int)Math.Ceiling(Math.Max(0.0, sourceMotion.Y));
-
-            if (!motionBB.Intersects(GetBoundingBox()))
-            {
-                return false;
-            }
-
-            if (!motionBB.Intersects(GetTightBoundingBox()))
-            {
-                return false;
-            }
-
-            float centerRad = center.LengthSquared();
-
-            if (centerRad < OccludedRadius * OccludedRadius)
-            {
-                float centerAngle = ConvertAngle((float)Math.Atan2(center.Y, center.X));
-
-                if ((centerAngle > LocalAngle1 && centerAngle < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (centerAngle > LocalAngle1 || centerAngle < LocalAngle2)))
-                {
-                    return true;
-                }
-            }
-
-            List<Vector2> polygon = source.GetSweptAABBPolygon(timestep);
-
-            for (int i = 0; i < polygon.Count; ++i)
-            {
-                int ind2 = i != polygon.Count - 1 ? i + 1 : 0;
-                Vector3 line = Vector3.Cross(new Vector3(polygon[i], 1), new Vector3(polygon[ind2], 1));
-
-                Vector3 point1 = Vector3.Cross(ConeLine1, line);
-                point1 = point1 / point1.Z;
-
-                Vector2 DirPoly = (polygon[ind2] - polygon[i]);
-                float lengthPoly = DirPoly.Length();
-                DirPoly.Normalize();
-
-                float dist1 = Vector2.Dot(new Vector2(point1.X, point1.Y) - Position, Dir1);
-                float distPoly1 = Vector2.Dot(new Vector2(point1.X, point1.Y) - polygon[i], DirPoly);
-                if (dist1 < OccludedRadius && dist1 > 0 && distPoly1 < lengthPoly && distPoly1 > 0)
-                {
-                    return true;
-                }
-
-                Vector3 point2 = Vector3.Cross(ConeLine2, line);
-                point2 = point2 / point2.Z;
-
-                float dist2 = Vector2.Dot(new Vector2(point2.X, point2.Y) - Position, Dir2);
-                float distPoly2 = Vector2.Dot(new Vector2(point2.X, point2.Y) - polygon[i], DirPoly);
-                if (dist2 < OccludedRadius && dist2 > 0 && distPoly2 < lengthPoly && distPoly2 > 0)
-                {
-                    return true;
-                }
-            }
-
-            for (int i = 0; i < polygon.Count; ++i)
-            {
-                int ind2 = i != polygon.Count - 1 ? i + 1 : 0;
-
-                Vector2 p1 = polygon[i] - Position;
-                Vector2 p2 = polygon[ind2] - Position;
-
-                float a = (p2 - p1).LengthSquared();
-                float b = 2 * Vector2.Dot(p1, (p2 - p1));
-                float c = p1.LengthSquared() - OccludedRadius * OccludedRadius;
-
-                float Disc = b * b - 4 * a * c;
-
-                if (Disc < 0)
-                {
-                    continue;
-                }
-                if (Disc == 0)
-                {
-                    float t = -b / (2 * a);
-
-                    if (t > 0 && t < 1)
-                    {
-                        Vector2 intersect = p1 + t * (p2 - p1);
-
-                        float angle = (float)Math.Atan2(intersect.Y, intersect.X);
-
-                        if ((angle > LocalAngle1 && angle < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (angle > LocalAngle1 || angle < LocalAngle2)))
-                        {
-                            return true;
-                        }
-                    }
-
-                    continue;
-
-                }
-                if (Disc > 0)
-                {
-                    float t1 = (-b - (float)Math.Sqrt(Disc)) / (2 * a);
-
-                    if (t1 > 0 && t1 < 1)
-                    {
-                        Vector2 intersect = p1 + t1 * (p2 - p1);
-
-                        float angle = ConvertAngle((float)Math.Atan2(intersect.Y, intersect.X));
-
-                        if ((angle > LocalAngle1 && angle < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (angle > LocalAngle1 || angle < LocalAngle2)))
-                        {
-                            return true;
-                        }
-                    }
-
-                    float t2 = (-b + (float)Math.Sqrt(Disc)) / (2 * a);
-
-                    if (t2 > 0 && t2 < 1)
-                    {
-                        Vector2 intersect = p1 + t2 * (p2 - p1);
-
-                        float angle = ConvertAngle((float)Math.Atan2(intersect.Y, intersect.X));
-
-                        if ((angle > LocalAngle1 && angle < LocalAngle2) || (LocalAngle2 < LocalAngle1 && (angle > LocalAngle1 || angle < LocalAngle2)))
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return false;
-
-        }
-        */
     }
 }

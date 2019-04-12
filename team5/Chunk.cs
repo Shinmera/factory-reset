@@ -472,10 +472,8 @@ namespace team5
             return points;
         }
 
-        public List<TileType> TouchingNonSolidTile(Movable source)
+        public void ForEachCollidingTile(Movable source, Action<TileType> action)
         {
-            var result = new List<TileType>();
-
             var sourceBB = source.GetBoundingBox();
 
             int minX = (int)Math.Max(Math.Floor((sourceBB.Left - BoundingBox.X) / TileSize), 0);
@@ -488,18 +486,9 @@ namespace team5
                 for (int y = minY; y < maxY; ++y)
                 {
                     if (tileObjects.ContainsKey(GetTile(x, y)))
-                    {
-                        var tile = tileObjects[GetTile(x, y)];
-                        if (!(tile is TileSolid))
-                        {
-                            result.Add(tile);
-                        }
-
-                    }
+                        action(tileObjects[GetTile(x, y)]);
                 }
             }
-
-            return result;
         }
 
         public GameObject CollidePoint(Vector2 point)

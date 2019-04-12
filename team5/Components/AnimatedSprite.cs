@@ -44,6 +44,8 @@ namespace team5
         private float TimeAccumulator = 0;
         /// <summary>The current Frame being rendered</summary>
         public int Frame = 0;
+        /// <summary>The direction of frame playback</summary>
+        public int FrameStep = +1;
         /// <summary>The animation currently being run</summary>
         private Animation Anim;
         /// <summary>A List of animations that can be rendered by this sprite</summary>
@@ -76,11 +78,13 @@ namespace team5
         /// </summary>
         public void Play(int idx)
         {
-            if(!EqualityComparer<Animation>.Default.Equals(Anim, Animations[idx]))
+            Animation next = Animations[idx];
+            if(!EqualityComparer<Animation>.Default.Equals(Anim, next))
             {
-                Anim = Animations[idx];
+                Anim = next;
                 Frame = Anim.Start;
                 TimeAccumulator = 0;
+                FrameStep = +1;
             }
         }
 
@@ -116,24 +120,6 @@ namespace team5
             Game.Transforms.Pop();
         }
 
-        /// <summary>
-        ///   Call to Draw the Sprite in its current state, with added parallax.
-        /// </summary>
-        public void DrawParallax(Vector2 position, float distance, Vector2 CameraCenter)
-        {
-            Vector2 relPos = position - CameraCenter;
-
-            Game.Transforms.Push();
-            Game.Transforms.Scale(Direction/distance, 1);
-            Game.Transforms.Translate((relPos / distance) + CameraCenter);
-            int width = (int)FrameSize.X;
-            int height = (int)FrameSize.Y;
-
-            Vector4 source = new Vector4(width * Frame, 0, width, height);
-            Game.SpriteEngine.Draw(Texture, source);
-            Game.Transforms.Pop();
-        }
-
         public void Draw()
         {
             Draw(new Vector2(0, 0));
@@ -146,7 +132,7 @@ namespace team5
             int frameInc = (int)System.Math.Floor(TimeAccumulator / Anim.FrameTime);
             TimeAccumulator = TimeAccumulator % Anim.FrameTime;
             // Step frames and check bounds
-            Frame += frameInc;
+            Frame += frameInc * FrameStep;
             if(Anim.End <= Frame)
             {
                 int oversteppedFrames = Anim.End - Frame;
@@ -155,6 +141,17 @@ namespace team5
                     Frame = Anim.LoopStart + oversteppedFrames;
                 else
                 {
+                    Anim = Animations[Anim.Next];
+                    Frame = Anim.Start + oversteppedFrames;
+                }
+            } else if(Frame < Anim.Start)
+            {
+                int oversteppedFrames = Anim.Start - Frame;
+                if(Anim.Next == -1)
+                    Frame = Anim.End - oversteppedFrames;
+                else
+                {
+                    FrameStep = +1;
                     Anim = Animations[Anim.Next];
                     Frame = Anim.Start + oversteppedFrames;
                 }

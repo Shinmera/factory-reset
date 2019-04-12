@@ -52,8 +52,6 @@ namespace team5
 
         private float Direction = 225;
 
-
-
         public AerialDrone(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize*0.375F))
         {
             Spawn = position;
@@ -334,7 +332,7 @@ namespace team5
                 if (ViewCone.Collide(chunk.Level.Player, Game1.DeltaT, out int direction, out float time, out bool corner))
                 {
                     chunk.Level.Alarm.Detected = false;
-                    chunk.Die(chunk.Level.Player);
+                    chunk.Level.Player.Kill();
                 }
             }
 

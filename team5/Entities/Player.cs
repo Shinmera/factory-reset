@@ -23,6 +23,7 @@ namespace team5
         private bool HasWallJumped = false;
         private float LongJump = 0;
         private int SoundFrame = 0;
+        private float DeathTimer = 0;
 
         private readonly float Gravity = 800;
         private readonly float MaxVel = 150;
@@ -56,9 +57,9 @@ namespace team5
             Sprite.Add("run",    6, 22, 0.8);
             Sprite.Add("climb", 22, 34, 1.0);
             Sprite.Add("hide",  34, 38, 0.5, 37);
-            Sprite.Add("die",   38, 46, 1.0, 45);
+            Sprite.Add("die",   38, 46, 0.8, 45);
             Sprite.Add("jump",  46, 49, 0.5, 48);
-            Sprite.Add("fall",  49, 54, 0.2, 51);
+            Sprite.Add("fall",  49, 54, 0.3, 51);
             
             Game.SoundEngine.Load("footstep");
         }
@@ -70,13 +71,19 @@ namespace team5
 
         public override void Update(Chunk chunk)
         {
+            float dt = Game1.DeltaT;
+            Controller.Update();
+            Sprite.Update(dt);
+            
             if(Controller.Quit)
                 Game.Exit();
             
-            float dt = Game1.DeltaT;
-
-            Controller.Update();
-            Sprite.Update(dt);
+            if(0 < DeathTimer)
+            {
+                DeathTimer -= dt;
+                if(DeathTimer <= 0)
+                    chunk.Die(this);
+            }
 
             bool hide = Controller.Hide && HideKeyWasUp;
             bool jump = Controller.Jump && JumpKeyWasUp;
@@ -95,25 +102,12 @@ namespace team5
             Object rightCorner= chunk.CollidePoint(new Vector2(Position.X+Size.X+1,
                                                                Position.Y-Size.Y-1));
 
-            if (chunk.CollidePoint(new Vector2(Position.X - Size.X,
-                                                         Position.Y)) != null)
-            {
-                bool wrong = true;
-            }
-
             // Apply gravity
             Velocity.Y -= dt * Gravity;
 
-            List<TileType> touchingTiles = chunk.TouchingNonSolidTile(this);
-
-            foreach(var tile in touchingTiles)
-            {
-                if(tile is TileSpike)
-                {
-                    chunk.Die(this);
-                    return;
-                }
-            }
+            chunk.ForEachCollidingTile(this, (tile)=>{
+                    if(tile is TileSpike) Kill();
+                });
 
             if (IsHiding || QueueHide)
             {
@@ -128,19 +122,13 @@ namespace team5
                     QueueHide = false;
                 }
             }
-            else
+            else if (hide && chunk.AtHidingSpot(this, out HidingSpot))
             {
-                if (hide)
-                {
-                    if (chunk.AtHidingSpot(this, out HidingSpot))
-                    {
-                        QueueHide = true;
-                        IsClimbing = false;
-                    }
-                }
+                QueueHide = true;
+                IsClimbing = false;
             }
-
-            if (!IsHiding && !QueueHide)
+            
+            if (!IsHiding && !QueueHide && DeathTimer <= 0)
             {
                 if (Grounded)
                 {
@@ -228,11 +216,6 @@ namespace team5
                     }
                 }
 
-                // // Debug
-                // if(Controller.MoveUp) Velocity.Y = +MaxVel;
-                // else if(Controller.MoveDown) Velocity.Y = -MaxVel;
-                // else Velocity.Y = 0;
-
                 if (Controller.Jump && 0 < LongJump)
                 {
                     Velocity.Y += AccelRate * dt;
@@ -285,53 +268,60 @@ namespace team5
             // Now that all movement has been updated, check for collisions
             HandleCollisions(dt, chunk, true);
 
-            if (chunk.CollidePoint(new Vector2(Position.X - Size.X,
-                                             Position.Y)) != null)
-            {
-                bool wrong = true;
-            }
-
             // Animations
-            if (IsClimbing || (Velocity.Y < 0 && (left != null || right != null)))
-            {
-                Sprite.Play("climb");
-                // Force direction to face wall
-                if(left != null) Sprite.Direction = -1;
-                if(right != null) Sprite.Direction = +1;
-                if(Velocity.Y == 0 || !Controller.Climb) Sprite.Reset();
-            }
-            else if(IsHiding || QueueHide)
-            {
-                Sprite.Play("hide");
-            }
+            if(0 < DeathTimer)
+                Sprite.Play("die");
             else
             {
-                if(0 < Velocity.Y){
-                    if(Sprite.Frame == 46 && SoundFrame != Sprite.Frame){
-                        SoundFrame = Sprite.Frame;
-                        Game.SoundEngine.Play("footstep", Position);
-                    }
-                    Sprite.Play("jump");
-                }else if(Velocity.Y < 0)
-                    Sprite.Play("fall");
-                else if(Velocity.X != 0){
-                    Sprite.Play("run");
-                    if((Sprite.Frame == 10 || Sprite.Frame == 18) && SoundFrame != Sprite.Frame){
-                        SoundFrame = Sprite.Frame;
-                        Game.SoundEngine.Play("footstep", Position);
-                    }
-                }else{
-                    SoundFrame = 0;
-                    Sprite.Play("idle");
+                if (IsClimbing || (Velocity.Y < 0 && (left != null || right != null)))
+                {
+                    Sprite.Play("climb");
+                    if(Velocity.Y < 0) Sprite.FrameStep = -1;
+                    else               Sprite.FrameStep = +1;
+                    // Force direction to face wall
+                    if(left != null) Sprite.Direction = -1;
+                    if(right != null) Sprite.Direction = +1;
+                    if(Velocity.Y == 0 || !Controller.Climb) Sprite.Reset();
                 }
-                // Base direction on movement
-                if (Velocity.X < 0)
-                    Sprite.Direction = -1;
-                if (0 < Velocity.X)
-                    Sprite.Direction = +1;
+                else if(IsHiding || QueueHide)
+                {
+                    Sprite.Play("hide");
+                }
+                else
+                {
+                    if(0 < Velocity.Y){
+                        if(Sprite.Frame == 46 && SoundFrame != Sprite.Frame){
+                            SoundFrame = Sprite.Frame;
+                            Game.SoundEngine.Play("footstep", Position);
+                        }
+                        Sprite.Play("jump");
+                    }else if(Velocity.Y < 0)
+                        Sprite.Play("fall");
+                    else if(Velocity.X != 0){
+                        Sprite.Play("run");
+                        if((Sprite.Frame == 10 || Sprite.Frame == 18) && SoundFrame != Sprite.Frame){
+                            SoundFrame = Sprite.Frame;
+                            Game.SoundEngine.Play("footstep", Position);
+                        }
+                    }else{
+                        SoundFrame = 0;
+                        Sprite.Play("idle");
+                    }
+                    // Base direction on movement
+                    if (Velocity.X < 0)
+                        Sprite.Direction = -1;
+                    if (0 < Velocity.X)
+                        Sprite.Direction = +1;
+                }
             }
             
             Game.SoundEngine.Update(Position);
+        }
+        
+        public void Kill()
+        {
+            if(DeathTimer <= 0)
+                DeathTimer = 2.0f;
         }
 
         public override void Respawn(Chunk chunk)
