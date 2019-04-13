@@ -111,6 +111,7 @@
       :background (hex FFFFFF)))
     (.tilemap
      :display flex
+     :max-height 80%
      (>canvas
       :margin auto
       :background (hex FFFFFF)

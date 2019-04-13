@@ -386,6 +386,7 @@ class Chunk{
                     empty = false;
                     var tileset = this.getTileset(l);
                     var s = tileset.rgMap[(r<<8) + g];
+                    if(!s) break;
                     mapctx.globalAlpha = pixels.opacity;
                     mapctx.drawImage(tileset.image,
                                      s[0]*tileSize, s[1]*tileSize, tileSize, tileSize,
@@ -675,6 +676,7 @@ var generateLevelmap = function(level){
             }
         });
         var ctx = entry.getContext("2d");
+        // FIXME: scale
         ctx.putImageData(chunk.getLayer(0), 0, 0);
 
         entry.addEventListener("mousedown", function(ev){
