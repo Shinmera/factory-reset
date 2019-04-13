@@ -86,11 +86,13 @@ namespace team5
             readonly SoundEffectInstance Instance;
             public Vector2 Position = new Vector2(0,0);
 
-            public Sound(SoundEngine soundEngine, SoundEffect effect)
+            public Sound(SoundEngine soundEngine, SoundEffect effect, Vector2 position)
             {
                 SoundEngine = soundEngine;
                 Effect = effect;
                 Instance = effect.CreateInstance();
+                Position = position;
+                Update();
                 Instance.Play();
                 SoundEngine.ActiveSounds.Add(this);
             }
@@ -166,16 +168,9 @@ namespace team5
             }
         }
         
-        public Sound Play(string effect)
-        {
-            return new Sound(this, SoundCache[effect]);
-        }
-        
         public Sound Play(string effect, Vector2 position)
         {
-            return new Sound(this, SoundCache[effect]){
-                Position = position
-            };
+            return new Sound(this, SoundCache[effect], position);
         }
         
         public bool Listen(Vector2 position, out Vector2 source)
