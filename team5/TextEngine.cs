@@ -28,8 +28,9 @@ namespace team5
             Center,
         };
         
-        private const string DefaultFont = "ethnocentric";
+        private const string DefaultFont = "welbut";
         private const float DefaultSize = 24;
+        private float ViewScale = 1;
         private SpriteBatch SpriteBatch;
         private Game1 Game;
         private List<Text> QueuedText;
@@ -50,7 +51,7 @@ namespace team5
             Fonts = new Dictionary<string, SpriteFont>
             {
                 { DefaultFont, content.Load<SpriteFont>("Fonts/"+DefaultFont) },
-                { "Arial", content.Load<SpriteFont>("Fonts/Arial") }
+                { "crashed-scoreboard", content.Load<SpriteFont>("Fonts/crashed-scoreboard") }
             };
         }
 
@@ -59,7 +60,7 @@ namespace team5
             Vector2 pos = new Vector2(position.X, position.Y);
             SpriteFont font = Fonts[fontName];
             Vector2 size = font.MeasureString(text);
-            float scale = sizePx / size.Y;
+            float scale = sizePx / size.Y * ViewScale;
             // Update position based on text size.
             switch(horizontal)
             {
@@ -85,6 +86,11 @@ namespace team5
         
         public void QueueText(string text, Vector2 position, float sizePx, Orientation horizontal=Orientation.Left, Orientation vertical=Orientation.Bottom){
             QueueText(text, position, Color.Black, DefaultFont, sizePx, horizontal, vertical);
+        }
+        
+        public void Resize(int width, int height)
+        {
+            ViewScale = width / 720;
         }
 
         public void DrawText()

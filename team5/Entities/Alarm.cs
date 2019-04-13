@@ -97,7 +97,8 @@ namespace team5
             {
                 float textX = Game.GraphicsDevice.Viewport.Width / 2;
                 float textY = Game.GraphicsDevice.Viewport.Height / 6;
-                TextEngine.QueueText((Math.Floor(Timer)).ToString(), new Vector2(textX, textY), Color.Red);
+                TextEngine.QueueText((Math.Floor(Timer)).ToString(), new Vector2(textX, textY), 
+                                     "crashed-scoreboard", 48, TextEngine.Orientation.Center);
                 Game.TextEngine.DrawText();
             }
             Game.Transforms.PopView();

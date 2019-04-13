@@ -90,6 +90,7 @@ namespace team5
             Transforms.ProjectionMatrix = Matrix.CreateOrthographicOffCenter(0, width, 0, height, -10, 10);
             System.Diagnostics.Debug.WriteLine("Viewport: " + width + "x" + height);
             ActiveWindow.Resize(width, height);
+            TextEngine.Resize(width, height);
         }
         
         protected override void Update(GameTime gameTime)
