@@ -25,8 +25,10 @@ namespace team5
         {
             Position = position + new Vector2(0, Chunk.TileSize/2);
             Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize * 2, Chunk.TileSize * 2));
-            ViewCone = new ConeEntity(game);
-            ViewCone.Radius = Chunk.TileSize * 6;
+            ViewCone = new ConeEntity(game)
+            {
+                Radius = Chunk.TileSize * 6
+            };
             ViewCone.FromDegrees(0, 30);
             ViewCone.UpdatePosition(Position);
             Velocity = new Vector2(PatrolSpeed.X, PatrolSpeed.Y);

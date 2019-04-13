@@ -16,9 +16,10 @@ namespace team5
             public Vector2 Position;
             public Color Color;
             public float Scale;
+            public float LineWrapSize;
 
-            public Text(string text, Vector2 position, Color color, SpriteFont font, float scale) {
-                String = text; Position = position; Color = color; Font = font; Scale = scale;
+            public Text(string text, Vector2 position, Color color, SpriteFont font, float scale, float lineWrapSize) {
+                String = text; Position = position; Color = color; Font = font; Scale = scale; LineWrapSize = lineWrapSize;
             }
         };
         
@@ -55,7 +56,10 @@ namespace team5
             };
         }
 
-        public void QueueText(string text, Vector2 position, Color color, string fontName=DefaultFont, float sizePx=DefaultSize, Orientation horizontal=Orientation.Left, Orientation vertical=Orientation.Bottom)
+        public void QueueText(string text, Vector2 position, Color color, 
+            string fontName=DefaultFont, float sizePx=DefaultSize, 
+            Orientation horizontal=Orientation.Left, Orientation vertical=Orientation.Bottom, 
+            bool lineWrapping = false, float textwidth = 0)
         {
             Vector2 pos = new Vector2(position.X, position.Y);
             SpriteFont font = Fonts[fontName];
@@ -77,7 +81,7 @@ namespace team5
                 default: throw new ArgumentException(String.Format("{0} is not a valid vertical orientation.", vertical));
             }
             
-            QueuedText.Add(new Text(text, pos, color, font, scale));
+            QueuedText.Add(new Text(text, pos, color, font, scale, -1));
         }
         
         public void QueueText(string text, Vector2 position, string fontName=DefaultFont, float sizePx=DefaultSize, Orientation horizontal=Orientation.Left, Orientation vertical=Orientation.Bottom){
