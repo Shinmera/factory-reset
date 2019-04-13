@@ -21,7 +21,7 @@ namespace team5
         private ConeEntity ViewCone;
         private SoundEngine.Sound Sound;
 
-        public GroundDrone(Vector2 position, Game1 game) : base( game, new Vector2(Chunk.TileSize/2, Chunk.TileSize))
+        public GroundDrone(Vector2 position, Game1 game) : base( game, new Vector2(Chunk.TileSize/3, Chunk.TileSize))
         {
             Position = position + new Vector2(0, Chunk.TileSize/2);
             Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize * 2, Chunk.TileSize * 2));

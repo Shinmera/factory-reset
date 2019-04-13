@@ -320,7 +320,7 @@ namespace team5
         }
 
         //Dictionary is point to cw/ccw line
-        public SortedDictionary<float, Tuple<Vector2, Vector2>> BuildLOSHelper(RectangleF boundingBox, Vector2 pos, float radius, Vector2 dir1, Vector2 dir2)
+        public SortedDictionary<float, Tuple<Vector2, Vector2>> BuildLOSHelper(RectangleF boundingBox, Vector2 pos, float radius, Vector2 dir1, Vector2 dir2, bool backgroundwalls = true)
         {
             float radiusSqr = radius * radius;
             float Cross2(Vector2 x1, Vector2 x2) => x1.X * x2.Y - x1.Y * x2.X;
@@ -361,7 +361,7 @@ namespace team5
             {
                 for (int y = minY; y < maxY; ++y)
                 {
-                    if (GetTile(x, y) == (uint)Colors.SolidPlatform || GetTile(x, y) == (uint)Colors.BackgroundWall)
+                    if (GetTile(x, y) == (uint)Colors.SolidPlatform || (backgroundwalls && GetTile(x, y) == (uint)Colors.BackgroundWall))
                     {
                         Vector2 tilePosition = offset + new Vector2(x + 0.5F, y + 0.5F) * TileSize;
                         var dir = pos - tilePosition;
@@ -371,7 +371,7 @@ namespace team5
 
                         if (Math.Sign(dir.X) == Math.Sign(dircorner.X)
                             && !(GetTile((int)cornerOffset.X + x, y) == (uint)Colors.SolidPlatform
-                            || GetTile((int)cornerOffset.X + x, y) == (uint)Colors.BackgroundWall))
+                            || (backgroundwalls && GetTile((int)cornerOffset.X + x, y) == (uint)Colors.BackgroundWall)))
                         {
                             Vector2 point1;
                             Vector2 point2;
@@ -443,7 +443,7 @@ namespace team5
 
                         if (Math.Sign(dir.Y) == Math.Sign(dircorner.Y)
                             && !(GetTile(x, (int)cornerOffset.Y + y) == (uint)Colors.SolidPlatform
-                            || GetTile(x, (int)cornerOffset.Y + y) == (uint)Colors.BackgroundWall))
+                            || (backgroundwalls && GetTile(x, (int)cornerOffset.Y + y) == (uint)Colors.BackgroundWall)))
                         {
                             Vector2 point1;
                             Vector2 point2;

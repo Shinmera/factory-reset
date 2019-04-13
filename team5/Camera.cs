@@ -54,6 +54,13 @@ namespace team5
             return new RectangleF(Position, TargetSize).Intersects(target);
         }
 
+        public void UpdatePaused()
+        {
+            Vector2 camera = (TargetSize / Zoom) - Position;
+            Game.Transforms.TranslateView(camera);
+            Game.Transforms.ScaleView(ViewScale);
+        }
+
         public void Update()
         {
             Vector2 intendedPosition = Player.Position;

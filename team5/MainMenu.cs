@@ -83,6 +83,11 @@ namespace team5
             Controller = new Controller();
         }
 
+        public override void OnQuitButon()
+        {
+            Game.Exit();
+        }
+
         public override void Update()
         {
             Controller.Update();

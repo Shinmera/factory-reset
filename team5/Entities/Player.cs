@@ -20,6 +20,7 @@ namespace team5
         private bool IsClimbing = false;
         private bool JumpKeyWasUp = false;
         private bool HideKeyWasUp = false;
+        private bool PauseKeyWasUp = false;
         private bool HasWallJumped = false;
         private float LongJump = 0;
         private int SoundFrame = 0;
@@ -75,10 +76,10 @@ namespace team5
             Controller.Update();
             Sprite.Update(dt);
             
-            if(Controller.Quit)
-                Game.Exit();
-            
-            if(0 < DeathTimer)
+            if(Controller.Quit && PauseKeyWasUp)
+                Game.ActiveWindow.OnQuitButon();
+
+            if (0 < DeathTimer)
             {
                 DeathTimer -= dt;
                 if(DeathTimer <= 0)
@@ -266,6 +267,7 @@ namespace team5
             }
             HideKeyWasUp = !Controller.Hide;
             JumpKeyWasUp = !Controller.Jump;
+            PauseKeyWasUp = !Controller.Quit;
             
             // Now that all movement has been updated, check for collisions
             HandleCollisions(dt, chunk, true);
@@ -332,15 +334,31 @@ namespace team5
             Position = chunk.SpawnPosition;
         }
 
+        public void UpdatePaused()
+        {
+            Controller.Update();
+
+            if (Controller.Quit && PauseKeyWasUp)
+            {
+                Game.ActiveWindow.OnQuitButon();
+            }
+
+            PauseKeyWasUp = !Controller.Quit;
+        }
+
         public void Update(int direction, int lingerCounter, Chunk targetChunk)
         {
-            if (Controller.Quit)
-                Game.Exit();
 
             float dt = Game1.DeltaT;
-
             Controller.Update();
             Sprite.Update(dt);
+
+            if (Controller.Quit && PauseKeyWasUp)
+                Game.ActiveWindow.OnQuitButon();
+
+
+
+            PauseKeyWasUp = !Controller.Quit;
 
             switch (direction)
             {

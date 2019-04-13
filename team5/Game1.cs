@@ -18,7 +18,7 @@ namespace team5
         public readonly Transforms Transforms = new Transforms();
         public readonly Random RNG;
 
-        Window ActiveWindow;
+        public Window ActiveWindow { get; private set; }
         MainMenu MainMenu;
         Level Level;
 

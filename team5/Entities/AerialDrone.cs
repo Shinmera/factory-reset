@@ -35,7 +35,7 @@ namespace team5
         /// <summary> The speed of the drone while actively searching the area</summary>
         private const float SearchSpeed = 80;
         /// <summary> The speed of the drone when moving towards a target</summary>
-        private const float TargetSpeed = 150;
+        private const float TargetSpeed = 120;
         /// <summary> How far the drone will patrol from its spawn location</summary>
         private const float PatrolRange = 160;
         /// <summary> How far away from a target location the drone will search</summary>
@@ -253,9 +253,9 @@ namespace team5
             WanderLocation = Position;
             TargetLocation = Position;
             Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize, Chunk.TileSize));
-            ViewCone = new ConeEntity(game);
-            ViewCone.FromDegrees(270, 90);
-            ViewCone.Radius = Chunk.TileSize * 3;
+            ViewCone = new ConeEntity(game, false);
+            ViewCone.FromDegrees(270, 50);
+            ViewCone.Radius = Chunk.TileSize * 5;
             ViewCone.UpdatePosition(position);
         }
 

@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace team5
 {
-    abstract class Window
+    public abstract class Window
     {
 
         public virtual void LoadContent(ContentManager content) {
@@ -16,5 +16,7 @@ namespace team5
         public abstract void Resize(int width, int height);
         public abstract void Update();
         public abstract void Draw();
+
+        public abstract void OnQuitButon();
     }
 }

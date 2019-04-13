@@ -129,15 +129,18 @@ namespace team5
         /// <summary>Maximum angle before fanning is performed to render a smooth cone (in the event where occlusion does not occur)</summary>
         private const float MaxFanAngle = (float)Math.PI / 20;
 
+        private readonly bool BlockedByBackgroundWalls = true;
+
         #endregion
 
         #region Constructors
 
-        public ConeEntity(Game1 game) : base(game)
+        public ConeEntity(Game1 game, bool blockedByBackgroundWalls = true) : base(game)
         {
             OcclusionAngles = new List<float>();
             OcclusionValues = new List<Tuple<Vector2, Vector2, float, float>>();
             Triangles = new List<Vector2>();
+            BlockedByBackgroundWalls = blockedByBackgroundWalls;
         }
         
         #endregion
@@ -261,7 +264,7 @@ namespace team5
             int x = (int)Math.Floor((Position.X - chunk.BoundingBox.X) / Chunk.TileSize);
             int y = (int)Math.Floor((Position.Y - chunk.BoundingBox.Y) / Chunk.TileSize);
 
-            if (chunk.GetTile(x, y) == (uint)Chunk.Colors.BackgroundWall)
+            if (BlockedByBackgroundWalls && chunk.GetTile(x, y) == (uint)Chunk.Colors.BackgroundWall)
             {
                 AddOcclusionValue(0, newTuple(Position, Position));
                 AddOcclusionValue(ConvertAngle(Angle2 - Angle1), newTuple(Position, Position));
@@ -269,7 +272,7 @@ namespace team5
             else
             {
                 if (!ComputedBB) RecomputeBB();
-                var points = chunk.BuildLOSHelper(BoundingBox, Position, Radius, Dir1, Dir2);
+                var points = chunk.BuildLOSHelper(BoundingBox, Position, Radius, Dir1, Dir2, BlockedByBackgroundWalls);
 
                 bool atBeginning = true;
 
@@ -294,7 +297,7 @@ namespace team5
                             if (angle > 0)
                             {
                                 Vector2 closestPoint = ConePoint1;
-                                if (!chunk.IntersectLine(Position, Dir1, LocalRadius, out float locationDir1))
+                                if (!chunk.IntersectLine(Position, Dir1, LocalRadius, out float locationDir1, BlockedByBackgroundWalls))
                                 {
                                     locationDir1 = LocalRadius;
                                 }
@@ -327,11 +330,11 @@ namespace team5
                             dir.Normalize();
                             Vector2 CCWoffset = new Vector2(-dir.Y, dir.X) * 0.001F;
 
-                            if (!chunk.IntersectLine(Position, dir - CCWoffset, LocalRadius, out float locationCW) || Math.Abs(locationCW - LocalRadius) < 1F)
+                            if (!chunk.IntersectLine(Position, dir - CCWoffset, LocalRadius, out float locationCW, BlockedByBackgroundWalls) || Math.Abs(locationCW - LocalRadius) < 1F)
                             {
                                 locationCW = LocalRadius;
                             }
-                            if (!chunk.IntersectLine(Position, dir + CCWoffset, LocalRadius, out float locationCCW) || Math.Abs(locationCCW - LocalRadius) < 1F)
+                            if (!chunk.IntersectLine(Position, dir + CCWoffset, LocalRadius, out float locationCCW, BlockedByBackgroundWalls) || Math.Abs(locationCCW - LocalRadius) < 1F)
                             {
                                 locationCCW = LocalRadius;
                             }
@@ -370,7 +373,7 @@ namespace team5
                 if (atBeginning)
                 {
                     Vector2 closestPoint = ConePoint1;
-                    if (!chunk.IntersectLine(Position, Dir1, LocalRadius, out float locationDir1))
+                    if (!chunk.IntersectLine(Position, Dir1, LocalRadius, out float locationDir1, BlockedByBackgroundWalls))
                     {
                         locationDir1 = LocalRadius;
                     }
@@ -385,7 +388,7 @@ namespace team5
 
                 Vector2 closestPointEnd = ConePoint2;
 
-                if (chunk.IntersectLine(Position, Dir2, LocalRadius, out float distIntersect))
+                if (chunk.IntersectLine(Position, Dir2, LocalRadius, out float distIntersect, BlockedByBackgroundWalls))
                 {
                     closestPointEnd = Position + Dir2 * distIntersect;
                     maxRangeEnd = false;

@@ -30,6 +30,13 @@ namespace team5
         private int TransitionLingerCounter = 0;
         private const int TransitionLingerDuration = 40;
 
+        public bool Pause = false;
+
+        public void TogglePause()
+        {
+            Pause = !Pause;
+        }
+
         public Alarm Alarm;
 
         public Level(Game1 game, string name)
@@ -73,141 +80,146 @@ namespace team5
 
         public override void Update()
         {
-            if (!ChunkTrans)
+            if (Pause)
             {
-                Camera.Update();
+                Player.UpdatePaused();
+                Camera.UpdatePaused();
             }
             else
             {
                 Camera.Update();
-            }
 
-            RectangleF PlayerBB = Player.GetBoundingBox();
+                RectangleF PlayerBB = Player.GetBoundingBox();
 
-            if (!ChunkTrans)
-            {
-                if (PlayerBB.Right + Game1.DeltaT * Player.Velocity.X > ActiveChunk.BoundingBox.Right && Player.Velocity.X > 0)
+                if (!ChunkTrans)
                 {
-                    TransitionDirection = Chunk.Right;
-                    ChunkTrans = true;
-                }
-                else if (PlayerBB.Left + Game1.DeltaT * Player.Velocity.X < ActiveChunk.BoundingBox.Left && Player.Velocity.X < 0)
-                {
-                    TransitionDirection = Chunk.Left;
-                    ChunkTrans = true;
-                }
-                else if (PlayerBB.Top >= ActiveChunk.BoundingBox.Top && Player.Velocity.Y > 0)
-                {
-                    TransitionDirection = Chunk.Up;
-                    ChunkTrans = true;
-                }
-                else if (PlayerBB.Bottom <= ActiveChunk.BoundingBox.Bottom && Player.Velocity.Y < 0)
-                {
-                    TransitionDirection = Chunk.Down;
-                    ChunkTrans = true;
+                    if (PlayerBB.Right + Game1.DeltaT * Player.Velocity.X > ActiveChunk.BoundingBox.Right && Player.Velocity.X > 0)
+                    {
+                        TransitionDirection = Chunk.Right;
+                        ChunkTrans = true;
+                    }
+                    else if (PlayerBB.Left + Game1.DeltaT * Player.Velocity.X < ActiveChunk.BoundingBox.Left && Player.Velocity.X < 0)
+                    {
+                        TransitionDirection = Chunk.Left;
+                        ChunkTrans = true;
+                    }
+                    else if (PlayerBB.Top >= ActiveChunk.BoundingBox.Top && Player.Velocity.Y > 0)
+                    {
+                        TransitionDirection = Chunk.Up;
+                        ChunkTrans = true;
+                    }
+                    else if (PlayerBB.Bottom <= ActiveChunk.BoundingBox.Bottom && Player.Velocity.Y < 0)
+                    {
+                        TransitionDirection = Chunk.Down;
+                        ChunkTrans = true;
+                    }
+
+                    if (ChunkTrans)
+                    {
+                        TransitionLingerCounter = 0;
+                        TargetChunk = null;
+                        foreach (var chunk in Chunks)
+                        {
+                            PlayerBB.X += Math.Min(0, Game1.DeltaT * Player.Velocity.X);
+                            PlayerBB.Width += Math.Abs(Game1.DeltaT * Player.Velocity.X);
+                            if (PlayerBB.Intersects(chunk.BoundingBox))
+                            {
+                                if (chunk != ActiveChunk)
+                                {
+                                    TargetChunk = chunk;
+                                }
+                            }
+                        }
+
+                        if (TargetChunk == null)
+                        {
+                            TargetChunk = LastActiveChunk;
+                            if (TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right)
+                            {
+                                ChunkTrans = false;
+                            }
+                        }
+                        if (ChunkTrans)
+                        {
+                            if ((TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right) &&
+                                TargetChunk.CollideSolid(Player, Game1.DeltaT, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetvel))
+                            {
+                                ChunkTrans = false;
+                            }
+                            else
+                            {
+                                if (TransitionDirection == Chunk.Up)
+                                {
+                                    Player.Velocity.Y = 500;
+                                }
+                                Player.Position.X += Player.Velocity.X * Game1.DeltaT;
+                                ActiveChunk.Deactivate();
+                                LastActiveChunk = ActiveChunk;
+                                ActiveChunk = null;
+                                Camera.UpdateChunk(TargetChunk);
+                            }
+                        }
+                    }
                 }
 
                 if (ChunkTrans)
                 {
-                    TransitionLingerCounter = 0;
-                    TargetChunk = null;
+                    TransitionChunks.Clear();
+
+                    TargetChunk.Update();
+
                     foreach (var chunk in Chunks)
                     {
-                        PlayerBB.X += Math.Min(0,Game1.DeltaT * Player.Velocity.X);
-                        PlayerBB.Width += Math.Abs(Game1.DeltaT * Player.Velocity.X);
                         if (PlayerBB.Intersects(chunk.BoundingBox))
                         {
-                            if(chunk != ActiveChunk)
-                            {
-                                TargetChunk = chunk;
-                            }
+                            TransitionChunks.Add(chunk);
                         }
                     }
 
-                    if (TargetChunk == null)
+                    if (TransitionChunks.Count == 1)
                     {
-                        TargetChunk = LastActiveChunk;
-                        if (TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right)
+                        if ((TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right))
                         {
-                            ChunkTrans = false;
-                        }
-                    }
-                    if (ChunkTrans)
-                    {
-                        if ((TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right) &&
-                            TargetChunk.CollideSolid(Player, Game1.DeltaT, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetvel))
-                        {
-                            ChunkTrans = false;
+                            TransitionLingerCounter++;
                         }
                         else
                         {
-                            if (TransitionDirection == Chunk.Up)
-                            {
-                                Player.Velocity.Y = 500;
-                            }
-                            Player.Position.X += Player.Velocity.X * Game1.DeltaT;
-                            ActiveChunk.Deactivate();
-                            LastActiveChunk = ActiveChunk;
-                            ActiveChunk = null;
-                            Camera.UpdateChunk(TargetChunk);
+                            TransitionLingerCounter = TransitionLingerDuration;
                         }
                     }
-                }
-            }
 
-            if(ChunkTrans){
-                TransitionChunks.Clear();
-
-                TargetChunk.Update();
-
-                foreach (var chunk in Chunks){
-                    if (PlayerBB.Intersects(chunk.BoundingBox)){
-                        TransitionChunks.Add(chunk);
-                    }
-                }
-
-                if (TransitionChunks.Count == 1)
-                {
-                    if ((TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right)) { 
-                        TransitionLingerCounter++;
-                    }
-                    else
+                    if (TransitionLingerCounter == TransitionLingerDuration)
                     {
-                        TransitionLingerCounter = TransitionLingerDuration;
+                        TransitionLingerCounter = 0;
+                        ActiveChunk = TargetChunk;
+                        ActiveChunk.Activate(Player);
+                        ChunkTrans = false;
+                        TransitionChunks.Clear();
+                        TransitionDirection = 0;
+                    }
+                    else if (TransitionChunks.Count == 0)
+                    {
+                        ActiveChunk = LastActiveChunk;
+                        ActiveChunk.Activate(Player);
+                        ActiveChunk.Die(Player);
+                        ChunkTrans = false;
+                        TransitionChunks.Clear();
+                        TransitionDirection = 0;
+                        Player.Velocity = new Vector2(0);
+                        return;
+                    }
+
+                    Player.Update(TransitionDirection, TransitionLingerCounter, TargetChunk);
+                }
+                else
+                {
+                    if (ActiveChunk != null)
+                    {
+                        ActiveChunk.Update();
+                        Alarm.Update(ActiveChunk);
                     }
                 }
-                
-                if(TransitionLingerCounter == TransitionLingerDuration)
-                {
-                    TransitionLingerCounter = 0;
-                    ActiveChunk = TargetChunk;
-                    ActiveChunk.Activate(Player);
-                    ChunkTrans = false;
-                    TransitionChunks.Clear();
-                    TransitionDirection = 0;
-                }
-                else if(TransitionChunks.Count == 0)
-                {
-                    ActiveChunk = LastActiveChunk;
-                    ActiveChunk.Activate(Player);
-                    ActiveChunk.Die(Player);
-                    ChunkTrans = false;
-                    TransitionChunks.Clear();
-                    TransitionDirection = 0;
-                    Player.Velocity = new Vector2(0);
-                    return;
-                }
-
-                Player.Update(TransitionDirection, TransitionLingerCounter,TargetChunk);
             }
-            else
-            {
-                if (ActiveChunk != null)
-                {
-                    ActiveChunk.Update();
-                    Alarm.Update(ActiveChunk);
-                }
-            } 
         }
 
         public override void Draw()
@@ -224,6 +236,11 @@ namespace team5
                     chunk.Draw();
                 }
             }
+        }
+
+        public override void OnQuitButon()
+        {
+            TogglePause();
         }
     }
 }
