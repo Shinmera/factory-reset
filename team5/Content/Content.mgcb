@@ -28,11 +28,6 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/welbut.spritefont
 
-#begin Levels/test.zip
-/importer:LevelImporter
-/processor:LevelProcessor
-/build:Levels/test.zip
-
 #begin Levels/test2.zip
 /importer:LevelImporter
 /processor:LevelProcessor
