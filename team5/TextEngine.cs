@@ -37,6 +37,8 @@ namespace team5
         private List<Text> QueuedText;
         private readonly RasterizerState NoCull;
 
+        private static readonly char[] Whitespace = { ' ' };
+
         private Dictionary<string, SpriteFont> Fonts;
 
         public TextEngine(Game1 game)
@@ -61,10 +63,46 @@ namespace team5
             Orientation horizontal=Orientation.Left, Orientation vertical=Orientation.Bottom, 
             bool lineWrapping = false, float textwidth = 0)
         {
-            Vector2 pos = new Vector2(position.X, position.Y);
+            
+
             SpriteFont font = Fonts[fontName];
+
+            if (lineWrapping)
+            {
+                string[] words = text.Split(Whitespace);
+
+                float spaceWidth = font.MeasureString(" ").X;
+                float lineWidth = -spaceWidth;
+
+                var lineWrappedString = new System.Text.StringBuilder();
+
+                for(int i = 0; i < words.Length; ++i)
+                {
+                    float wordWidth = font.MeasureString(" " + words[i]).X;
+                    lineWidth += wordWidth;
+                    if(lineWidth > textwidth)
+                    {
+                        lineWidth = -spaceWidth + wordWidth;
+                        lineWrappedString.Append("\n");
+                    }
+                    else
+                    {
+                        lineWrappedString.Append(" ");
+                    }
+
+                    lineWrappedString.Append(words[i]);
+                }
+
+                text = lineWrappedString.ToString();
+            }
+            
             Vector2 size = font.MeasureString(text);
-            float scale = sizePx / size.Y * ViewScale;
+
+            float scale = sizePx / font.LineSpacing * ViewScale;
+
+            Vector2 pos = position;// * ViewScale;
+
+            
             // Update position based on text size.
             switch(horizontal)
             {
@@ -95,10 +133,10 @@ namespace team5
         public void QueueText(string text, Vector2 position, float sizePx, Color color, Orientation horizontal=Orientation.Left, Orientation vertical=Orientation.Bottom){
             QueueText(text, position, color, DefaultFont, sizePx, horizontal, vertical);
         }
-        
+
         public void Resize(int width, int height)
         {
-            ViewScale = width / 720;
+            ViewScale = Math.Max(width / 1280F, height / 720F);
         }
 
         public void DrawText()
