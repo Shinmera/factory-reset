@@ -67,10 +67,14 @@ namespace team5
 
             SpriteFont font = Fonts[fontName];
 
+            float scale = sizePx / font.LineSpacing * ViewScale;
+
             if (lineWrapping)
             {
                 string[] words = text.Split(Whitespace);
 
+                float scaledWidth = textwidth * font.LineSpacing / sizePx;
+                
                 float spaceWidth = font.MeasureString(" ").X;
                 float lineWidth = -spaceWidth;
 
@@ -80,7 +84,7 @@ namespace team5
                 {
                     float wordWidth = font.MeasureString(" " + words[i]).X;
                     lineWidth += wordWidth;
-                    if(lineWidth > textwidth)
+                    if(lineWidth > scaledWidth)
                     {
                         lineWidth = -spaceWidth + wordWidth;
                         lineWrappedString.Append("\n");
@@ -97,8 +101,6 @@ namespace team5
             }
             
             Vector2 size = font.MeasureString(text);
-
-            float scale = sizePx / font.LineSpacing * ViewScale;
 
             Vector2 pos = position;// * ViewScale;
 
@@ -136,7 +138,7 @@ namespace team5
 
         public void Resize(int width, int height)
         {
-            ViewScale = Math.Max(width / 1280F, height / 720F);
+            ViewScale = width / 1280F;
         }
 
         public void DrawText()

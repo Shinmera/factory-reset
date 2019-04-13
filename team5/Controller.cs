@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace team5
 {
-    class Controller
+    public class Controller
     {
         readonly int gamepadIndex;
         KeyboardState key;

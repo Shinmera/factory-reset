@@ -30,11 +30,13 @@ namespace team5
         private int TransitionLingerCounter = 0;
         private const int TransitionLingerDuration = 40;
 
-        public bool Pause = false;
+        public bool Paused = false;
+        private readonly List<Container> Popups = new List<Container>();
 
-        public void TogglePause()
+        public void Pause()
         {
-            Pause = !Pause;
+            Paused = !Paused;
+            Popups.Add(new DialogBox("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", Game, this));
         }
 
         public Alarm Alarm;
@@ -47,7 +49,25 @@ namespace team5
             Name = name;
             Alarm = new Alarm(game);
         }
-        
+
+        public void ClosePopup()
+        {
+            Popups.RemoveAt(Popups.Count - 1);
+            if(Popups.Count == 0)
+            {
+                Paused = false;
+            }
+        }
+
+        public void ClosePopup(Container popup)
+        {
+            Popups.Remove(popup);
+            if (Popups.Count == 0)
+            {
+                Paused = false;
+            }
+        }
+
         public override void LoadContent(ContentManager content)
         {
             var data = content.Load<LevelContent>("Levels/"+Name);
@@ -71,6 +91,8 @@ namespace team5
             Camera.UpdateChunk(ActiveChunk);
             //Alarm sound
             Alarm.LoadContent(content);
+
+            DialogBox.LoadStaticContent(content);
         }
         
         public override void Resize(int width, int height)
@@ -80,10 +102,10 @@ namespace team5
 
         public override void Update()
         {
-            if (Pause)
+            if (Paused)
             {
-                Player.UpdatePaused();
-                Camera.UpdatePaused();
+                Popups.Last().Update();
+                Camera.Update();
             }
             else
             {
@@ -224,6 +246,7 @@ namespace team5
 
         public override void Draw()
         {
+
             if (ChunkTrans)
             {
                 Player.Draw();
@@ -236,11 +259,16 @@ namespace team5
                     chunk.Draw();
                 }
             }
+
+            foreach (Container container in Popups)
+            {
+                container.Draw();
+            }
         }
 
         public override void OnQuitButon()
         {
-            TogglePause();
+            Pause();
         }
     }
 }

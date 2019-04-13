@@ -14,7 +14,7 @@ namespace team5
     {
         private Game1 Game;
         private SpriteBatch SpriteBatch;
-        private Controller Controller;
+        //private Controller Controller;
         private AnimatedSprite Background;
 
         private Vector2 Size;
@@ -84,8 +84,6 @@ namespace team5
             Buttons[0].Down = Buttons[1];
 
             ActiveButton = Buttons[0];
-
-            Controller = new Controller();
         }
         
         public override void LoadContent(ContentManager content)
@@ -102,37 +100,36 @@ namespace team5
 
         public override void Update()
         {
-            Controller.Update();
             Background.Update(Game1.DeltaT);
 
-            if (Controller.Enter)
+            if (Game.Controller.Enter)
             {
                 ActiveButton.Action.Invoke();
             }
             else
             {
-                if (Controller.MoveLeft)
+                if (Game.Controller.MoveLeft)
                 {
                     if(ActiveButton.Left != null)
                     {
                         ActiveButton = ActiveButton.Left;
                     }
                 }
-                if (Controller.MoveRight)
+                if (Game.Controller.MoveRight)
                 {
                     if (ActiveButton.Right != null)
                     {
                         ActiveButton = ActiveButton.Right;
                     }
                 }
-                if (Controller.MoveDown)
+                if (Game.Controller.MoveDown)
                 {
                     if (ActiveButton.Down != null)
                     {
                         ActiveButton = ActiveButton.Down;
                     }
                 }
-                if (Controller.MoveUp)
+                if (Game.Controller.MoveUp)
                 {
                     if (ActiveButton.Up != null)
                     {

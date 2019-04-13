@@ -334,18 +334,6 @@ namespace team5
             Position = chunk.SpawnPosition;
         }
 
-        public void UpdatePaused()
-        {
-            Controller.Update();
-
-            if (Controller.Quit && PauseKeyWasUp)
-            {
-                Game.ActiveWindow.OnQuitButon();
-            }
-
-            PauseKeyWasUp = !Controller.Quit;
-        }
-
         public void Update(int direction, int lingerCounter, Chunk targetChunk)
         {
 

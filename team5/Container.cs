@@ -4,13 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework;
 
 namespace team5
 {
     abstract class Container
     {
+        public Controller Controller;
+
         protected Game1 Game;
         protected Window Parent;
+
+        public Vector2 Size;
+        public Vector2 Position;
 
         public Container(Game1 game, Window parent)
         {
@@ -20,9 +26,9 @@ namespace team5
 
         public virtual void LoadContent(ContentManager content)
         {
+
         }
-        public abstract void Resize(int width, int height);
-        public abstract void LoadContent();
+
         public abstract void Update();
         public abstract void Draw();
 

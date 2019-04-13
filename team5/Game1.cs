@@ -17,6 +17,7 @@ namespace team5
         public readonly TextEngine TextEngine;
         public readonly Transforms Transforms = new Transforms();
         public readonly Random RNG;
+        public readonly Controller Controller;
 
         public Window ActiveWindow { get; private set; }
         MainMenu MainMenu;
@@ -30,6 +31,7 @@ namespace team5
             ViewConeEngine = new ViewConeEngine(this);
             SoundEngine = new SoundEngine(this);
             TextEngine = new TextEngine(this);
+            Controller = new Controller();
             DeviceManager.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
             RNG = new Random();
@@ -91,6 +93,7 @@ namespace team5
         
         protected override void Update(GameTime gameTime)
         {
+            Controller.Update();
             base.Update(gameTime);
             Transforms.Reset();
             Transforms.ResetView();
