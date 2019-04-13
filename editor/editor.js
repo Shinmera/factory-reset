@@ -312,8 +312,9 @@ class Chunk{
         }
     }
 
-    preprocess(pixels, i){
-        var self = this;
+    preprocess(pix, i){
+        let self = this;
+        let pixels = pix;
         pixels.id = i;
         pixels.visible = true;
         pixels.opacity = 1.0;
