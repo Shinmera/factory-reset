@@ -21,13 +21,6 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/crashed-scoreboard.spritefont
 
-#begin Fonts/ethnocentric.spritefont
-/importer:FontDescriptionImporter
-/processor:LocalizedFontProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:Fonts/ethnocentric.spritefont
-
 #begin Fonts/welbut.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor

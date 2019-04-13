@@ -168,6 +168,11 @@ namespace team5
             }
         }
         
+        public Sound Play(string effect)
+        {
+            return new Sound(this, SoundCache[effect], Listener);
+        }
+        
         public Sound Play(string effect, Vector2 position)
         {
             return new Sound(this, SoundCache[effect], position);
