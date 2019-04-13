@@ -15,6 +15,7 @@ namespace team5
         private Game1 Game;
         private SpriteBatch SpriteBatch;
         private Controller Controller;
+        private AnimatedSprite Background;
 
         private Vector2 Size;
 
@@ -59,7 +60,8 @@ namespace team5
 
             public override void Draw(SpriteBatch batch, Vector2 Center, bool selected)
             {
-                Game.TextEngine.QueueText(Label, Center+Location, (selected)? 48 : 24, TextEngine.Orientation.Center);
+                Game.TextEngine.QueueText(Label, Center+Location, (selected)? 48 : 24, 
+                                          Color.White, TextEngine.Orientation.Center);
             }
         }
 
@@ -69,10 +71,12 @@ namespace team5
         public MainMenu(Game1 game)
         {
             Game = game;
+            
+            Background = new AnimatedSprite(null, game, new Vector2(480,270));
+            
             Buttons = new List<Button>();
 
             Buttons.Add(new TextButton(game, new Vector2(0, -200), Game.StartLevel, "Start"));
-
             Buttons.Add(new TextButton(game, new Vector2(0, 200), Game.Exit, "Quit"));
 
             Buttons[1].Up = Buttons[0];
@@ -81,6 +85,13 @@ namespace team5
             ActiveButton = Buttons[0];
 
             Controller = new Controller();
+        }
+        
+        public override void LoadContent(ContentManager content)
+        {
+            Background.Texture = content.Load<Texture2D>("Textures/main-menu");
+            Background.Add("idle", 0, 4, 0.4);
+            Background.Play("idle");
         }
 
         public override void OnQuitButon()
@@ -91,6 +102,10 @@ namespace team5
         public override void Update()
         {
             Controller.Update();
+            Background.Update(Game1.DeltaT);
+            Game.Transforms.TranslateView(Background.FrameSize/2);
+            Game.Transforms.ScaleView(Math.Max(Game.GraphicsDevice.Viewport.Width/Background.FrameSize.X,
+                                               Game.GraphicsDevice.Viewport.Height/Background.FrameSize.Y));
 
             if (Controller.Enter)
             {
@@ -127,13 +142,11 @@ namespace team5
                     }
                 }
             }
-            
-            
         }
 
         public override void Draw()
         {
-            Game.GraphicsDevice.Clear(Color.LightGray);
+            Background.Draw();
 
             foreach(Button button in Buttons)
             {
@@ -153,8 +166,6 @@ namespace team5
         {
             Size.X = width / 2F;
             Size.Y = height / 2F;
-
-
         }
     }
 }

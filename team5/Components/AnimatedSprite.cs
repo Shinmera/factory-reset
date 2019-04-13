@@ -51,7 +51,7 @@ namespace team5
         /// <summary>A List of animations that can be rendered by this sprite</summary>
         private List<Animation> Animations = new List<Animation>();
         /// <summary>The size of each animation frame</summary>
-        private Vector2 FrameSize;
+        public Vector2 FrameSize { get; }
 
         public AnimatedSprite(Texture2D texture, Game1 game) 
             : this(texture, game, new Vector2(Chunk.TileSize, Chunk.TileSize))

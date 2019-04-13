@@ -63,11 +63,7 @@ namespace team5
             ViewConeEngine.LoadContent(Content);
             TextEngine.LoadContent(Content);
             SoundEngine.LoadContent(Content);
-            
-            /*
-            Level = new Level(this, "test");
-            Level.LoadContent(Content);
-            */
+            MainMenu.LoadContent(Content);
         }
         
         protected override void UnloadContent()

@@ -88,6 +88,10 @@ namespace team5
             QueueText(text, position, Color.Black, DefaultFont, sizePx, horizontal, vertical);
         }
         
+        public void QueueText(string text, Vector2 position, float sizePx, Color color, Orientation horizontal=Orientation.Left, Orientation vertical=Orientation.Bottom){
+            QueueText(text, position, color, DefaultFont, sizePx, horizontal, vertical);
+        }
+        
         public void Resize(int width, int height)
         {
             ViewScale = width / 720;
