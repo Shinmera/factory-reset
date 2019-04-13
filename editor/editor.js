@@ -317,7 +317,7 @@ class Chunk{
         let pixels = pix;
         pixels.id = i;
         pixels.visible = true;
-        pixels.opacity = 1.0;
+        pixels.opacity = (i == 0)? 0.7 : 1.0;
         pixels.show = function(){
             pixels.visible = true;
             var layer = self.uiElement.querySelector(".layer[data-id=\""+pixels.id+"\"]");
@@ -376,7 +376,7 @@ class Chunk{
     drawPos(x, y){
         var pixelIndex = ((this.width*y)+x)*4;
         var empty = true;
-        for(var l=0; l<this.pixels.length; l++){
+        for(var l of [1, 2, 3, 0]){
             var pixels = this.pixels[l];
             if(pixels.visible){
                 var r = pixels.data[pixelIndex+0];
