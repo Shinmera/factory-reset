@@ -252,7 +252,7 @@ namespace team5
             Position = position;
             WanderLocation = Position;
             TargetLocation = Position;
-            Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize, Chunk.TileSize));
+            Sprite = new AnimatedSprite(null, game, new Vector2(32, 32));
             ViewCone = new ConeEntity(game, false);
             ViewCone.FromDegrees(270, 50);
             ViewCone.Radius = Chunk.TileSize * 5;
@@ -433,6 +433,8 @@ namespace team5
 
         public override void Update(Chunk chunk)
         {
+            float dt = Game1.DeltaT;
+            
             Velocity = new Vector2();
             if (chunk.Level.Alarm.Drones)
             {
@@ -473,21 +475,21 @@ namespace team5
                         }
                     }
 
-                    StateTimer += Game1.DeltaT;
+                    StateTimer += dt;
                     if(StateTimer >= SearchTime)
                     {
                         Return(chunk);
                     }
                     break;
                 case AIState.Waiting:
-                    StateTimer += Game1.DeltaT;
+                    StateTimer += dt;
                     if (StateTimer <= 0.05F * WaitTime)
                     {
 
                     }
                     if (StateTimer <= 0.25F * WaitTime)
                     {
-                        Direction += Game1.DeltaT * WaitAngularVelocity;
+                        Direction += dt * WaitAngularVelocity;
                     }
                     else if (StateTimer <= 0.3F * WaitTime)
                     {
@@ -495,7 +497,7 @@ namespace team5
                     }
                     else if (StateTimer <= 0.7F * WaitTime)
                     {
-                        Direction -= Game1.DeltaT * WaitAngularVelocity;
+                        Direction -= dt * WaitAngularVelocity;
                     }
                     else if (StateTimer <= 0.75F * WaitTime)
                     {
@@ -503,7 +505,7 @@ namespace team5
                     }
                     else if (StateTimer <= 0.95F * WaitTime)
                     {
-                        Direction += Game1.DeltaT * WaitAngularVelocity;
+                        Direction += dt * WaitAngularVelocity;
                     }
                     else if (StateTimer <= WaitTime)
                     {
@@ -565,27 +567,31 @@ namespace team5
                     chunk.Level.Player.Kill();
                 }
             }
+            
+            if(State == AIState.Targeting || State == AIState.Searching)
+                Sprite.Play("chase");
+            else
+                Sprite.Play("idle");
 
-            Position += Game1.DeltaT * Velocity;
+            Position += dt * Velocity;
             ViewCone.UpdatePosition(Position);
             ViewCone.Middle = Direction;
             ViewCone.Update(chunk);
+            Sprite.Update(dt);
             base.Update(chunk);
         }
 
         public override void LoadContent(ContentManager content)
         {
-            Sprite.Texture = content.Load<Texture2D>("Textures/camera");
-            Sprite.Add("idle", 0, 4, 1.0);
+            Sprite.Texture = content.Load<Texture2D>("Textures/aerial-drone");
+            Sprite.Add("idle", 0, 4, 0.4);
+            Sprite.Add("chase", 4, 12, 0.8, 8);
         }
 
         public override void Draw()
         {
             ViewCone.Draw();
-            Game.Transforms.Push();
-            Game.Transforms.Rotate(ViewCone.Middle);
             Sprite.Draw(Position);
-            Game.Transforms.Pop();
         }
 
         #endregion

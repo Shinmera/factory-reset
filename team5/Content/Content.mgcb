@@ -86,6 +86,18 @@
 /processorParam:Quality=Best
 /build:Sounds/submarine.mp3
 
+#begin Textures/aerial-drone.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/aerial-drone.png
+
 #begin Textures/camera.png
 /importer:TextureImporter
 /processor:TextureProcessor
