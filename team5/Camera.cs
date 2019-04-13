@@ -14,7 +14,13 @@ namespace team5
         public float Zoom = 1.0f;
         private float ViewScale = 1.0f;
         // Target view half-size
-        private Vector2 TargetSize = new Vector2(40, 26)*Chunk.TileSize/2.0f;
+        public const float TargetWidth = 40 * Chunk.TileSize / 2.0f;
+        private Vector2 TargetSize = new Vector2(TargetWidth, 26*Chunk.TileSize/2.0f);
+
+        public Vector2 GetTargetSize()
+        {
+            return TargetSize;
+        }
 
         public bool IsInClamp { get; private set; } = true;
 

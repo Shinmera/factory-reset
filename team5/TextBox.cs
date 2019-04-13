@@ -9,12 +9,13 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace team5
 {
-    class DialogBox : Container
+    class TextBox : Container
     {
         public string Text;
         public string Font;
         public float SizePx;
         static Texture2D Background;
+        public int Anchor;
         private bool PauseKeyWasUp = false;
         private bool EnterKeyWasUp = false;
         private Level Level { get { return (Level)Parent; } }
@@ -25,14 +26,17 @@ namespace team5
 
         private AnimatedSprite BackgroundSprite;
 
-        public DialogBox(string text, string font, float sizePx, Game1 game, Level parent) : base(game, parent)
+        public TextBox(string text, string font, float sizePx, Game1 game, Level parent, Vector2 position = new Vector2(), int anchor = 0) : base(game, parent)
         {
-            Text = game.TextEngine.TextWrap(text, sizePx, font, Background.Width * 2 - SidePadding * 2);
+            Text = game.TextEngine.TextWrap(text, sizePx, font, Background.Width - SidePadding * 2);
             Font = font;
             SizePx = sizePx;
             BackgroundSprite = new AnimatedSprite(Background, game, new Vector2(Background.Bounds.Width,Background.Bounds.Height));
             BackgroundSprite.Add("idle", 0, 1, 100);
             BackgroundSprite.Play("idle");
+
+            Position = position;
+            Anchor = anchor;
         }
 
         public static void LoadStaticContent(ContentManager content)
@@ -42,21 +46,49 @@ namespace team5
 
         public override void Draw()
         {
-            float centerX = Game.GraphicsDevice.Viewport.Width / 2;
-            float scale = Game.GraphicsDevice.Viewport.Width / 1280F * Level.Camera.Zoom;
-            float centerY = Game.GraphicsDevice.Viewport.Height / 2;
+            float centerX;
+            float centerY;
+            float scale = Game.GraphicsDevice.Viewport.Width / Level.Camera.GetTargetSize().X * 0.5F;
+            if ((Anchor & Chunk.Left) != 0)
+            {
+                centerX = scale * Background.Width/2;
+            }else if ((Anchor & Chunk.Right) != 0) { 
+                centerX = Game.GraphicsDevice.Viewport.Width - scale * Background.Width/2;
+            }else{
+                centerX = Game.GraphicsDevice.Viewport.Width / 2;
+            }
+
+            if ((Anchor & Chunk.Down) != 0)
+            {
+                centerY = scale * Background.Height / 2;
+            }
+            else if ((Anchor & Chunk.Up) != 0)
+            {
+                centerY = Game.GraphicsDevice.Viewport.Height - scale * Background.Height / 2;
+            }
+            else
+            {
+                centerY = Game.GraphicsDevice.Viewport.Height / 2;
+            }
+
+            centerX += Position.X;
+            centerY += Position.Y;
 
             Game.Transforms.Push();
             Game.Transforms.Reset();
-            Game.Transforms.Translate(Level.Camera.Position);
-            BackgroundSprite.Draw();
+            
+            
             Game.Transforms.Pop();
 
             Game.Transforms.PushView();
             Game.Transforms.ResetView();
-            float textX = centerX - scale * (Background.Width - SidePadding);
-            float textY = centerY - scale * (Background.Height - TopPadding);
-            Game.TextEngine.QueueText(Text, new Vector2(textX, textY), Color.Black, Font, 20, TextEngine.Orientation.Left, TextEngine.Orientation.Bottom);
+            Game.Transforms.ScaleView(scale);
+            Game.Transforms.TranslateView(new Vector2(centerX, centerY));
+            BackgroundSprite.Draw();
+            Game.Transforms.ResetView();
+            float textX = centerX - scale * (Background.Width/2 - SidePadding);
+            float textY = Game.GraphicsDevice.Viewport.Height-(centerY + scale * (Background.Height/2 - TopPadding));
+            Game.TextEngine.QueueText(Text, new Vector2(textX, textY), Color.Black, Font, SizePx, TextEngine.Orientation.Left, TextEngine.Orientation.Bottom);
 
             Game.TextEngine.DrawText();
 

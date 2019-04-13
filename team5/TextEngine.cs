@@ -145,7 +145,7 @@ namespace team5
 
         public void Resize(int width, int height)
         {
-            ViewScale = width / 1280F;
+            ViewScale = width / (Camera.TargetWidth*2);
         }
 
         public void DrawText()

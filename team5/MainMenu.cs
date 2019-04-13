@@ -60,7 +60,7 @@ namespace team5
 
             public override void Draw(SpriteBatch batch, bool selected)
             {
-                Game.TextEngine.QueueText(Label, Game.Transforms * Location, 32, 
+                Game.TextEngine.QueueText(Label, Game.Transforms * Location, 20, 
                                           (selected)? Color.White : new Color(0.8f, 0.8f, 0.8f),
                                           TextEngine.Orientation.Right);
             }
