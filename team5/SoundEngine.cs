@@ -72,7 +72,10 @@ namespace team5
         /// <summary>The attenuation function used for sound distance volume scaling.</summary>
         public static readonly Attenuation Attenuation = Attenuations.Exponential;
         
-        public Vector2 Listener;
+        private Vector2 Listener;
+        
+        /// <summary>Master volume adjustment</summary>
+        public float Volume = 0.6f;
         
         private Game1 Game;
         private ContentManager Content;
@@ -135,7 +138,7 @@ namespace team5
                 float panFactor = clamp(0, (distance-DeadZone)/(MidRange-DeadZone), 1);
                 float attenuation = clamp(0, Attenuation(distance, DeadZone, AudibleDistance, Rolloff), 1);
                 
-                Instance.Volume = attenuation;
+                Instance.Volume = attenuation * SoundEngine.Volume;
                 Instance.Pan = Math.Sign(direction.X)*panFactor;
             }
             
