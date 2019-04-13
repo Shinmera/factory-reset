@@ -41,6 +41,39 @@ namespace team5
 
         private Dictionary<string, SpriteFont> Fonts;
 
+        public string TextWrap(string text, float sizePx, string fontName, float textwidth)
+        {
+            SpriteFont font = Fonts[fontName];
+
+            string[] words = text.Split(Whitespace);
+
+            float scaledWidth = textwidth * font.LineSpacing / sizePx;
+
+            float spaceWidth = font.MeasureString(" ").X;
+            float lineWidth = -spaceWidth;
+
+            var lineWrappedString = new System.Text.StringBuilder();
+
+            for (int i = 0; i < words.Length; ++i)
+            {
+                float wordWidth = font.MeasureString(" " + words[i]).X;
+                lineWidth += wordWidth;
+                if (lineWidth > scaledWidth)
+                {
+                    lineWidth = -spaceWidth + wordWidth;
+                    lineWrappedString.Append("\n");
+                }
+                else
+                {
+                    lineWrappedString.Append(" ");
+                }
+
+                lineWrappedString.Append(words[i]);
+            }
+
+            return lineWrappedString.ToString();
+        }
+
         public TextEngine(Game1 game)
         {
             Game = game;
@@ -71,33 +104,7 @@ namespace team5
 
             if (lineWrapping)
             {
-                string[] words = text.Split(Whitespace);
-
-                float scaledWidth = textwidth * font.LineSpacing / sizePx;
-                
-                float spaceWidth = font.MeasureString(" ").X;
-                float lineWidth = -spaceWidth;
-
-                var lineWrappedString = new System.Text.StringBuilder();
-
-                for(int i = 0; i < words.Length; ++i)
-                {
-                    float wordWidth = font.MeasureString(" " + words[i]).X;
-                    lineWidth += wordWidth;
-                    if(lineWidth > scaledWidth)
-                    {
-                        lineWidth = -spaceWidth + wordWidth;
-                        lineWrappedString.Append("\n");
-                    }
-                    else
-                    {
-                        lineWrappedString.Append(" ");
-                    }
-
-                    lineWrappedString.Append(words[i]);
-                }
-
-                text = lineWrappedString.ToString();
+                text = TextWrap(text, sizePx, fontName, textwidth);
             }
             
             Vector2 size = font.MeasureString(text);
