@@ -44,7 +44,7 @@ namespace team5
             {
             }
 
-            public virtual void Draw(SpriteBatch batch, Vector2 Center, bool selected)
+            public virtual void Draw(SpriteBatch batch, bool selected)
             {
             }
         }
@@ -58,10 +58,11 @@ namespace team5
                 Label = label;
             }
 
-            public override void Draw(SpriteBatch batch, Vector2 Center, bool selected)
+            public override void Draw(SpriteBatch batch, bool selected)
             {
-                Game.TextEngine.QueueText(Label, Center+Location, (selected)? 48 : 24, 
-                                          Color.White, TextEngine.Orientation.Center);
+                Game.TextEngine.QueueText(Label, Game.Transforms * Location, 24, 
+                                          (selected)? Color.White : new Color(0.8f, 0.8f, 0.8f),
+                                          TextEngine.Orientation.Right);
             }
         }
 
@@ -76,8 +77,8 @@ namespace team5
             
             Buttons = new List<Button>();
 
-            Buttons.Add(new TextButton(game, new Vector2(0, -200), Game.StartLevel, "Start"));
-            Buttons.Add(new TextButton(game, new Vector2(0, 200), Game.Exit, "Quit"));
+            Buttons.Add(new TextButton(game, new Vector2(360, 80), Game.StartLevel, "Start"));
+            Buttons.Add(new TextButton(game, new Vector2(360, 90), Game.Exit, "Quit"));
 
             Buttons[1].Up = Buttons[0];
             Buttons[0].Down = Buttons[1];
@@ -103,9 +104,6 @@ namespace team5
         {
             Controller.Update();
             Background.Update(Game1.DeltaT);
-            Game.Transforms.TranslateView(Background.FrameSize/2);
-            Game.Transforms.ScaleView(Math.Max(Game.GraphicsDevice.Viewport.Width/Background.FrameSize.X,
-                                               Game.GraphicsDevice.Viewport.Height/Background.FrameSize.Y));
 
             if (Controller.Enter)
             {
@@ -146,19 +144,16 @@ namespace team5
 
         public override void Draw()
         {
+            Game.Transforms.ScaleView(Math.Max(Game.GraphicsDevice.Viewport.Width/Background.FrameSize.X,
+                                               Game.GraphicsDevice.Viewport.Height/Background.FrameSize.Y));
+            Game.Transforms.Push();
+            Game.Transforms.Translate(Background.FrameSize/2);
             Background.Draw();
+            Game.Transforms.Pop();
 
             foreach(Button button in Buttons)
-            {
-                if (button != ActiveButton)
-                {
-                    button.Draw(SpriteBatch, Size, false);
-                }
-                else
-                {
-                    button.Draw(SpriteBatch, Size, true);
-                }
-            }
+                button.Draw(SpriteBatch, (button == ActiveButton));
+            
             Game.TextEngine.DrawText();
         }
 
