@@ -13,7 +13,7 @@ namespace team5
         
         private const float EdgeWaitTime = 1;
         private static readonly Vector2 PatrolSpeed = new Vector2(50, 0);
-        private static readonly Vector2 ConeOffset = new Vector2(0, -2.5);
+        private static readonly Vector2 ConeOffset = new Vector2(0, -2.5F);
 
         private AnimatedSprite Sprite;
         private float EdgeTimer = 0;
