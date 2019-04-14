@@ -87,7 +87,7 @@ namespace team5
             BackgroundSprite.Draw();
             Game.Transforms.ResetView();
             float textX = centerX - scale * (Background.Width/2 - SidePadding);
-            float textY = Game.GraphicsDevice.Viewport.Height-(centerY + scale * (Background.Height/2 - TopPadding));
+            float textY = centerY + scale * (Background.Height/2 - TopPadding);
             Game.TextEngine.QueueText(Text, new Vector2(textX, textY), Color.Black, Font, SizePx, TextEngine.Orientation.Left, TextEngine.Orientation.Bottom);
 
             Game.TextEngine.DrawText();

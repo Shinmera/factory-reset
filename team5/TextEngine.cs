@@ -154,7 +154,7 @@ namespace team5
 
             foreach(Text text in QueuedText)
             {
-                SpriteBatch.DrawString(text.Font, text.String, text.Position, text.Color, 0, Vector2.Zero, text.Scale, SpriteEffects.None, 0);
+                SpriteBatch.DrawString(text.Font, text.String, new Vector2(text.Position.X, Game.GraphicsDevice.Viewport.Height - text.Position.Y), text.Color, 0, Vector2.Zero, text.Scale, SpriteEffects.None, 0);
             }
 
             SpriteBatch.End();
