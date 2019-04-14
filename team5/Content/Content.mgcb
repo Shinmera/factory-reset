@@ -93,6 +93,18 @@
 /processorParam:TextureFormat=Color
 /build:Textures/aerial-drone.png
 
+#begin Textures/alert-backdrop.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/alert-backdrop.png
+
 #begin Textures/camera.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -128,6 +140,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Textures/dialog-box.png
+
+#begin Textures/File.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Textures/File.fx
 
 #begin Textures/ground-drone.png
 /importer:TextureImporter

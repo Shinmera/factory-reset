@@ -24,21 +24,18 @@ namespace team5
         private float AlarmTime = 20;
         private float AlertTime = 1;
         private float Timer = 0;
-
-        //drawing the hud
-        private SpriteFont font;
-        private TextEngine TextEngine;
+        private AnimatedSprite Sprite;
 
         public Alarm(Game1 game) : base( game)
         {
-            TextEngine = game.TextEngine;
-
+            Sprite = new AnimatedSprite(null, game, new Vector2(64,48));
         }
 
         public override void LoadContent(ContentManager content)
         {
             Game.SoundEngine.Load("Alert");
-            Game.TextEngine.LoadContent(content);
+            Sprite.Texture = content.Load<Texture2D>("Textures/alert-backdrop");
+            Sprite.Add("alert", 0, 1, 1.0);
         }
 
 
@@ -91,16 +88,15 @@ namespace team5
 
         public override void Draw()
         {
+            //if(!Detected) return;
             Game.Transforms.PushView();
             Game.Transforms.ResetView();
-            if (Detected)
-            {
-                float textX = Game.GraphicsDevice.Viewport.Width / 2;
-                float textY = Game.GraphicsDevice.Viewport.Height / 6;
-                TextEngine.QueueText((Math.Floor(Timer)).ToString(), new Vector2(textX, textY), 
-                                     "crashed-scoreboard", 48, TextEngine.Orientation.Center);
-                Game.TextEngine.DrawText();
-            }
+            float textX = Game.GraphicsDevice.Viewport.Width / 2;
+            float textY = Game.GraphicsDevice.Viewport.Height / 6;
+            Sprite.Draw();
+            Game.TextEngine.QueueText((Math.Floor(Timer)).ToString(), new Vector2(textX,textY), 
+                                      "crashed-scoreboard", 32, TextEngine.Orientation.Center);
+            Game.TextEngine.DrawText();
             Game.Transforms.PopView();
         }
 

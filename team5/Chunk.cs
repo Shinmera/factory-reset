@@ -175,7 +175,7 @@ namespace team5
             {
                 int mid = ((Layers.Length-1)/2)+1;
                 for(int i=1; i<mid; ++i)
-                    Game.TilemapEngine.Draw(Layers[1], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
+                    Game.TilemapEngine.Draw(Layers[i], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
                 CallAll(x => x.Draw());
                 for (int i=mid; i<Layers.Length; ++i)
                     Game.TilemapEngine.Draw(Layers[i], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
