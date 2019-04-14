@@ -22,7 +22,7 @@ namespace team5
 
         public override void LoadContent(ContentManager content)
         {
-            Sprite.Texture = content.Load<Texture2D>("Textures/pickup");
+            Sprite.Texture = content.Load<Texture2D>("Textures/collectible-book");
             Sprite.Add("idle", 0, 1, 1.0);
         }
 

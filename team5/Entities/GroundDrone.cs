@@ -21,10 +21,10 @@ namespace team5
         private ConeEntity ViewCone;
         private SoundEngine.Sound Sound;
 
-        public GroundDrone(Vector2 position, Game1 game) : base( game, new Vector2(Chunk.TileSize/3, Chunk.TileSize))
+        public GroundDrone(Vector2 position, Game1 game) : base( game, new Vector2(Chunk.TileSize/3, Chunk.TileSize/2))
         {
-            Position = position + new Vector2(0, Chunk.TileSize/2);
-            Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize * 2, Chunk.TileSize * 2));
+            Position = position;
+            Sprite = new AnimatedSprite(null, game, new Vector2(32, 32));
             ViewCone = new ConeEntity(game)
             {
                 Radius = Chunk.TileSize * 6
@@ -36,9 +36,9 @@ namespace team5
 
         public override void LoadContent(ContentManager content)
         {
-            Sprite.Texture = content.Load<Texture2D>("Textures/tempplayer");
-            Sprite.Add("idle", 0, 4, 1.0);
-            Sprite.Add("run", 4, 10, 0.8);
+            Sprite.Texture = content.Load<Texture2D>("Textures/ground-drone");
+            Sprite.Add("run", 0, 5, 0.5);
+            Sprite.Add("idle", 5, 10, 0.5);
             Game.SoundEngine.Load("submarine");
             Sound = Game.SoundEngine.Play("submarine", Position);
             Sound.Loop = true;
@@ -74,22 +74,14 @@ namespace team5
             switch(State)
             {
                 case AIState.Patrolling:
-                    Vector2 edgePoint = Position + new Vector2(Size.X * Sprite.Direction, -Size.Y-0.01F);
-                    bool switchDirection = (chunk.CollidePoint(edgePoint) == null);
-
-                    if(!switchDirection && chunk.CollideSolid(this, Game1.DeltaT, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetVel))
+                    if(chunk.CollideSolid(this, dt, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetVel))
                     {
                         if ((Sprite.Direction == 1 && (direction & Chunk.Right) != 0)
                             || Sprite.Direction == -1 && (direction & Chunk.Left) != 0)
                         {
-                            switchDirection = true;
+                            EdgeTimer = EdgeWaitTime;
+                            SetState(AIState.Waiting);
                         }
-                    }
-
-                    if (switchDirection)
-                    {
-                        EdgeTimer = EdgeWaitTime;
-                        SetState(AIState.Waiting);
                     }
                     break;
                     
@@ -139,7 +131,7 @@ namespace team5
         public override void Draw()
         {
             ViewCone.Draw();
-            Sprite.Draw(Position);
+            Sprite.Draw(Position+new Vector2(0, Size.Y));
         }
     }
 }

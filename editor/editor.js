@@ -15,9 +15,9 @@ var solids = {
 };
 
 const tileSize = 16;
-const defaultLayers = 4;
+const defaultLayers = 5;
 const tilesPerRow = 32;
-const layerNames = ["Solids", "Background", "Ground", "Foreground", "Special"];
+const layerNames = ["Solids", "Background", "Decals", "Ground", "Foreground", "Special"];
 const minSize = [40,26];
 var tilemap = document.querySelector("#tilemap");
 var tilelist = document.querySelector("#tilelist");
@@ -384,7 +384,7 @@ class Chunk{
         mapctx.lineTo((x+1)*tileSize-0.5, y*tileSize+0.5);
         mapctx.stroke();
         // Draw actual tile.
-        for(var l of [1, 2, 3, 0]){
+        for(var l of [1, 2, 3, 4, 0]){
             var pixels = this.pixels[l];
             if(pixels.visible){
                 var r = pixels.data[pixelIndex+0];
