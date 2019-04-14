@@ -401,6 +401,7 @@ class Chunk{
                 }
             }
         }
+        mapctx.globalAlpha = 1.0;
         return this;
     }
 
@@ -474,6 +475,7 @@ class Chunk{
         }else if(action === "erase"){
             pixels.data[pixelIndex+0] = 0;
             pixels.data[pixelIndex+1] = 0;
+            pixels.data[pixelIndex+2] = 0;
             pixels.data[pixelIndex+3] = 0;
         }
         this.drawPos(x,y);
