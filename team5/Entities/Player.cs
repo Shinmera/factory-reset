@@ -330,7 +330,7 @@ namespace team5
 
         public override void Respawn(Chunk chunk)
         {
-            Velocity = new Vector2(0);
+            Velocity = chunk.SpawnVelocity;
             Position = chunk.SpawnPosition;
         }
 

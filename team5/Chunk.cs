@@ -62,6 +62,7 @@ namespace team5
 
         public Texture2D[] Layers;
         public Vector2 SpawnPosition;
+        public Vector2 SpawnVelocity = Vector2.Zero;
 
         public uint Width;
         public uint Height;
@@ -123,9 +124,14 @@ namespace team5
 
         #region Public Procedures
 
-        public void Activate(Player player)
+        public void Activate(Player player, bool setSpawn = true)
         {
             Player = player;
+            if (setSpawn)
+            {
+                SpawnPosition = player.Position;
+                SpawnVelocity = player.Velocity;
+            }
         }
 
         public void Deactivate()
@@ -148,6 +154,8 @@ namespace team5
             {
                 PendingDeletion.Add(entity);
             }
+
+            //Level.Camera.SnapToLocation();
         }
 
         public void Update()

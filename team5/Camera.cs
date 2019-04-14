@@ -17,12 +17,12 @@ namespace team5
         public const float TargetWidth = 40 * Chunk.TileSize / 2.0f;
         private Vector2 TargetSize = new Vector2(TargetWidth, 26*Chunk.TileSize/2.0f);
 
+        private bool SnapOnNext = false;
+
         public Vector2 GetTargetSize()
         {
             return TargetSize;
         }
-
-        public bool IsInClamp { get; private set; } = true;
 
         public Camera(Player player, Game1 game)
         {
@@ -40,7 +40,6 @@ namespace team5
             float cw = TargetSize.X;
             float ch = TargetSize.Y;
             ChunkClamps = new RectangleF(lx + cw, ly + ch, -2 * cw + lw * 2, -2 * ch + lh * 2);
-            IsInClamp = false;
         }
 
         public void Resize(int width, int height)
@@ -59,6 +58,11 @@ namespace team5
         public bool IsVisible(RectangleF target)
         {
             return new RectangleF(Position, TargetSize).Intersects(target);
+        }
+
+        public void SnapToLocation()
+        {
+            SnapOnNext = true;
         }
 
         public void UpdatePaused()
@@ -80,22 +84,15 @@ namespace team5
             Vector2 direction = intendedPosition - Position;
             float length = (float)Math.Max(1.0, direction.Length());
 
-            if (length <= 1)
+            if (length <= 3 || SnapOnNext)
             {
+                SnapOnNext = false;
                 Position = intendedPosition;
             }
             else
             {
                 float ease = (float)Math.Max(0.0, Math.Min(20.0, 0.2 + (Math.Pow(length, 1.5) / 100)));
                 Position += direction * ease / length;
-            }
-
-            if (!IsInClamp)
-            {
-                if(Position.X > ChunkClamps.Left && Position.X < ChunkClamps.Right && Position.Y > ChunkClamps.Bottom && Position.Y < ChunkClamps.Top)
-                {
-                    IsInClamp = true;
-                }
             }
 
             // Update view transform

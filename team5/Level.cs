@@ -81,18 +81,21 @@ namespace team5
             
             Player.LoadContent(content);
             ActiveChunk = Chunks[data.startChunk];
+            Player.Position = ActiveChunk.SpawnPosition;
             ActiveChunk.Activate(Player);
             LastActiveChunk = ActiveChunk;
-            Player.Position = ActiveChunk.SpawnPosition;
+            
             
             //  Force camera to be still
             Camera.Position.X = Player.Position.X;
             Camera.Position.Y = Player.Position.Y;
             Camera.UpdateChunk(ActiveChunk);
+            Camera.SnapToLocation();
             //Alarm sound
             Alarm.LoadContent(content);
 
             TextBox.LoadStaticContent(content);
+
         }
         
         public override void Resize(int width, int height)
@@ -172,7 +175,7 @@ namespace team5
                             {
                                 if (TransitionDirection == Chunk.Up)
                                 {
-                                    Player.Velocity.Y = 500;
+                                    Player.Velocity.Y = 350;
                                 }
                                 Player.Position.X += Player.Velocity.X * Game1.DeltaT;
                                 ActiveChunk.Deactivate();
@@ -222,7 +225,7 @@ namespace team5
                     else if (TransitionChunks.Count == 0)
                     {
                         ActiveChunk = LastActiveChunk;
-                        ActiveChunk.Activate(Player);
+                        ActiveChunk.Activate(Player,false);
                         ActiveChunk.Die(Player);
                         ChunkTrans = false;
                         TransitionChunks.Clear();
