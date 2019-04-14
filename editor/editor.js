@@ -469,7 +469,6 @@ class Chunk{
         if(action === "place"){
             var tileset = this.getTileset(layer);
             var tile = tileset.tileMap[tileset.selected[1]][tileset.selected[0]];
-            console.log(tile);
             pixels.data[pixelIndex+0] = tile[0];
             pixels.data[pixelIndex+1] = tile[1];
             pixels.data[pixelIndex+2] = tile[2];
@@ -480,7 +479,7 @@ class Chunk{
             pixels.data[pixelIndex+3] = 0;
         }
         this.drawPos(x,y);
-        console.log("Edited",this,":",layer,"(",x,"x",y,")");
+        //console.log("Edited",this,":",layer,"(",x,"x",y,")");
         return this;
     }
 
@@ -805,12 +804,29 @@ var selectTileEvent = function(ev){
 
 var button = 0;
 var editMapEvent = function(ev){
+    ev.preventDefault();
     if(ev.buttons){
         var x = Math.floor(ev.offsetX/tilemap.clientWidth*tilemap.width/tileSize);
-        var y = Math.floor(ev.offsetY/tilemap.clientHeight*tilemap.height/tileSize);
-        var action = (button == 2)? "erase" : "place";
-        level.chunk.edit(x, y, action);
+        var y = Math.floor(ev.offsetY/tilemap.clientHeight*tilemap.height/tileSize);    
+        if(ev.altKey || ev.metaKey){
+            var pixelIndex = ((level.chunk.layer.width*y)+x)*4;
+            var r = level.chunk.layer.data[pixelIndex+0];
+            var g = level.chunk.layer.data[pixelIndex+1];
+            console.log(r, g);
+            level.chunk.tileset.selected = level.chunk.tileset.rgMap[(r<<8) + g];
+        }else if(ev.ctrlKey){
+            // FIXME: implement flood fill
+        }else{
+            var action = (button == 2)? "erase" : "place";
+            level.chunk.edit(x, y, action);
+        }
     }
+    if(ev.altKey || ev.metaKey){
+        tilemap.style.cursor = "crosshair";
+    }else{
+        tilemap.style.cursor = "auto";
+    }
+    return false;
 };
 
 var zoomEvent = function(){
