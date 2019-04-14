@@ -12,8 +12,9 @@ namespace team5
         };
         
         private const float EdgeWaitTime = 1;
-        private readonly Vector2 PatrolSpeed = new Vector2(50, 0);
-        
+        private static readonly Vector2 PatrolSpeed = new Vector2(50, 0);
+        private static readonly Vector2 ConeOffset = new Vector2(0, -2.5);
+
         private AnimatedSprite Sprite;
         private float EdgeTimer = 0;
         private AIState State = AIState.Patrolling;
@@ -124,7 +125,7 @@ namespace team5
             }
             
             Position += dt * Velocity;
-            ViewCone.UpdatePosition(Position);
+            ViewCone.UpdatePosition(Position + ConeOffset);
             ViewCone.Update(chunk);
         }
 
