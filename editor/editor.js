@@ -375,7 +375,15 @@ class Chunk{
 
     drawPos(x, y){
         var pixelIndex = ((this.width*y)+x)*4;
-        var empty = true;
+        // Clear and fill background pattern
+        mapctx.clearRect(x*tileSize, y*tileSize, tileSize, tileSize);
+        mapctx.strokeStyle = "#DDDDDD";
+        mapctx.beginPath();
+        mapctx.moveTo(x*tileSize+0.5, (y+1)*tileSize-0.5);
+        mapctx.lineTo(x*tileSize+0.5, y*tileSize+0.5);
+        mapctx.lineTo((x+1)*tileSize-0.5, y*tileSize+0.5);
+        mapctx.stroke();
+        // Draw actual tile.
         for(var l of [1, 2, 3, 0]){
             var pixels = this.pixels[l];
             if(pixels.visible){
@@ -383,7 +391,6 @@ class Chunk{
                 var g = pixels.data[pixelIndex+1];
                 var a = pixels.data[pixelIndex+3];
                 if(0 < a){
-                    empty = false;
                     var tileset = this.getTileset(l);
                     var s = tileset.rgMap[(r<<8) + g];
                     if(!s) break;
@@ -393,15 +400,6 @@ class Chunk{
                                      x*tileSize, y*tileSize, tileSize, tileSize);
                 }
             }
-        }
-        if(empty){
-            mapctx.fillRect(x*tileSize, y*tileSize, tileSize, tileSize);
-            mapctx.strokeStyle = "#DDDDDD";
-            mapctx.beginPath();
-            mapctx.moveTo(x*tileSize+0.5, (y+1)*tileSize-0.5);
-            mapctx.lineTo(x*tileSize+0.5, y*tileSize+0.5);
-            mapctx.lineTo((x+1)*tileSize-0.5, y*tileSize+0.5);
-            mapctx.stroke();
         }
         return this;
     }
