@@ -122,9 +122,9 @@ namespace team5
             }
             switch(vertical)
             {
-                case Orientation.Bottom: break;
-                case Orientation.Top: pos.Y -= size.Y*scale; break;
-                case Orientation.Center: pos.Y -= size.Y/2*scale; break;
+                case Orientation.Top: break;
+                case Orientation.Bottom: pos.Y += size.Y*scale; break;
+                case Orientation.Center: pos.Y += size.Y/2*scale; break;
                 default: throw new ArgumentException(String.Format("{0} is not a valid vertical orientation.", vertical));
             }
             

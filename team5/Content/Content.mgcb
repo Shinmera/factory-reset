@@ -141,12 +141,6 @@
 /processorParam:TextureFormat=Color
 /build:Textures/dialog-box.png
 
-#begin Textures/File.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:Textures/File.fx
-
 #begin Textures/ground-drone.png
 /importer:TextureImporter
 /processor:TextureProcessor

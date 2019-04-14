@@ -12,7 +12,7 @@ namespace team5
         private Chunk ChunkInFocus;
         private RectangleF ChunkClamps;
         public float Zoom = 1.0f;
-        private float ViewScale = 1.0f;
+        public float ViewScale{ get; private set; }
         // Target view half-size
         public const float TargetWidth = 40 * Chunk.TileSize / 2.0f;
         private Vector2 TargetSize = new Vector2(TargetWidth, 26*Chunk.TileSize/2.0f);
@@ -28,6 +28,7 @@ namespace team5
         {
             Player = player;
             Game = game;
+            ViewScale = 1;
         }
 
         private void UpdateClampData()

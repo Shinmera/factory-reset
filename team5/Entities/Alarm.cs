@@ -79,6 +79,7 @@ namespace team5
                     Timer -= dt;
                     if (Timer <= 0)
                     {
+                        Timer = 0;
                         Detected = false;
                         SetState(AlarmState.Clear);
                     }
@@ -86,16 +87,20 @@ namespace team5
             }
         }
 
-        public override void Draw()
+        public void Draw(Level level)
         {
-            //if(!Detected) return;
+            if(!Detected) return;
             Game.Transforms.PushView();
             Game.Transforms.ResetView();
-            float textX = Game.GraphicsDevice.Viewport.Width / 2;
-            float textY = Game.GraphicsDevice.Viewport.Height / 6;
+            Game.Transforms.TranslateView(new Vector2(Camera.TargetWidth, 300));
+            Game.Transforms.ScaleView(level.Camera.ViewScale);
             Sprite.Draw();
-            Game.TextEngine.QueueText((Math.Floor(Timer)).ToString(), new Vector2(textX,textY), 
-                                      "crashed-scoreboard", 32, TextEngine.Orientation.Center);
+            float full = (float)Math.Truncate(Timer);
+            float rest = Timer - full;
+            Game.TextEngine.QueueText(full.ToString("00"), Game.Transforms*new Vector2(-30,0), 26,
+                                      Color.White, TextEngine.Orientation.Left, TextEngine.Orientation.Center);
+            Game.TextEngine.QueueText(rest.ToString(".00"), Game.Transforms*new Vector2(6,-2), 18,
+                                      Color.LightGray, TextEngine.Orientation.Left, TextEngine.Orientation.Center);
             Game.TextEngine.DrawText();
             Game.Transforms.PopView();
         }

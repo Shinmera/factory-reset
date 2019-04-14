@@ -16,6 +16,7 @@ namespace team5
         public Chunk ActiveChunk = null;
         public Player Player;
         public Camera Camera;
+        public Alarm Alarm;
         public int collected = 0;
         
         public readonly string Name;
@@ -39,8 +40,6 @@ namespace team5
             Popups.Add(new TextBox("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", 
                 "welbut",12,Game, this,Vector2.Zero,Chunk.Down | Chunk.Left));
         }
-
-        public Alarm Alarm;
 
         public Level(Game1 game, string name)
         {
@@ -249,24 +248,16 @@ namespace team5
         {
 
             if (ChunkTrans)
-            {
                 Player.Draw();
-            }
-            
 
-            foreach (Chunk chunk in Chunks){
+            foreach (Chunk chunk in Chunks)
                 if (Camera.IsVisible(chunk.BoundingBox))
-                {
                     chunk.Draw();
-                }
-            }
 
-            Alarm.Draw();
+            Alarm.Draw(this);
 
             foreach (Container container in Popups)
-            {
                 container.Draw();
-            }
         }
 
         public override void OnQuitButon()
