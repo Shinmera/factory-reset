@@ -250,12 +250,12 @@ namespace team5
         public override void Draw()
         {
 
-            if (ChunkTrans)
-                Player.Draw();
-
             foreach (Chunk chunk in Chunks)
                 if (Camera.IsVisible(chunk.BoundingBox))
                     chunk.Draw();
+
+            if (ChunkTrans)
+                Player.Draw();
 
             Alarm.Draw(this);
 
