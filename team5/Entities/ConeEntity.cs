@@ -680,7 +680,7 @@ namespace team5
                 if (Collide(chunk.Level.Player, Game1.DeltaT, out int dirction, out float time, out bool corner))
                 {
                     chunk.Level.Alarm.Detected = true;
-                    chunk.Level.Alarm.SendDrones(chunk.Level.Player.Position);
+                    chunk.Level.Alarm.SendDrones(chunk.Level.Player.Position, chunk);
                 }
             }
         }

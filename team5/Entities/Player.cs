@@ -42,7 +42,7 @@ namespace team5
 
         private AnimatedSprite Sprite;
 
-        public Player(Vector2 position, Game1 game):base(game, new Vector2(Chunk.TileSize/2, Chunk.TileSize-0.5f))
+        public Player(Vector2 position, Game1 game):base(game, new Vector2(Chunk.TileSize/2, 0.98F*Chunk.TileSize))
         {
             Sprite = new AnimatedSprite(null, game, new Vector2(32, 40));
 
@@ -67,7 +67,7 @@ namespace team5
 
         public override void Draw()
         {
-            Sprite.Draw(Position+new Vector2(0, 4));
+            Sprite.Draw(Position+new Vector2(0, 4+ 0.02F * Chunk.TileSize));
         }
 
         public override void Update(Chunk chunk)
@@ -157,15 +157,20 @@ namespace team5
                         else if (Velocity.Y <= ClimbSpeed)
                             Velocity.Y = 0;
 
+                        if(Velocity.X != 0)
+                        {
+                            IsClimbing = false;
+                        }
+
                         // Push over corners
                         if (leftCorner != null && left == null && Sprite.Direction == -1)
                         {
-                            Velocity.X = -50;
+                            Velocity.X = -150;
                             Velocity.Y = ClimbSpeed;
                         }
                         if (rightCorner != null && right == null && Sprite.Direction == +1)
                         {
-                            Velocity.X = +50;
+                            Velocity.X = +150;
                             Velocity.Y = ClimbSpeed;
                         }
                     }

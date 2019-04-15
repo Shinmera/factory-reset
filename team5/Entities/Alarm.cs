@@ -39,11 +39,17 @@ namespace team5
         }
 
 
-        public void SendDrones(Vector2 pos)
+        public void SendDrones(Vector2 pos, Chunk chunk)
         {
             LastKnowPos = pos;
             Timer = AlarmTime;
-            Drones = true;
+            //Drones = true;
+
+            chunk.CallAll(x => {
+                if (x is AerialDrone) {
+                    ((AerialDrone)x).Target(pos, chunk);
+                }
+            });
         }
 
         public void SetState(AlarmState state )

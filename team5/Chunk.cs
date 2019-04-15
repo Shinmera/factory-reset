@@ -111,7 +111,7 @@ namespace team5
 
         #region Private Methods
 
-        private void CallAll(Action<GameObject> func)
+        public void CallAll(Action<GameObject> func)
         {
             if (Player != null)
                 func.Invoke(Player);

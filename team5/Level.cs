@@ -91,6 +91,7 @@ namespace team5
             Camera.Position.Y = Player.Position.Y;
             Camera.UpdateChunk(ActiveChunk);
             Camera.SnapToLocation();
+            Camera.Update();
             //Alarm sound
             Alarm.LoadContent(content);
 
