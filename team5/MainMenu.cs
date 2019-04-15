@@ -77,8 +77,8 @@ namespace team5
             
             Buttons = new List<Button>();
 
-            Buttons.Add(new TextButton(game, new Vector2(360, 80), Game.StartLevel, "Start"));
-            Buttons.Add(new TextButton(game, new Vector2(360, 90), Game.Exit, "Quit"));
+            Buttons.Add(new TextButton(game, new Vector2(360, 190), Game.StartLevel, "Start"));
+            Buttons.Add(new TextButton(game, new Vector2(360, 180), Game.Exit, "Quit"));
 
             Buttons[1].Up = Buttons[0];
             Buttons[0].Down = Buttons[1];
