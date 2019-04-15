@@ -144,12 +144,12 @@
     <Compile Include="Game1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangleF.cs" />
-    <Compile Include="SoundEngine.cs" />
-    <Compile Include="SpriteEngine.cs" />
-    <Compile Include="TilemapEngine.cs" />
+    <Compile Include="Engine\SoundEngine.cs" />
+    <Compile Include="Engine\SpriteEngine.cs" />
+    <Compile Include="Engine\TilemapEngine.cs" />
     <Compile Include="Transforms.cs" />
-    <Compile Include="TextEngine.cs" />
-    <Compile Include="ViewConeEngine.cs" />
+    <Compile Include="Engine\TextEngine.cs" />
+    <Compile Include="Engine\ViewConeEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
