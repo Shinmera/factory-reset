@@ -176,15 +176,18 @@ var constructElement = function(tag, options){
     if(options.id) el.setAttribute("id", options.id);
     if(options.text) el.innerText = options.text;
     if(options.html) el.innerHTML = options.html;
-    for(var attr in (options.attributes||{})){
+    for(let attr in (options.attributes||{})){
         el.setAttribute(attr, options.attributes[attr]);
     }
-    for(var data in (options.data||{})){
+    for(let data in (options.data||{})){
         el.dataset[data] = options.data[data];
     }
-    for(var tag in (options.elements||{})){
-        var content = options.elements[tag];
-        var sub = self.constructElement(content.tag || tag, content);
+    for(let attr in (options.style||{})){
+        el.style[attr] = options.style[attr];
+    }
+    for(let tag in (options.elements||{})){
+        let content = options.elements[tag];
+        let sub = self.constructElement(content.tag || tag, content);
         el.appendChild(sub);
     }
     return el;
@@ -699,13 +702,16 @@ var generateLevelmap = function(level){
             classes: ["chunk"],
             data: {id: chunk.index},
             attributes: {
-                width: chunk.width*zoom,
-                height: chunk.height*zoom,
+                width: chunk.width,
+                height: chunk.height,
                 title: chunk.name
+            },
+            style: {
+                minWidth: chunk.width*zoom + "px",
+                minHeight: chunk.height*zoom + "px"
             }
         });
         var ctx = entry.getContext("2d");
-        // FIXME: scale
         ctx.putImageData(chunk.getLayer(0), 0, 0);
 
         entry.addEventListener("mousedown", function(ev){
