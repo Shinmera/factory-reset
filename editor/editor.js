@@ -469,8 +469,7 @@ class Chunk{
         var pi = (x, y)=>((pixels.width*y)+x)*4;
         var p = (x, y)=>{
             let i = pi(x,y);
-            return ((pixels.data[i+0]<<24) + (pixels.data[i+1]<<16)
-                    + (pixels.data[i+2]<<8) + (pixels.data[i+3]<<0)) >>> 0;
+            return ((pixels.data[i+0]<<24) + (pixels.data[i+1]<<16)) >>> 0;
         };
         var sp = (x, y, tile)=>{
             let i = pi(x,y);
@@ -494,18 +493,17 @@ class Chunk{
             var width = pixels.width, height = pixels.height;
             while(0<queue.length){
                 let c = queue.pop();
-                console.log(c);
                 let n = c[0], y = c[1];
                 let w = n, e = n;
-                while(0 < w && p(w-1, y) == find)
+                while(0 < w && p(w-1, y) === find)
                     w--;
-                while(e < width-1 && p(e+1, y) == find)
+                while(e < width-1 && p(e+1, y) === find)
                     e++;
                 for(let i=w; i<=e; i++){
                     sp(i, y, fill);
-                    if(y<height-1 && p(i, y+1) == find)
+                    if(y<height-1 && p(i, y+1) === find)
                         queue.push([i, y+1]);
-                    if(0<y && p(i, y-1) == find)
+                    if(0<y && p(i, y-1) === find)
                         queue.push([i, y-1]);
                 }
             }
