@@ -466,21 +466,51 @@ class Chunk{
     edit(x, y, action, layer){
         if(layer === undefined)layer = this.currentLayer;
         var pixels = this.pixels[layer];
-        var pixelIndex = ((pixels.width*y)+x)*4;
+        var pi = (x, y)=>((pixels.width*y)+x)*4;
+        var p = (x, y)=>{
+            let i = pi(x,y);
+            return ((pixels.data[i+0]<<24) + (pixels.data[i+1]<<16)
+                    + (pixels.data[i+2]<<8) + (pixels.data[i+3]<<0)) >>> 0;
+        };
+        var sp = (x, y, tile)=>{
+            let i = pi(x,y);
+            pixels.data[i+0] = tile[0];
+            pixels.data[i+1] = tile[1];
+            pixels.data[i+2] = tile[2];
+            pixels.data[i+3] = (tile[3] === undefined)? 255 : tile[3];
+        };
         if(action === "place"){
-            var tileset = this.getTileset(layer);
-            var tile = tileset.tileMap[tileset.selected[1]][tileset.selected[0]];
-            pixels.data[pixelIndex+0] = tile[0];
-            pixels.data[pixelIndex+1] = tile[1];
-            pixels.data[pixelIndex+2] = tile[2];
-            pixels.data[pixelIndex+3] = 255;
+            let tileset = this.getTileset(layer);
+            sp(x, y, tileset.tileMap[tileset.selected[1]][tileset.selected[0]]);
+            this.drawPos(x,y);
         }else if(action === "erase"){
-            pixels.data[pixelIndex+0] = 0;
-            pixels.data[pixelIndex+1] = 0;
-            pixels.data[pixelIndex+2] = 0;
-            pixels.data[pixelIndex+3] = 0;
+            sp(x, y, [0,0,0,0]);
+            this.drawPos(x,y);
+        }else if(action === "fill"){
+            let tileset = this.getTileset(layer);
+            var fill = tileset.tileMap[tileset.selected[1]][tileset.selected[0]];
+            var queue = [[x,y]];
+            var find = p(x,y);
+            var width = pixels.width, height = pixels.height;
+            while(0<queue.length){
+                let c = queue.pop();
+                console.log(c);
+                let n = c[0], y = c[1];
+                let w = n, e = n;
+                while(0 < w && p(w-1, y) == find)
+                    w--;
+                while(e < width-1 && p(e+1, y) == find)
+                    e++;
+                for(let i=w; i<=e; i++){
+                    sp(i, y, fill);
+                    if(y<height-1 && p(i, y+1) == find)
+                        queue.push([i, y+1]);
+                    if(0<y && p(i, y-1) == find)
+                        queue.push([i, y-1]);
+                }
+            }
+            this.show();
         }
-        this.drawPos(x,y);
         //console.log("Edited",this,":",layer,"(",x,"x",y,")");
         return this;
     }
@@ -817,7 +847,7 @@ var editMapEvent = function(ev){
             console.log(r, g);
             level.chunk.tileset.selected = level.chunk.tileset.rgMap[(r<<8) + g];
         }else if(ev.ctrlKey){
-            // FIXME: implement flood fill
+            level.chunk.edit(x, y, "fill");
         }else{
             var action = (button == 2)? "erase" : "place";
             level.chunk.edit(x, y, action);
