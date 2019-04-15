@@ -24,7 +24,7 @@ namespace team5
         private bool HasWallJumped = false;
         private float LongJump = 0;
         private int SoundFrame = 0;
-        private float DeathTimer = 0;
+
 
         private readonly float Gravity = 800;
         private readonly float MaxVel = 150;
@@ -39,6 +39,7 @@ namespace team5
         private bool QueueHide = false;
         private Vector2 HidingSpot;
         public bool IsHiding { get; private set; }
+        public float DeathTimer = 0;
 
         private AnimatedSprite Sprite;
 

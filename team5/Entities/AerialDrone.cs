@@ -254,7 +254,10 @@ namespace team5
             TargetLocation = Position;
             Sprite = new AnimatedSprite(null, game, new Vector2(32, 32));
             ViewCone = new ConeEntity(game, false);
-            ViewCone.FromDegrees(270, 50);
+
+            Direction = (float)game.RNG.NextDouble() * 2 * (float)Math.PI;
+
+            ViewCone.FromDegrees(0, 50);
             ViewCone.Radius = Chunk.TileSize * 5;
             ViewCone.UpdatePosition(position);
         }
@@ -426,7 +429,7 @@ namespace team5
 
         public override void Respawn(Chunk chunk)
         {
-
+            Direction = (float)Game.RNG.NextDouble() * 2 * (float)Math.PI;
             Position = Spawn;
             Wait();
         }
@@ -436,10 +439,6 @@ namespace team5
             float dt = Game1.DeltaT;
             
             Velocity = new Vector2();
-            if (chunk.Level.Alarm.Drones)
-            {
-                Target(chunk.Level.Alarm.LastKnowPos, chunk);
-            }
             
             switch (State)
             {

@@ -147,6 +147,7 @@ namespace team5
                 CallAll((GameObject x) => { if (x is Entity) ((Entity)x).Respawn(this); });
                 //reset the alarm behavior
                 Level.Alarm.Detected = false;
+                Level.Alarm.SetState(Alarm.AlarmState.Clear);
                 Level.Alarm.Drones = false;
             }
 

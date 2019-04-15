@@ -675,7 +675,7 @@ namespace team5
 
             base.Update(chunk);
 
-            if (!chunk.Level.Player.IsHiding)
+            if (!chunk.Level.Player.IsHiding && chunk.Level.Player.DeathTimer <= 0)
             {
                 if (Collide(chunk.Level.Player, Game1.DeltaT, out int dirction, out float time, out bool corner))
                 {
