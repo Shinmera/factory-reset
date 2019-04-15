@@ -28,6 +28,11 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/welbut.spritefont
 
+#begin Levels/lobby.zip
+/importer:LevelImporter
+/processor:LevelProcessor
+/build:Levels/lobby.zip
+
 #begin Levels/test2.zip
 /importer:LevelImporter
 /processor:LevelProcessor
@@ -37,16 +42,6 @@
 /importer:LevelImporter
 /processor:LevelProcessor
 /build:Levels/test3.zip
-
-#begin Levels/test4.zip
-/importer:LevelImporter
-/processor:LevelProcessor
-/build:Levels/test4.zip
-
-#begin Levels/lobby.zip
-/importer:LevelImporter
-/processor:LevelProcessor
-/build:Levels/lobby.zip
 
 #begin Shaders/cone.fx
 /importer:EffectImporter
