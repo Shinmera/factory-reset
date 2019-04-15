@@ -108,7 +108,10 @@
      (.chunk
       :position absolute
       :box-shadow inset 0 0 0 1px (hex 000000)
-      :background (hex FFFFFF)))
+      :background (hex FFFFFF))
+     ((:and .chunk :hover)
+      :z-index 100
+      :box-shadow 0 0 1em (hex 0088EE)))
     (.tilemap
      :display flex
      :max-height 80%
