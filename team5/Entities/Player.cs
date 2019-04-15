@@ -42,7 +42,7 @@ namespace team5
 
         private AnimatedSprite Sprite;
 
-        public Player(Vector2 position, Game1 game):base(game, new Vector2(Chunk.TileSize/2, Chunk.TileSize))
+        public Player(Vector2 position, Game1 game):base(game, new Vector2(Chunk.TileSize/2, Chunk.TileSize-0.5f))
         {
             Sprite = new AnimatedSprite(null, game, new Vector2(32, 40));
 
