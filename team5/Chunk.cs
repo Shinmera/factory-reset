@@ -613,7 +613,15 @@ namespace team5
                         if(y == (Dir.Y > 0 ? localMinY : (localMaxY - 1)))
                         {
                             location = prevLength;
-                            return true;
+                            if (location < length)
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                location = -1;
+                                return false;
+                            }
                         }
 
                         if(Dir.Y == 0)
