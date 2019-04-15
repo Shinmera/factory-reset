@@ -38,6 +38,11 @@
 /processor:LevelProcessor
 /build:Levels/test3.zip
 
+#begin Levels/test4.zip
+/importer:LevelImporter
+/processor:LevelProcessor
+/build:Levels/test4.zip
+
 #begin Shaders/cone.fx
 /importer:EffectImporter
 /processor:EffectProcessor

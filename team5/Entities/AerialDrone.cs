@@ -439,7 +439,6 @@ namespace team5
             if (chunk.Level.Alarm.Drones)
             {
                 Target(chunk.Level.Alarm.LastKnowPos, chunk);
-                chunk.Level.Alarm.Drones = false;
             }
             
             switch (State)
