@@ -409,6 +409,8 @@ class Chunk{
         for(var l=0; l<this.pixels.length; l++){
             this.pixels[l] = this.preprocess(resizePixels(this.pixels[l], width, height), l);
         }
+        // FIXME: Kludge
+        generateSidebar(level);
         this.show();
         level.zoom(zoom);
         return this;
