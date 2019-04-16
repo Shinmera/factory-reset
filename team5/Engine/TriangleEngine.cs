@@ -10,31 +10,21 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace team5
 {
-    public class ViewConeEngine
+    public class TriangleEngine
     {
         public Game1 Game;
-        private VertexBuffer VertexBuffer;
-        private Effect ConeEffect;
         private Effect TriangleEffect;
         private const int Triangles = 5;
         private static readonly Vector4 ConeColor = new Vector4(1, 0, 0, 0.3F);
 
-        public ViewConeEngine(Game1 game)
+        public TriangleEngine(Game1 game)
         {
             Game = game;
         }
 
         public void LoadContent(ContentManager content)
         {
-            // This is stupid but monogame requires a bogus vertex buffer. Fuck you, monogame!
-            VertexPosition[] vertices = new VertexPosition[Triangles*3];
-            for(int i=0; i<vertices.Length; i++)
-                vertices[i] = new VertexPosition(new Vector3(0, 0, 0));
-            VertexBuffer = new VertexBuffer(Game.GraphicsDevice, VertexPosition.VertexDeclaration,
-                                            Triangles*3, BufferUsage.None);
-            VertexBuffer.SetData(vertices);
-            // Create shader
-            ConeEffect = content.Load<Effect>("Shaders/cone");
+
             TriangleEffect = content.Load<Effect>("Shaders/triangle");
         }
 
