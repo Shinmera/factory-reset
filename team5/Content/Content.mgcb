@@ -49,12 +49,6 @@
 /processorParam:DebugMode=Auto
 /build:Shaders/cone.fx
 
-#begin Shaders/redTriangle.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:Shaders/redTriangle.fx
-
 #begin Shaders/sprite.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -66,6 +60,12 @@
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:Shaders/tile.fx
+
+#begin Shaders/triangle.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Shaders/triangle.fx
 
 #begin Sounds/Alert.mp3
 /importer:Mp3Importer

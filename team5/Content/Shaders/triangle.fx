@@ -10,6 +10,7 @@
 float4x4 projectionMatrix;
 float4x4 viewMatrix;
 float4x4 modelMatrix;
+float4 color;
 
 struct VertexShaderInput
 {
@@ -35,7 +36,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 
 float4 MainPS(VertexShaderOutput input) : COLOR0
 {
-    return float4(1, 0, 0, 0.3);
+    return color;
 }
 
 technique Triangle

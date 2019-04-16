@@ -17,6 +17,7 @@ namespace team5
         private Effect ConeEffect;
         private Effect TriangleEffect;
         private const int Triangles = 5;
+        private static readonly Vector4 ConeColor = new Vector4(1, 0, 0, 0.3F);
 
         public ViewConeEngine(Game1 game)
         {
@@ -34,32 +35,10 @@ namespace team5
             VertexBuffer.SetData(vertices);
             // Create shader
             ConeEffect = content.Load<Effect>("Shaders/cone");
-            TriangleEffect = content.Load<Effect>("Shaders/redTriangle");
+            TriangleEffect = content.Load<Effect>("Shaders/triangle");
         }
 
-        public void Draw(float radius, float angle1, float angle2)
-        {
-            GraphicsDevice device = Game.GraphicsDevice;
-
-            ConeEffect.CurrentTechnique = ConeEffect.Techniques["Cone"];
-            ConeEffect.Parameters["projectionMatrix"].SetValue(Game.Transforms.ProjectionMatrix);
-            ConeEffect.Parameters["viewMatrix"].SetValue(Game.Transforms.ViewMatrix);
-            ConeEffect.Parameters["modelMatrix"].SetValue(Game.Transforms.ModelMatrix);
-            ConeEffect.Parameters["angles"].SetValue(new Vector2(angle1, angle2));
-            ConeEffect.Parameters["radius"].SetValue(radius);
-            ConeEffect.Parameters["triangles"].SetValue(Triangles);
-
-            device.SetVertexBuffer(VertexBuffer);
-            device.BlendState = BlendState.AlphaBlend;
-            foreach (EffectPass pass in ConeEffect.CurrentTechnique.Passes)
-            {
-                pass.Apply();
-                device.DrawPrimitives(PrimitiveType.TriangleList, 0, Triangles);
-            }
-        }
-
-
-        public void DrawTriangles(List<Vector2> triangles)
+        public void DrawTriangles(List<Vector2> triangles, Vector4 color)
         {
             GraphicsDevice device = Game.GraphicsDevice;
 
@@ -67,6 +46,7 @@ namespace team5
             TriangleEffect.Parameters["projectionMatrix"].SetValue(Game.Transforms.ProjectionMatrix);
             TriangleEffect.Parameters["viewMatrix"].SetValue(Game.Transforms.ViewMatrix);
             TriangleEffect.Parameters["modelMatrix"].SetValue(Game.Transforms.ModelMatrix);
+            TriangleEffect.Parameters["color"].SetValue(color);
 
             VertexPosition[] vertices = new VertexPosition[triangles.Count];
             for (int i = 0; i < vertices.Length; i++)
@@ -81,19 +61,11 @@ namespace team5
             }
         }
 
-        public void Draw(Vector2 position, float radius, float angle1, float angle2)
-        {
-            Game.Transforms.Push();
-            Game.Transforms.Translate(position);
-            Draw(radius, angle1, angle2);
-            Game.Transforms.Pop();
-        }
-
         public void DrawTriangles(Vector2 position, List<Vector2> triangles)
         {
             Game.Transforms.Push();
             Game.Transforms.Translate(position);
-            DrawTriangles(triangles);
+            DrawTriangles(triangles, ConeColor);
             Game.Transforms.Pop();
         }
     }
