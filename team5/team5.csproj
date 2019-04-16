@@ -13,7 +13,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.17763.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
@@ -110,7 +110,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="GamePage.xaml.cs">
+    <Compile Include="Container.cs" />
+    <Compile Include="LoadScreen.cs" />
+    <Compile Include="UI\GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Camera.cs" />
@@ -118,7 +120,10 @@
     <Compile Include="DialogBox.cs" />
     <Compile Include="TextBox.cs" />
     <Compile Include="Entities\Alarm.cs" />
-    <Compile Include="Window.cs" />
+    <Compile Include="UI\IPane.cs" />
+    <Compile Include="UI\MainMenu.xaml.cs">
+      <DependentUpon>MainMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controller.cs" />
     <Compile Include="Entities\AerialDrone.cs" />
     <Compile Include="Entities\BoxEntity.cs" />
@@ -146,7 +151,6 @@
     <Compile Include="Level.cs" />
     <Compile Include="LevelContent.cs" />
     <Compile Include="LevelReader.cs" />
-    <Compile Include="MainMenu.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangleF.cs" />
@@ -156,6 +160,13 @@
     <Compile Include="Transforms.cs" />
     <Compile Include="Engine\TextEngine.cs" />
     <Compile Include="Engine\TriangleEngine.cs" />
+    <Compile Include="UI\Options.xaml.cs">
+      <DependentUpon>Options.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Root.xaml.cs">
+      <DependentUpon>Root.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Window.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -166,6 +177,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo.scale-200.png" />
+    <Content Include="Assets\main-menu.png" />
     <Content Include="Assets\SmallLogo.scale-200.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
@@ -194,11 +206,24 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="GamePage.xaml">
+    <Page Include="UI\GamePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\MainMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Options.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Root.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

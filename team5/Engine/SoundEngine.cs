@@ -75,7 +75,7 @@ namespace team5
         private Vector2 Listener;
         
         /// <summary>Master volume adjustment</summary>
-        public float Volume = 0.6f;
+        public static float Volume = 0.6f;
         
         private Game1 Game;
         private ContentManager Content;

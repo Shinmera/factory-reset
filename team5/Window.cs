@@ -16,7 +16,5 @@ namespace team5
         public abstract void Resize(int width, int height);
         public abstract void Update();
         public abstract void Draw();
-
-        public abstract void OnQuitButon();
     }
 }

@@ -20,7 +20,6 @@ namespace team5
         public readonly Controller Controller;
 
         public Window ActiveWindow { get; private set; }
-        MainMenu MainMenu;
         Level Level;
 
         public Game1()
@@ -38,8 +37,7 @@ namespace team5
 
             IsFixedTimeStep = true;
 
-            MainMenu = new MainMenu(this);
-            ActiveWindow = MainMenu;
+            ActiveWindow = new LoadScreen();
         }
 
         protected override void Initialize()
@@ -65,7 +63,7 @@ namespace team5
             TriangleEngine.LoadContent(Content);
             TextEngine.LoadContent(Content);
             SoundEngine.LoadContent(Content);
-            MainMenu.LoadContent(Content);
+            ActiveWindow.LoadContent(Content);
         }
         
         protected override void UnloadContent()
@@ -75,6 +73,7 @@ namespace team5
 
         public void StartLevel()
         {
+            System.Diagnostics.Debug.WriteLine("Loading level proper...");
             Level = new Level(this, "lobby");
             Level.LoadContent(Content);
             SoundEngine.LoadContent(Content);

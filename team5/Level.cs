@@ -270,7 +270,6 @@ namespace team5
 
         public override void Draw()
         {
-
             foreach (Chunk chunk in Chunks)
                 if (Camera.IsVisible(chunk.BoundingBox))
                     chunk.Draw();
@@ -300,11 +299,6 @@ namespace team5
 
                 Game.TriangleEngine.DrawTriangles(Camera.Position, OverlayTriangles, new Color(0,0,0,alpha));
             }
-        }
-
-        public override void OnQuitButon()
-        {
-            Pause();
         }
     }
 }

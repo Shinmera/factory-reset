@@ -77,9 +77,6 @@ namespace team5
             float dt = Game1.DeltaT;
             Controller.Update();
             Sprite.Update(dt);
-            
-            if(Controller.Quit && PauseKeyWasUp)
-                Game.ActiveWindow.OnQuitButon();
 
             if (0 < DeathTimer)
             {
@@ -347,11 +344,6 @@ namespace team5
             float dt = Game1.DeltaT;
             Controller.Update();
             Sprite.Update(dt);
-
-            if (Controller.Quit && PauseKeyWasUp)
-                Game.ActiveWindow.OnQuitButon();
-
-
 
             PauseKeyWasUp = !Controller.Quit;
 
