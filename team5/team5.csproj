@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="Camera.cs" />
     <Compile Include="Container.cs" />
+    <Compile Include="DialogBox.cs" />
     <Compile Include="TextBox.cs" />
     <Compile Include="Entities\Alarm.cs" />
     <Compile Include="Window.cs" />

@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace team5
 {
-    struct RectangleF
+    public struct RectangleF
     {
         public float X;
         public float Y;
@@ -15,7 +15,7 @@ namespace team5
         public float Height;
         public Rectangle GetRectangle()
         {
-            return new Rectangle((int)X, (int)(Y + Math.Ceiling(Height)), (int)Math.Ceiling(Width), (int)Math.Ceiling(Height));
+            return new Rectangle((int)X, (int)(Y), (int)Math.Ceiling(Width), (int)Math.Ceiling(Height));
         }
 
         public RectangleF(float x, float y, float width, float height)

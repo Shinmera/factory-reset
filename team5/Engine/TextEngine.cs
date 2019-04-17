@@ -148,11 +148,38 @@ namespace team5
             ViewScale = width / (Camera.TargetWidth*2);
         }
 
-        public void DrawText()
+        public void DrawText(RectangleF Mask = default(RectangleF))
         {
-            SpriteBatch.Begin();
+            if (Mask.Width != 0)
+            {
+                RasterizerState _rasterizerState = new RasterizerState() { ScissorTestEnable = true };
 
-            foreach(Text text in QueuedText)
+                SpriteBatch.Begin(SpriteSortMode.Deferred, null,
+                      null, null, _rasterizerState);
+            }
+            else
+            {
+                SpriteBatch.Begin();
+            }
+
+            //Mask.X = 0;
+            //Mask.Y = 0;
+            //Mask.Height = 640;
+            //Mask.Width = 640;
+
+            if (Mask.Width != 0)
+            {
+                /*
+                Mask.X *= ViewScale;
+                Mask.Y *= ViewScale;
+                Mask.Width *= ViewScale;
+                Mask.Height *= ViewScale;
+                */
+                Mask.Y = Game.GraphicsDevice.Viewport.Height - Mask.Y - Mask.Height;
+                SpriteBatch.GraphicsDevice.ScissorRectangle = Mask.GetRectangle();
+            }
+
+            foreach (Text text in QueuedText)
             {
                 SpriteBatch.DrawString(text.Font, text.String, new Vector2(text.Position.X, Game.GraphicsDevice.Viewport.Height - text.Position.Y), text.Color, 0, Vector2.Zero, text.Scale, SpriteEffects.None, 0);
             }

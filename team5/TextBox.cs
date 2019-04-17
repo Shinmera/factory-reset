@@ -14,23 +14,34 @@ namespace team5
         public string Text;
         public string Font;
         public float SizePx;
-        static Texture2D Background;
+
+        protected static Dictionary<string,Texture2D> Backgrounds;
+        protected Texture2D Background;
+
         public int Anchor;
         private bool PauseKeyWasUp = false;
         private bool EnterKeyWasUp = false;
         private Level Level { get { return (Level)Parent; } }
 
-        private const int TopPadding = 10;
-        private const int SidePadding = 10;
-        
+        protected int TopPadding = 10;
+        protected int LeftPadding = 10;
+        protected int RightPadding = 10;
+        protected int BottomPadding = 10;
 
         private AnimatedSprite BackgroundSprite;
 
-        public TextBox(string text, string font, float sizePx, Game1 game, Level parent, Vector2 position = new Vector2(), int anchor = 0) : base(game, parent)
+        public TextBox(string text, string font, float sizePx, Game1 game, Level parent, 
+            string type = "Debug", Vector2 position = new Vector2(), int anchor = 0, 
+            int leftPadding = 0, int rightPadding = 0, int topPadding = 0, int bottomPadding = 0 ) : base(game, parent)
         {
-            Text = game.TextEngine.TextWrap(text, sizePx, font, Background.Width - SidePadding * 2);
+            Background = Backgrounds[type];
+            Text = text;
             Font = font;
             SizePx = sizePx;
+
+            TopPadding = topPadding;
+
+
             BackgroundSprite = new AnimatedSprite(Background, game, new Vector2(Background.Bounds.Width,Background.Bounds.Height));
             BackgroundSprite.Add("idle", 0, 1, 100);
             BackgroundSprite.Play("idle");
@@ -39,9 +50,19 @@ namespace team5
             Anchor = anchor;
         }
 
+        public void Initialize()
+        {
+            Text = Game.TextEngine.TextWrap(Text, SizePx, Font, Background.Width - LeftPadding - RightPadding);
+        }
+
         public static void LoadStaticContent(ContentManager content)
         {
-            Background = content.Load<Texture2D>("Textures/dialog-box");
+            Backgrounds = new Dictionary<string, Texture2D>
+            {
+                { "Debug", content.Load<Texture2D>("Textures/dialog-box") },
+                { "WalkieTalkie", content.Load<Texture2D>("Textures/walkie_talkie_text__box") },
+                { "WalkieTalkieSprite", content.Load<Texture2D>("Textures/walkie_talkie_spriteBox") }
+            };
         }
 
         public override void Draw()
@@ -86,11 +107,11 @@ namespace team5
             Game.Transforms.TranslateView(new Vector2(centerX, centerY));
             BackgroundSprite.Draw();
             Game.Transforms.ResetView();
-            float textX = centerX - scale * (Background.Width/2 - SidePadding);
+            float textX = centerX - scale * (Background.Width/2 - LeftPadding);
             float textY = centerY + scale * (Background.Height/2 - TopPadding);
-            Game.TextEngine.QueueText(Text, new Vector2(textX, textY), Color.Black, Font, SizePx, TextEngine.Orientation.Left, TextEngine.Orientation.Top);
+            Game.TextEngine.QueueText(Text, new Vector2(textX, textY), Color.White, Font, SizePx, TextEngine.Orientation.Left, TextEngine.Orientation.Top);
 
-            Game.TextEngine.DrawText();
+            Game.TextEngine.DrawText(new RectangleF(textX, textY - scale*(Background.Height - TopPadding - BottomPadding), scale*(Background.Width - LeftPadding - RightPadding), scale*(Background.Height - TopPadding - BottomPadding)));
 
             Game.Transforms.PopView();
         }
