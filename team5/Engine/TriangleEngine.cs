@@ -51,11 +51,11 @@ namespace team5
             }
         }
 
-        public void DrawTriangles(Vector2 position, List<Vector2> triangles)
+        public void DrawTriangles(Vector2 position, List<Vector2> triangles, Color coneColor)
         {
             Game.Transforms.Push();
             Game.Transforms.Translate(position);
-            DrawTriangles(triangles, ConeColor);
+            DrawTriangles(triangles, coneColor.ToVector4());
             Game.Transforms.Pop();
         }
     }

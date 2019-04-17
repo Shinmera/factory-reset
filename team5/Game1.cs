@@ -12,7 +12,7 @@ namespace team5
         GraphicsDeviceManager DeviceManager;
         public readonly SpriteEngine SpriteEngine;
         public readonly TilemapEngine TilemapEngine;
-        public readonly TriangleEngine ViewConeEngine;
+        public readonly TriangleEngine TriangleEngine;
         public readonly SoundEngine SoundEngine;
         public readonly TextEngine TextEngine;
         public readonly Transforms Transforms = new Transforms();
@@ -28,7 +28,7 @@ namespace team5
             DeviceManager = new GraphicsDeviceManager(this);
             SpriteEngine = new SpriteEngine(this);
             TilemapEngine = new TilemapEngine(this);
-            ViewConeEngine = new TriangleEngine(this);
+            TriangleEngine = new TriangleEngine(this);
             SoundEngine = new SoundEngine(this);
             TextEngine = new TextEngine(this);
             Controller = new Controller();
@@ -62,7 +62,7 @@ namespace team5
         {
             SpriteEngine.LoadContent(Content);
             TilemapEngine.LoadContent(Content);
-            ViewConeEngine.LoadContent(Content);
+            TriangleEngine.LoadContent(Content);
             TextEngine.LoadContent(Content);
             SoundEngine.LoadContent(Content);
             MainMenu.LoadContent(Content);

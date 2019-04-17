@@ -28,8 +28,12 @@ namespace team5
         private int TransitionDirection = 0;
         private Chunk LastActiveChunk;
         private Chunk TargetChunk;
-        private int TransitionLingerCounter = 0;
+        private int TransitionLingerTimer = 0;
         private const int TransitionLingerDuration = 40;
+        private float DeathFadeLingerTimer = 0;
+        private const float DeathFadeLingerDuration = 1F;
+
+        private List<Vector2> OverlayTriangles;
 
         public bool Paused = false;
 
@@ -50,6 +54,12 @@ namespace team5
             Game = game;
             Name = name;
             Alarm = new Alarm(game);
+
+            OverlayTriangles = new List<Vector2>(6);
+            for(int i = 0; i < 6; ++i)
+            {
+                OverlayTriangles.Add(Vector2.Zero);
+            }
         }
 
         public void ClosePopup()
@@ -121,6 +131,11 @@ namespace team5
 
                 if (!ChunkTrans)
                 {
+                    if(Player.DeathTimer > 0)
+                    {
+                        DeathFadeLingerTimer = DeathFadeLingerDuration;
+                    }
+
                     if (PlayerBB.Right + Game1.DeltaT * Player.Velocity.X > ActiveChunk.BoundingBox.Right && Player.Velocity.X > 0)
                     {
                         TransitionDirection = Chunk.Right;
@@ -144,7 +159,7 @@ namespace team5
 
                     if (ChunkTrans)
                     {
-                        TransitionLingerCounter = 0;
+                        TransitionLingerTimer = 0;
                         TargetChunk = null;
                         foreach (var chunk in Chunks)
                         {
@@ -208,17 +223,17 @@ namespace team5
                     {
                         if ((TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right))
                         {
-                            TransitionLingerCounter++;
+                            TransitionLingerTimer++;
                         }
                         else
                         {
-                            TransitionLingerCounter = TransitionLingerDuration;
+                            TransitionLingerTimer = TransitionLingerDuration;
                         }
                     }
 
-                    if (TransitionLingerCounter == TransitionLingerDuration)
+                    if (TransitionLingerTimer == TransitionLingerDuration)
                     {
-                        TransitionLingerCounter = 0;
+                        TransitionLingerTimer = 0;
                         ActiveChunk = TargetChunk;
                         ActiveChunk.Activate(Player);
                         ChunkTrans = false;
@@ -237,7 +252,7 @@ namespace team5
                         return;
                     }
 
-                    Player.Update(TransitionDirection, TransitionLingerCounter, TargetChunk);
+                    Player.Update(TransitionDirection, TransitionLingerTimer, TargetChunk);
                 }
                 else
                 {
@@ -248,6 +263,9 @@ namespace team5
                     }
                 }
             }
+
+            if(DeathFadeLingerTimer > 0)
+            DeathFadeLingerTimer -= Game1.DeltaT;
         }
 
         public override void Draw()
@@ -264,6 +282,24 @@ namespace team5
 
             foreach (Container container in Popups)
                 container.Draw();
+
+            if(Player.DeathTimer > 0 || DeathFadeLingerTimer > 0)
+            {
+                float alpha = Player.DeathTimer > 0 ? 1 - Player.DeathTimer / Player.DeathDuration : DeathFadeLingerTimer/DeathFadeLingerDuration;
+                Vector2 LL = -1.2F*Camera.GetTargetSize();
+                Vector2 UL = 1.2F*Camera.GetTargetSize() * new Vector2(-1,1);
+                Vector2 LR = 1.2F*Camera.GetTargetSize() * new Vector2(1, -1);
+                Vector2 UR = 1.2F*Camera.GetTargetSize();
+
+                OverlayTriangles[0] = UR;
+                OverlayTriangles[1] = UL;
+                OverlayTriangles[2] = LL;
+                OverlayTriangles[3] = LL;
+                OverlayTriangles[4] = LR;
+                OverlayTriangles[5] = UR;
+
+                Game.TriangleEngine.DrawTriangles(Camera.Position, OverlayTriangles, new Color(0,0,0,alpha));
+            }
         }
 
         public override void OnQuitButon()

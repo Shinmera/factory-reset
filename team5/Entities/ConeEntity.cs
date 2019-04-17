@@ -9,6 +9,10 @@ namespace team5
 {
     class ConeEntity : Entity
     {
+        #region Static Fields
+        public static readonly Color coneColor = new Color(1, 0, 0, 0.3F);
+        #endregion
+
         #region Static Functions
 
         /// <summary>Clamps any angle into the [0,2pi] domain used by this class.</summary>
@@ -688,7 +692,7 @@ namespace team5
         public override void Draw()
         {
             if (ComputedOccludedRadius)
-                Game.ViewConeEngine.DrawTriangles(Position, Triangles);
+                Game.TriangleEngine.DrawTriangles(Position, Triangles, coneColor);
         }
         #endregion
     }

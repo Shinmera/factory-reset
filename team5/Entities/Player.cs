@@ -40,6 +40,7 @@ namespace team5
         private Vector2 HidingSpot;
         public bool IsHiding { get; private set; }
         public float DeathTimer = 0;
+        public const float DeathDuration = 2;
 
         private AnimatedSprite Sprite;
 
@@ -331,7 +332,7 @@ namespace team5
         public void Kill()
         {
             if(DeathTimer <= 0)
-                DeathTimer = 2.0f;
+                DeathTimer = DeathDuration;
         }
 
         public override void Respawn(Chunk chunk)

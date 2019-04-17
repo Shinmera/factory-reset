@@ -149,6 +149,7 @@ namespace team5
                 Level.Alarm.Detected = false;
                 Level.Alarm.SetState(Alarm.AlarmState.Clear);
                 Level.Alarm.Drones = false;
+                Level.Camera.SnapToLocation();
             }
 
             if(entity is Pickup)
