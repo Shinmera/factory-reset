@@ -120,7 +120,7 @@
     <Compile Include="DialogBox.cs" />
     <Compile Include="TextBox.cs" />
     <Compile Include="Entities\Alarm.cs" />
-    <Compile Include="UI\IPane.cs" />
+    <Compile Include="UI\IPanel.cs" />
     <Compile Include="UI\LevelSelect.xaml.cs">
       <DependentUpon>LevelSelect.xaml</DependentUpon>
     </Compile>
@@ -176,7 +176,7 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include=".editorconfig" />
-    <EmbeddedResource Include="Content\Fonts\welbutrin.ttf" />
+    <None Include="Content\Fonts\Wellbutrin.ttf" />
     <None Include="team5_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -210,7 +210,7 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Assets\Style.xaml">
+    <Page Include="UI\Style.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

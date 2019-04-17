@@ -21,12 +21,12 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/crashed-scoreboard.spritefont
 
-#begin Fonts/welbut.spritefont
+#begin Fonts/wellbutrin.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:Fonts/welbut.spritefont
+/build:Fonts/wellbutrin.spritefont
 
 #begin Levels/lobby.zip
 /importer:LevelImporter

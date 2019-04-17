@@ -8,6 +8,7 @@ namespace team5
     public class Game1 : Game
     {
         public const float DeltaT = 1 / 60.0F;
+        public const string FirstLevel = "lobby";
 
         GraphicsDeviceManager DeviceManager;
         public readonly SpriteEngine SpriteEngine;
@@ -67,10 +68,10 @@ namespace team5
             // FIXME: Should probably do this
         }
 
-        public void StartLevel()
+        public void LoadLevel(string level=FirstLevel)
         {
             System.Diagnostics.Debug.WriteLine("Loading level proper...");
-            Level = new Level(this, "lobby");
+            Level = new Level(this, level);
             Level.LoadContent(Content);
             SoundEngine.LoadContent(Content);
 

@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace team5.UI
 {
-    public sealed partial class MainMenu : Page, IPane
+    public sealed partial class MainMenu : Page, IPanel
     {
         private Dictionary<string, Page> Pages = new Dictionary<string, Page>();
-        private Grid Container;
 
         public MainMenu()
         {
@@ -16,23 +16,17 @@ namespace team5.UI
             Pages["Load"] = new LevelSelect();
         }
 
-        public UIElement Show()
-        {
-            return this;
-        }
-
         private void ShowPage(string name)
         {
-            if (Container == null) return;
-            Container.Children.Clear();
+            if (Content == null) return;
+            Content.Children.Clear();
             if(Pages.TryGetValue(name, out Page page))
-                Container.Children.Add(page);
+                Content.Children.Add(page);
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private new void Loaded(object sender, RoutedEventArgs e)
         {
-            ((ListView)FindName("SidePanel")).Focus(FocusState.Keyboard);
-            Container = (Grid)FindName("Content");
+            SidePanel.Focus(FocusState.Keyboard);
         }
 
         private void ItemClick(object sender, ItemClickEventArgs e)
@@ -41,7 +35,7 @@ namespace team5.UI
             if(item.Equals("New Game"))
             {
                 System.Diagnostics.Debug.WriteLine("Loading Game...");
-                Root.Current.Forward(new GamePage());
+                Root.Current.LoadGame();
             }
             else if(item.Equals("Quit"))
             {
@@ -57,6 +51,11 @@ namespace team5.UI
         {
             var item = (string)e.AddedItems[0];
             ShowPage(item);
+        }
+
+        public void Back(BackRequestedEventArgs e)
+        {
+
         }
     }
 }

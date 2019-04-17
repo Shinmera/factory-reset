@@ -19,48 +19,46 @@ namespace team5.UI
     public sealed partial class Root : Page
     {
         public static Root Current;
-        private Stack<IPane> History = new Stack<IPane>();
+        private GamePage Game;
+        private MainMenu Menu;
+        private IPanel VisiblePage;
         
         public Root()
         {
             this.InitializeComponent();
             Current = this;
-            //SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
-            Forward(new MainMenu());
-        }
-        
-        private void Show(IPane pane)
-        {
-            UIElement show = pane.Show();
-            Grid grid = ((Grid)FindName("centralGrid"));
-            grid.Children.Clear();
-            grid.Children.Add(show);
-        }
-        
-        private void Show()
-        {
-            Show(History.Peek());
+            SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
+            Menu = new MainMenu();
+            Game = new GamePage();
+            ShowMenu();
         }
 
-        public bool Back()
+        private void Show(Page page)
         {
-            if (History.Count <= 1)
-                return false;
-            History.Pop();
-            Show();
-            return true;
+            VisiblePage = (IPanel)page;
+            CentralGrid.Children.Clear();
+            CentralGrid.Children.Add(page);
+        }
+
+        public void ShowMenu()
+        {
+            Show(Menu);
+        }
+
+        public void ShowGame()
+        {
+            Show(Game);
+        }
+
+        public void LoadGame(string level = Game1.FirstLevel)
+        {
+            ShowGame();
+            Game.Game.LoadLevel(level);
         }
         
-        public void Forward(IPane pane)
+        private void OnBackRequested(object sender, BackRequestedEventArgs e)
         {
-            History.Push(pane);
-            Show();
-        }
-        
-        private void OnBackRequested(object sender, BackRequestedEventArgs ev)
-        {
-            ev.Handled = true;
-            Back();
+            VisiblePage.Back(e);
         }
     }
 }

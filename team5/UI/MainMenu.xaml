@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Loaded="Page_Loaded"
+    Loaded="Loaded"
     Style="{StaticResource MainMenu}">
     <Grid>
         <SplitView HorizontalAlignment="Stretch" IsPaneOpen="True" DisplayMode="Inline" OpenPaneLength="200"
@@ -15,7 +15,7 @@
                 <ListView x:Name="SidePanel" HorizontalAlignment="Stretch" SelectedIndex="0"
                           IsItemClickEnabled="True" SelectionMode="Single" SingleSelectionFollowsFocus="True"
                           ItemClick="ItemClick" SelectionChanged="SelectionChanged"
-                          Style="{StaticResource SidePanel}" Background="#80FFFFFF">
+                          Style="{StaticResource SidePanel}">
                     <x:String>New Game</x:String>
                     <x:String>Load</x:String>
                     <x:String>Options</x:String>
