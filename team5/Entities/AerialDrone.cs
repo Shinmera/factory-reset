@@ -246,7 +246,7 @@ namespace team5
 
         #region Constructors
 
-        public AerialDrone(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize/2))
+        public AerialDrone(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize/3, Chunk.TileSize/6))
         {
             Spawn = position;
             Position = position;
