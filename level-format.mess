@@ -2,17 +2,7 @@
 This is a specification for a level data package. A level is a ZIP file with a set file structure. You can find an example at the end of the document.
 
 ## ZIP Contents
-The ZIP file must be structured as follows:
-
-:: BNF
-ZIP          ::= DataFile ChunkTexture*
-DataFile     ::= 'level.json'
-ChunkTexture ::= 'chunks/' chunk '-' layer '.png'
-chunk        --- A string denoting the name of the chunk for this layer.
-layer        --- A positive, zero-indexed integer indicating the layer of the texture.
-::
-
-The ``chunk`` name must be a name mentioned in the ``DataFile`` and the ``layer`` must not be equal to or larger than the ``layers`` count of the corresponding chunk. See the following section for the relevant data.
+The only requirement about the zip file is that it must contain a `level.json` file at its root with the data structure conforming to the specification in the following section.
 
 ## Data File Format
 This is a specification for the level data file format. The specification declares the structure in abstract terms of types, including structure types, and is thus not dependent on any particular interchange format. However, for the purposes of this game the format should be assumed to be **JSON**, encoded in **UTF-8** when serialised to binary.
@@ -23,9 +13,10 @@ We employ a special syntax to denote the format.
 :: BNF
 Specification  ::= TypeDefinition*
 TypeDefinition ::= name ':' Type '\n'
-Type           ::= baseType | Structure | Array | name
+Type           ::= Structure | Array | Union | name | baseType
 Structure      ::= '{' Entry (',' Entry)* '}'
 Array          ::= '[' Type (' ' integer)? ']'
+Union          ::= Type '|' Type
 Entry          ::=  name ':' Type
 baseType       --- One of the basic types noted in the following section
 name           --- A name for an entry or type, alphanumerics only
@@ -41,6 +32,7 @@ The specification assumes the following types to be present:
 - //Integer// A numerical integer.
 - //Float// A decimal number of limited precision.
 - //Boolean// Either ``true`` or ``false``.
+- //Null// An empty value.
 
 ### Data Validity
 In order for the data to be valid, it must abide the following rules:
@@ -50,6 +42,7 @@ In order for the data to be valid, it must abide the following rules:
 - Each field's value must be of the associated type.
 - Data specified to be an array must only contain entries of the associated type.
 - If the array type contains an integer, data specified to be of that array type must contain exactly as many entries.
+- If the type is a union, the value must be of one of the two types of the union.
 
 An implementation must signal an error if the data to be processed is not valid.
 
@@ -60,6 +53,7 @@ We will now describe the level file format using the established conventions.
 Level: {
   name: String,
   description: String,
+  preview: Null | Path,
   startChase: Boolean,
   startChunk: Integer,
   chunks: [ Chunk ]
@@ -68,11 +62,12 @@ Level: {
 Chunk: {
   name: String,
   position: Vector,
-  layers: Integer,
   tileset: String,
-  storyItems: [ String ]
+  storyItems: [ String ],
+  layers: [ Path ]
 }
 
+Path: String
 Vector: [ Float 2 ]
 ::
 
@@ -81,6 +76,7 @@ The following are the file records for an example level ZIP:
 
 ::
 level.json
+preview.png
 chunks/first-0.png
 chunks/first-1.png
 chunks/first-2.png
@@ -91,15 +87,21 @@ And the following would be the JSON encoded contents of the ``level.json`` file:
 
 :: JSON
 {
-  "name": "example",
+  "name": "Example",
   "description": "An example level for the specification.",
+  "preview": "preview.png",
   "startChase": false,
   "startChunk": 0,
   "chunks": [
     {
       "name": "first",
       "position": [0, 0],
-      "layers": 4,
+      "layers": [
+        "chunks/first-0.png",
+        "chunks/first-1.png",
+        "chunks/first-2.png",
+        "chunks/first-3.png"
+      ],
       "tileset": "sampleset",
       "storyItems": ["Hello there, welcome to the game!"]
     }

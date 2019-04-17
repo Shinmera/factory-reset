@@ -153,7 +153,6 @@
     <Compile Include="Entities\TileType.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="LevelContent.cs" />
-    <Compile Include="LevelReader.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangleF.cs" />
@@ -177,6 +176,7 @@
     </AppxManifest>
     <None Include=".editorconfig" />
     <None Include="Content\Fonts\Wellbutrin.ttf" />
+    <Content Include="Content\Levels\lobby.zip" />
     <None Include="team5_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

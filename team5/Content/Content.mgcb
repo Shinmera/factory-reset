@@ -10,7 +10,6 @@
 
 #-------------------------------- References --------------------------------#
 
-/reference:..\..\LevelContentPipeline\bin\Debug\LevelContentPipeline.dll
 
 #---------------------------------- Content ---------------------------------#
 
@@ -27,21 +26,6 @@
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
 /build:Fonts/wellbutrin.spritefont
-
-#begin Levels/lobby.zip
-/importer:LevelImporter
-/processor:LevelProcessor
-/build:Levels/lobby.zip
-
-#begin Levels/test2.zip
-/importer:LevelImporter
-/processor:LevelProcessor
-/build:Levels/test2.zip
-
-#begin Levels/test3.zip
-/importer:LevelImporter
-/processor:LevelProcessor
-/build:Levels/test3.zip
 
 #begin Shaders/cone.fx
 /importer:EffectImporter

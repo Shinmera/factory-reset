@@ -20,7 +20,6 @@ namespace team5
         public int collected = 0;
         
         public readonly string Name;
-        private readonly string Description;
         
         private readonly Game1 Game;
         private bool ChunkTrans = false;
@@ -82,7 +81,8 @@ namespace team5
 
         public override void LoadContent(ContentManager content)
         {
-            var data = content.Load<LevelContent>("Levels/"+Name);
+            var data = LevelContent.Read(Name);
+            data.Resolve(Game.GraphicsDevice);
             
             foreach(var chunkdata in data.chunks)
             {

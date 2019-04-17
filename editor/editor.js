@@ -76,6 +76,18 @@ var getImage = function(imagedata){
     });
 };
 
+var getImageBase64 = function(image){
+    tempcanvas.width = image.width;
+    tempcanvas.height = image.height;
+    var ctx = tempcanvas.getContext("2d");
+    ctx.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+    if(image instanceof ImageData)
+        ctx.putImageData(image, 0, 0);
+    else
+        ctx.drawImage(image, 0, 0);
+    return tempcanvas.toDataURL("image/png").replace(/.*?base64,/, "");
+};
+
 var fillCheckerboard = function(canvas, ctx){
     var s = tileSize/2;
     ctx = ctx || canvas.getContext("2d");
@@ -457,15 +469,6 @@ class Chunk{
         return this;
     }
 
-    layerImage(layer){
-        if(layer === undefined)layer = this.currentLayer;
-        var pixels = this.pixels[layer];
-        tempcanvas.width = pixels.width;
-        tempcanvas.height = pixels.height;
-        tempcanvas.getContext("2d").putImageData(pixels, 0, 0);
-        return tempcanvas.toDataURL("image/png");
-    }
-
     edit(x, y, action, layer){
         if(layer === undefined)layer = this.currentLayer;
         var pixels = this.pixels[layer];
@@ -517,10 +520,13 @@ class Chunk{
     }
 
     serialize(){
+        var layers = new Array(this.layers);
+        for(var i=0; i<layers.length; i++)
+            layers[0] = "chunks/"+this.name+"-"+i+".png"; 
         return {
             name: this.name,
             position: [ this.position[0]*tileSize, this.position[1]*tileSize ],
-            layers: this.layers,
+            layers: layers,
             tileset: this.tileset.name,
             storyItems: this.storyItems
         };
@@ -551,6 +557,7 @@ class Level{
         init = init || {};
         this.name = init.name || "level";
         this.description = init.description || "";
+        this.preview = init.preview || null;
         this.startChase = init.startChase || false;
         this.startChunk = init.startChunk || 0;
         this.defaultTileset = init.defaultTileset || solidset;
@@ -595,6 +602,7 @@ class Level{
         return {
             name: this.name,
             description: this.description,
+            preview: (this.preview)? "preview.png" : null,
             startChase: this.startChase,
             startChunk: this.startChunk,
             chunks: chunks
@@ -958,6 +966,7 @@ var newLevel = function(){
 };
 
 var editLevel = function(){
+    // FIXME: Preview
     return showPrompt(".prompt.level", {
         "#level-name": level.name,
         "#level-description": level.description,
@@ -997,11 +1006,15 @@ var openLevel = function(){
                         chunk.pixels = [];
                         chunk.tileset = new Tileset({name: chunk.tileset});
                         for(var l=0; l<chunk.layers; l++){
-                            var base64 = await zip.file("chunks/"+chunk.name+"-"+l+".png").async("base64");
+                            var base64 = await zip.file(chunk.layers[l]).async("base64");
                             var image = await loadImage("data:image/png;base64,"+base64);
                             chunk.pixels[l] = getImagePixels(image);
                         }
                         json.chunks[i] = new Chunk(chunk);
+                    }
+                    if(json.preview){
+                        var preview = await zip.file(json.preview).async("base64");
+                        json.preview = await loadImage("data:image/png;base64,"+preview);
                     }
                     alert("Please load the tilesets \""+tilesets.join("\", \"")+"\"");
                     return new Level(json).use();
@@ -1011,13 +1024,17 @@ var openLevel = function(){
 var saveLevel = function(){
     var zip = new JSZip();
     var chunks = zip.folder("chunks");
-    for(var chunk of level.chunks){
+    var data = level.serialize();
+    for(var c=0; c<level.chunks.length; ++c){
+        let chunk = level.chunks[c];
         for(var l=0; l<chunk.layers; ++l){
-            var data = chunk.layerImage(l).replace(/.*?base64,/, "");
-            chunks.file(chunk.name+"-"+l+".png", data, {"base64":true});
+            var image = getImageBase64(chunk.layer(l));
+            chunks.file(data.chunks[c].layers[l], image, {"base64":true});
         }
     }
-    zip.file("level.json", JSON.stringify(level.serialize()));
+    if(level.preview)
+        zip.file(data.preview, getImageBase64(level.preview), {"base64":true});
+    zip.file("level.json", JSON.stringify(data));
     zip.generateAsync({type:"base64"}).then(function(data){
         data = "data:application/zip;base64,"+data;
         return saveFile(data, level.name+".zip");

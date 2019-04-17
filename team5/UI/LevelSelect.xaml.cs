@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
@@ -14,8 +15,7 @@ namespace team5.UI
         {
             this.InitializeComponent();
 
-            Previews.Add(new LevelPreview("Test", "A test level", "pack://application:,,,/Assets/Logo.scale-200.png"));
-            Previews.Add(new LevelPreview("Lobby", "The introduction lobby", "pack://application:,,,/Assets/Logo.scale-200.png"));
+            Previews.Add(new LevelPreview("lobby"));
 
             LevelList.ItemsSource = Previews;
         }
@@ -34,16 +34,19 @@ namespace team5.UI
 
     public class LevelPreview
     {
-        public string Name { get; }
-        public string Description { get; }
-        public ImageSource Preview { get; }
+        public string Name => Content.name;
+        public string Description => Content.description;
+        public BitmapImage Preview { get; }
+        private LevelContent Content;
 
-        public LevelPreview(string name, string description, string preview)
+        public LevelPreview(string name)
         {
-            Name = name;
-            Description = description;
-
-            Preview = new BitmapImage(new Uri("ms-appx:///Assets/Logo.scale-200.png"));
+            Content = LevelContent.Read(name, true);
+            Preview = new BitmapImage();
+            if (Content.previewData != null)
+            {
+                Preview.SetSource(Content.previewData.AsRandomAccessStream());
+            }
         }
     }
 }
