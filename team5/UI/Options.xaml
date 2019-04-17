@@ -15,7 +15,8 @@
             <Slider x:Name="masterVolume" Header="Master Volume" Maximum="100"
                     ValueChanged="MasterVolume_ValueChanged"/>
             <Button x:Name="back" Content="Back" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                Click="Back_Click" Height="32" Margin="-10,0,-10,0"/>
+                Click="Back_Click" Height="32" Margin="-10,0,-10,0"
+                Style="{StaticResource Back}"/>
         </StackPanel>
 
     </Grid>

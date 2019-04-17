@@ -1,0 +1,19 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:team5.UI">
+    <FontFamily x:Key="Wellbutrin">pack://application:,,,/Content/Fonts/#Wellbutrin</FontFamily>
+    <Style TargetType="Button">
+        <Setter Property="Background" Value="#80FFFFFF"/>
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="FontFamily" Value="{StaticResource Wellbutrin}"/>
+        <Setter Property="FocusVisualPrimaryThickness" Value="2"/>
+        <Setter Property="FocusVisualSecondaryThickness" Value="0"/>
+    </Style>
+    <Style x:Key="Back" TargetType="Button">
+        <Setter Property="Background" Value="#80FF0000"/>
+    </Style>
+    <Style x:Key="Focus" TargetType="Button">
+        <Setter Property="Margin" Value="10,0,0,0"/>
+    </Style>
+</ResourceDictionary>

@@ -24,6 +24,7 @@ namespace team5.UI
         {
             this.InitializeComponent();
             Current = this;
+            SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
             Forward(new MainMenu());
         }
         
@@ -53,6 +54,12 @@ namespace team5.UI
         {
             History.Push(pane);
             Show();
+        }
+        
+        private void OnBackRequested(object sender, BackRequestedEventArgs ev)
+        {
+            ev.Handled = true;
+            Back();
         }
     }
 }

@@ -9,6 +9,7 @@ namespace team5
         public App()
         {
             InitializeComponent();
+            RequiresPointerMode = Windows.UI.Xaml.ApplicationRequiresPointerMode.WhenRequested;
             Suspending += OnSuspending;
         }
 
