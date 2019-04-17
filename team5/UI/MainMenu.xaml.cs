@@ -6,30 +6,14 @@ namespace team5.UI
 {
     public sealed partial class MainMenu : Page, IPane
     {
+        private Dictionary<string, Page> Pages = new Dictionary<string, Page>();
+        private Grid Container;
+
         public MainMenu()
         {
             this.InitializeComponent();
-        }
-
-        private void Start_Click(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Debug.WriteLine("Loading Game...");
-            Root.Current.Forward(new GamePage());
-        }
-
-        private void Load_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
-        private void Options_Click(object sender, RoutedEventArgs e)
-        {
-            Root.Current.Forward(new Options());
-        }
-
-        private void Quit_Click(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Exit();
+            Pages["Options"] = new Options();
+            Pages["Load"] = new LevelSelect();
         }
 
         public UIElement Show()
@@ -37,9 +21,42 @@ namespace team5.UI
             return this;
         }
 
+        private void ShowPage(string name)
+        {
+            if (Container == null) return;
+            Container.Children.Clear();
+            if(Pages.TryGetValue(name, out Page page))
+                Container.Children.Add(page);
+        }
+
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            ((Button)this.FindName("start")).Focus(FocusState.Keyboard);
+            ((ListView)FindName("SidePanel")).Focus(FocusState.Keyboard);
+            Container = (Grid)FindName("Content");
+        }
+
+        private void ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var item = (string)e.ClickedItem;
+            if(item.Equals("New Game"))
+            {
+                System.Diagnostics.Debug.WriteLine("Loading Game...");
+                Root.Current.Forward(new GamePage());
+            }
+            else if(item.Equals("Quit"))
+            {
+                Application.Current.Exit();
+            }
+            else
+            {
+                Pages[item].Focus(FocusState.Keyboard);
+            }
+        }
+
+        private void SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var item = (string)e.AddedItems[0];
+            ShowPage(item);
         }
     }
 }

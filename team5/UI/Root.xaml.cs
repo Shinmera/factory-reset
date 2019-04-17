@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -24,7 +25,7 @@ namespace team5.UI
         {
             this.InitializeComponent();
             Current = this;
-            SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
+            //SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
             Forward(new MainMenu());
         }
         
@@ -43,7 +44,7 @@ namespace team5.UI
 
         public bool Back()
         {
-            if (!History.TryPeek(out _))
+            if (History.Count <= 1)
                 return false;
             History.Pop();
             Show();

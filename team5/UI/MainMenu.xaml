@@ -6,32 +6,23 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Loaded="Page_Loaded">
-    <Page.Background>
-        <ImageBrush Stretch="UniformToFill">
-            <ImageBrush.ImageSource>
-                <BitmapImage UriSource="/Assets/main-menu.png" DecodePixelType="Logical" DecodePixelWidth="1920" DecodePixelHeight="1080"/>
-            </ImageBrush.ImageSource>
-        </ImageBrush>
-    </Page.Background>
-
+    Loaded="Page_Loaded"
+    Style="{StaticResource MainMenu}">
     <Grid>
-        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center" Width="200">
-            <Button x:Name="start" Content="Start" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" TabIndex="0"
-                    Click="Start_Click"/>
-            <Button x:Name="load" Content="Load" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                    Click="Load_Click">
-                <Button.Flyout>
-                    <Flyout>
-                        <TextBlock Text="Not implemented yet!" />
-                    </Flyout>
-                </Button.Flyout>
-            </Button>
-            <Button x:Name="options" Content="Options" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                    Click="Options_Click"/>
-            <Button x:Name="quit" Content="Quit" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                    Click="Quit_Click"/>
-        </StackPanel>
-
+        <SplitView HorizontalAlignment="Stretch" IsPaneOpen="True" DisplayMode="Inline" OpenPaneLength="200"
+                   PaneBackground="Transparent">
+            <SplitView.Pane>
+                <ListView x:Name="SidePanel" HorizontalAlignment="Stretch" SelectedIndex="0"
+                          IsItemClickEnabled="True" SelectionMode="Single" SingleSelectionFollowsFocus="True"
+                          ItemClick="ItemClick" SelectionChanged="SelectionChanged"
+                          Style="{StaticResource SidePanel}" Background="#80FFFFFF">
+                    <x:String>New Game</x:String>
+                    <x:String>Load</x:String>
+                    <x:String>Options</x:String>
+                    <x:String>Quit</x:String>
+                </ListView>
+            </SplitView.Pane>
+            <Grid x:Name="Content" Padding="10,10,10,10"/>
+        </SplitView>
     </Grid>
 </Page>
