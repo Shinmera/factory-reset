@@ -29,7 +29,7 @@ namespace team5
             Center,
         };
         
-        private const string DefaultFont = "welbut";
+        private const string DefaultFont = "wellbutrin";
         private const float DefaultSize = 24;
         private float ViewScale = 1;
         private SpriteBatch SpriteBatch;
