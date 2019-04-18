@@ -19,8 +19,8 @@ namespace team5.UI
     public sealed partial class Root : Page
     {
         public static Root Current;
-        private GamePage Game;
-        private MainMenu Menu;
+        public readonly GamePage Game;
+        public readonly MainMenu Menu;
         private IPanel VisiblePage;
         
         public Root()

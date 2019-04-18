@@ -79,6 +79,28 @@ namespace team5
             Resize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
         }
 
+        public void UnloadLevel()
+        {
+            //Level.UnloadContent();
+            //SoundEngine.UnloadContent(Content);
+            ActiveWindow = new LoadScreen();
+        }
+
+        public bool Paused {
+            get
+            {
+                return (ActiveWindow != Level || Level.Paused);
+            }
+            set
+            {
+                if (value == Paused) return;
+                Level.Paused = value;
+                // Oh jeeze.
+                Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
+                    ()=>UI.Root.Current.Game.Paused = value);
+            }
+        }
+
         protected void Resize(int width, int height)
         {
             Transforms.ProjectionMatrix = Matrix.CreateOrthographicOffCenter(0, width, 0, height, -10, 10);

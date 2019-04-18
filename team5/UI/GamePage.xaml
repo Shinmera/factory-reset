@@ -8,5 +8,18 @@
     mc:Ignorable="d">
     <Grid>
         <SwapChainPanel x:Name="Renderer"></SwapChainPanel>
+        <StackPanel x:Name="PauseMenu" HorizontalAlignment="Center" VerticalAlignment="Stretch" Width="300"
+                    Visibility="Collapsed" Style="{StaticResource PauseMenu}">
+            <TextBlock Text="Pause" TextAlignment="Center" Style="{StaticResource PauseHeader}"/>
+            <ListView x:Name="PauseMenuList" SelectedIndex="0"
+                      IsItemClickEnabled="True" SelectionMode="Single" SingleSelectionFollowsFocus="True"
+                      ItemClick="PauseItemClick">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <TextBlock Text="{Binding}" Style="{StaticResource PauseItem}"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
     </Grid>
 </Page>
