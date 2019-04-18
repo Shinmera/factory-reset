@@ -8,8 +8,8 @@
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="8*"/>
-            <RowDefinition Height="11*"/>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="15*"/>
             <RowDefinition Height="8*"/>
         </Grid.RowDefinitions>
         <ListView ScrollViewer.HorizontalScrollMode="Enabled"
@@ -26,13 +26,13 @@
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local:LevelPreview">
                     <StackPanel Style="{StaticResource Level}">
-                        <Image Source="{x:Bind Preview}" Style="{StaticResource LevelPreview}" Width="128" Height="128"/>
+                        <Image Source="{x:Bind Preview}" Style="{StaticResource LevelPreview}"/>
                         <TextBlock Text="{x:Bind Name}" Style="{StaticResource LevelName}"/>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
         <TextBlock x:Name="Description" Style="{StaticResource LevelDescription}" Text="TextBlock" TextWrapping="Wrap"
-                   Grid.Row="2" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                   Grid.Row="2" VerticalAlignment="Stretch"/>
     </Grid>
 </Page>

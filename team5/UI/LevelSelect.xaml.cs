@@ -29,20 +29,22 @@ namespace team5.UI
 
         private void LevelSelected(object sender, ItemClickEventArgs e)
         {
-            Root.Current.LoadGame(((LevelPreview)e.ClickedItem).Name);
+            Root.Current.LoadGame(((LevelPreview)e.ClickedItem).FileName);
         }
     }
 
     public class LevelPreview
     {
+        public readonly string FileName;
         public string Name => Content.name;
         public string Description => Content.description;
         public SoftwareBitmapSource Preview { get; }
         private LevelContent Content;
 
-        public LevelPreview(string name)
+        public LevelPreview(string fileName)
         {
-            Content = LevelContent.Read(name, true);
+            FileName = fileName;
+            Content = LevelContent.Read(fileName, true);
             Preview = new SoftwareBitmapSource();
             if (Content.previewData != null)
                 LoadPreview(Content.previewData);
