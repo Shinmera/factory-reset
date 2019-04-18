@@ -71,7 +71,7 @@ namespace team5
         public const float Rolloff = 1f;
         /// <summary>The attenuation function used for sound distance volume scaling.</summary>
         public static readonly Attenuation Attenuation = Attenuations.Exponential;
-        
+
         private Vector2 Listener;
         
         /// <summary>Master volume adjustment</summary>
@@ -87,10 +87,12 @@ namespace team5
             private SoundEngine SoundEngine;
             readonly SoundEffect Effect;
             readonly SoundEffectInstance Instance;
+            public float RelativeVolume;
             public Vector2 Position = new Vector2(0,0);
 
-            public Sound(SoundEngine soundEngine, SoundEffect effect, Vector2 position)
+            public Sound(SoundEngine soundEngine, SoundEffect effect, Vector2 position, float relativeVolume = 1)
             {
+                RelativeVolume = relativeVolume;
                 SoundEngine = soundEngine;
                 Effect = effect;
                 Instance = effect.CreateInstance();
@@ -129,6 +131,14 @@ namespace team5
                 set { Instance.IsLooped = value; }
             }
             
+            public float getRelativeVolumeAt(Vector2 position)
+            {
+                float clamp(float l, float x, float u) { return (x < l) ? l : (u < x) ? u : x; }
+                Vector2 direction = Position - position;
+                float distance = clamp(DeadZone, direction.Length(), AudibleDistance);
+                return clamp(0, Attenuation(distance, DeadZone, AudibleDistance, Rolloff), 1) * RelativeVolume;
+            }
+
             public void Update()
             {
                 float clamp(float l, float x, float u) { return (x < l) ? l : (u < x) ? u : x; }
@@ -137,8 +147,7 @@ namespace team5
                 float distance = clamp(DeadZone, direction.Length(), AudibleDistance);
                 float panFactor = clamp(0, (distance-DeadZone)/(MidRange-DeadZone), 1);
                 float attenuation = clamp(0, Attenuation(distance, DeadZone, AudibleDistance, Rolloff), 1);
-                
-                Instance.Volume = attenuation * SoundEngine.Volume;
+                Instance.Volume = attenuation * SoundEngine.Volume * RelativeVolume;
                 Instance.Pan = Math.Sign(direction.X)*panFactor;
             }
             
@@ -176,9 +185,10 @@ namespace team5
             return new Sound(this, SoundCache[effect], Listener);
         }
         
-        public Sound Play(string effect, Vector2 position)
+        public Sound Play(string effect, Vector2 position, float volume = 1)
         {
-            return new Sound(this, SoundCache[effect], position);
+            var sound = new Sound(this, SoundCache[effect], position, volume);
+            return sound;
         }
         
         public bool Listen(Vector2 position, out Vector2 source)

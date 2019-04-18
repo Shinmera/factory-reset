@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -14,6 +15,13 @@ namespace team5
         private const float EdgeWaitTime = 1;
         private static readonly Vector2 PatrolSpeed = new Vector2(50, 0);
         private static readonly Vector2 ConeOffset = new Vector2(0, -2.5F);
+
+        private float Alertness = 0;
+        private const float AlertnessThreshold = 5;
+        private const float MaxAlertness = 20;
+        private const float MaxAlertIncrease = 10;
+        private const float BaseVolume = 100;
+        private const float MinVolume = 10;
 
         private AnimatedSprite Sprite;
         private float EdgeTimer = 0;
@@ -67,6 +75,9 @@ namespace team5
         public override void Update(Chunk chunk)
         {
             float dt = Game1.DeltaT;
+
+            Alertness -= dt;
+            Alertness = Math.Min(Alertness, MaxAlertness);
 
             base.Update(chunk);
             Sprite.Update(dt);
@@ -133,6 +144,29 @@ namespace team5
         {
             ViewCone.Draw();
             Sprite.Draw(Position+new Vector2(0, Size.Y));
+        }
+
+        public void HearSound(Vector2 position, float volume)
+        {
+            float sqrDist = (Position - position).LengthSquared();
+
+            if(sqrDist > SoundEngine.AudibleDistance * SoundEngine.AudibleDistance)
+            {
+                return;
+            }
+
+            Alertness += MaxAlertIncrease * volume / BaseVolume;
+
+            if (volume > MinVolume && Alertness > AlertnessThreshold && Math.Abs(position.Y - Position.Y) < Chunk.TileSize * 4 && State != AIState.Waiting && Math.Sign(position.X - Position.X) != Sprite.Direction)
+            {
+                EdgeTimer = EdgeWaitTime/2;
+                SetState(AIState.Waiting);
+            }
+        }
+
+        public void Alert(Vector2 position, Chunk chunk)
+        {
+
         }
     }
 }

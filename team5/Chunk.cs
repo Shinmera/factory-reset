@@ -70,6 +70,8 @@ namespace team5
         public Vector2 Size;
         public RectangleF BoundingBox;
 
+        public bool ChunkAlarmState = false;
+
         public uint[] SolidTiles;
 
         //Viewcones, intelligence
@@ -109,7 +111,17 @@ namespace team5
 
         #endregion
 
-        #region Private Methods
+        #region Public Procedures
+
+        public void MakeSound(SoundEngine.Sound sound, float volume, Vector2 position)
+        {
+
+            CallAll(x => {
+                if (x is IEnemy && x is Entity) {
+                    ((IEnemy) x).HearSound(position, volume * sound.getRelativeVolumeAt(((Entity)x).Position));
+                }
+            });
+        }
 
         public void CallAll(Action<GameObject> func)
         {
@@ -119,10 +131,6 @@ namespace team5
             NonCollidingEntities.ForEach(func);
             CollidingEntities.ForEach(func);
         }
-
-        #endregion
-
-        #region Public Procedures
 
         public void Activate(Player player, bool setSpawn = true)
         {

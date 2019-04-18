@@ -302,7 +302,8 @@ namespace team5
                     if(0 < Velocity.Y){
                         if(Sprite.Frame == 46 && SoundFrame != Sprite.Frame){
                             SoundFrame = Sprite.Frame;
-                            Game.SoundEngine.Play("footstep", Position);
+                            var sound = Game.SoundEngine.Play("footstep", Position, 1);
+                            chunk.MakeSound(sound, 60, Position);
                         }
                         Sprite.Play("jump");
                     }else if(Velocity.Y < 0)
@@ -311,7 +312,8 @@ namespace team5
                         Sprite.Play("run");
                         if((Sprite.Frame == 10 || Sprite.Frame == 18) && SoundFrame != Sprite.Frame){
                             SoundFrame = Sprite.Frame;
-                            Game.SoundEngine.Play("footstep", Position);
+                            var sound = Game.SoundEngine.Play("footstep", Position, 0.8F);
+                            chunk.MakeSound(sound, 60, Position);
                         }
                     }else{
                         SoundFrame = 0;

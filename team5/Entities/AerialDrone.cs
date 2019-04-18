@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace team5
 {
-    class AerialDrone : BoxEntity
+    class AerialDrone : BoxEntity, IEnemy
     {
         #region Constants and Enums
 
@@ -24,6 +24,8 @@ namespace team5
             Returning,
             //Wandering around a target location
             Searching,
+            //Checking a heard sound
+            Investigating,
         };
 
         /// <summary> The range of the viewcone</summary>
@@ -367,11 +369,11 @@ namespace team5
         #region State Switches
 
         /// <summary> Sets the state to targeting and pathfinds towards the target location, then searches after it reaches it.</summary>
-        public void Target(Vector2 target, Chunk chunk)
+        public bool Target(Vector2 target, Chunk chunk)
         {
             if(State == AIState.Targeting && (TargetLocation-target).LengthSquared() < Chunk.TileSize*Chunk.TileSize*16 && Path.Count > 2)
             {
-                return;
+                return false;
             }
 
             Velocity = new Vector2();
@@ -386,16 +388,16 @@ namespace team5
 
             if (newPath.Count <= 1)
             {
-
+                return false;
             }
             else {
                 Path = newPath;
 
                 NextNode = 1;
 
-                State = AIState.Targeting;
-
                 TargetLocation = target;
+
+                return true;
             }
         }
         /// <summary> Wanders around a target location without waiting between new wanders</summary>
@@ -411,8 +413,8 @@ namespace team5
         /// <summary> Pathfinds back to the spawn</summary>
         public void Return(Chunk chunk)
         {
-            Target(Spawn, chunk);
-            State = AIState.Returning;
+            if(Target(Spawn, chunk))
+                State = AIState.Returning;
         }
         /// <summary> Waits, swiveling the camera back and forth</summary>
         public void Wait()
@@ -449,11 +451,6 @@ namespace team5
                     }
                     break;
                 case AIState.Searching:
-                    if (!chunk.Level.Alarm.Detected)
-                    {
-                        Return(chunk);
-                        break;
-                    }
 
                     if (MoveTo(WanderLocation, SearchSpeed))
                     {
@@ -592,6 +589,21 @@ namespace team5
             Sprite.Draw(Position);
         }
 
+        public void HearSound(Vector2 Position, float volume)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public void Alert(Vector2 position, Chunk chunk)
+        {
+            if (Target(position, chunk))
+            {
+                State = AIState.Targeting;
+                StateTimer = float.NegativeInfinity;
+            }
+
+        }
+
         #endregion
 
         #region Public Methods
@@ -657,7 +669,8 @@ namespace team5
 
             return reducedPath;
         }
-        
+
+
         #endregion
     }
 }

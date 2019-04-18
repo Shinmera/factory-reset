@@ -39,15 +39,41 @@ namespace team5
         }
 
 
-        public void SendDrones(Vector2 pos, Chunk chunk)
+        public void Alert(Vector2 pos, Chunk chunk)
         {
             LastKnowPos = pos;
             Timer = AlarmTime;
             //Drones = true;
 
+            chunk.ChunkAlarmState = true;
+
             chunk.CallAll(x => {
-                if (x is AerialDrone) {
-                    ((AerialDrone)x).Target(pos, chunk);
+                if (x is IEnemy) {
+                    ((IEnemy)x).Alert(pos, chunk);
+                }
+            });
+        }
+
+        public void ClearAlarm(Chunk chunk)
+        {
+            chunk.ChunkAlarmState = false;
+
+            chunk.CallAll(x => {
+                if (x is AerialDrone)
+                {
+                    ((AerialDrone)x).Return(chunk);
+                }
+            });
+        }
+
+        public void ResetAlarm(Chunk chunk)
+        {
+            chunk.ChunkAlarmState = false;
+
+            chunk.CallAll(x => {
+                if (x is AerialDrone)
+                {
+                    ((AerialDrone)x).Respawn(chunk);
                 }
             });
         }
@@ -58,7 +84,6 @@ namespace team5
             switch (state)
             {
                 case AlarmState.Clear:
-
                     break;
                 case AlarmState.Raised:
                     Game.SoundEngine.Play("Alert");
@@ -87,6 +112,7 @@ namespace team5
                     {
                         Timer = 0;
                         Detected = false;
+                        ClearAlarm(chunk);
                         SetState(AlarmState.Clear);
                     }
                     break;

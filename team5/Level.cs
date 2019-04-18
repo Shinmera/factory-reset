@@ -190,6 +190,36 @@ namespace team5
                                 ActiveChunk.Deactivate();
                                 LastActiveChunk = ActiveChunk;
                                 ActiveChunk = null;
+
+                                if(TargetChunk.ChunkAlarmState != Alarm.Detected)
+                                {
+                                    if (Alarm.Detected)
+                                    {
+                                        Vector2 posOffset = Vector2.Zero;
+                                        switch (TransitionDirection)
+                                        {
+                                            case Chunk.Up:
+                                                posOffset = Vector2.UnitY;
+                                                break;
+                                            case Chunk.Down:
+                                                posOffset = -Vector2.UnitY;
+                                                break;
+                                            case Chunk.Right:
+                                                posOffset = Vector2.UnitX;
+                                                break;
+                                            case Chunk.Left:
+                                                posOffset = -Vector2.UnitX;
+                                                break;
+                                        }
+
+                                        Alarm.Alert(Player.Position + Chunk.TileSize*2F*posOffset, TargetChunk);
+                                    }
+                                    else
+                                    {
+                                        Alarm.ResetAlarm(TargetChunk);
+                                    }
+                                }
+
                                 Camera.UpdateChunk(TargetChunk);
                             }
                         }
