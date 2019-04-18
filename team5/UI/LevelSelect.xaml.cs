@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using Windows.Graphics.Imaging;
+using Windows.Storage;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
@@ -10,15 +12,13 @@ namespace team5.UI
 {
     public sealed partial class LevelSelect : Page
     {
-        List<LevelPreview> Previews = new List<LevelPreview>();
+        ObservableCollection<LevelPreview> Previews = new ObservableCollection<LevelPreview>();
 
         public LevelSelect()
         {
             this.InitializeComponent();
-
-            Previews.Add(new LevelPreview("lobby"));
-
             LevelList.ItemsSource = Previews;
+            LoadLevels();
         }
 
         private void SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -30,6 +30,18 @@ namespace team5.UI
         private void LevelSelected(object sender, ItemClickEventArgs e)
         {
             Root.Current.LoadGame(((LevelPreview)e.ClickedItem).FileName);
+        }
+
+        private async void LoadLevels()
+        {
+            StorageFolder appInstalledFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+            StorageFolder content = await appInstalledFolder.GetFolderAsync("Content");
+            StorageFolder levels = await content.GetFolderAsync("Levels");
+            foreach(var file in await levels.GetFilesAsync())
+            {
+                if (file.Name.EndsWith(".zip"))
+                    Previews.Add(new LevelPreview(file.Name.Substring(0, file.Name.Length - 4)));
+            }
         }
     }
 

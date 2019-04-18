@@ -7,20 +7,23 @@ namespace team5.UI
 {
     public sealed partial class MainMenu : Page, IPanel
     {
-        private Dictionary<string, Page> Pages = new Dictionary<string, Page>();
+        private List<MenuPage> Pages = new List<MenuPage>();
 
         public MainMenu()
         {
             this.InitializeComponent();
-            Pages["Options"] = new Options();
-            Pages["Load"] = new LevelSelect();
+            Pages.Add(new MenuPage("New Game", null));
+            Pages.Add(new MenuPage("Load", new LevelSelect()));
+            Pages.Add(new MenuPage("Options", new Options()));
+            Pages.Add(new MenuPage("Quit", null));
+            SidePanel.ItemsSource = Pages;
         }
 
-        private void ShowPage(string name)
+        private void ShowPage(Page page)
         {
             if (Content == null) return;
             Content.Children.Clear();
-            if(Pages.TryGetValue(name, out Page page))
+            if(page != null)
                 Content.Children.Add(page);
         }
 
@@ -31,31 +34,42 @@ namespace team5.UI
 
         private void ItemClick(object sender, ItemClickEventArgs e)
         {
-            var item = (string)e.ClickedItem;
-            if(item.Equals("New Game"))
+            var item = (MenuPage)e.ClickedItem;
+            if(item.Name.Equals("New Game"))
             {
                 System.Diagnostics.Debug.WriteLine("Loading Game...");
                 Root.Current.LoadGame();
             }
-            else if(item.Equals("Quit"))
+            else if(item.Name.Equals("Quit"))
             {
                 Application.Current.Exit();
             }
             else
             {
-                Pages[item].Focus(FocusState.Keyboard);
+                item.Page.Focus(FocusState.Keyboard);
             }
         }
 
         private void SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var item = (string)e.AddedItems[0];
-            ShowPage(item);
+            ShowPage(((MenuPage)e.AddedItems[0]).Page);
         }
 
         public void Back(BackRequestedEventArgs e)
         {
 
+        }
+    }
+
+    class MenuPage
+    {
+        public readonly Page Page;
+        public readonly string Name;
+
+        public MenuPage(string name, Page page)
+        {
+            Page = page;
+            Name = name;
         }
     }
 }

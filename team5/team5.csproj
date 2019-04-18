@@ -175,7 +175,7 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include=".editorconfig" />
-    <None Include="Content\Fonts\Wellbutrin.ttf" />
+    <Content Include="Content\Fonts\Wellbutrin.ttf" />
     <Content Include="Content\Levels\lobby.zip" />
     <None Include="team5_TemporaryKey.pfx" />
   </ItemGroup>
