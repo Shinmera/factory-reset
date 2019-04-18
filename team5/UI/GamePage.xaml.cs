@@ -45,6 +45,7 @@ namespace team5.UI
                     Game.Paused = false;
                     break;
                 case "Restart":
+                    // FIXME: Restart the level
                     break;
                 case "Quit to Menu":
                     Game.UnloadLevel();

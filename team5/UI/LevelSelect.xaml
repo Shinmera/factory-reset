@@ -8,17 +8,17 @@
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="4*"/>
             <RowDefinition Height="15*"/>
             <RowDefinition Height="6*"/>
-            <RowDefinition Height="2*"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <ListView ScrollViewer.HorizontalScrollMode="Enabled"
                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
                   ScrollViewer.VerticalScrollMode="Disabled"
-                  ScrollViewer.VerticalScrollBarVisibility="Hidden" SelectedIndex="0" VerticalAlignment="Center"
+                  ScrollViewer.VerticalScrollBarVisibility="Hidden" SelectedIndex="0"
                   IsItemClickEnabled="True" SelectionMode="Single" SingleSelectionFollowsFocus="True"
-                  x:Name="LevelList" Grid.Row="1" ItemClick="LevelSelected" SelectionChanged="SelectionChanged" HorizontalAlignment="Stretch">
+                  x:Name="LevelList" Grid.Row="0" ItemClick="LevelSelected" SelectionChanged="SelectionChanged"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal"></StackPanel>
@@ -34,8 +34,8 @@
             </ListView.ItemTemplate>
         </ListView>
         <TextBlock x:Name="Description" Style="{StaticResource LevelDescription}" Text="TextBlock" TextWrapping="Wrap"
-                   Grid.Row="2" HorizontalAlignment="Stretch"/>
-        <Button Content="Sideload" HorizontalAlignment="Right" Grid.Row="3" VerticalAlignment="Stretch">
+                   Grid.Row="1" HorizontalAlignment="Stretch"/>
+        <Button Content="Sideload" HorizontalAlignment="Right" Grid.Row="2" VerticalAlignment="Stretch">
             <Button.Flyout>
                 <Flyout>
                     <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
