@@ -20,7 +20,7 @@ namespace team5
         private bool IsClimbing = false;
         private bool JumpKeyWasUp = false;
         private bool HideKeyWasUp = false;
-        private bool PauseKeyWasUp = false;
+        private bool CrouchWasUp = false;
         private bool HasWallJumped = false;
         private float LongJump = 0;
         private int SoundFrame = 0;
@@ -30,6 +30,7 @@ namespace team5
         private readonly float AccelRate = 800;
         private readonly float DeaccelRate = 100;
         private readonly float ClimbSpeed = 70;
+        private readonly float CrouchSpeed = 70;
         private readonly float JumpSpeed = 150;
         private readonly float LongJumpTime = 15;
         private readonly Vector2 WallJumpVelocity = new Vector2(200, 200);
@@ -38,6 +39,7 @@ namespace team5
         private bool QueueHide = false;
         private Vector2 HidingSpot;
         public bool IsHiding { get; private set; }
+        public bool IsCrouched { get; private set; }
         public float DeathTimer = 0;
         public const float DeathDuration = 2;
 
@@ -62,6 +64,7 @@ namespace team5
             Sprite.Add("die",   38, 46, 0.8, 45);
             Sprite.Add("jump",  46, 49, 0.5, 48);
             Sprite.Add("fall",  49, 54, 0.3, 51);
+            Sprite.Add("crouchwalk", 6, 22, 1.6);
             
             Game.SoundEngine.Load("footstep");
         }
@@ -77,7 +80,7 @@ namespace team5
             Controller.Update();
             Sprite.Update(dt);
             
-            if(Controller.Pause && PauseKeyWasUp)
+            if(Controller.Pause)
                 Game.Paused = true;
 
             if (0 < DeathTimer)
@@ -89,6 +92,9 @@ namespace team5
                     Velocity.X = 0;
             }
 
+            if(Controller.Crouch && CrouchWasUp)
+                IsCrouched = !IsCrouched;
+                
             bool hide = Controller.Hide && HideKeyWasUp;
             bool jump = Controller.Jump && JumpKeyWasUp;
             
@@ -203,13 +209,14 @@ namespace team5
 
                 if (!IsClimbing || Grounded)
                 {
-                    if (Controller.MoveRight && Velocity.X < MaxVel)
+                    float max = (IsCrouched)? CrouchSpeed : MaxVel;
+                    if (Controller.MoveRight && Velocity.X < max)
                     {
                         // Allow quick turns on the ground
                         if (Velocity.X < 0 && Grounded) Velocity.X = 0;
                         Velocity.X += AccelRate * dt;
                     }
-                    else if (Controller.MoveLeft && -MaxVel < Velocity.X)
+                    else if (Controller.MoveLeft && -max < Velocity.X)
                     {
                         // Allow quick turns on the ground
                         if (0 < Velocity.X && Grounded) Velocity.X = 0;
@@ -223,6 +230,8 @@ namespace team5
                         else
                             Velocity.X -= Math.Sign(Velocity.X) * DeaccelRate * dt;
                     }
+                    else if(IsCrouched && max < Math.Abs(Velocity.X))
+                        Velocity.X = Math.Sign(Velocity.X)*max;
                 }
 
                 if (Controller.Jump && 0 < LongJump)
@@ -271,9 +280,10 @@ namespace team5
                 Velocity.X = 0;
                 Velocity.Y = 0;
             }
+            
             HideKeyWasUp = !Controller.Hide;
             JumpKeyWasUp = !Controller.Jump;
-            PauseKeyWasUp = !Controller.Pause;
+            CrouchWasUp = !Controller.Crouch;
             
             // Now that all movement has been updated, check for collisions
             HandleCollisions(dt, chunk, true);
@@ -309,11 +319,18 @@ namespace team5
                     }else if(Velocity.Y < 0)
                         Sprite.Play("fall");
                     else if(Velocity.X != 0){
-                        Sprite.Play("run");
-                        if((Sprite.Frame == 10 || Sprite.Frame == 18) && SoundFrame != Sprite.Frame){
-                            SoundFrame = Sprite.Frame;
-                            var sound = Game.SoundEngine.Play("footstep", Position, 0.8F);
-                            chunk.MakeSound(sound, 60, Position);
+                        if(IsCrouched)
+                        {
+                            Sprite.Play("crouchwalk");
+                        }
+                        else
+                        {
+                            Sprite.Play("run");
+                            if((Sprite.Frame == 10 || Sprite.Frame == 18) && SoundFrame != Sprite.Frame){
+                                SoundFrame = Sprite.Frame;
+                                var sound = Game.SoundEngine.Play("footstep", Position, 0.8F);
+                                chunk.MakeSound(sound, 60, Position);
+                            }
                         }
                     }else{
                         SoundFrame = 0;
@@ -348,8 +365,6 @@ namespace team5
             float dt = Game1.DeltaT;
             Controller.Update();
             Sprite.Update(dt);
-
-            PauseKeyWasUp = !Controller.Pause;
 
             switch (direction)
             {

@@ -53,6 +53,9 @@ namespace team5
             || pad.Buttons.X == ButtonState.Pressed
             || pad.Buttons.Y == ButtonState.Pressed;
         
+        public bool Crouch => key.IsKeyDown(Keys.LeftControl)
+            || pad.Buttons.LeftStick == ButtonState.Pressed;
+        
         public bool Pause => key.IsKeyDown(Keys.Escape)
             || pad.Buttons.Start == ButtonState.Pressed;
 
