@@ -25,7 +25,6 @@ namespace team5
         private float LongJump = 0;
         private int SoundFrame = 0;
 
-
         private readonly float Gravity = 800;
         private readonly float MaxVel = 150;
         private readonly float AccelRate = 800;
@@ -271,7 +270,7 @@ namespace team5
             }
             HideKeyWasUp = !Controller.Hide;
             JumpKeyWasUp = !Controller.Jump;
-            PauseKeyWasUp = !Controller.Quit;
+            PauseKeyWasUp = !Controller.Pause;
             
             // Now that all movement has been updated, check for collisions
             HandleCollisions(dt, chunk, true);
@@ -345,7 +344,7 @@ namespace team5
             Controller.Update();
             Sprite.Update(dt);
 
-            PauseKeyWasUp = !Controller.Quit;
+            PauseKeyWasUp = !Controller.Pause;
 
             switch (direction)
             {

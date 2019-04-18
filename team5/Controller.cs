@@ -53,11 +53,15 @@ namespace team5
             || pad.Buttons.X == ButtonState.Pressed
             || pad.Buttons.Y == ButtonState.Pressed;
         
-        public bool Quit => key.IsKeyDown(Keys.Escape)
+        public bool Pause => key.IsKeyDown(Keys.Escape)
             || pad.Buttons.Start == ButtonState.Pressed;
 
         public bool Enter => key.IsKeyDown(Keys.Enter)
             || Jump;
+
+        public bool Back => key.IsKeyDown(Keys.Back)
+            || pad.Buttons.B == ButtonState.Pressed
+            || pad.Buttons.Back == ButtonState.Pressed;
 
         public void Update()
         {

@@ -118,12 +118,12 @@ namespace team5
 
         public override void Update()
         {
-            if ((PauseKeyWasUp && Game.Controller.Quit) || (EnterKeyWasUp && Game.Controller.Enter))
+            if ((PauseKeyWasUp && Game.Controller.Pause) || (EnterKeyWasUp && Game.Controller.Enter))
             {
                 Level.ClosePopup();
             }
 
-            PauseKeyWasUp = !Game.Controller.Quit;
+            PauseKeyWasUp = !Game.Controller.Pause;
             EnterKeyWasUp = !Game.Controller.Enter;
         }
     }
