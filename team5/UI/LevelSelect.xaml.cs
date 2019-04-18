@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Windows.Graphics.Imaging;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
@@ -36,17 +37,26 @@ namespace team5.UI
     {
         public string Name => Content.name;
         public string Description => Content.description;
-        public BitmapImage Preview { get; }
+        public SoftwareBitmapSource Preview { get; }
         private LevelContent Content;
 
         public LevelPreview(string name)
         {
             Content = LevelContent.Read(name, true);
-            Preview = new BitmapImage();
+            Preview = new SoftwareBitmapSource();
             if (Content.previewData != null)
-            {
-                Preview.SetSource(Content.previewData.AsRandomAccessStream());
-            }
+                LoadPreview(Content.previewData);
+        }
+
+        // This dumbass workaround is necessary as the direct usage of
+        // BitmapImage.SetSource does not produce a bitmap at all, and 
+        // BitmapImage.SetSourceAsync crashes with an access violation.
+        // Thanks for the cool shit, Microsoft.
+        private async void LoadPreview(Stream preview)
+        {
+            var decoder = await BitmapDecoder.CreateAsync(preview.AsRandomAccessStream());
+            var bitmap = await decoder.GetSoftwareBitmapAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied);
+            await Preview.SetBitmapAsync(bitmap);
         }
     }
 }
