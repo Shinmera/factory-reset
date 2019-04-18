@@ -16,12 +16,11 @@ namespace team5
         private static readonly Vector2 PatrolSpeed = new Vector2(50, 0);
         private static readonly Vector2 ConeOffset = new Vector2(0, -2.5F);
 
-        private float Alertness = 0;
-        private const float AlertnessThreshold = 5;
-        private const float MaxAlertness = 20;
-        private const float MaxAlertIncrease = 10;
+        private bool NoDirSwitch = false;
+
         private const float BaseVolume = 100;
-        private const float MinVolume = 10;
+        private const float MinVolume = 15;
+        private const float AlertVolume = 5;
 
         private AnimatedSprite Sprite;
         private float EdgeTimer = 0;
@@ -76,9 +75,6 @@ namespace team5
         {
             float dt = Game1.DeltaT;
 
-            Alertness -= dt;
-            Alertness = Math.Min(Alertness, MaxAlertness);
-
             base.Update(chunk);
             Sprite.Update(dt);
             Sound.Position = Position;
@@ -100,7 +96,8 @@ namespace team5
                 case AIState.Waiting:
                     if(EdgeTimer <= 0)
                     {
-                        Sprite.Direction *= -1;
+                        if(!NoDirSwitch) Sprite.Direction *= -1;
+                        NoDirSwitch = false;
                         SetState(AIState.Patrolling);
                     }
                     else
@@ -146,7 +143,7 @@ namespace team5
             Sprite.Draw(Position+new Vector2(0, Size.Y));
         }
 
-        public void HearSound(Vector2 position, float volume)
+        public void HearSound(Vector2 position, float volume, Chunk chunk)
         {
             float sqrDist = (Position - position).LengthSquared();
 
@@ -155,11 +152,19 @@ namespace team5
                 return;
             }
 
-            Alertness += MaxAlertIncrease * volume / BaseVolume;
-
-            if (volume > MinVolume && Alertness > AlertnessThreshold && Math.Abs(position.Y - Position.Y) < Chunk.TileSize * 4 && State != AIState.Waiting && Math.Sign(position.X - Position.X) != Sprite.Direction)
+            if (chunk.IntersectLine(position, Position - position, 1, out float temp, false))
             {
-                EdgeTimer = EdgeWaitTime/2;
+                volume /= 2;
+            }
+
+            if (((volume > MinVolume) || chunk.ChunkAlarmState && (volume > AlertVolume)) && Math.Abs(position.Y - Position.Y) < Chunk.TileSize * 4 && Math.Sign(position.X - Position.X) != Sprite.Direction)
+            {
+                Sprite.Direction *= -1;
+                EdgeTimer = EdgeWaitTime* 1.5F;
+                if(State == AIState.Waiting)
+                {
+                    NoDirSwitch = true;
+                }
                 SetState(AIState.Waiting);
             }
         }

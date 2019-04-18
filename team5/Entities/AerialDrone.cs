@@ -26,6 +26,8 @@ namespace team5
             Searching,
             //Checking a heard sound
             Investigating,
+            //Checking a heard sound
+            CursorySearching,
         };
 
         /// <summary> The range of the viewcone</summary>
@@ -42,8 +44,8 @@ namespace team5
         private const float PatrolRange = 160;
         /// <summary> How far away from a target location the drone will search</summary>
         private const float SearchRange = 160;
-        /// <summary> How long the drone will search before giving up (obsolete by deactivation via alarm)</summary>
-        private const float SearchTime = 20;
+        /// <summary> How long the drone will search before giving up after an investigation</summary>
+        private const float SearchTime = 10;
         /// <summary> How long the drone will wait before wandering to a new spot (in patrol mode)</summary>
         private const float WaitTime = 5;
         /// <summary> How fast the drone turns during idling</summary>
@@ -53,6 +55,12 @@ namespace team5
         /// <summary> The amount of times the drone will attempt to find a new location to wander to before giving up and returning to spawn.</summary>
         private const int WanderSearchAttempts = 15;
 
+        private const float BaseVolume = 100;
+        private const float MinVolume = 10;
+        private const float AlertVolume = 5;
+        private const float HearingPrecision = Chunk.TileSize * 8;
+
+        private int PositionKnown = 0;
         #endregion
 
         #region Static Methods
@@ -401,14 +409,14 @@ namespace team5
             }
         }
         /// <summary> Wanders around a target location without waiting between new wanders</summary>
-        public void Search(Vector2 target, Chunk chunk)
+        public void Search(Vector2 target, Chunk chunk, float time, bool cursory = false)
         {
             Path = null;
-            StateTimer = 0;
+            StateTimer = time;
             TargetLocation = target;
             WanderLocation = target;
             FindWander(TargetLocation, SearchRange, chunk);
-            State = AIState.Searching;
+            State = cursory? AIState.CursorySearching : AIState.Searching;
         }
         /// <summary> Pathfinds back to the spawn</summary>
         public void Return(Chunk chunk)
@@ -438,6 +446,9 @@ namespace team5
 
         public override void Update(Chunk chunk)
         {
+            if(PositionKnown > 0)
+                --PositionKnown;
+
             float dt = Game1.DeltaT;
             
             Velocity = new Vector2();
@@ -451,7 +462,6 @@ namespace team5
                     }
                     break;
                 case AIState.Searching:
-
                     if (MoveTo(WanderLocation, SearchSpeed))
                     {
                         Velocity = new Vector2(0);
@@ -469,9 +479,28 @@ namespace team5
                             Target(TargetLocation, chunk);
                         }
                     }
+                    break;
+                case AIState.CursorySearching:
+                    if (MoveTo(WanderLocation, PatrolSpeed))
+                    {
+                        Velocity = new Vector2(0);
+                        bool foundSearch = false;
+                        for (int i = 0; i < WanderSearchAttempts; ++i)
+                        {
+                            if (FindWander(TargetLocation, PatrolRange, chunk))
+                            {
+                                foundSearch = true;
+                                break;
+                            }
+                        }
+                        if (!foundSearch)
+                        {
+                            Target(TargetLocation, chunk);
+                        }
+                    }
 
-                    StateTimer += dt;
-                    if(StateTimer >= SearchTime)
+                    StateTimer -= dt;
+                    if(StateTimer <= 0)
                     {
                         Return(chunk);
                     }
@@ -535,11 +564,26 @@ namespace team5
                         ++NextNode;
                         if (NextNode >= Path.Count)
                         {
-                            Search(Path[NextNode - 1], chunk);
+                            Search(Path[NextNode - 1], chunk, float.PositiveInfinity);
                         }
                         else
                         {
                             MoveTo(Path[NextNode], TargetSpeed);
+                        }
+                    }
+                    break;
+                case AIState.Investigating:
+                    if (MoveTo(Path[NextNode], SearchSpeed))
+                    {
+                        Velocity = new Vector2();
+                        ++NextNode;
+                        if (NextNode >= Path.Count)
+                        {
+                            Search(Path[NextNode - 1], chunk, SearchTime, true);
+                        }
+                        else
+                        {
+                            MoveTo(Path[NextNode], SearchSpeed);
                         }
                     }
                     break;
@@ -589,17 +633,68 @@ namespace team5
             Sprite.Draw(Position);
         }
 
-        public void HearSound(Vector2 Position, float volume)
+        public void HearSound(Vector2 position, float volume, Chunk chunk)
         {
-            //throw new NotImplementedException();
+            if (PositionKnown > 0)
+            {
+                return;
+            }
+
+            float sqrDist = (Position - position).LengthSquared();
+
+            if (sqrDist > SoundEngine.AudibleDistance * SoundEngine.AudibleDistance)
+            {
+                return;
+            }
+
+            if (chunk.IntersectLine(position, Position - position, 1, out float temp, false))
+            {
+                volume /= 2;
+            }
+
+            if (((volume > MinVolume) || chunk.ChunkAlarmState && (volume > AlertVolume)))
+            {
+                float precision = Math.Min(1, volume / BaseVolume);
+
+
+
+                for(int i = 0; i < 10; ++i)
+                {
+                    float angle = (float)Game.RNG.NextDouble() * 2 * (float)Math.PI;
+
+                    float dist = (1 - precision) * HearingPrecision;
+
+                    Vector2 dir = new Vector2((float)Math.Sin(angle), (float)Math.Cos(angle));
+
+                    if(chunk.IntersectLine(position, dir, dist + Size.X, out float location))
+                    {
+                        dist = location - Size.X;
+                    }
+                    
+                    if (Target(position + dir * dist, chunk))
+                    {
+                        if(State == AIState.Searching)
+                        {
+                            State = AIState.Targeting;
+                        }
+                        else if (State != AIState.Targeting && State != AIState.Investigating)
+                        {
+                            State = AIState.Investigating;
+                        }
+                        break;
+                    }
+                }
+                
+
+            }
         }
 
         public void Alert(Vector2 position, Chunk chunk)
         {
+            PositionKnown = 2;
             if (Target(position, chunk))
             {
                 State = AIState.Targeting;
-                StateTimer = float.NegativeInfinity;
             }
 
         }
