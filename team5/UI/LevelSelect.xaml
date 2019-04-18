@@ -10,14 +10,15 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="4*"/>
             <RowDefinition Height="15*"/>
-            <RowDefinition Height="8*"/>
+            <RowDefinition Height="6*"/>
+            <RowDefinition Height="2*"/>
         </Grid.RowDefinitions>
         <ListView ScrollViewer.HorizontalScrollMode="Enabled"
                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
                   ScrollViewer.VerticalScrollMode="Disabled"
                   ScrollViewer.VerticalScrollBarVisibility="Hidden" SelectedIndex="0" VerticalAlignment="Center"
                   IsItemClickEnabled="True" SelectionMode="Single" SingleSelectionFollowsFocus="True"
-                  x:Name="LevelList" Grid.Row="1" ItemClick="LevelSelected" SelectionChanged="SelectionChanged">
+                  x:Name="LevelList" Grid.Row="1" ItemClick="LevelSelected" SelectionChanged="SelectionChanged" HorizontalAlignment="Stretch">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal"></StackPanel>
@@ -33,6 +34,20 @@
             </ListView.ItemTemplate>
         </ListView>
         <TextBlock x:Name="Description" Style="{StaticResource LevelDescription}" Text="TextBlock" TextWrapping="Wrap"
-                   Grid.Row="2" VerticalAlignment="Stretch"/>
+                   Grid.Row="2" HorizontalAlignment="Stretch"/>
+        <Button Content="Sideload" HorizontalAlignment="Right" Grid.Row="3" VerticalAlignment="Stretch">
+            <Button.Flyout>
+                <Flyout>
+                    <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20*"/>
+                            <ColumnDefinition Width="5*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="SideloadUrl" PlaceholderText="http://example.com/..." Header="Level Archive URL" Grid.Column="0" Width="300"/>
+                        <Button Content="Load" Grid.Column="1" VerticalAlignment="Bottom" Click="Sideload" />
+                    </Grid>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
     </Grid>
 </Page>

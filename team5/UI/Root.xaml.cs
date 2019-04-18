@@ -50,7 +50,7 @@ namespace team5.UI
             Show(Game);
         }
 
-        public void LoadGame(string level = Game1.FirstLevel)
+        public void LoadGame(object level)
         {
             ShowGame();
             Game.Game.LoadLevel(level);

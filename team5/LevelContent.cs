@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
+using Windows.Web.Http;
 
 namespace team5
 {
@@ -50,6 +51,16 @@ namespace team5
             foreach(var entry in textures)
                 entry.Value.Close();
         }
+
+        public static LevelContent Read(object level, bool readMetadata=false)
+        {
+            if (level is string)
+                return Read((string)level, readMetadata);
+            else if (level is Uri)
+                return Read((Uri)level, readMetadata);
+            else
+                throw new ArgumentException(String.Format("{0} is not a valid level identifier. Must be a string or Uri.", level));
+        }
         
         public static LevelContent Read(String level, bool readMetadata = false)
         {
@@ -68,10 +79,21 @@ namespace team5
 
         public static async Task<LevelContent> ReadAsync(Uri uri, bool readMetadata = false)
         {
-            var file = await Windows.Storage.StorageFile.GetFileFromApplicationUriAsync(uri);
-            var asyncStream = await file.OpenSequentialReadAsync();
-            using (var stream = asyncStream.AsStreamForRead())
-                return Read(stream, readMetadata);
+            if (uri.Scheme.Equals("ms-appx"))
+            {
+                var file = await Windows.Storage.StorageFile.GetFileFromApplicationUriAsync(uri);
+                var asyncStream = await file.OpenSequentialReadAsync();
+                using (var stream = asyncStream.AsStreamForRead())
+                    return Read(stream, readMetadata);
+            }
+            else if (uri.Scheme.Equals("http") || uri.Scheme.Equals("https"))
+            {
+                var asyncStream = await new HttpClient().GetInputStreamAsync(uri);
+                using (var stream = asyncStream.AsStreamForRead())
+                    return Read(stream, readMetadata);
+            }
+            else
+                throw new ArgumentException(String.Format("{0} is not an acceptable Uri. Needs to be a local file, or http/s Url.", uri));
         }
         
         public static LevelContent Read(Stream stream, bool readMetadata = false)

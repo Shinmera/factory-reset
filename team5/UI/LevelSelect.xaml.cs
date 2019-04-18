@@ -43,6 +43,12 @@ namespace team5.UI
                     Previews.Add(new LevelPreview(file.Name.Substring(0, file.Name.Length - 4)));
             }
         }
+
+        private void Sideload(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            string url = SideloadUrl.Text;
+            Root.Current.LoadGame(new Uri(url));
+        }
     }
 
     public class LevelPreview

@@ -38,7 +38,7 @@ namespace team5.UI
             if(item.Name.Equals("New Game"))
             {
                 System.Diagnostics.Debug.WriteLine("Loading Game...");
-                Root.Current.LoadGame();
+                Root.Current.LoadGame(Game1.FirstLevel);
             }
             else if(item.Name.Equals("Quit"))
             {

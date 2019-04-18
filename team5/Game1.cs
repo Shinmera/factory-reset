@@ -68,10 +68,10 @@ namespace team5
             // FIXME: Should probably do this
         }
 
-        public void LoadLevel(string level=FirstLevel)
+        public void LoadLevel(object identifier)
         {
-            System.Diagnostics.Debug.WriteLine("Loading level proper...");
-            Level = new Level(this, level);
+            System.Diagnostics.Debug.WriteLine(String.Format("Loading level from {0}...", identifier));
+            Level = new Level(this, identifier);
             Level.LoadContent(Content);
             SoundEngine.LoadContent(Content);
 
