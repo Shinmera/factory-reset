@@ -23,6 +23,7 @@ namespace team5.UI
 
         private void SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if(e.AddedItems.Count <= 0) return;
             var level = (LevelPreview)e.AddedItems[0];
             Description.Text = level.Description;
         }
