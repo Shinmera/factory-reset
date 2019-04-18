@@ -38,7 +38,7 @@ namespace team5
 
             IsFixedTimeStep = true;
 
-            ActiveWindow = new LoadScreen();
+            ActiveWindow = new LoadScreen(this);
         }
 
         protected override void Initialize()
@@ -83,7 +83,7 @@ namespace team5
         {
             //Level.UnloadContent();
             //SoundEngine.UnloadContent(Content);
-            ActiveWindow = new LoadScreen();
+            ActiveWindow = new LoadScreen(this);
         }
 
         public bool Paused {

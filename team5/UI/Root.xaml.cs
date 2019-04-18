@@ -52,8 +52,10 @@ namespace team5.UI
 
         public void LoadGame(object level)
         {
-            ShowGame();
+            
             Game.Game.LoadLevel(level);
+
+            ShowGame();
         }
         
         private void OnBackRequested(object sender, BackRequestedEventArgs e)

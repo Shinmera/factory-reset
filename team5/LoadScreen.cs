@@ -1,10 +1,11 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 
 namespace team5
 {
     class LoadScreen : Window
     {
-        public LoadScreen() { }
+        public LoadScreen(Game1 game):base(game) { }
 
         public override void LoadContent(ContentManager content) {
             // FIXME
@@ -18,7 +19,7 @@ namespace team5
         }
         
         public override void Draw(){
-            // FIXME
+            Game.GraphicsDevice.Clear(Color.Black);
         }
     }
 }

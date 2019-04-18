@@ -28,7 +28,7 @@ namespace team5
         private Chunk TargetChunk;
         private int TransitionLingerTimer = 0;
         private const int TransitionLingerDuration = 40;
-        private float DeathFadeLingerTimer = 0;
+        private float DeathFadeLingerTimer = 1F;
         private const float DeathFadeLingerDuration = 1F;
 
         private List<Vector2> OverlayTriangles;
@@ -37,7 +37,7 @@ namespace team5
 
         private readonly List<Container> Popups = new List<Container>();
 
-        public Level(Game1 game, object identifier)
+        public Level(Game1 game, object identifier):base(game)
         {
             Player = new Player(new Vector2(0, 0), game);
             Camera = new Camera(Player, game);

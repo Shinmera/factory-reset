@@ -10,6 +10,12 @@ namespace team5
 {
     public abstract class Window
     {
+        protected Game1 Game;
+
+        public Window(Game1 game)
+        {
+            Game = game;
+        }
 
         public virtual void LoadContent(ContentManager content) {
         }
