@@ -30,7 +30,7 @@ namespace team5
         private readonly float AccelRate = 800;
         private readonly float DeaccelRate = 100;
         private readonly float ClimbSpeed = 70;
-        private readonly float CrouchSpeed = 70;
+        private readonly float CrouchSpeed = 60;
         private readonly float JumpSpeed = 150;
         private readonly float LongJumpTime = 15;
         private readonly Vector2 WallJumpVelocity = new Vector2(200, 200);
@@ -64,7 +64,8 @@ namespace team5
             Sprite.Add("die",   38, 46, 0.8, 45);
             Sprite.Add("jump",  46, 49, 0.5, 48);
             Sprite.Add("fall",  49, 54, 0.3, 51);
-            Sprite.Add("crouchwalk", 6, 22, 1.6);
+            Sprite.Add("crouch", 54, 55, 1.0);
+            Sprite.Add("crouchwalk", 55, 67, 1.0);
             
             Game.SoundEngine.Load("footstep");
         }
@@ -334,7 +335,10 @@ namespace team5
                         }
                     }else{
                         SoundFrame = 0;
-                        Sprite.Play("idle");
+                        if(IsCrouched)
+                            Sprite.Play("crouch");
+                        else
+                            Sprite.Play("idle");
                     }
                     // Base direction on movement
                     if (Velocity.X < 0)
