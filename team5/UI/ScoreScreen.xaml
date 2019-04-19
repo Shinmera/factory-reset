@@ -8,7 +8,8 @@
     mc:Ignorable="d"
     Style="{StaticResource GameOverlay}" Width="500" Height="Auto">
     <TextBlock Text="Level Complete" TextAlignment="Center" Style="{StaticResource OverlayHeader}"/>
-    <ListView x:Name="ScoreList" IsItemClickEnabled="False" FocusVisualPrimaryBrush="{x:Null}" FocusVisualSecondaryBrush="{x:Null}">
+    <ListView x:Name="ScoreList" IsItemClickEnabled="False" FocusVisualPrimaryBrush="{x:Null}" FocusVisualSecondaryBrush="{x:Null}"
+              IsTabStop="False">
         <ListView.ItemContainerStyle>
             <Style TargetType="ListViewItem">
                 <Setter Property="HorizontalContentAlignment"  Value="Stretch"></Setter>
@@ -27,7 +28,6 @@
             </DataTemplate>
         </ListView.ItemTemplate>
     </ListView>
-    <TextBlock x:Name="ScoreTotal" Style="{StaticResource ScoreTotal}" Text="100"/>
     <Button x:Name="Continue" Content="Continue" HorizontalAlignment="Center" Style="{StaticResource ScoreContinue}"
             Click="Continue_Click"/>
 </StackPanel>

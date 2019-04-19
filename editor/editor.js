@@ -568,16 +568,13 @@ class Chunk{
         var layers = new Array(this.layers);
         for(var i=0; i<layers.length; i++)
             layers[i] = "chunks/"+this.name+"-"+i+".png";
-        var background = this.background;
-        if(background)
-            background = background.name.substring(0, background.name.lastIndexOf("."));
         return {
             name: this.name,
             position: [ this.position[0]*tileSize, this.position[1]*tileSize ],
             layers: layers,
             tileset: this.tileset.name,
             storyItems: this.storyItems,
-            background: background
+            background: this.background
         };
     }
 
@@ -957,7 +954,10 @@ var newChunk = function(level){
             if(prompt.querySelector("#chunk-background").value)
                 await loadFile(prompt.querySelector("#chunk-background"), "data")
                 .then(loadImage, (e)=>showPrompt(".prompt.error", e))
-                .then(image => background = image);
+                .then(image => {
+                    image.name = image.name.substring(0, image.name.lastIndexOf("."));
+                    background = image;
+                });
             level.chunks.push(
                     new Chunk({
                         name: name,
@@ -991,7 +991,10 @@ var editChunk = function(chunk){
             if(prompt.querySelector("#chunk-background").value)
                 await loadFile(prompt.querySelector("#chunk-background"), "data")
                 .then(loadImage, (e)=>showPrompt(".prompt.error", e))
-                .then(image => chunk.background = image);
+                .then(image => {
+                    image.name = image.name.substring(0, image.name.lastIndexOf("."));
+                    chunk.background = image;
+                });
             return chunk;
         });
 };
