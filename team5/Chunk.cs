@@ -48,9 +48,11 @@ namespace team5
 
         private Texture2D Tileset, Solidset, Background;
 
-        private string[][] StoryItems;
+        public string[][] StoryItems;
 
-        private Dictionary<uint, TileType> tileObjects;
+        public int NextItem = 0;
+
+        private Dictionary<uint, TileType> TileObjects;
 
         #endregion
 
@@ -92,7 +94,7 @@ namespace team5
 
         public Chunk(Game1 game, Level level, LevelContent.Chunk chunk)
         {
-            tileObjects = new Dictionary<uint, TileType>
+            TileObjects = new Dictionary<uint, TileType>
             {
                 { (uint)Colors.SolidPlatform, new TilePlatform(game) },
                 { (uint)Colors.FallThrough, new TilePassThroughPlatform(game) },
@@ -156,6 +158,7 @@ namespace team5
                 CallAll((GameObject x) => { if (x is Entity) ((Entity)x).Respawn(this); });
                 //reset the alarm behavior
                 Level.Alarm.Detected = false;
+                Level.Alarm.ClearAlarm(this);
                 Level.Alarm.SetState(Alarm.AlarmState.Clear);
                 Level.Alarm.Drones = false;
                 Level.Camera.SnapToLocation();
@@ -281,8 +284,8 @@ namespace team5
             {
                 for (int y = minY; y < maxY; ++y)
                 {
-                    if (tileObjects.ContainsKey(GetTile(x, y)))
-                        action(tileObjects[GetTile(x, y)]);
+                    if (TileObjects.ContainsKey(GetTile(x, y)))
+                        action(TileObjects[GetTile(x, y)]);
                 }
             }
         }
@@ -562,7 +565,7 @@ namespace team5
 
             if(GetTile(x,y) == (uint)Colors.SolidPlatform)
             {
-                return tileObjects[(uint)Colors.SolidPlatform];
+                return TileObjects[(uint)Colors.SolidPlatform];
             }
 
             return null;
@@ -749,8 +752,8 @@ namespace team5
                 {
                     for (int y = minY; y < maxY; ++y)
                     {
-                        if (tileObjects.ContainsKey(GetTile(x,y))) {
-                            var tile = tileObjects[GetTile(x, y)];
+                        if (TileObjects.ContainsKey(GetTile(x,y))) {
+                            var tile = TileObjects[GetTile(x, y)];
 
                             if (tile is TileSolid)
                             {

@@ -20,7 +20,6 @@ namespace team5
         public int collected = 0;
         
         private readonly object Identifier;
-        private readonly Game1 Game;
         private bool ChunkTrans = false;
         private List<Chunk> TransitionChunks = new List<Chunk>();
         private int TransitionDirection = 0;
@@ -36,6 +35,7 @@ namespace team5
         public bool Paused = false;
 
         private readonly List<Container> Popups = new List<Container>();
+        private readonly List<Container> DeletedPopups = new List<Container>();
 
         public Level(Game1 game, object identifier):base(game)
         {
@@ -52,10 +52,16 @@ namespace team5
             }
         }
 
+        public void OpenDialogBox(string[] text)
+        {
+            Popups.Add(new DialogBox(text, "wellbutrin", 18, Game, this));
+            Paused = true;
+        }
+
         public void ClosePopup()
         {
-            Popups.RemoveAt(Popups.Count - 1);
-            if(Popups.Count == 0)
+            DeletedPopups.Add(Popups.Last());
+            if(Popups.Count == DeletedPopups.Count)
             {
                 Paused = false;
             }
@@ -63,8 +69,8 @@ namespace team5
 
         public void ClosePopup(Container popup)
         {
-            Popups.Remove(popup);
-            if (Popups.Count == 0)
+            DeletedPopups.Add(popup);
+            if (Popups.Count == DeletedPopups.Count)
             {
                 Paused = false;
             }
@@ -112,6 +118,8 @@ namespace team5
             if (Paused)
             {
                 Popups.ForEach((x)=>x.Update());
+                DeletedPopups.ForEach((x) => Popups.Remove(x));
+                DeletedPopups.Clear();
                 Camera.Update();
             }
             else

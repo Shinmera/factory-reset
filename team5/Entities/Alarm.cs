@@ -71,6 +71,10 @@ namespace team5
             chunk.ChunkAlarmState = false;
 
             chunk.CallAll(x => {
+                if (x is IEnemy)
+                {
+                    ((IEnemy)x).ClearAlarm(chunk);
+                }
                 if (x is AerialDrone)
                 {
                     ((AerialDrone)x).Respawn(chunk);
@@ -129,6 +133,8 @@ namespace team5
             Sprite.Draw();
             float full = (float)Math.Truncate(Timer);
             float rest = Timer - full;
+            Game.Transforms.ResetView();
+            Game.Transforms.TranslateView(new Vector2(Camera.TargetWidth, 300));
             Game.TextEngine.QueueText(full.ToString("00"), Game.Transforms*new Vector2(-30,0), 26,
                                       Color.White, TextEngine.Orientation.Left, TextEngine.Orientation.Center);
             Game.TextEngine.QueueText(rest.ToString(".00"), Game.Transforms*new Vector2(6,-2), 18,

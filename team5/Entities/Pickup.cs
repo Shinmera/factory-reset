@@ -32,8 +32,11 @@ namespace team5
 
             if (Collide(chunk.Level.Player, Game1.DeltaT, out int dirction, out float time, out bool corner))
             {
-                ++chunk.Level.collected;
-                chunk.Die(this);
+                if (chunk.NextItem < chunk.StoryItems.Length)
+                {
+                    chunk.Level.OpenDialogBox(chunk.StoryItems[chunk.NextItem++]);
+                    chunk.Die(this);
+                }
             }
         }
 

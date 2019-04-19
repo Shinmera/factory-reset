@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace team5
 {
-    class StaticCamera : Entity
+    class StaticCamera : Entity, IEnemy
     {
         protected AnimatedSprite Sprite;
         protected ConeEntity ViewCone;
@@ -58,6 +58,20 @@ namespace team5
         public override bool Contains(Vector2 point)
         {
             return false;
+        }
+
+        public void HearSound(Vector2 Position, float volume, Chunk chunk)
+        {
+        }
+
+        public void Alert(Vector2 Position, Chunk chunk)
+        {
+            ViewCone.SetColor(ConeEntity.AlertColor);
+        }
+
+        public void ClearAlarm(Chunk chunk)
+        {
+            ViewCone.SetColor(ConeEntity.ClearColor);
         }
     }
 }

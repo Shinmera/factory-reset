@@ -180,13 +180,13 @@ namespace team5
 
         public void Alert(Vector2 position, Chunk chunk)
         {
-            ViewCone.SetColor(ConeEntity.ClearColor);
+            ViewCone.SetColor(ConeEntity.AlertColor);
             AlertSignal.Play("alert");
         }
 
         public void ClearAlarm(Chunk chunk)
         {
-            ViewCone.SetColor(ConeEntity.AlertColor);
+            ViewCone.SetColor(ConeEntity.ClearColor);
         }
     }
 }

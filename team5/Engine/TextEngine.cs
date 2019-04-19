@@ -97,7 +97,7 @@ namespace team5
             bool lineWrapping = false, float textwidth = 0)
         {
             
-
+            
             SpriteFont font = Fonts[fontName];
 
             float scale = sizePx / font.LineSpacing * ViewScale;
@@ -109,7 +109,7 @@ namespace team5
             
             Vector2 size = font.MeasureString(text);
 
-            Vector2 pos = position;// * ViewScale;
+            Vector2 pos = position * ViewScale;
 
             
             // Update position based on text size.
@@ -162,19 +162,14 @@ namespace team5
                 SpriteBatch.Begin();
             }
 
-            //Mask.X = 0;
-            //Mask.Y = 0;
-            //Mask.Height = 640;
-            //Mask.Width = 640;
-
             if (Mask.Width != 0)
             {
-                /*
+                
                 Mask.X *= ViewScale;
                 Mask.Y *= ViewScale;
                 Mask.Width *= ViewScale;
                 Mask.Height *= ViewScale;
-                */
+                
                 Mask.Y = Game.GraphicsDevice.Viewport.Height - Mask.Y - Mask.Height;
                 SpriteBatch.GraphicsDevice.ScissorRectangle = Mask.GetRectangle();
             }

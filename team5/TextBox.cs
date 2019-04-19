@@ -19,9 +19,9 @@ namespace team5
         protected Texture2D Background;
 
         public int Anchor;
-        private bool PauseKeyWasUp = false;
+        public float TextOffset;
         private bool EnterKeyWasUp = false;
-        private Level Level { get { return (Level)Parent; } }
+        protected Level Level { get { return (Level)Parent; } }
 
         protected int TopPadding = 10;
         protected int LeftPadding = 10;
@@ -50,9 +50,9 @@ namespace team5
             Anchor = anchor;
         }
 
-        public void Initialize()
+        public void SetText(string text)
         {
-            Text = Game.TextEngine.TextWrap(Text, SizePx, Font, Background.Width - LeftPadding - RightPadding);
+            Text = Game.TextEngine.TextWrap(text.Trim(), SizePx, Font, Background.Width - LeftPadding - RightPadding);
         }
 
         public static void LoadStaticContent(ContentManager content)
@@ -69,27 +69,27 @@ namespace team5
         {
             float centerX;
             float centerY;
-            float scale = Game.GraphicsDevice.Viewport.Width / Level.Camera.GetTargetSize().X * 0.5F;
+
             if ((Anchor & Chunk.Left) != 0)
             {
-                centerX = scale * Background.Width/2;
+                centerX = Background.Width/2;
             }else if ((Anchor & Chunk.Right) != 0) { 
-                centerX = Game.GraphicsDevice.Viewport.Width - scale * Background.Width/2;
+                centerX = Level.Camera.GetTargetSize().X * 2 - Background.Width/2;
             }else{
-                centerX = Game.GraphicsDevice.Viewport.Width / 2;
+                centerX = Level.Camera.GetTargetSize().X;
             }
 
             if ((Anchor & Chunk.Down) != 0)
             {
-                centerY = scale * Background.Height / 2;
+                centerY = Background.Height / 2;
             }
             else if ((Anchor & Chunk.Up) != 0)
             {
-                centerY = Game.GraphicsDevice.Viewport.Height - scale * Background.Height / 2;
+                centerY = Level.Camera.GetTargetSize().Y * 2 - Background.Height / 2;
             }
             else
             {
-                centerY = Game.GraphicsDevice.Viewport.Height / 2;
+                centerY = Level.Camera.GetTargetSize().Y;
             }
 
             centerX += Position.X;
@@ -101,29 +101,31 @@ namespace team5
             
             Game.Transforms.Pop();
 
+            float scale = Game.GraphicsDevice.Viewport.Width / Level.Camera.GetTargetSize().X * 0.5F;
+
             Game.Transforms.PushView();
             Game.Transforms.ResetView();
             Game.Transforms.ScaleView(scale);
-            Game.Transforms.TranslateView(new Vector2(centerX, centerY));
+            Game.Transforms.TranslateView(scale * new Vector2(centerX, centerY));
+            
             BackgroundSprite.Draw();
             Game.Transforms.ResetView();
-            float textX = centerX - scale * (Background.Width/2 - LeftPadding);
-            float textY = centerY + scale * (Background.Height/2 - TopPadding);
-            Game.TextEngine.QueueText(Text, new Vector2(textX, textY), Color.White, Font, SizePx, TextEngine.Orientation.Left, TextEngine.Orientation.Top);
+            float textX = centerX - (Background.Width/2 - LeftPadding);
+            float textY = centerY + (Background.Height/2 - TopPadding);
+            Game.TextEngine.QueueText(Text, new Vector2(textX, textY + TextOffset), Color.White, Font, SizePx, TextEngine.Orientation.Left, TextEngine.Orientation.Top);
 
-            Game.TextEngine.DrawText(new RectangleF(textX, textY - scale*(Background.Height - TopPadding - BottomPadding), scale*(Background.Width - LeftPadding - RightPadding), scale*(Background.Height - TopPadding - BottomPadding)));
+            Game.TextEngine.DrawText(new RectangleF(textX, textY - (Background.Height - TopPadding - BottomPadding), (Background.Width - LeftPadding - RightPadding), (Background.Height - TopPadding - BottomPadding)));
 
             Game.Transforms.PopView();
         }
 
         public override void Update()
         {
-            if ((PauseKeyWasUp && Game.Controller.Pause) || (EnterKeyWasUp && Game.Controller.Enter))
+            if ((EnterKeyWasUp && Game.Controller.Enter))
             {
                 Level.ClosePopup();
             }
 
-            PauseKeyWasUp = !Game.Controller.Pause;
             EnterKeyWasUp = !Game.Controller.Enter;
         }
     }
