@@ -61,7 +61,7 @@ namespace team5
             chunk.CallAll(x => {
                 if (x is AerialDrone)
                 {
-                    ((AerialDrone)x).Return(chunk);
+                    ((AerialDrone)x).ClearAlarm(chunk);
                 }
             });
         }

@@ -171,6 +171,12 @@ namespace team5
 
         public void Alert(Vector2 position, Chunk chunk)
         {
+            ViewCone.SetColor(new Color(1, 0, 0, 0.2F));
+        }
+
+        public void ClearAlarm(Chunk chunk)
+        {
+            ViewCone.SetColor(new Color(0, 0.5F, 1, 0.2F));
 
         }
     }

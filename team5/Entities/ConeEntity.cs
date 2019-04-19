@@ -9,9 +9,10 @@ namespace team5
 {
     class ConeEntity : Entity
     {
-        #region Static Fields
-        public static readonly Color coneColor = new Color(1, 0, 0, 0.3F);
-        #endregion
+
+        public static readonly Color ClearColor = new Color(0, 0.5F, 0.7F, 0.2F);
+        public static readonly Color AlertColor = new Color(1, 0, 0, 0.2F);
+        public static readonly Color InspectColor = new Color(0.7F, 0.7F, 0, 0.2F);
 
         #region Static Functions
 
@@ -117,6 +118,7 @@ namespace team5
         /// <summary>Whether the occlusion has been computed.</summary>
         private bool ComputedOccludedRadius = false;
 
+        private Color ConeColor = ClearColor;
         #endregion
 
         #region Private Occlusion Fields
@@ -573,6 +575,11 @@ namespace team5
 
         #region Public Methods
 
+        public void SetColor(Color color)
+        {
+            ConeColor = color;
+        }
+
         /// <summary>Changes the position of the cone center</summary>
         public void UpdatePosition(Vector2 position)
         {
@@ -692,7 +699,7 @@ namespace team5
         public override void Draw()
         {
             if (ComputedOccludedRadius)
-                Game.TriangleEngine.DrawTriangles(Position, Triangles, coneColor);
+                Game.TriangleEngine.DrawTriangles(Position, Triangles, ConeColor);
         }
         #endregion
     }

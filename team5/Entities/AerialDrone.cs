@@ -56,8 +56,8 @@ namespace team5
         private const int WanderSearchAttempts = 15;
 
         private const float BaseVolume = 100;
-        private const float MinVolume = 10;
-        private const float AlertVolume = 5;
+        private const float MinVolume = 7;
+        private const float AlertVolume = 4;
         private const float HearingPrecision = Chunk.TileSize * 8;
 
         private int PositionKnown = 0;
@@ -417,12 +417,14 @@ namespace team5
             WanderLocation = target;
             FindWander(TargetLocation, SearchRange, chunk);
             State = cursory? AIState.CursorySearching : AIState.Searching;
+            ViewCone.SetColor(cursory ? ConeEntity.InspectColor : ConeEntity.AlertColor);
         }
         /// <summary> Pathfinds back to the spawn</summary>
         public void Return(Chunk chunk)
         {
             if(Target(Spawn, chunk))
                 State = AIState.Returning;
+            ViewCone.SetColor(ConeEntity.ClearColor);
         }
         /// <summary> Waits, swiveling the camera back and forth</summary>
         public void Wait()
@@ -431,6 +433,8 @@ namespace team5
             Velocity = new Vector2(0);
             StateTimer = 0;
             State = AIState.Waiting;
+
+            ViewCone.SetColor(ConeEntity.ClearColor);
         }
 
         #endregion
@@ -680,6 +684,7 @@ namespace team5
                         else if (State != AIState.Targeting && State != AIState.Investigating)
                         {
                             State = AIState.Investigating;
+                            ViewCone.SetColor(ConeEntity.InspectColor);
                         }
                         break;
                     }
@@ -695,7 +700,14 @@ namespace team5
             if (Target(position, chunk))
             {
                 State = AIState.Targeting;
+                ViewCone.SetColor(ConeEntity.AlertColor);
             }
+
+        }
+
+        public void ClearAlarm(Chunk chunk)
+        {
+            Return(chunk);
 
         }
 

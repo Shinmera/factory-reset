@@ -329,7 +329,7 @@ namespace team5
                             Sprite.Play("run");
                             if((Sprite.Frame == 10 || Sprite.Frame == 18) && SoundFrame != Sprite.Frame){
                                 SoundFrame = Sprite.Frame;
-                                var sound = Game.SoundEngine.Play("footstep", Position, 0.8F);
+                                var sound = Game.SoundEngine.Play("footstep", Position, 0.9F);
                                 chunk.MakeSound(sound, 60, Position);
                             }
                         }
