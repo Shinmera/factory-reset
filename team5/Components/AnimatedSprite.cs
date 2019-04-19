@@ -21,7 +21,7 @@ namespace team5
             /// <summary>The next animation to transition to when this one is done, or -1 to loop the animation</summary>
             public int Next;
             
-            public Animation(string name, int start, int stop, double duration, int loopStart = 0, int next = -1)
+            public Animation(string name, int start, int stop, double duration, int loopStart = -1, int next = -1)
             {
                 Name = name;
                 Start = start;

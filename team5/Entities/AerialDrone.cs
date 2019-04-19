@@ -228,6 +228,7 @@ namespace team5
         private ConeEntity ViewCone;
         /// <summary> Sprite used to draw this drone</summary>
         private AnimatedSprite Sprite;
+        private AnimatedSprite AlertSignal;
 
         /// <summary> Current AI State</summary>
         private AIState State = AIState.Waiting;
@@ -263,6 +264,7 @@ namespace team5
             WanderLocation = Position;
             TargetLocation = Position;
             Sprite = new AnimatedSprite(null, game, new Vector2(32, 32));
+            AlertSignal = new AnimatedSprite(null, game, new Vector2(16, 16));
             ViewCone = new ConeEntity(game, false);
 
             Direction = (float)game.RNG.NextDouble() * 2 * (float)Math.PI;
@@ -620,21 +622,30 @@ namespace team5
             ViewCone.UpdatePosition(Position);
             ViewCone.Middle = Direction;
             ViewCone.Update(chunk);
+            
+            AlertSignal.Update(dt);
             Sprite.Update(dt);
             base.Update(chunk);
         }
 
         public override void LoadContent(ContentManager content)
         {
+            // FIXME: Pool things out, since right now we're reloading the sprites for each
+            //        enemy instance.
             Sprite.Texture = content.Load<Texture2D>("Textures/aerial-drone");
             Sprite.Add("idle", 0, 4, 0.4);
             Sprite.Add("chase", 4, 12, 0.8, 8);
+            AlertSignal.Texture = content.Load<Texture2D>("Textures/alerts");
+            AlertSignal.Add("none", 20, 21, 1);
+            AlertSignal.Add("noise", 0, 10, 1, -1, 0);
+            AlertSignal.Add("alert", 10, 20, 1, -1, 0);
         }
 
         public override void Draw()
         {
             ViewCone.Draw();
             Sprite.Draw(Position);
+            AlertSignal.Draw(Position+new Vector2(0, 16));
         }
 
         public void HearSound(Vector2 position, float volume, Chunk chunk)
@@ -680,10 +691,12 @@ namespace team5
                         if(State == AIState.Searching)
                         {
                             State = AIState.Targeting;
+                            AlertSignal.Play("alert");
                         }
                         else if (State != AIState.Targeting && State != AIState.Investigating)
                         {
                             State = AIState.Investigating;
+                            AlertSignal.Play("noise");
                             ViewCone.SetColor(ConeEntity.InspectColor);
                         }
                         break;
@@ -700,6 +713,7 @@ namespace team5
             if (Target(position, chunk))
             {
                 State = AIState.Targeting;
+                AlertSignal.Play("alert");
                 ViewCone.SetColor(ConeEntity.AlertColor);
             }
 

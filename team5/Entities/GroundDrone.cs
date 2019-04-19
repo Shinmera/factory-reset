@@ -23,6 +23,7 @@ namespace team5
         private const float AlertVolume = 5;
 
         private AnimatedSprite Sprite;
+        private AnimatedSprite AlertSignal;
         private float EdgeTimer = 0;
         private AIState State = AIState.Patrolling;
 
@@ -33,6 +34,7 @@ namespace team5
         {
             Position = position;
             Sprite = new AnimatedSprite(null, game, new Vector2(32, 32));
+            AlertSignal = new AnimatedSprite(null, game, new Vector2(16, 16));
             ViewCone = new ConeEntity(game)
             {
                 Radius = Chunk.TileSize * 6
@@ -47,6 +49,10 @@ namespace team5
             Sprite.Texture = content.Load<Texture2D>("Textures/ground-drone");
             Sprite.Add("run", 0, 5, 0.5);
             Sprite.Add("idle", 5, 10, 0.5);
+            AlertSignal.Texture = content.Load<Texture2D>("Textures/alerts");
+            AlertSignal.Add("none", 20, 21, 1);
+            AlertSignal.Add("noise", 0, 10, 1, -1, 0);
+            AlertSignal.Add("alert", 10, 20, 1, -1, 0);
             Game.SoundEngine.Load("submarine");
             Sound = Game.SoundEngine.Play("submarine", Position);
             Sound.Loop = true;
@@ -77,6 +83,7 @@ namespace team5
 
             base.Update(chunk);
             Sprite.Update(dt);
+            AlertSignal.Update(dt);
             Sound.Position = Position;
 
             switch(State)
@@ -141,6 +148,7 @@ namespace team5
         {
             ViewCone.Draw();
             Sprite.Draw(Position+new Vector2(0, Size.Y));
+            AlertSignal.Draw(Position+new Vector2(0, Size.Y+8));
         }
 
         public void HearSound(Vector2 position, float volume, Chunk chunk)
@@ -166,18 +174,19 @@ namespace team5
                     NoDirSwitch = true;
                 }
                 SetState(AIState.Waiting);
+                AlertSignal.Play("noise");
             }
         }
 
         public void Alert(Vector2 position, Chunk chunk)
         {
             ViewCone.SetColor(ConeEntity.ClearColor);
+            AlertSignal.Play("alert");
         }
 
         public void ClearAlarm(Chunk chunk)
         {
             ViewCone.SetColor(ConeEntity.AlertColor);
-
         }
     }
 }
