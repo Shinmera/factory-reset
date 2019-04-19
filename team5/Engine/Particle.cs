@@ -8,13 +8,14 @@ namespace team5
     {
         public float dt = Game1.DeltaT;
         public Texture2D Texture { get; set; }
-        public Vector2 Position { get; set; }
-        public Vector2 Velocity { get; set; }
-        public float Angle { get; set; }
-        public float AngularVelocity { get; set; }
-        public Color Color { get; set; }
-        public float Size { get; set; }
-        public float TTL { get; set; }
+        public Vector2 Position;
+        public Vector2 Velocity;
+        public float Angle;
+        public float AngularVelocity;
+        public Color Color;
+        public float Size;
+        public float TTL;
+        private const float Gravity = 30; 
 
         public Particle(Texture2D texture, Vector2 position, Vector2 velocity,
             float angle, float angularVelocity, Color color, float size, float ttl)
@@ -32,6 +33,7 @@ namespace team5
         public void Update()
         {
             TTL -= dt;
+            Velocity.Y += dt * Gravity;
             Position += Velocity;
             Angle += AngularVelocity;
         }

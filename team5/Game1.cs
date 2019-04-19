@@ -59,6 +59,7 @@ namespace team5
 
         protected override void LoadContent()
         {
+            ParticleEmitter.LoadContent(Content);
             SpriteEngine.LoadContent(Content);
             TilemapEngine.LoadContent(Content);
             TriangleEngine.LoadContent(Content);
@@ -116,11 +117,13 @@ namespace team5
         
         protected override void Update(GameTime gameTime)
         {
+            ParticleEmitter.EmitterLocation = new Vector2(this.GraphicsDevice.DisplayMode.Width / 2, this.GraphicsDevice.DisplayMode.Height / 6);
             Controller.Update();
             base.Update(gameTime);
             Transforms.Reset();
             Transforms.ResetView();
             ActiveWindow.Update();
+            ParticleEmitter.Update();
         }
 
         protected override void Draw(GameTime gameTime)
@@ -128,6 +131,7 @@ namespace team5
             base.Draw(gameTime);
             GraphicsDevice.Clear(Color.CornflowerBlue);
             ActiveWindow.Draw();
+            ParticleEmitter.Draw();
         }
     }
 }
