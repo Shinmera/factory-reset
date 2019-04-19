@@ -130,39 +130,5 @@ namespace team5
             }
             Game.Transforms.Pop();
         }
-
-        /// <summary>
-        ///   Render the given tilemap using the tileset atlas.xs, with parallax.
-        /// </summary>
-        /// <param name="tilemap">The map texture, describing which tiles to render where.</param>
-        /// <param name="tileset">The set texture, describing individual tiles in an atlas.</param>
-        /// <param name="CameraPosition">The position of the Camera.</param>
-        /// <param name="distance">The distance of the tiles to the Camera.</param>
-        public void DrawParallax(Texture2D tilemap, Texture2D tileset, Vector2 pos, Vector2 CameraPosition, float distance)
-        {
-            Vector2 relPos = pos - CameraPosition;
-            Game.Transforms.Push();
-            Game.Transforms.Scale(1 / distance);
-            Game.Transforms.Translate(CameraPosition + relPos/distance);
-            GraphicsDevice device = Game.GraphicsDevice;
-
-            TileEffect.CurrentTechnique = TileEffect.Techniques["Tile"];
-            TileEffect.Parameters["viewSize"].SetValue(new Vector2(device.Viewport.Width, device.Viewport.Height));
-            TileEffect.Parameters["viewMatrix"].SetValue(Matrix.Invert(Game.Transforms.ViewMatrix));
-            TileEffect.Parameters["modelMatrix"].SetValue(Matrix.Invert(Game.Transforms.ModelMatrix));
-            TileEffect.Parameters["tileSize"].SetValue(Chunk.TileSize);
-            TileEffect.Parameters["tilemap"].SetValue(tilemap);
-            TileEffect.Parameters["tileset"].SetValue(tileset);
-
-            device.SetVertexBuffer(VertexBuffer);
-            device.Indices = IndexBuffer;
-            device.BlendState = BlendState.AlphaBlend;
-            foreach (EffectPass pass in TileEffect.CurrentTechnique.Passes)
-            {
-                pass.Apply();
-                device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, 2);
-            }
-            Game.Transforms.Pop();
-        }
     }
 }

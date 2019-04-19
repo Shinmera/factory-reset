@@ -16,6 +16,7 @@ namespace team5
         public readonly TriangleEngine TriangleEngine;
         public readonly SoundEngine SoundEngine;
         public readonly TextEngine TextEngine;
+        public readonly ParallaxEngine ParallaxEngine;
         public readonly ParticleEmitter ParticleEmitter;
         public readonly Transforms Transforms = new Transforms();
         public readonly Random RNG;
@@ -33,6 +34,7 @@ namespace team5
             TriangleEngine = new TriangleEngine(this);
             SoundEngine = new SoundEngine(this);
             TextEngine = new TextEngine(this);
+            ParallaxEngine = new ParallaxEngine(this);
             ParticleEmitter = new ParticleEmitter(this);
             Controller = new Controller();
             DeviceManager.GraphicsProfile = GraphicsProfile.HiDef;
@@ -61,6 +63,7 @@ namespace team5
             TilemapEngine.LoadContent(Content);
             TriangleEngine.LoadContent(Content);
             TextEngine.LoadContent(Content);
+            ParallaxEngine.LoadContent(Content);
             SoundEngine.LoadContent(Content);
             ActiveWindow.LoadContent(Content);
         }

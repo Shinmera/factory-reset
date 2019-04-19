@@ -111,6 +111,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Container.cs" />
+    <Compile Include="Engine\ParallaxEngine.cs" />
     <Compile Include="LoadScreen.cs" />
     <Compile Include="UI\GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>
