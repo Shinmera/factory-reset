@@ -59,9 +59,9 @@ namespace team5
             chunk.ChunkAlarmState = false;
 
             chunk.CallAll(x => {
-                if (x is AerialDrone)
+                if (x is IEnemy)
                 {
-                    ((AerialDrone)x).ClearAlarm(chunk);
+                    ((IEnemy)x).ClearAlarm(chunk);
                 }
             });
         }

@@ -10,7 +10,7 @@ namespace team5
     class ConeEntity : Entity
     {
 
-        public static readonly Color ClearColor = new Color(0, 0.5F, 0.7F, 0.2F);
+        public static readonly Color ClearColor = new Color(0, 0.3F, 0.5F, 0.2F);
         public static readonly Color AlertColor = new Color(1, 0, 0, 0.2F);
         public static readonly Color InspectColor = new Color(0.7F, 0.7F, 0, 0.2F);
 
