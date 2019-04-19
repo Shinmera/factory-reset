@@ -125,13 +125,16 @@
      :margin 0
      :padding 0
      :flex-shrink 0
-     :min-height 128px
+     :min-height 20%
      :max-height 20%
      :overflow-y scroll
      ("#info"
+      :display flex
       :background (hex FFFFFF)
       :font-family monospace
-      (>* :white-space pre))
+      ("#posXY" :margin-left auto)
+      (>* :white-space pre
+          :margin 0 1em))
      (>canvas
       :width 100%))))
   (>footer

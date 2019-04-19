@@ -53,6 +53,21 @@ var formatRGB = function(pixel){
     return "#"+("00000000" + string).slice(-8);
 };
 
+var abgrToRgba = function(abgr){
+    return(((abgr & 0x000000FF) << 24) >>>  0)
+        + (((abgr & 0x0000FF00) <<  8) >>>  0)
+        + (((abgr & 0x00FF0000) <<  0) >>>  8)
+        + (((abgr & 0xFF000000) <<  0) >>> 24);
+};
+
+var tileType = function(pixel){
+    for(var solid in solids){
+        if(abgrToRgba(solids[solid]) === pixel)
+            return solid;
+    }
+    return null;
+};
+
 var getImagePixels = function(image, dim){
     dim = dim || [image.width, image.height];
     tempcanvas.width = dim[0];
@@ -293,10 +308,10 @@ class Tileset{
         this.currentTile = [x, y];
 
         var tile = this.tileMap[y][x];
-        var format = formatRGB(getPixel(this.pixels, x*tileSize, y*tileSize));
+        var pixel = getPixel(this.pixels, x*tileSize, y*tileSize);
         document.querySelector("#selected").innerText = pad(tile[0], 3)+","+pad(tile[1], 3);
-        document.querySelector("#color").innerText = format;
-        console.log(this, "Selected tile", this.currentTile, tile, format);
+        document.querySelector("#color").innerText = formatRGB(pixel);
+        document.querySelector("#type").innerText = tileType(pixel);
         return this.currentTile;
     }
 
@@ -867,9 +882,9 @@ var selectTileEvent = function(ev){
 var button = 0;
 var editMapEvent = function(ev){
     ev.preventDefault();
+    var x = Math.floor(ev.offsetX/tilemap.clientWidth*tilemap.width/tileSize);
+    var y = Math.floor(ev.offsetY/tilemap.clientHeight*tilemap.height/tileSize);
     if(ev.buttons){
-        var x = Math.floor(ev.offsetX/tilemap.clientWidth*tilemap.width/tileSize);
-        var y = Math.floor(ev.offsetY/tilemap.clientHeight*tilemap.height/tileSize);    
         if(ev.altKey || ev.metaKey){
             var pixelIndex = ((level.chunk.layer.width*y)+x)*4;
             var r = level.chunk.layer.data[pixelIndex+0];
@@ -888,6 +903,7 @@ var editMapEvent = function(ev){
     }else{
         tilemap.style.cursor = "auto";
     }
+    document.querySelector("#posXY").innerText = pad(x, 3)+"x"+pad(y, 3);
     return false;
 };
 
