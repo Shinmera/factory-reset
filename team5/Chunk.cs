@@ -93,7 +93,8 @@ namespace team5
                 { (uint)Colors.FallThrough, new TilePassThroughPlatform(game) },
                 { (uint)Colors.BackgroundWall, new TileBackgroundWall(game) },
                 { (uint)Colors.Spike, new TileSpike(game) },
-                { (uint)Colors.HidingSpot, new TileHidingSpot(game) }
+                { (uint)Colors.HidingSpot, new TileHidingSpot(game) },
+                { (uint)Colors.Goal, new TileGoal(game) }
             };
 
             Game = game;

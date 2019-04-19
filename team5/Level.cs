@@ -127,6 +127,7 @@ namespace team5
             else
             {
                 Camera.Update();
+                Time += Game1.DeltaT;
 
                 RectangleF PlayerBB = Player.GetBoundingBox();
 

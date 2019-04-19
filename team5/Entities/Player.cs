@@ -118,6 +118,7 @@ namespace team5
 
             chunk.ForEachCollidingTile(this, (tile)=>{
                     if(tile is TileSpike) Kill();
+                    if(tile is TileGoal) Game.ShowScore();
                 });
 
             if (IsHiding || QueueHide)

@@ -109,6 +109,7 @@ namespace team5
         
         public void ShowScore()
         {
+            Level.Paused = true;
             var score = Level.Score();
             Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
                     ()=>UI.Root.Current.Game.ShowScore(score));
