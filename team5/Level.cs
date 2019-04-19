@@ -17,7 +17,9 @@ namespace team5
         public Player Player;
         public Camera Camera;
         public Alarm Alarm;
-        public int collected = 0;
+        public float Time = 0;
+        public int DeathCounter = 0;
+        public int AlertCounter = 0;
         
         private readonly object Identifier;
         private bool ChunkTrans = false;
@@ -328,6 +330,27 @@ namespace team5
 
                 Game.TriangleEngine.DrawTriangles(Camera.Position, OverlayTriangles, new Color(0,0,0,alpha));
             }
+        }
+        
+        public Dictionary<string, string> Score()
+        {
+            var result = new Dictionary<string, string>();
+            int minutes = (int)(Time / 60);
+            int seconds = (int)Time % 60;
+            int total = 0;
+            int collected = 0;
+            
+            foreach(var chunk in Chunks)
+            {
+                total += chunk.TotalPickups;
+                collected += chunk.NextItem;
+            }
+            
+            result.Add("Time", minutes+":"+seconds.ToString("00"));
+            result.Add("Pickups", collected+"/"+total);
+            result.Add("Alerts", AlertCounter+"");
+            result.Add("Deaths", DeathCounter+"");
+            return result;
         }
     }
 }

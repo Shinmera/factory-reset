@@ -167,8 +167,14 @@
     <Compile Include="UI\Options.xaml.cs">
       <DependentUpon>Options.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\PauseMenu.xaml.cs">
+      <DependentUpon>PauseMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Root.xaml.cs">
       <DependentUpon>Root.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ScoreScreen.xaml.cs">
+      <DependentUpon>ScoreScreen.xaml</DependentUpon>
     </Compile>
     <Compile Include="Window.cs" />
   </ItemGroup>
@@ -213,6 +219,14 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="UI\PauseMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\ScoreScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Style.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

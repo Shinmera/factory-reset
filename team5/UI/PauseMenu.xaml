@@ -1,0 +1,20 @@
+﻿<StackPanel x:Class="team5.UI.PauseMenu"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:local="using:team5.UI"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            mc:Ignorable="d"
+            HorizontalAlignment="Center" VerticalAlignment="Stretch" Width="300"
+            Style="{StaticResource GameOverlay}">
+    <TextBlock Text="Pause" TextAlignment="Center" Style="{StaticResource OverlayHeader}"/>
+    <ListView x:Name="PauseMenuList" SelectedIndex="0"
+                      IsItemClickEnabled="True" SelectionMode="Single" SingleSelectionFollowsFocus="True"
+                      ItemClick="PauseItemClick">
+        <ListView.ItemTemplate>
+            <DataTemplate x:DataType="x:String">
+                <TextBlock Text="{Binding}" Style="{StaticResource PauseItem}"/>
+            </DataTemplate>
+        </ListView.ItemTemplate>
+    </ListView>
+</StackPanel>

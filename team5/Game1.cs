@@ -106,6 +106,13 @@ namespace team5
                     ()=>UI.Root.Current.Game.Paused = value);
             }
         }
+        
+        public void ShowScore()
+        {
+            var score = Level.Score();
+            Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
+                    ()=>UI.Root.Current.Game.ShowScore(score));
+        }
 
         protected void Resize(int width, int height)
         {

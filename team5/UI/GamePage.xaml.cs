@@ -2,6 +2,7 @@
 using MonoGame.Framework;
 using Windows.UI.Xaml;
 using Windows.UI.Core;
+using System.Collections.Generic;
 
 namespace team5.UI
 {
@@ -13,7 +14,6 @@ namespace team5.UI
         {
             this.InitializeComponent();
             Game = XamlGame<Game1>.Create("", Windows.UI.Xaml.Window.Current.CoreWindow, Renderer);
-            PauseMenuList.ItemsSource = new string[]{"Continue","Restart","Quit to Menu"};
         }
 
         public void Back(BackRequestedEventArgs e)
@@ -23,35 +23,18 @@ namespace team5.UI
         }
 
         public bool Paused {
-            get { return (PauseMenu.Visibility == Visibility.Visible); }
+            get { return PauseMenu.Shown; }
             set
             {
                 if (value == Paused) return;
-                PauseMenu.Visibility = (value) ? Visibility.Visible : Visibility.Collapsed;
-                PauseMenuList.Focus(FocusState.Keyboard);
+                PauseMenu.Shown = value;
                 Game.Paused = value;
             }
         }
 
-        private void PauseItemClick(object sender, ItemClickEventArgs e)
+        public void ShowScore(Dictionary<string, string> score)
         {
-            if (PauseMenu.Visibility != Visibility.Visible) return;
-            Paused = false;
-
-            var item = (string)e.ClickedItem;
-            switch ((string)e.ClickedItem)
-            {
-                case "Continue":
-                    Game.Paused = false;
-                    break;
-                case "Restart":
-                    // FIXME: Restart the level
-                    break;
-                case "Quit to Menu":
-                    Game.UnloadLevel();
-                    Root.Current.ShowMenu();
-                    break;
-            }
+            ScoreScreen.Show(score);
         }
     }
 }

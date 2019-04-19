@@ -13,7 +13,7 @@ namespace team5.UI
         {
             this.InitializeComponent();
             Pages.Add(new MenuPage("New Game", null));
-            Pages.Add(new MenuPage("Load", new LevelSelect()));
+            Pages.Add(new MenuPage("Select Level", new LevelSelect()));
             Pages.Add(new MenuPage("Options", new Options()));
             Pages.Add(new MenuPage("Quit", null));
             SidePanel.ItemsSource = Pages;

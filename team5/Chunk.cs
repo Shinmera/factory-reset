@@ -43,15 +43,10 @@ namespace team5
 
         private Game1 Game;
         private readonly string TileSetName, BackgroundName;
-
         private Player Player;
-
         private Texture2D Tileset, Solidset, Background;
-
         public string[][] StoryItems;
-
         public int NextItem = 0;
-
         private Dictionary<uint, TileType> TileObjects;
 
         #endregion
@@ -65,16 +60,14 @@ namespace team5
         public Texture2D[] Layers;
         public Vector2 SpawnPosition;
         public Vector2 SpawnVelocity = Vector2.Zero;
-
         public uint Width;
         public uint Height;
         public readonly Vector2 Position;
         public Vector2 Size;
         public RectangleF BoundingBox;
-
         public bool ChunkAlarmState = false;
-
         public uint[] SolidTiles;
+        public int TotalPickups = 0;
 
         //Viewcones, intelligence
         List<Entity> CollidingEntities = new List<Entity>();
@@ -254,6 +247,7 @@ namespace team5
                                 NonCollidingEntities.Add(new GroundDrone(position, Game));
                                 break;
                             case (uint)Colors.Pickup:
+                                TotalPickups++;
                                 CollidingEntities.Add(new Pickup(position, Game));
                                 break;
                             case (uint)Colors.AerialDrone:

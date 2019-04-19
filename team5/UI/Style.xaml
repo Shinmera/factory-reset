@@ -50,10 +50,10 @@
         <Setter Property="FontSize" Value="20"/>
         <Setter Property="TextAlignment" Value="Center"/>
     </Style>
-    <Style x:Key="PauseMenu" TargetType="StackPanel">
+    <Style x:Key="GameOverlay" TargetType="StackPanel">
         <Setter Property="Background" Value="#A0000000"/>
     </Style>
-    <Style x:Key="PauseHeader" TargetType="TextBlock">
+    <Style x:Key="OverlayHeader" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource Wellbutrin}" />
         <Setter Property="FontSize" Value="36"/>
         <Setter Property="FontWeight" Value="Bold"/>
@@ -62,6 +62,32 @@
     <Style x:Key="PauseItem" TargetType="TextBlock">
         <Setter Property="TextAlignment" Value="Center"/>
         <Setter Property="FontFamily" Value="{StaticResource Wellbutrin}" />
+        <Setter Property="FocusVisualPrimaryThickness" Value="0"/>
+        <Setter Property="FocusVisualSecondaryThickness" Value="0"/>
+    </Style>
+    <Style x:Key="ScoreLabel" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource Wellbutrin}" />
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Foreground" Value="#A0A0A0"/>
+        <Setter Property="Margin" Value="5,0,0,0"/>
+    </Style>
+    <Style x:Key="ScoreValue" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource Wellbutrin}" />
+        <Setter Property="FontSize" Value="24"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="TextAlignment" Value="Right"/>
+        <Setter Property="Margin" Value="5,0,5,0"/>
+    </Style>
+    <Style x:Key="ScoreTotal" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource Wellbutrin}" />
+        <Setter Property="FontSize" Value="32"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="10,10,10,10"/>
+    </Style>
+    <Style x:Key="ScoreContinue" TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource Wellbutrin}" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="FocusVisualPrimaryThickness" Value="0"/>
         <Setter Property="FocusVisualSecondaryThickness" Value="0"/>
     </Style>
