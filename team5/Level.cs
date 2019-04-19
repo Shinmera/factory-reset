@@ -105,7 +105,7 @@ namespace team5
             Alarm.LoadContent(content);
 
             TextBox.LoadStaticContent(content);
-
+            DialogBox.LoadStaticContent(content);
         }
         
         public override void Resize(int width, int height)

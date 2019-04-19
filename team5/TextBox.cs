@@ -65,17 +65,21 @@ namespace team5
             };
         }
 
-        public override void Draw()
+        public Vector2 GetPos()
         {
             float centerX;
             float centerY;
 
             if ((Anchor & Chunk.Left) != 0)
             {
-                centerX = Background.Width/2;
-            }else if ((Anchor & Chunk.Right) != 0) { 
-                centerX = Level.Camera.GetTargetSize().X * 2 - Background.Width/2;
-            }else{
+                centerX = Background.Width / 2;
+            }
+            else if ((Anchor & Chunk.Right) != 0)
+            {
+                centerX = Level.Camera.GetTargetSize().X * 2 - Background.Width / 2;
+            }
+            else
+            {
                 centerX = Level.Camera.GetTargetSize().X;
             }
 
@@ -95,23 +99,24 @@ namespace team5
             centerX += Position.X;
             centerY += Position.Y;
 
-            Game.Transforms.Push();
-            Game.Transforms.Reset();
-            
-            
-            Game.Transforms.Pop();
+            return new Vector2(centerX, centerY);
+        }
+
+        public override void Draw()
+        {
+            Vector2 center = GetPos();
 
             float scale = Game.GraphicsDevice.Viewport.Width / Level.Camera.GetTargetSize().X * 0.5F;
 
             Game.Transforms.PushView();
             Game.Transforms.ResetView();
             Game.Transforms.ScaleView(scale);
-            Game.Transforms.TranslateView(scale * new Vector2(centerX, centerY));
+            Game.Transforms.TranslateView(scale * center);
             
             BackgroundSprite.Draw();
             Game.Transforms.ResetView();
-            float textX = centerX - (Background.Width/2 - LeftPadding);
-            float textY = centerY + (Background.Height/2 - TopPadding);
+            float textX = center.X - (Background.Width/2 - LeftPadding);
+            float textY = center.Y + (Background.Height/2 - TopPadding);
             Game.TextEngine.QueueText(Text, new Vector2(textX, textY + TextOffset), Color.White, Font, SizePx, TextEngine.Orientation.Left, TextEngine.Orientation.Top);
 
             Game.TextEngine.DrawText(new RectangleF(textX, textY - (Background.Height - TopPadding - BottomPadding), (Background.Width - LeftPadding - RightPadding), (Background.Height - TopPadding - BottomPadding)));

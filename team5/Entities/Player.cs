@@ -361,6 +361,11 @@ namespace team5
         {
             Velocity = chunk.SpawnVelocity;
             Position = chunk.SpawnPosition;
+
+            if (0 < Velocity.Y)
+            {
+                SoundFrame = 46;
+            }
         }
 
         public void Update(int direction, int lingerCounter, Chunk targetChunk)
