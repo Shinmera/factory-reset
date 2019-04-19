@@ -147,6 +147,18 @@
 /processorParam:TextureFormat=Color
 /build:Textures/ground-drone.png
 
+#begin Textures/particle.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/particle.png
+
 #begin Textures/player.png
 /importer:TextureImporter
 /processor:TextureProcessor

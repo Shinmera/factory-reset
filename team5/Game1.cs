@@ -16,6 +16,7 @@ namespace team5
         public readonly TriangleEngine TriangleEngine;
         public readonly SoundEngine SoundEngine;
         public readonly TextEngine TextEngine;
+        public readonly ParticleEmitter ParticleEmitter;
         public readonly Transforms Transforms = new Transforms();
         public readonly Random RNG;
         public readonly Controller Controller;
@@ -25,16 +26,17 @@ namespace team5
 
         public Game1()
         {
+            RNG = new Random();
             DeviceManager = new GraphicsDeviceManager(this);
             SpriteEngine = new SpriteEngine(this);
             TilemapEngine = new TilemapEngine(this);
             TriangleEngine = new TriangleEngine(this);
             SoundEngine = new SoundEngine(this);
             TextEngine = new TextEngine(this);
+            ParticleEmitter = new ParticleEmitter(this);
             Controller = new Controller();
             DeviceManager.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "Content";
-            RNG = new Random();
 
             IsFixedTimeStep = true;
 

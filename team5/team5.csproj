@@ -161,6 +161,8 @@
     <Compile Include="Transforms.cs" />
     <Compile Include="Engine\TextEngine.cs" />
     <Compile Include="Engine\TriangleEngine.cs" />
+    <Compile Include="Engine\Particle.cs" />
+    <Compile Include="Engine\ParticleEmitter.cs" />
     <Compile Include="UI\Options.xaml.cs">
       <DependentUpon>Options.xaml</DependentUpon>
     </Compile>
