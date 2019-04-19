@@ -15,9 +15,9 @@ namespace team5
         public class Chunk{
             public string name;
             public float[] position;
-            public String[] layers;
+            public string[] layers;
             public string tileset;
-            public String[] storyItems;
+            public string[][] storyItems;
             public Texture2D[] maps;
         };
         

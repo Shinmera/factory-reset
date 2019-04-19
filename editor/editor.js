@@ -1078,13 +1078,12 @@ var openLevel = function(){
 
 var saveLevel = function(){
     var zip = new JSZip();
-    var chunks = zip.folder("chunks");
     var data = level.serialize();
     for(var c=0; c<level.chunks.length; ++c){
         let chunk = level.chunks[c];
         for(var l=0; l<chunk.layers; ++l){
             var image = getImageBase64(chunk.pixels[l]);
-            chunks.file(data.chunks[c].layers[l], image, {"base64":true});
+            zip.file(data.chunks[c].layers[l], image, {"base64":true});
         }
     }
     if(level.preview)
