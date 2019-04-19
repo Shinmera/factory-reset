@@ -132,7 +132,7 @@ var loadFile = function(input, type){
         var fr = new FileReader();
         
         fr.onload = function(){
-            accept(fr.result, f.name);
+            accept([fr.result, f.name]);
         };
         fr.onabort = ()=>{reject("File loading got aborted.");};
         fr.onerror = ()=>{reject("File loading failed.");};
@@ -149,6 +149,10 @@ var loadFile = function(input, type){
 };
 
 var loadImage = function(data, name){
+    if(data.constructor === Array){
+        name = data[1];
+        data = data[0];
+    }
     var image = new Image();
     return new Promise(function(accept){
         image.onload = function(){
@@ -532,14 +536,17 @@ class Chunk{
     serialize(){
         var layers = new Array(this.layers);
         for(var i=0; i<layers.length; i++)
-            layers[0] = "chunks/"+this.name+"-"+i+".png"; 
+            layers[i] = "chunks/"+this.name+"-"+i+".png";
+        var background = this.background;
+        if(background)
+            background = background.name.substring(0, background.name.lastIndexOf("."));
         return {
             name: this.name,
             position: [ this.position[0]*tileSize, this.position[1]*tileSize ],
             layers: layers,
             tileset: this.tileset.name,
             storyItems: this.storyItems,
-            background: this.background.name
+            background: background
         };
     }
 
@@ -1000,7 +1007,7 @@ var editLevel = function(){
 var openLevel = function(){
     return openFile(".zip,application/zip")
         .then(input => loadFile(input, "array"))
-        .then(data => {
+        .then(([data]) => {
             var zip = new JSZip();
             var tilesets = [];
             return zip.loadAsync(data)
@@ -1042,7 +1049,7 @@ var saveLevel = function(){
     for(var c=0; c<level.chunks.length; ++c){
         let chunk = level.chunks[c];
         for(var l=0; l<chunk.layers; ++l){
-            var image = getImageBase64(chunk.layer(l));
+            var image = getImageBase64(chunk.pixels[l]);
             chunks.file(data.chunks[c].layers[l], image, {"base64":true});
         }
     }
