@@ -248,7 +248,7 @@ namespace team5
                         }
                     }
 
-                    if (TransitionChunks.Count == 1)
+                    if (TransitionChunks.Count == 1 && TargetChunk != LastActiveChunk)
                     {
                         if ((TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right))
                         {
