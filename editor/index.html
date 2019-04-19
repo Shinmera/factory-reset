@@ -51,11 +51,17 @@
         </div>
         <div class="row">
           <label for="level-tileset">Default tileset:</label>
-          <input id="level-tileset" type="file" />
+          <div class="file">
+            <input id="level-tileset" type="file" accept=".png,image/png" />
+            <img src="" />
+          </div>
         </div>
         <div class="row">
-          <label for="level-startchase">Start with chase:</label>
-          <input id="level-startchase" type="checkbox" />
+          <label for="level-preview">Preview:</label>
+          <div class="file">
+            <input id="level-preview" type="file" accept=".png,image/png" />
+            <img src="" class="preview" />
+          </div>
         </div>
         <input type="submit" value="Ok" />
       </form>
@@ -63,10 +69,6 @@
         <div class="row">
           <label for="chunk-name">Name:</label>
           <input id="chunk-name" placeholder="chunk" pattern="[a-zA-Z0-9]+" required />
-        </div>
-        <div class="row">
-          <label for="chunk-tileset">Tileset:</label>
-          <input id="chunk-tileset" type="file" />
         </div>
         <div class="row">
           <label for="chunk-width">Width:</label>
@@ -77,7 +79,21 @@
           <input id="chunk-height" type="number" min="26" value="26" />
         </div>
         <div class="row">
-          <label for="chunk-storyitems">Story Items:</label>
+          <label for="chunk-tileset">Tileset:</label>
+          <div class="file">
+            <input id="chunk-tileset" type="file" accept=".png,image/png" />
+            <img src="" />
+          </div>
+        </div>
+        <div class="row">
+          <label for="chunk-background">Parallax background:</label>
+          <div class="file">
+            <input id="chunk-background" type="file" accept=".png,image/png" />
+            <img src="" />
+          </div>
+        </div>
+        <div class="row">
+          <label for="chunk-storyitems">Story items:</label>
           <textarea id="chunk-storyitems"></textarea>
         </div>
         <input type="submit" value="Ok" />

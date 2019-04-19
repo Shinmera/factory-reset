@@ -132,7 +132,7 @@ var loadFile = function(input, type){
         var fr = new FileReader();
         
         fr.onload = function(){
-            accept(fr.result);
+            accept(fr.result, f.name);
         };
         fr.onabort = ()=>{reject("File loading got aborted.");};
         fr.onerror = ()=>{reject("File loading failed.");};
@@ -148,14 +148,23 @@ var loadFile = function(input, type){
     });
 };
 
-var loadImage = function(data){
+var loadImage = function(data, name){
     var image = new Image();
     return new Promise(function(accept){
         image.onload = function(){
             accept(image);
         };
         image.src = data;
+        image.name = name;
     });
+};
+
+var loadTileset = function(input){
+    var name = input.files[0].name;
+    name = name.substr(0, name.lastIndexOf("."));
+    return loadFile(input, "data")
+        .then(loadImage, (e)=>{showPrompt(".prompt.error", e); return null;})
+        .then(image => new Tileset({image: image, name: name}));
 };
 
 var openFile = function(type){
@@ -311,6 +320,7 @@ class Chunk{
         this.name = init.name || "chunk";
         this.position = init.position || [0, 0];
         this.currentLayer = 0;
+        this.background = init.background || null;
         this.tileset = init.tileset || level.defaultTileset;
         this.storyItems = init.storyItems || [];
         this.pixels = init.pixels;
@@ -528,7 +538,8 @@ class Chunk{
             position: [ this.position[0]*tileSize, this.position[1]*tileSize ],
             layers: layers,
             tileset: this.tileset.name,
-            storyItems: this.storyItems
+            storyItems: this.storyItems,
+            background: this.background.name
         };
     }
 
@@ -878,21 +889,14 @@ var zoomEvent = function(){
 };
 
 var openTileset = function(){
-    var name = null;
     return openFile(".png,image/png")
-        .then(input => {
-            name = input.files[0].name;
-            name = name.substr(0, name.lastIndexOf(".png"));
-            return loadFile(input, "data");
-        })
-        .then(data => loadImage(data))
-        .catch((e)=>{showPrompt(".prompt.error", e);})
-        .then(image => {
-            var tileset = new Tileset({name: name, image: image});
+        .then(async input => {
+            var tileset = await loadTileset(input);
             for(var chunk of level.chunks){
-                if(chunk.tileset.name == name){
+                if(chunk.tileset.name == tileset.name){
                     chunk.tileset = tileset;
-                    if(level.chunk == chunk) chunk.show();
+                    if(level.chunk == chunk)
+                        chunk.show();
                 }
             }
             return tileset.use();
@@ -903,88 +907,93 @@ var newChunk = function(level){
     return showPrompt(".prompt.chunk", {
         "#chunk-height": 26,
         "#chunk-width": 40})
-        .then((prompt)=>{
+        .then(async (prompt)=>{
             var name = prompt.querySelector("#chunk-name").value;
             var w = parseInt(prompt.querySelector("#chunk-width").value);
             var h = parseInt(prompt.querySelector("#chunk-height").value);
-            var complete = function(tileset){
-                level.chunks.push(
+            var tileset = level.defaultTileset;
+            var background = null;
+            if(prompt.querySelector("#chunk-tileset").value)
+                tileset = await loadTileset(prompt.querySelector("#chunk-tileset"));
+            if(prompt.querySelector("#chunk-background").value)
+                await loadFile(prompt.querySelector("#chunk-background"), "data")
+                .then(loadImage, (e)=>showPrompt(".prompt.error", e))
+                .then(image => background = image);
+            level.chunks.push(
                     new Chunk({
                         name: name,
                         width: w,
                         height: h,
                         tileset: tileset,
+                        background: background
                     }));
-                generateSidebar(level);
-                generateLevelmap(level);
-                return level.chunks[level.chunks.length-1];
-            };
-            if(prompt.querySelector("#chunk-tileset").value)
-                return loadFile(prompt.querySelector("#chunk-tileset"), "data")
-                .then(data => loadImage(data))
-                .then(image => complete(new Tileset({image: image})))
-                .catch((e)=>{showPrompt(".prompt.error", e);});
-            else
-                return complete(null);});
+            generateSidebar(level);
+            generateLevelmap(level);
+            return level.chunks[level.chunks.length-1];
+        });
 };
 
 var editChunk = function(chunk){
     return showPrompt(".prompt.chunk", {
         "#chunk-name": chunk.name,
         "#chunk-width": chunk.width,
-        "#chunk-height": chunk.height})
-        .then((prompt)=>{
+        "#chunk-height": chunk.height,
+        "#chunk-tileset+img": {src: chunk.tileset.image.src},
+        "#chunk-background+img": {src: (chunk.background)?chunk.background.src:""}})
+        .then(async (prompt)=>{
             chunk.name = prompt.querySelector("#chunk-name").value;
             chunk.resize(parseInt(prompt.querySelector("#chunk-width").value),
                          parseInt(prompt.querySelector("#chunk-height").value));
             chunk.uiElement.querySelector("header label").innerText = chunk.name;
             if(prompt.querySelector("#chunk-tileset").value)
-                return loadFile(prompt.querySelector("#chunk-tileset"), "data")
-                .then(data => loadImage(data))
-                .then(image => chunk.tileset = new Tileset({image: image}))
-                .catch((e)=>{showPrompt(".prompt.error", e);});
-            else
-                return chunk;
+                chunk.tileset = await loadTileset(prompt.querySelector("#chunk-tileset"));
+            if(prompt.querySelector("#chunk-background").value)
+                await loadFile(prompt.querySelector("#chunk-background"), "data")
+                .then(loadImage, (e)=>showPrompt(".prompt.error", e))
+                .then(image => chunk.background = image);
+            return chunk;
         });
 };
 
 var newLevel = function(){
     return showPrompt(".prompt.level")
-        .then((prompt)=>{
+        .then(async (prompt)=>{
             var name = prompt.querySelector("#level-name").value;
             var description = prompt.querySelector("#level-description").value;
-            var startChase = prompt.querySelector("#level-startchase").checked;
-            return loadFile(prompt.querySelector("#level-tileset"), "data")
-                .then(data => loadImage(data))
-                .then(image => new Level({
+            var preview = null;
+            var tileset = null;
+            if(prompt.querySelector("#level-preview").value)
+                await loadFile(prompt.querySelector("#level-preview"), "data")
+                .then(loadImage, (e)=>showPrompt(".prompt.error", e))
+                .then(image => preview = image);
+            if(prompt.querySelector("#level-tileset").value)
+                tileset = await loadTileset(prompt.querySelector("#level-tileset"));
+            return new Level({
                     name: name,
                     description: description,
+                    preview: preview,
                     startChase: startChase,
-                    defaultTileset: new Tileset({image: image}),
-                }).use())
-                .catch((e)=>{showPrompt(".prompt.error", e);});});
+                    defaultTileset: tileset,
+            });});
 };
 
 var editLevel = function(){
-    // FIXME: Preview
     return showPrompt(".prompt.level", {
         "#level-name": level.name,
         "#level-description": level.description,
-        "#level-startchase": (level.startChase)? "checked": ""})
-        .then((prompt)=>{
+        "#level-tileset+img": {src: (level.defaultTileset)?level.defaultTileset.image.src:""},
+        "#level-preview+img": {src: (level.preview)?level.preview.src:""}})
+        .then(async (prompt)=>{
             level.name = prompt.querySelector("#level-name").value;
             level.description = prompt.querySelector("#level-description").value;
-            level.startChase = prompt.querySelector("#level-startchase").checked;
             level.uiElement.querySelector("header label").innerText = level.name;
+            if(prompt.querySelector("#level-preview").value)
+                await loadFile(prompt.querySelector("#level-preview"), "data")
+                .then(loadImage, (e)=>showPrompt(".prompt.error", e))
+                .then(image => level.preview = image);
             if(prompt.querySelector("#level-tileset").value)
-                return loadFile(prompt.querySelector("#level-tileset"), "data")
-                .then(data => loadImage(data), (e)=>{showPrompt(".prompt.error", e);})
-                .then(image => { level.defaultTileset = new Tileset({image: image});
-                                 return level;
-                               })
-                .catch((e)=>{showPrompt(".prompt.error", e);});
-            else
-                return level;
+                level.defaultTileset = await loadTileset(prompt.querySelector("#level-tileset"));
+            return level;
         });
 };
 
@@ -996,7 +1005,7 @@ var openLevel = function(){
             var tilesets = [];
             return zip.loadAsync(data)
                 .then(zip => zip.file("level.json").async("string"))
-                .catch((e)=>{showPrompt(".prompt.error", e);})
+                .catch((e)=>showPrompt(".prompt.error", e))
                 .then(async data => {
                     var json = JSON.parse(data);
                     for(var i=0; i<json.chunks.length; i++){
@@ -1005,7 +1014,12 @@ var openLevel = function(){
                         chunk.position = [ chunk.position[0]/tileSize, chunk.position[1]/tileSize ];
                         chunk.pixels = [];
                         chunk.tileset = new Tileset({name: chunk.tileset});
-                        for(var l=0; l<chunk.layers; l++){
+                        if(chunk.background){
+                            var name = chunk.background;
+                            chunk.background = new Image();
+                            chunk.background.name = name;
+                        }
+                        for(var l=0; l<chunk.layers.length; l++){
                             var base64 = await zip.file(chunk.layers[l]).async("base64");
                             var image = await loadImage("data:image/png;base64,"+base64);
                             chunk.pixels[l] = getImagePixels(image);
@@ -1047,8 +1061,7 @@ var showPrompt = function(id, defaults){
     var prompt = prompts.querySelector(id);
     var ok = prompt.querySelector("input[type=submit]");
     if(typeof defaults === 'string' || defaults instanceof String){
-        prompt.querySelector(".message").innerText = defaults;
-        defaults = {};
+        defaults = {".message": {innerText: defaults}};
     }
     return new Promise((accept, reject) =>{
         var fail, succeed;
@@ -1086,7 +1099,12 @@ var showPrompt = function(id, defaults){
             }
         });
         for(var selector in defaults){
-            prompt.querySelector(selector).value = defaults[selector];
+            var element = prompt.querySelector(selector);
+            var value = defaults[selector];
+            if(value.constructor !== Object)
+                value = {value: value};
+            for(var key in value)
+                element[key] = value[key];
         }
         
         prompt.style.display = "block";

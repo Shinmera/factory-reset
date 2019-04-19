@@ -157,6 +157,13 @@
     :margin 10vh
     :border 2px solid (hex AAAAAA)
     :padding 0.3em
+    (.file
+     (* :display block)
+     ("img:not([src=\"\"])"
+      :max-height 256px
+      :max-width 100%)
+     ("img.preview"
+      :max-width 256px))
     (.row
      :display flex
      ((:or input textarea) :flex-grow 1))
