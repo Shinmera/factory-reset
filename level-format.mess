@@ -64,7 +64,7 @@ Chunk: {
   position: Vector,
   tileset: String,
   background: Null | String,
-  storyItems: [ String ],
+  storyItems: [ [ String ] ],
   layers: [ Path ]
 }
 

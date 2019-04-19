@@ -30,6 +30,22 @@ var level = null;
 var zoom = 1.0;
 
 /// Helper functions
+var parseStory = function(string){
+    var items = string.split("\n---\n");
+    for(var i in items){
+        items[i] = items[i].split("\n\n");
+    }
+    return items;
+};
+
+var printStory = function(story){
+    var items = [];
+    for(var item of story){
+        items.push(item.join("\n\n"));
+    }
+    return items.join("\n---\n");
+};
+
 var pad = function(string, length, char){
     char = char || " ";
     string = string+"";
@@ -961,12 +977,12 @@ var editChunk = function(chunk){
         "#chunk-name": chunk.name,
         "#chunk-width": chunk.width,
         "#chunk-height": chunk.height,
-        "#chunk-storyitems": chunk.storyItems.join("\n\n"),
+        "#chunk-storyitems": printStory(chunk.storyItems),
         "#chunk-tileset+img": {src: chunk.tileset.image.src},
         "#chunk-background+img": {src: (chunk.background)?chunk.background.src:""}})
         .then(async (prompt)=>{
             chunk.name = prompt.querySelector("#chunk-name").value;
-            chunk.storyItems = prompt.querySelector("#chunk-storyitems").value.split("\n\n");
+            chunk.storyItems = parseStory(prompt.querySelector("#chunk-storyitems").value);
             chunk.resize(parseInt(prompt.querySelector("#chunk-width").value),
                          parseInt(prompt.querySelector("#chunk-height").value));
             chunk.uiElement.querySelector("header label").innerText = chunk.name;

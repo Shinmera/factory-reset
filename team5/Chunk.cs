@@ -48,7 +48,7 @@ namespace team5
 
         private Texture2D Tileset, Solidset;
 
-        private string[] StoryItems;
+        private string[][] StoryItems;
 
         private Dictionary<uint, TileType> tileObjects;
 
