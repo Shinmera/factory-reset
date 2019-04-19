@@ -54,7 +54,7 @@ namespace team5
 
         public void OpenDialogBox(string[] text)
         {
-            Popups.Add(new DialogBox(text, "wellbutrin", 18, Game, this));
+            Popups.Add(new DialogBox(text, "wellbutrin", 14, Game, this));
             Paused = true;
         }
 
