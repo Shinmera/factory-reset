@@ -26,14 +26,14 @@ namespace team5
         private int SoundFrame = 0;
 
         private readonly float Gravity = 800;
-        private readonly float MaxVel = 150;
+        private readonly float MaxVel = 170;
         private readonly float AccelRate = 800;
         private readonly float DeaccelRate = 100;
         private readonly float ClimbSpeed = 70;
-        private readonly float CrouchSpeed = 60;
+        private readonly float CrouchSpeed = 50;
         private readonly float JumpSpeed = 150;
         private readonly float LongJumpTime = 15;
-        private readonly Vector2 WallJumpVelocity = new Vector2(200, 200);
+        private readonly Vector2 WallJumpVelocity = new Vector2(200, 250);
         private readonly float WallSlideFriction = 0.9F;
 
         private bool QueueHide = false;
