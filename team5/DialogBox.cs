@@ -10,7 +10,7 @@ namespace team5
 {
     class DialogBox : TextBox
     {
-        private bool EnterKeyWasUp = false;
+        private bool EnterKeyWasDown = false;
         private string[] TextArray;
         private int CurText = 0;
         private int CurNumLines;
@@ -36,7 +36,7 @@ namespace team5
 
         public override void Update()
         {
-            if ((EnterKeyWasUp && Game.Controller.Enter))
+            if ((EnterKeyWasDown && !Game.Controller.Enter))
             {
                 if(CurLine + MaxLines < CurNumLines)
                 {
@@ -60,7 +60,7 @@ namespace team5
                 }
             }
 
-            EnterKeyWasUp = !Game.Controller.Enter;
+            EnterKeyWasDown = Game.Controller.Enter;
         }
 
         public override void Draw()

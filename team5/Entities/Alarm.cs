@@ -38,6 +38,17 @@ namespace team5
             Sprite.Add("alert", 0, 1, 1.0);
         }
 
+        public void ContinueAlert(Vector2 pos, Chunk chunk)
+        {
+            chunk.ChunkAlarmState = true;
+
+            chunk.CallAll(x => {
+                if (x is IEnemy)
+                {
+                    ((IEnemy)x).Alert(pos, chunk);
+                }
+            });
+        }
 
         public void Alert(Vector2 pos, Chunk chunk)
         {

@@ -220,7 +220,7 @@ namespace team5
                                                 break;
                                         }
 
-                                        Alarm.Alert(Player.Position + Chunk.TileSize*2F*posOffset, TargetChunk);
+                                        Alarm.ContinueAlert(Player.Position + Chunk.TileSize*2F*posOffset, TargetChunk);
                                     }
                                     else
                                     {
