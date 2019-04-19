@@ -17,6 +17,7 @@ namespace team5
             public float[] position;
             public string[] layers;
             public string tileset;
+            public string background;
             public string[][] storyItems;
             public Texture2D[] maps;
         };

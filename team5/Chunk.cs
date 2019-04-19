@@ -42,11 +42,11 @@ namespace team5
         #region Private Fields
 
         private Game1 Game;
-        private readonly string TileSetName;
+        private readonly string TileSetName, BackgroundName;
 
         private Player Player;
 
-        private Texture2D Tileset, Solidset;
+        private Texture2D Tileset, Solidset, Background;
 
         private string[][] StoryItems;
 
@@ -106,6 +106,7 @@ namespace team5
             Position = new Vector2(chunk.position[0], chunk.position[1]);
             Layers = chunk.maps;
             TileSetName = chunk.tileset;
+            BackgroundName = chunk.background;
             StoryItems = chunk.storyItems;
         }
 
@@ -191,6 +192,9 @@ namespace team5
             }
             else
             {
+                if(Background != null)
+                    Game.ParallaxEngine.Draw(Background, Level.Camera.Position, Level.Camera.ViewScale);
+                
                 int mid = ((Layers.Length-1)/2)+1;
                 for(int i=1; i<mid; ++i)
                     Game.TilemapEngine.Draw(Layers[i], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
@@ -202,6 +206,8 @@ namespace team5
 
         public void LoadContent(ContentManager content)
         {
+            if(BackgroundName != null)
+                Background = content.Load<Texture2D>("Textures/"+BackgroundName);
             Tileset = Game.TilemapEngine.Tileset(TileSetName);
             Solidset = Game.TilemapEngine.Tileset("solid");
 
