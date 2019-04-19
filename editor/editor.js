@@ -961,10 +961,12 @@ var editChunk = function(chunk){
         "#chunk-name": chunk.name,
         "#chunk-width": chunk.width,
         "#chunk-height": chunk.height,
+        "#chunk-storyitems": chunk.storyItems.join("\n\n"),
         "#chunk-tileset+img": {src: chunk.tileset.image.src},
         "#chunk-background+img": {src: (chunk.background)?chunk.background.src:""}})
         .then(async (prompt)=>{
             chunk.name = prompt.querySelector("#chunk-name").value;
+            chunk.storyItems = prompt.querySelector("#chunk-storyitems").value.split("\n\n");
             chunk.resize(parseInt(prompt.querySelector("#chunk-width").value),
                          parseInt(prompt.querySelector("#chunk-height").value));
             chunk.uiElement.querySelector("header label").innerText = chunk.name;

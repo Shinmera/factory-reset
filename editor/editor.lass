@@ -154,6 +154,10 @@
     :border-color (hex FF5555)
     :box-shadow 0 0 50px (hex FF5555)
     (.message :margin 1em))
+   (.prompt.chunk
+    (textarea
+     :height 40vh
+     :width 60vw))
    (.prompt
     :display none
     :background (hex FFFFFF)
