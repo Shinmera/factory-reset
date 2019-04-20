@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<XnaContent xmlns:Graphics="Microsoft.Xna.Framework.Content.Pipeline.Graphics">
+  <Asset Type="Graphics:LocalizedFontDescription">
+    <FontName>PromptFont</FontName>
+    <Size>64</Size>
+    <Spacing>0</Spacing>
+    <UseKerning>true</UseKerning>
+    <Style>Regular</Style>
+    <!--
+      DPAD-L   0x219E
+      DPAD-U   0x219F
+      DPAD-R   0x21A0
+      DPAD-D   0x21A1
+      X        0x21A4
+      Y        0x21A5
+      B        0x21A6
+      A        0x21A7
+      L1       0x21B0
+      R1       0x21B1
+      L2       0x21B2
+      R2       0x21B3
+      L        0x21BA
+      R        0x21BB
+      L-L      0x21BC
+      R-L      0x21BD
+      L-U      0x21BE
+      R-U      0x21BF
+      L-R      0x21C0
+      R-R      0x21C1
+      L-D      0x21C2
+      R-D      0x21C3
+      A-L      0x21C7
+      A-U      0x21C8
+      A-R      0x21C9
+      A-D      0x21CA
+      A-UL     0x21D6
+      A-UR     0x21D7
+      A-DR     0x21D8
+      A-DL     0x21D9
+      SELECT   0x21F7
+      START    0x21F8
+      HOME     0x21F9
+    -->
+    <CharacterRegions>
+      <CharacterRegion>
+        <Start>8606</Start>
+        <End>8697</End>
+      </CharacterRegion>
+    </CharacterRegions>
+  </Asset>
+</XnaContent>

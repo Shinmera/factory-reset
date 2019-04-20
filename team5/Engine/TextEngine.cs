@@ -87,7 +87,7 @@ namespace team5
             Fonts = new Dictionary<string, SpriteFont>
             {
                 { DefaultFont, content.Load<SpriteFont>("Fonts/"+DefaultFont) },
-                { "crashed-scoreboard", content.Load<SpriteFont>("Fonts/crashed-scoreboard") }
+                { "promptfont", content.Load<SpriteFont>("Fonts/promptfont") }
             };
         }
 

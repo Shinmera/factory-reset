@@ -13,12 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin Fonts/crashed-scoreboard.spritefont
+#begin Fonts/promptfont.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:Fonts/crashed-scoreboard.spritefont
+/build:Fonts/promptfont.spritefont
 
 #begin Fonts/wellbutrin.spritefont
 /importer:FontDescriptionImporter
