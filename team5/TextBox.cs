@@ -14,6 +14,7 @@ namespace team5
         public string Text;
         public string Font;
         public float SizePx;
+        
 
         protected static Dictionary<string,Texture2D> Backgrounds;
         protected Texture2D Background;
@@ -21,6 +22,7 @@ namespace team5
         public int Anchor;
         public float TextOffset;
         protected Level Level { get { return (Level)Parent; } }
+        protected int CurLetters;
 
         protected int TopPadding = 10;
         protected int LeftPadding = 10;
@@ -52,6 +54,7 @@ namespace team5
         public void SetText(string text)
         {
             Text = Game.TextEngine.TextWrap(text.Trim(), SizePx, Font, Background.Width - LeftPadding - RightPadding);
+            CurLetters = Text.Length;
         }
 
         public static void LoadStaticContent(ContentManager content)
@@ -116,7 +119,7 @@ namespace team5
             Game.Transforms.ResetView();
             float textX = center.X - (Background.Width/2 - LeftPadding);
             float textY = center.Y + (Background.Height/2 - TopPadding);
-            Game.TextEngine.QueueText(Text, new Vector2(textX, textY + TextOffset), Color.White, Font, SizePx, TextEngine.Orientation.Left, TextEngine.Orientation.Top);
+            Game.TextEngine.QueueText(Text.Substring(0,CurLetters), new Vector2(textX, textY + TextOffset), Color.White, Font, SizePx, TextEngine.Orientation.Left, TextEngine.Orientation.Top);
 
             Game.TextEngine.DrawText(new RectangleF(textX, textY - (Background.Height - TopPadding - BottomPadding), (Background.Width - LeftPadding - RightPadding), (Background.Height - TopPadding - BottomPadding)));
 

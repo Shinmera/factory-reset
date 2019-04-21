@@ -16,6 +16,10 @@ namespace team5
         private int CurNumLines;
         private int CurLine = 0;
         private float MaxLines;
+        private float LetterTimer = 0;
+        private int CurMaxLetters;
+
+        public static float timePerLetter = 0.02f;
 
         private Texture2D AvatarTexture;
         private AnimatedSprite Avatar;
@@ -41,7 +45,8 @@ namespace team5
             MaxLines = (Background.Height - TopPadding - BottomPadding) / sizePx;
 
             SetText(TextArray[0]);
-
+            CurLetters = 1;
+            CurMaxLetters = Text.Length;
             CurNumLines = Text.Split('\n',StringSplitOptions.RemoveEmptyEntries).Length;
         }
 
@@ -56,9 +61,25 @@ namespace team5
 
         public override void Update()
         {
+            if(CurLetters < CurMaxLetters)
+            {
+                LetterTimer += Game1.DeltaT;
+
+                while(LetterTimer >= timePerLetter)
+                {
+                    LetterTimer -= timePerLetter;
+                    ++CurLetters;
+                }
+                CurLetters = Math.Min(CurMaxLetters, CurLetters);
+            }
+
             if ((Game.Controller.Interact && !Game.Controller.Was.Interact))
             {
-                if(CurLine + MaxLines < CurNumLines)
+                if (CurLetters < CurMaxLetters)
+                {
+                    CurLetters = CurMaxLetters;
+                }
+                else if (CurLine + MaxLines < CurNumLines)
                 {
                     CurLine += (int)Math.Floor(MaxLines - 0.3F);
                     TextOffset = CurLine * SizePx;
@@ -76,6 +97,9 @@ namespace team5
                         CurNumLines = Text.Split('\n').Length;
                         CurLine = 0;
                         TextOffset = 0;
+                        CurLetters = 1;
+                        CurMaxLetters = Text.Length;
+                        LetterTimer = 0;
                     }
                 }
             }
