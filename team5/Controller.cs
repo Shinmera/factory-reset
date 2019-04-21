@@ -60,7 +60,7 @@ namespace team5
             || pad.Buttons.Start == ButtonState.Pressed;
 
         public bool Enter => key.IsKeyDown(Keys.Enter)
-            || Jump;
+            || pad.Buttons.Y == ButtonState.Pressed;
 
         public bool Back => key.IsKeyDown(Keys.Back)
             || pad.Buttons.B == ButtonState.Pressed

@@ -112,6 +112,7 @@
     </Compile>
     <Compile Include="Container.cs" />
     <Compile Include="Engine\ParallaxEngine.cs" />
+    <Compile Include="Entities\HidingSpot.cs" />
     <Compile Include="Entities\TileGoal.cs" />
     <Compile Include="LoadScreen.cs" />
     <Compile Include="UI\GamePage.xaml.cs">
@@ -146,7 +147,6 @@
     <Compile Include="Chunk.cs" />
     <Compile Include="Entities\StaticCamera.cs" />
     <Compile Include="Entities\TileBackgroundWall.cs" />
-    <Compile Include="Entities\TileHidingSpot.cs" />
     <Compile Include="Entities\TilePassThroughPlatform.cs" />
     <Compile Include="Entities\TilePlatform.cs" />
     <Compile Include="Entities\TileSolid.cs" />

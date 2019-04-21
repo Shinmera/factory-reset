@@ -118,27 +118,27 @@ namespace team5
 
             chunk.ForEachCollidingTile(this, (tile)=>{
                     if(tile is TileSpike) Kill();
-                    if(tile is TileGoal) Game.ShowScore();
+                    else if(tile is TileGoal) Game.ShowScore();
                 });
-
-            if (IsHiding || QueueHide)
-            {
-                if (IsHiding)
-                {
-                    Grounded = true;
-                }
-
-                if (jump || hide || (HidingSpot + new Vector2(0, Size.Y - Chunk.TileSize / 2) - Position).Length() > Chunk.TileSize * 1.5)
-                {
-                    IsHiding = false;
-                    QueueHide = false;
-                }
-            }
-            else if (hide && chunk.AtHidingSpot(this, out HidingSpot))
-            {
-                QueueHide = true;
-                IsClimbing = false;
-            }
+            chunk.ForEachCollidingEntity(this, (entity)=>{
+                    if(entity is Pickup){
+                        Game.TextEngine.QueueButton(TextEngine.Button.Y, entity.Position+new Vector2(0, 32));
+                        if(Controller.Enter){
+                            if(chunk.NextItem < chunk.StoryItems.Length)
+                                chunk.Level.OpenDialogBox(chunk.StoryItems[chunk.NextItem++]);
+                            chunk.Die(entity);
+                        }
+                    }
+                    else if(entity is HidingSpot){
+                        Game.TextEngine.QueueButton(TextEngine.Button.Y, entity.Position+new Vector2(0, 40));
+                        if(hide){
+                            HidingSpot = entity.Position;
+                            hide = false;
+                            QueueHide = true;
+                            IsClimbing = false;
+                        }
+                    }
+                });
             
             if (!IsHiding && !QueueHide && DeathTimer <= 0)
             {
@@ -281,6 +281,8 @@ namespace team5
             {
                 Velocity.X = 0;
                 Velocity.Y = 0;
+                if(hide)
+                    IsHiding = false;
             }
             
             HideKeyWasUp = !Controller.Hide;

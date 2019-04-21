@@ -35,6 +35,14 @@ namespace team5
                 && point.X <= Position.X + Size.X
                 && point.Y <= Position.Y + Size.Y;
         }
+        
+        public bool Contains(BoxEntity box)
+        {
+            return Position.X - Size.X - box.Size.X <= box.Position.X
+                && Position.Y - Size.Y - box.Size.Y <= box.Position.Y
+                && box.Position.X <= Position.X + Size.X + box.Size.X
+                && box.Position.Y <= Position.Y + Size.Y + box.Size.Y;
+        }
 
         //Standard swept AABB
         //Source: https://www.gamedev.net/articles/programming/general-and-gameplay-programming/swept-aabb-collision-detection-and-response-r3084

@@ -93,7 +93,6 @@ namespace team5
                 { (uint)Colors.FallThrough, new TilePassThroughPlatform(game) },
                 { (uint)Colors.BackgroundWall, new TileBackgroundWall(game) },
                 { (uint)Colors.Spike, new TileSpike(game) },
-                { (uint)Colors.HidingSpot, new TileHidingSpot(game) },
                 { (uint)Colors.Goal, new TileGoal(game) }
             };
 
@@ -247,13 +246,17 @@ namespace team5
                             case (uint)Colors.GroundDrone:
                                 NonCollidingEntities.Add(new GroundDrone(position, Game));
                                 break;
+                            case (uint)Colors.AerialDrone:
+                                var drone = new AerialDrone(position, Game);
+                                NonCollidingEntities.Add(drone);
+                                break;
                             case (uint)Colors.Pickup:
                                 TotalPickups++;
                                 CollidingEntities.Add(new Pickup(position, Game));
                                 break;
-                            case (uint)Colors.AerialDrone:
-                                var drone = new AerialDrone(position, Game);
-                                NonCollidingEntities.Add(drone);
+                            case (uint)Colors.HidingSpot:
+                                if(GetTile(x, y-1) == (uint)Colors.SolidPlatform)
+                                    CollidingEntities.Add(new HidingSpot(position, Game));
                                 break;
                         }
                     }
@@ -284,6 +287,14 @@ namespace team5
                 }
             }
         }
+        
+        public void ForEachCollidingEntity(BoxEntity source, Action<Entity> action)
+        {
+            foreach(Entity e in CollidingEntities){
+                if(source.Contains(e.Position) || (e is BoxEntity && source.Contains((BoxEntity)e)))
+                    action(e);
+            }
+        }
 
         #endregion
 
@@ -297,50 +308,6 @@ namespace team5
             }
 
             return SolidTiles[(Height - y - 1)*Width + x];
-        }
-
-        public bool AtHidingSpot(Movable source, out Vector2 location)
-        {
-            var sourceBB = source.GetBoundingBox();
-
-            int minX = (int)Math.Max(Math.Floor((sourceBB.Left - BoundingBox.X) / TileSize), 0);
-            int minY = (int)Math.Max(Math.Floor((sourceBB.Bottom - BoundingBox.Y) / TileSize), 0);
-            int maxX = (int)Math.Min(Math.Floor((sourceBB.Right - BoundingBox.X) / TileSize) + 1, Width + 1);
-            int maxY = (int)Math.Min(Math.Floor((sourceBB.Top - BoundingBox.Y) / TileSize) + 1, Height + 1);
-
-            float closestSqr = float.PositiveInfinity;
-            int xpos = -1;
-            int ypos = -1;
-
-            for (int x = minX; x < maxX; ++x)
-            {
-                for (int y = minY; y < maxY; ++y)
-                {
-                    if (GetTile(x, y) == (uint)Colors.HidingSpot)
-                    {
-                        Vector2 tilePos = new Vector2(x * TileSize + BoundingBox.X + TileSize / 2, y * TileSize + BoundingBox.Y + TileSize / 2);
-
-                        float sqrdist = (tilePos - source.Position).LengthSquared();
-                        if (sqrdist < closestSqr)
-                        {
-                            closestSqr = sqrdist;
-                            xpos = x;
-                            ypos = y;
-                        }
-                    }
-                }
-            }
-
-            if (closestSqr == float.PositiveInfinity)
-            {
-                location = new Vector2(-1, -1);
-                return false;
-            }
-
-            while (GetTile(xpos, --ypos) == (uint)Colors.HidingSpot) ;
-
-            location = new Vector2(xpos * TileSize + BoundingBox.X + TileSize / 2, (ypos + 1) * TileSize + BoundingBox.Y + TileSize / 2);
-            return true;
         }
 
         //Dictionary is point to cw/ccw line
