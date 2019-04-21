@@ -20,7 +20,6 @@ namespace team5
 
         public int Anchor;
         public float TextOffset;
-        private bool EnterKeyWasUp = false;
         protected Level Level { get { return (Level)Parent; } }
 
         protected int TopPadding = 10;
@@ -126,12 +125,10 @@ namespace team5
 
         public override void Update()
         {
-            if ((EnterKeyWasUp && Game.Controller.Enter))
+            if ((!Game.Controller.Interact && Game.Controller.Was.Interact))
             {
                 Level.ClosePopup();
             }
-
-            EnterKeyWasUp = !Game.Controller.Enter;
         }
     }
 }

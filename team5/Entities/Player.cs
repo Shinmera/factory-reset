@@ -18,9 +18,6 @@ namespace team5
 
         private Controller Controller;
         private bool IsClimbing = false;
-        private bool JumpKeyWasUp = false;
-        private bool HideKeyWasUp = false;
-        private bool CrouchWasUp = false;
         private bool HasWallJumped = false;
         private float LongJump = 0;
         private int SoundFrame = 0;
@@ -93,11 +90,11 @@ namespace team5
                     Velocity.X = 0;
             }
 
-            if(Controller.Crouch && CrouchWasUp)
+            if(Controller.Crouch && !Controller.Was.Crouch)
                 IsCrouched = !IsCrouched;
                 
-            bool hide = Controller.Hide && HideKeyWasUp;
-            bool jump = Controller.Jump && JumpKeyWasUp;
+            bool hide = Controller.Hide && !Controller.Was.Hide;
+            bool jump = Controller.Jump && !Controller.Was.Jump;
             
             //// Perform movement stepping. 
             //// !! This code should never change Position !!
@@ -123,7 +120,7 @@ namespace team5
             chunk.ForEachCollidingEntity(this, (entity)=>{
                     if(entity is Pickup){
                         Game.TextEngine.QueueButton(TextEngine.Button.Y, entity.Position+new Vector2(0, 32));
-                        if(Controller.Enter){
+                        if(Controller.Interact){
                             if(chunk.NextItem < chunk.StoryItems.Length)
                                 chunk.Level.OpenDialogBox(chunk.StoryItems[chunk.NextItem++]);
                             chunk.Die(entity);
@@ -131,7 +128,7 @@ namespace team5
                     }
                     else if(entity is HidingSpot){
                         Game.TextEngine.QueueButton(TextEngine.Button.Y, entity.Position+new Vector2(0, 40));
-                        if(hide && !IsHiding){
+                        if(hide && !QueueHide && !IsHiding){
                             HidingSpot = entity.Position;
                             hide = false;
                             QueueHide = true;
@@ -284,10 +281,6 @@ namespace team5
                 if(hide)
                     IsHiding = false;
             }
-            
-            HideKeyWasUp = !Controller.Hide;
-            JumpKeyWasUp = !Controller.Jump;
-            CrouchWasUp = !Controller.Crouch;
             
             // Now that all movement has been updated, check for collisions
             HandleCollisions(dt, chunk, true);

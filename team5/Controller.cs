@@ -10,66 +10,82 @@ namespace team5
 {
     public class Controller
     {
+        public struct State{
+            public readonly bool MoveLeft, MoveRight, MoveUp, MoveDown, Jump, Climb, Hide, Crouch, Pause, Interact, Back;
+            public State(KeyboardState key, GamePadState pad){
+                MoveLeft = key.IsKeyDown(Keys.A)
+                    || key.IsKeyDown(Keys.Left)
+                    || pad.DPad.Left == ButtonState.Pressed
+                    || pad.ThumbSticks.Left.X < -0.25;
+
+                MoveRight = key.IsKeyDown(Keys.D)
+                    || key.IsKeyDown(Keys.Right)
+                    || pad.DPad.Right == ButtonState.Pressed
+                    || pad.ThumbSticks.Left.X > +0.25;
+
+                MoveUp = key.IsKeyDown(Keys.W)
+                    || key.IsKeyDown(Keys.Up)
+                    || pad.DPad.Up == ButtonState.Pressed
+                    || pad.ThumbSticks.Left.Y > +0.25;
+
+                MoveDown = key.IsKeyDown(Keys.S)
+                    || key.IsKeyDown(Keys.Down)
+                    || pad.DPad.Down == ButtonState.Pressed
+                    || pad.ThumbSticks.Left.Y < -0.25;
+
+                Jump = key.IsKeyDown(Keys.Space)
+                    || pad.Buttons.A == ButtonState.Pressed
+                    || pad.Buttons.B == ButtonState.Pressed;
+        
+                Climb = key.IsKeyDown(Keys.LeftShift)
+                    || pad.Buttons.LeftShoulder == ButtonState.Pressed
+                    || pad.Buttons.RightShoulder == ButtonState.Pressed
+                    || pad.Triggers.Left >= 0.5
+                    || pad.Triggers.Right >= 0.5;
+
+                Hide = key.IsKeyDown(Keys.F)
+                    || pad.Buttons.X == ButtonState.Pressed
+                    || pad.Buttons.Y == ButtonState.Pressed;
+        
+                Crouch = key.IsKeyDown(Keys.LeftControl)
+                    || pad.Buttons.LeftStick == ButtonState.Pressed;
+        
+                Pause = key.IsKeyDown(Keys.Escape)
+                    || pad.Buttons.Start == ButtonState.Pressed;
+
+                Interact = key.IsKeyDown(Keys.E)
+                    || pad.Buttons.Y == ButtonState.Pressed;
+
+                Back = key.IsKeyDown(Keys.Back)
+                    || pad.Buttons.B == ButtonState.Pressed
+                    || pad.Buttons.Back == ButtonState.Pressed;
+            }
+        };
+        
         readonly int gamepadIndex;
-        KeyboardState key;
-        GamePadState pad;
+        public State Is, Was;
         
         public Controller(int gamepadIndex=0)
         {
             this.gamepadIndex = gamepadIndex;
         }
 
-        public bool MoveLeft => key.IsKeyDown(Keys.A)
-            || key.IsKeyDown(Keys.Left)
-            || pad.DPad.Left == ButtonState.Pressed
-            || pad.ThumbSticks.Left.X < -0.25;
-
-        public bool MoveRight => key.IsKeyDown(Keys.D)
-            || key.IsKeyDown(Keys.Right)
-            || pad.DPad.Right == ButtonState.Pressed
-            || pad.ThumbSticks.Left.X > +0.25;
-
-        public bool MoveUp => key.IsKeyDown(Keys.W)
-            || key.IsKeyDown(Keys.Up)
-            || pad.DPad.Up == ButtonState.Pressed
-            || pad.ThumbSticks.Left.Y > +0.25;
-
-        public bool MoveDown => key.IsKeyDown(Keys.S)
-            || key.IsKeyDown(Keys.Down)
-            || pad.DPad.Down == ButtonState.Pressed
-            || pad.ThumbSticks.Left.Y < -0.25;
-
-        public bool Jump => key.IsKeyDown(Keys.Space)
-            || pad.Buttons.A == ButtonState.Pressed
-            || pad.Buttons.B == ButtonState.Pressed;
-        
-        public bool Climb => key.IsKeyDown(Keys.LeftShift)
-            || pad.Buttons.LeftShoulder == ButtonState.Pressed
-            || pad.Buttons.RightShoulder == ButtonState.Pressed
-            || pad.Triggers.Left >= 0.5
-            || pad.Triggers.Right >= 0.5;
-
-        public bool Hide => key.IsKeyDown(Keys.F)
-            || pad.Buttons.X == ButtonState.Pressed
-            || pad.Buttons.Y == ButtonState.Pressed;
-        
-        public bool Crouch => key.IsKeyDown(Keys.LeftControl)
-            || pad.Buttons.LeftStick == ButtonState.Pressed;
-        
-        public bool Pause => key.IsKeyDown(Keys.Escape)
-            || pad.Buttons.Start == ButtonState.Pressed;
-
-        public bool Enter => key.IsKeyDown(Keys.Enter)
-            || pad.Buttons.Y == ButtonState.Pressed;
-
-        public bool Back => key.IsKeyDown(Keys.Back)
-            || pad.Buttons.B == ButtonState.Pressed
-            || pad.Buttons.Back == ButtonState.Pressed;
+        public bool MoveLeft => Is.MoveLeft;
+        public bool MoveRight => Is.MoveRight;
+        public bool MoveUp => Is.MoveUp;
+        public bool MoveDown => Is.MoveDown;
+        public bool Jump => Is.Jump;
+        public bool Climb => Is.Climb;
+        public bool Hide => Is.Hide;
+        public bool Crouch => Is.Crouch;
+        public bool Pause => Is.Pause;
+        public bool Interact => Is.Interact;
+        public bool Back => Is.Back;
 
         public void Update()
         {
-            key = Keyboard.GetState();
-            pad = GamePad.GetState(gamepadIndex);
+            Was = Is;
+            Is = new State(Keyboard.GetState(), GamePad.GetState(gamepadIndex));
         }
     }
 }
