@@ -86,7 +86,7 @@ namespace team5
                 
             }
 
-            if ((Game.Controller.Interact && !Game.Controller.Was.Interact))
+            if ((!Game.Controller.Advance && Game.Controller.Was.Advance))
             {
                 if (CurLetters < CurMaxLetters)
                 {
