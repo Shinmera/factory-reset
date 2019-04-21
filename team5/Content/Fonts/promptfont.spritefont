@@ -7,44 +7,44 @@
     <UseKerning>true</UseKerning>
     <Style>Regular</Style>
     <!--
-      DPAD-L   0x219E
-      DPAD-U   0x219F
-      DPAD-R   0x21A0
-      DPAD-D   0x21A1
-      X        0x21A4
-      Y        0x21A5
-      B        0x21A6
-      A        0x21A7
-      L1       0x21B0
-      R1       0x21B1
-      L2       0x21B2
-      R2       0x21B3
-      L        0x21BA
-      R        0x21BB
-      L-L      0x21BC
-      R-L      0x21BD
-      L-U      0x21BE
-      R-U      0x21BF
-      L-R      0x21C0
-      R-R      0x21C1
-      L-D      0x21C2
-      R-D      0x21C3
-      A-L      0x21C7
-      A-U      0x21C8
-      A-R      0x21C9
-      A-D      0x21CA
-      A-UL     0x21D6
-      A-UR     0x21D7
-      A-DR     0x21D8
-      A-DL     0x21D9
-      SELECT   0x21F7
-      START    0x21F8
-      HOME     0x21F9
+      DPAD-L   0x00AF
+      DPAD-U   0x00B0
+      DPAD-R   0x00B1
+      DPAD-D   0x00B2
+      X        0x00B5
+      Y        0x00B6
+      B        0x00B7
+      A        0x00B8
+      L1       0x00C1
+      R1       0x00C2
+      L2       0x00C3
+      R2       0x00C4
+      L        0x00CB
+      R        0x00CC
+      L-L      0x00CD
+      R-L      0x00CE
+      L-U      0x00CF
+      R-U      0x00D0
+      L-R      0x00D1
+      R-R      0x00D2
+      L-D      0x00D3
+      R-D      0x00D4
+      A-L      0x00D8
+      A-U      0x00D9
+      A-R      0x00DA
+      A-D      0x00DB
+      A-UL     0x00E7
+      A-UR     0x00E8
+      A-DR     0x00E9
+      A-DL     0x00EA
+      SELECT   0x0108
+      START    0x0109
+      HOME     0x010A
     -->
     <CharacterRegions>
       <CharacterRegion>
-        <Start>8606</Start>
-        <End>8697</End>
+        <Start>175</Start>
+        <End>266</End>
       </CharacterRegion>
     </CharacterRegions>
   </Asset>

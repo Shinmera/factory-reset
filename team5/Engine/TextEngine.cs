@@ -23,6 +23,42 @@ namespace team5
             }
         };
         
+        public enum Button : int{
+            DpadL   = 0x00AF,
+            DpadU   = 0x00B0,
+            DpadR   = 0x00B1,
+            DpadD   = 0x00B2,
+            X       = 0x00B5,
+            Y       = 0x00B6,
+            B       = 0x00B7,
+            A       = 0x00B8,
+            L1      = 0x00C1,
+            R1      = 0x00C2,
+            L2      = 0x00C3,
+            R2      = 0x00C4,
+            L       = 0x00CB,
+            R       = 0x00CC,
+            LL      = 0x00CD,
+            RL      = 0x00CE,
+            LU      = 0x00CF,
+            RU      = 0x00D0,
+            LR      = 0x00D1,
+            RR      = 0x00D2,
+            LD      = 0x00D3,
+            RD      = 0x00D4,
+            AL      = 0x00D8,
+            AU      = 0x00D9,
+            AR      = 0x00DA,
+            AD      = 0x00DB,
+            AUL     = 0x00E7,
+            AUR     = 0x00E8,
+            ADR     = 0x00E9,
+            ADL     = 0x00EA,
+            Select  = 0x0108,
+            Start   = 0x0109,
+            Home    = 0x010A
+        };
+        
         public enum Orientation{
             Left, Top,
             Right, Bottom,
@@ -141,6 +177,18 @@ namespace team5
         
         public void QueueText(string text, Vector2 position, float sizePx, Color color, Orientation horizontal=Orientation.Left, Orientation vertical=Orientation.Bottom){
             QueueText(text, position, color, DefaultFont, sizePx, horizontal, vertical);
+        }
+        
+        public void QueueButton(Button button, Vector2 worldPosition){
+            // Translate world coordinates into window coordinates
+            var w = Camera.TargetWidth*2;
+            var h = Camera.TargetWidth*2 * 1080 / 1920;
+            Vector2 window = Game.Transforms * worldPosition;
+            window = (window + new Vector2(1, 1))/2;
+            window.X *= w; window.Y *= h;
+            // Translate button and queue draw
+            string text = Char.ConvertFromUtf32((int)button);
+            QueueText(text, window, "promptfont", DefaultSize, Orientation.Center, Orientation.Center);
         }
 
         public void Resize(int width, int height)

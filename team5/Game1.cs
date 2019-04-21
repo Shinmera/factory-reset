@@ -137,6 +137,7 @@ namespace team5
             base.Draw(gameTime);
             GraphicsDevice.Clear(Color.CornflowerBlue);
             ActiveWindow.Draw();
+            TextEngine.DrawText();
         }
     }
 }

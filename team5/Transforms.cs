@@ -179,11 +179,10 @@ namespace team5
         
         /// <summary>
         ///   Transforms the given vector by the transform matrices.
-        ///   Returns the equivalent of: vec2(ViewMatrix*ModelMatrix*vec4(vec))
         /// </summary>
         public Vector2 Transform(Vector2 vec)
         {
-            return ViewStack.Transform(ModelStack.Transform(vec));
+            return Vector2.Transform(ViewStack.Transform(ModelStack.Transform(vec)), ProjectionMatrix);
         }
         
         /// <summary>
