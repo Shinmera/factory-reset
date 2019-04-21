@@ -72,7 +72,7 @@ namespace team5
             {
                 LetterTimer += Game1.DeltaT;
 
-                while(LetterTimer >= timePerLetter)
+                while(LetterTimer >= timePerLetter && CurLetters < CurMaxLetters)
                 {
                     LetterTimer -= timePerLetter;
                     ++CurLetters;
