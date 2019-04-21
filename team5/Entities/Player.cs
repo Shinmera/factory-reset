@@ -119,7 +119,8 @@ namespace team5
                 });
             chunk.ForEachCollidingEntity(this, (entity)=>{
                     if(entity is Pickup){
-                        Game.TextEngine.QueueButton(TextEngine.Button.Y, entity.Position+new Vector2(0, 32));
+                        Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position+new Vector2(0, 36));
+                        Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
                         if(Controller.Interact){
                             if(chunk.NextItem < chunk.StoryItems.Length)
                                 chunk.Level.OpenDialogBox(chunk.StoryItems[chunk.NextItem++]);
@@ -127,7 +128,8 @@ namespace team5
                         }
                     }
                     else if(entity is HidingSpot){
-                        Game.TextEngine.QueueButton(TextEngine.Button.Y, entity.Position+new Vector2(0, 40));
+                        Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position+new Vector2(0, 36));
+                        Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
                         if(hide && !QueueHide && !IsHiding){
                             HidingSpot = entity.Position;
                             hide = false;

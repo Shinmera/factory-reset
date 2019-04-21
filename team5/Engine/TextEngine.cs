@@ -179,16 +179,25 @@ namespace team5
             QueueText(text, position, color, DefaultFont, sizePx, horizontal, vertical);
         }
         
-        public void QueueButton(Button button, Vector2 worldPosition){
-            // Translate world coordinates into window coordinates
+        public void QueueButton(Button button, Vector2 position, Color color)
+        {
+            string text = Char.ConvertFromUtf32((int)button);
+            QueueText(text, position, color, "promptfont", DefaultSize, Orientation.Center, Orientation.Center);
+        }
+        
+        public void QueueButton(Button button, Vector2 position)
+        {
+            QueueButton(button, position, Color.Black);
+        }
+        
+        public Vector2 TranslateToWindow(Vector2 worldPosition)
+        {
             var w = Camera.TargetWidth*2;
             var h = Camera.TargetWidth*2 * 1080 / 1920;
             Vector2 window = Game.Transforms * worldPosition;
             window = (window + new Vector2(1, 1))/2;
             window.X *= w; window.Y *= h;
-            // Translate button and queue draw
-            string text = Char.ConvertFromUtf32((int)button);
-            QueueText(text, window, "promptfont", DefaultSize, Orientation.Center, Orientation.Center);
+            return window;
         }
 
         public void Resize(int width, int height)
