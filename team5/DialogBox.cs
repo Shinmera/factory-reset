@@ -58,7 +58,7 @@ namespace team5
 
         public override void Update()
         {
-            if (EnterKeyWasUp && (EnterKeyWasDown && !Game.Controller.Enter))
+            if (EnterKeyWasUp && Game.Controller.Enter)
             {
                 if(CurLine + MaxLines < CurNumLines)
                 {
@@ -82,12 +82,7 @@ namespace team5
                 }
             }
 
-            if (!Game.Controller.Enter)
-            {
-                EnterKeyWasUp = true;
-            }
-
-            EnterKeyWasDown = Game.Controller.Enter;
+            EnterKeyWasUp = !Game.Controller.Enter;
         }
 
         public override void Draw()
