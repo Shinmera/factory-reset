@@ -12,6 +12,7 @@ namespace team5
     class DialogBox : TextBox
     {
         private bool EnterKeyWasDown = false;
+        private bool EnterKeyWasUp = false;
         private string[] TextArray;
         private int CurText = 0;
         private int CurNumLines;
@@ -57,7 +58,7 @@ namespace team5
 
         public override void Update()
         {
-            if ((EnterKeyWasDown && !Game.Controller.Enter))
+            if (EnterKeyWasUp && (EnterKeyWasDown && !Game.Controller.Enter))
             {
                 if(CurLine + MaxLines < CurNumLines)
                 {
@@ -79,6 +80,11 @@ namespace team5
                         TextOffset = 0;
                     }
                 }
+            }
+
+            if (!Game.Controller.Enter)
+            {
+                EnterKeyWasUp = true;
             }
 
             EnterKeyWasDown = Game.Controller.Enter;

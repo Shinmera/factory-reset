@@ -131,7 +131,7 @@ namespace team5
                     }
                     else if(entity is HidingSpot){
                         Game.TextEngine.QueueButton(TextEngine.Button.Y, entity.Position+new Vector2(0, 40));
-                        if(hide){
+                        if(hide && !IsHiding){
                             HidingSpot = entity.Position;
                             hide = false;
                             QueueHide = true;
