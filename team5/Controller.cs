@@ -11,7 +11,7 @@ namespace team5
     public class Controller
     {
         public struct State{
-            public readonly bool MoveLeft, MoveRight, MoveUp, MoveDown, Jump, Climb, Hide, Crouch, Pause, Interact, Back;
+            public readonly bool MoveLeft, MoveRight, MoveUp, MoveDown, Jump, Climb, Hide, Crouch, Pause, Interact, Advance, Back;
             public State(KeyboardState key, GamePadState pad){
                 MoveLeft = key.IsKeyDown(Keys.A)
                     || key.IsKeyDown(Keys.Left)
@@ -55,6 +55,10 @@ namespace team5
 
                 Interact = key.IsKeyDown(Keys.E)
                     || pad.Buttons.Y == ButtonState.Pressed;
+                
+                Advance = key.IsKeyDown(Keys.Space)
+                    || pad.Buttons.A == ButtonState.Pressed
+                    || pad.Buttons.B == ButtonState.Pressed;
 
                 Back = key.IsKeyDown(Keys.Back)
                     || pad.Buttons.B == ButtonState.Pressed
@@ -80,6 +84,7 @@ namespace team5
         public bool Crouch => Is.Crouch;
         public bool Pause => Is.Pause;
         public bool Interact => Is.Interact;
+        public bool Advance => Is.Advance;
         public bool Back => Is.Back;
 
         public void Update()
