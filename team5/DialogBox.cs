@@ -19,6 +19,9 @@ namespace team5
         private float LetterTimer = 0;
         private int CurMaxLetters;
 
+        private float timeBeforeSkip;
+        private float timeBeforeSkipDuration = 0.3f;
+
         public static float timePerLetter = 0.02f;
 
         private Texture2D AvatarTexture;
@@ -61,6 +64,10 @@ namespace team5
 
         public override void Update()
         {
+            if(timeBeforeSkip > 0)
+            {
+                timeBeforeSkip -= Game1.DeltaT;
+            }
             if(CurLetters < CurMaxLetters)
             {
                 LetterTimer += Game1.DeltaT;
@@ -70,7 +77,13 @@ namespace team5
                     LetterTimer -= timePerLetter;
                     ++CurLetters;
                 }
-                CurLetters = Math.Min(CurMaxLetters, CurLetters);
+
+                if(CurLetters >= CurMaxLetters)
+                {
+                    CurLetters = CurMaxLetters;
+                    timeBeforeSkip = timeBeforeSkipDuration;
+                }
+                
             }
 
             if ((Game.Controller.Interact && !Game.Controller.Was.Interact))
@@ -78,6 +91,10 @@ namespace team5
                 if (CurLetters < CurMaxLetters)
                 {
                     CurLetters = CurMaxLetters;
+                }
+                else if(timeBeforeSkip > 0)
+                {
+                    timeBeforeSkip = 0;
                 }
                 else if (CurLine + MaxLines < CurNumLines)
                 {
