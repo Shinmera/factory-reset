@@ -11,14 +11,21 @@ namespace team5.UI
             this.InitializeComponent();
         }
 
-        private void MasterVolume_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-        {
-            SoundEngine.Volume = (float)((Slider)sender).Value/100;
-        }
-        
         private new void Loaded(object sender, RoutedEventArgs e)
         {
-            MasterVolume.Value = SoundEngine.Volume*100;
+            MasterVolume.Value = SoundEngine.Volume * 100;
+            // Map 0.0 ... 0.05 to 100 ... 0
+            TextSpeed.Value = 100-(DialogBox.TimePerLetter*100/0.05f);
+        }
+
+        private void MasterVolume_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            SoundEngine.Volume = (float)((Slider)sender).Value / 100;
+        }
+
+        private void TextSpeed_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            DialogBox.TimePerLetter = (100-((float)((Slider)sender).Value))*0.05f/100;
         }
     }
 }

@@ -19,10 +19,9 @@ namespace team5
         private float LetterTimer = 0;
         private int CurMaxLetters;
 
-        private float timeBeforeSkip;
-        private float timeBeforeSkipDuration = 0.3f;
-
-        public static float timePerLetter = 0.02f;
+        private float TimeBeforeSkip;
+        private float TimeBeforeSkipDuration = 0.3f;
+        public static float TimePerLetter = 0.02f;
 
         private Texture2D AvatarTexture;
         private AnimatedSprite Avatar;
@@ -64,17 +63,17 @@ namespace team5
 
         public override void Update()
         {
-            if(timeBeforeSkip > 0)
+            if(TimeBeforeSkip > 0)
             {
-                timeBeforeSkip -= Game1.DeltaT;
+                TimeBeforeSkip -= Game1.DeltaT;
             }
             if(CurLetters < CurMaxLetters)
             {
                 LetterTimer += Game1.DeltaT;
 
-                while(LetterTimer >= timePerLetter && CurLetters < CurMaxLetters)
+                while(LetterTimer >= TimePerLetter && CurLetters < CurMaxLetters)
                 {
-                    LetterTimer -= timePerLetter;
+                    LetterTimer -= TimePerLetter;
                     ++CurLetters;
                 }
 
@@ -82,7 +81,7 @@ namespace team5
                 {
                     CurLetters = CurMaxLetters;
                     if(timePerLetter > 0)
-                        timeBeforeSkip = timeBeforeSkipDuration;
+                        TimeBeforeSkip = TimeBeforeSkipDuration;
                 }
                 
             }
@@ -93,9 +92,9 @@ namespace team5
                 {
                     CurLetters = CurMaxLetters;
                 }
-                else if(timeBeforeSkip > 0)
+                else if(TimeBeforeSkip > 0)
                 {
-                    timeBeforeSkip = 0;
+                    TimeBeforeSkip = 0;
                 }
                 else if (CurLine + MaxLines < CurNumLines)
                 {

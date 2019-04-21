@@ -10,8 +10,10 @@
     <Grid>
         <StackPanel HorizontalAlignment="Center" Width="200">
             <TextBlock Text="Options" FontSize="24" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-            <Slider x:Name="MasterVolume" Header="Master Volume" Maximum="100"
+            <Slider x:Name="MasterVolume" Header="Master volume" Maximum="100"
                     ValueChanged="MasterVolume_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+            <Slider x:Name="TextSpeed" Header="Text scroll speed" Maximum="100"
+                    ValueChanged="TextSpeed_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
         </StackPanel>
     </Grid>
 </Page>
