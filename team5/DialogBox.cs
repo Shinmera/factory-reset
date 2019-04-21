@@ -56,7 +56,7 @@ namespace team5
 
         public override void Update()
         {
-            if ((!Game.Controller.Interact && Game.Controller.Was.Interact))
+            if ((Game.Controller.Interact && !Game.Controller.Was.Interact))
             {
                 if(CurLine + MaxLines < CurNumLines)
                 {
