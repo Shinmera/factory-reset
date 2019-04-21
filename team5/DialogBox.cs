@@ -81,7 +81,8 @@ namespace team5
                 if(CurLetters >= CurMaxLetters)
                 {
                     CurLetters = CurMaxLetters;
-                    timeBeforeSkip = timeBeforeSkipDuration;
+                    if(timePerLetter > 0)
+                        timeBeforeSkip = timeBeforeSkipDuration;
                 }
                 
             }
