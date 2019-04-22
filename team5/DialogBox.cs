@@ -80,7 +80,7 @@ namespace team5
                 if(CurLetters >= CurMaxLetters)
                 {
                     CurLetters = CurMaxLetters;
-                    if(timePerLetter > 0)
+                    if(TimePerLetter > 0)
                         TimeBeforeSkip = TimeBeforeSkipDuration;
                 }
                 
