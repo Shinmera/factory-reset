@@ -46,10 +46,10 @@ namespace team5
 
         public override void LoadContent(ContentManager content)
         {
-            Sprite.Texture = content.Load<Texture2D>("Textures/ground-drone");
+            Sprite.Texture = Game.TextureCache["ground-drone"];
             Sprite.Add("run", 0, 5, 0.5);
             Sprite.Add("idle", 5, 10, 0.5);
-            AlertSignal.Texture = content.Load<Texture2D>("Textures/alerts");
+            AlertSignal.Texture = Game.TextureCache["alerts"];
             AlertSignal.Add("none", 20, 21, 1);
             AlertSignal.Add("noise", 0, 10, 1, -1, 0);
             AlertSignal.Add("alert", 10, 20, 1, -1, 0);

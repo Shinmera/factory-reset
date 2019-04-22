@@ -203,9 +203,9 @@ namespace team5
         public void LoadContent(ContentManager content)
         {
             if(BackgroundName != null)
-                Background = content.Load<Texture2D>("Textures/"+BackgroundName);
-            Tileset = Game.TilemapEngine.Tileset(TileSetName);
-            Solidset = Game.TilemapEngine.Tileset("solid");
+                Background = Game.TextureCache[BackgroundName];
+            Tileset = Game.TextureCache[TileSetName];
+            Solidset = Game.TilemapEngine.SolidSet;
 
             Width = (uint)Layers[0].Width;
             Height = (uint)Layers[0].Height;

@@ -33,7 +33,7 @@ namespace team5
         public override void LoadContent(ContentManager content)
         {
             Game.SoundEngine.Load("Alert");
-            Sprite.Texture = content.Load<Texture2D>("Textures/alert-backdrop");
+            Sprite.Texture = Game.TextureCache["alert-backdrop"];
             Sprite.Add("alert", 0, 1, 1.0);
         }
 

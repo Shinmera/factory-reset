@@ -27,8 +27,6 @@ namespace team5
         private AnimatedSprite Avatar;
         private Vector2 AvatarOffset = new Vector2(-197, 38);
 
-        protected static Dictionary<string, Texture2D> Sprites;
-
         public DialogBox(string[] text, string font, float sizePx, Game1 game, Level parent, Vector2 position = default(Vector2)) : base("", font, sizePx, game, parent, "WalkieTalkie", position, Chunk.Down)
         {
             LeftPadding = 65;
@@ -36,7 +34,7 @@ namespace team5
             TopPadding = 5;
             BottomPadding = 5;
 
-            AvatarTexture = Sprites["WalkieTalkieSprite"];
+            AvatarTexture = game.TextureCache["walkie_talkie"];
 
             Avatar = new AnimatedSprite(AvatarTexture, game, new Vector2(AvatarTexture.Bounds.Width, AvatarTexture.Bounds.Height));
             Avatar.Add("idle", 0, 1, 100);
@@ -50,15 +48,6 @@ namespace team5
             CurLetters = 1;
             CurMaxLetters = Text.Length;
             CurNumLines = Text.Split('\n',StringSplitOptions.RemoveEmptyEntries).Length;
-        }
-
-        public static new void LoadStaticContent(ContentManager content)
-        {
-            Sprites = new Dictionary<string, Texture2D>
-            {
-                { "WalkieTalkieSprite", content.Load<Texture2D>("Textures/walkie_talkie") },
-                { "WalkieTalkieBlank", content.Load<Texture2D>("Textures/walkie_talkie_Blank") }
-            };
         }
 
         public override void Update()

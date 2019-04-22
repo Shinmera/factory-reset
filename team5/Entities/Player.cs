@@ -53,7 +53,7 @@ namespace team5
         
         public override void LoadContent(ContentManager content)
         {
-            Sprite.Texture = content.Load<Texture2D>("Textures/player");
+            Sprite.Texture = Game.TextureCache["player"];
             Sprite.Add("idle",   0,  6, 1.0);
             Sprite.Add("run",    6, 22, 0.8);
             Sprite.Add("climb", 22, 34, 1.0);

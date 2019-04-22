@@ -12,6 +12,7 @@ namespace team5
         public const string FirstLevel = "lobby";
 
         GraphicsDeviceManager DeviceManager;
+        public readonly TextureCache TextureCache;
         public readonly SpriteEngine SpriteEngine;
         public readonly TilemapEngine TilemapEngine;
         public readonly TriangleEngine TriangleEngine;
@@ -31,6 +32,7 @@ namespace team5
         {
             RNG = new Random();
             DeviceManager = new GraphicsDeviceManager(this);
+            TextureCache = new TextureCache(Content);
             SpriteEngine = new SpriteEngine(this);
             TilemapEngine = new TilemapEngine(this);
             TriangleEngine = new TriangleEngine(this);
@@ -68,14 +70,13 @@ namespace team5
             TextEngine.LoadContent(Content);
             ParallaxEngine.LoadContent(Content);
             SoundEngine.LoadContent(Content);
-            TextBox.LoadStaticContent(Content);
-            DialogBox.LoadStaticContent(Content);
             ActiveWindow.LoadContent(Content);
         }
         
         protected override void UnloadContent()
         {
             if(Level != null) Level.UnloadContent();
+            TextureCache.UnloadContent();
             ParticleEmitter.UnloadContent();
             SpriteEngine.UnloadContent();
             TilemapEngine.UnloadContent();
@@ -83,8 +84,6 @@ namespace team5
             TextEngine.UnloadContent();
             ParallaxEngine.UnloadContent();
             SoundEngine.UnloadContent();
-            //TextBox.LoadStaticContent();
-            //DialogBox.LoadStaticContent();
         }
 
         public void LoadLevel(object identifier)

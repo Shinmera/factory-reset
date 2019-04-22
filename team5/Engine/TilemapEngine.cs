@@ -14,7 +14,7 @@ namespace team5
         private VertexBuffer VertexBuffer;
         private IndexBuffer IndexBuffer;
         private Effect TileEffect;
-        private readonly Dictionary<string, Texture2D> SetCache = new Dictionary<string, Texture2D>();
+        public Texture2D SolidSet {get; private set;}
         
         public TilemapEngine(Game1 game)
         {
@@ -42,8 +42,7 @@ namespace team5
             
             // Create shader
             TileEffect = content.Load<Effect>("Shaders/tile");
-            
-            SetCache.Add("solid", CreateChunkTileset());
+            SolidSet = CreateChunkTileset();
         }
         
         public void UnloadContent()
@@ -51,14 +50,6 @@ namespace team5
             VertexBuffer.Dispose();
             IndexBuffer.Dispose();
             TileEffect.Dispose();
-            // FIXME: remove SetCache in favour of generic texture cache.
-        }
-        
-        public Texture2D Tileset(string tileset)
-        {
-            if(!SetCache.ContainsKey(tileset))
-                SetCache.Add(tileset, Content.Load<Texture2D>("Textures/"+tileset));
-            return SetCache[tileset];
         }
         
         public Texture2D CreateChunkTileset()

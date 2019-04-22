@@ -21,7 +21,7 @@ namespace team5
         
         public override void LoadContent(ContentManager content)
         {
-            Sprite.Texture = content.Load<Texture2D>("Textures/camera");
+            Sprite.Texture = Game.TextureCache["camera"];
             Sprite.Add("idle", 0, 4, 1.0);
         }
         

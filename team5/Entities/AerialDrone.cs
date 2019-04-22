@@ -630,12 +630,10 @@ namespace team5
 
         public override void LoadContent(ContentManager content)
         {
-            // FIXME: Pool things out, since right now we're reloading the sprites for each
-            //        enemy instance.
-            Sprite.Texture = content.Load<Texture2D>("Textures/aerial-drone");
+            Sprite.Texture = Game.TextureCache["aerial-drone"];
             Sprite.Add("idle", 0, 4, 0.4);
             Sprite.Add("chase", 4, 12, 0.8, 8);
-            AlertSignal.Texture = content.Load<Texture2D>("Textures/alerts");
+            AlertSignal.Texture = Game.TextureCache["alerts"];
             AlertSignal.Add("none", 20, 21, 1);
             AlertSignal.Add("noise", 0, 10, 1, -1, 0);
             AlertSignal.Add("alert", 10, 20, 1, -1, 0);

@@ -44,7 +44,7 @@ namespace team5
         public void LoadContent(ContentManager content)
         {
             SpriteBatch = new SpriteBatch(Game.GraphicsDevice);
-            Textures.Add(content.Load<Texture2D>("Textures/particle"));
+            Textures.Add(Game.TextureCache["particle"]);
         }
         
         public void UnloadContent()

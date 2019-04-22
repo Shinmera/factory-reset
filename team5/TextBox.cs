@@ -14,9 +14,13 @@ namespace team5
         public string Text;
         public string Font;
         public float SizePx;
-        
 
-        protected static Dictionary<string,Texture2D> Backgrounds;
+        protected static Dictionary<string, string> Backgrounds = new Dictionary<string, string>
+        {
+            { "Debug", "dialog-box" },
+            { "WalkieTalkie", "walkie_talkie_text__box" },
+            { "WalkieTalkieSprite", "walkie_talkie_spriteBox" }
+        };
         protected Texture2D Background;
 
         public int Anchor;
@@ -35,13 +39,12 @@ namespace team5
             string type = "Debug", Vector2 position = new Vector2(), int anchor = 0, 
             int leftPadding = 0, int rightPadding = 0, int topPadding = 0, int bottomPadding = 0 ) : base(game, parent)
         {
-            Background = Backgrounds[type];
+            Background = game.TextureCache[Backgrounds[type]];
             Text = text;
             Font = font;
             SizePx = sizePx;
 
             TopPadding = topPadding;
-
 
             BackgroundSprite = new AnimatedSprite(Background, game, new Vector2(Background.Bounds.Width,Background.Bounds.Height));
             BackgroundSprite.Add("idle", 0, 1, 100);
@@ -55,16 +58,6 @@ namespace team5
         {
             Text = Game.TextEngine.TextWrap(text.Trim(), SizePx, Font, Background.Width - LeftPadding - RightPadding);
             CurLetters = Text.Length;
-        }
-
-        public static void LoadStaticContent(ContentManager content)
-        {
-            Backgrounds = new Dictionary<string, Texture2D>
-            {
-                { "Debug", content.Load<Texture2D>("Textures/dialog-box") },
-                { "WalkieTalkie", content.Load<Texture2D>("Textures/walkie_talkie_text__box") },
-                { "WalkieTalkieSprite", content.Load<Texture2D>("Textures/walkie_talkie_spriteBox") }
-            };
         }
 
         public Vector2 GetPos()
