@@ -225,7 +225,7 @@ namespace team5
                     if (Enum.IsDefined(typeof(Colors), tile))
                     {
                         Vector2 position = new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
-                                                        y * TileSize + BoundingBox.Y + TileSize / 2);
+                                                       y * TileSize + BoundingBox.Y + TileSize / 2);
 
                         switch (tile)
                         {
@@ -233,7 +233,6 @@ namespace team5
                                 SpawnPosition = new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
                                                             y * TileSize + BoundingBox.Y + TileSize);
                                 break;
-                            // FIXME: this is way too verbose, factor out.
                             case (uint)Colors.StaticCamera:
                                 {
                                     bool left = (GetTile(x - 1, y) == (uint)Colors.SolidPlatform);

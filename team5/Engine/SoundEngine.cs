@@ -193,7 +193,6 @@ namespace team5
         
         public bool Listen(Vector2 position, out Vector2 source)
         {
-            // FIXME: Implement sound hearing
             source = position;
             return false;
         }
