@@ -32,7 +32,7 @@ namespace team5
         {
             RNG = new Random();
             DeviceManager = new GraphicsDeviceManager(this);
-            TextureCache = new TextureCache(Content);
+            TextureCache = new TextureCache(this);
             SpriteEngine = new SpriteEngine(this);
             TilemapEngine = new TilemapEngine(this);
             TriangleEngine = new TriangleEngine(this);
@@ -75,7 +75,6 @@ namespace team5
         
         protected override void UnloadContent()
         {
-            if(Level != null) Level.UnloadContent();
             TextureCache.UnloadContent();
             ParticleEmitter.UnloadContent();
             SpriteEngine.UnloadContent();
@@ -84,14 +83,24 @@ namespace team5
             TextEngine.UnloadContent();
             ParallaxEngine.UnloadContent();
             SoundEngine.UnloadContent();
+            ActiveWindow.UnloadContent();
         }
 
         public void LoadLevel(object identifier)
         {
+            var sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+
             System.Diagnostics.Debug.WriteLine(String.Format("Loading level from {0}...", identifier));
             Level = new Level(this, identifier);
             Level.LoadContent(Content);
-            SoundEngine.LoadContent(Content);
+            System.Diagnostics.Debug.WriteLine("Level loaded in "+(sw.ElapsedMilliseconds/100.0f)+"s");
+            // Pad out load time so that the load screen doesn't just "pop in" for a fraction of a second.
+            while(sw.ElapsedMilliseconds < 1000){
+                RunOneFrame();
+                System.Threading.Thread.Sleep(1);
+            }
+            sw.Stop();
 
             ActiveWindow = Level;
             Resize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
@@ -101,7 +110,9 @@ namespace team5
         {
             Level.UnloadContent();
             SoundEngine.UnloadContent();
+            TextureCache.UnloadContent();
             ActiveWindow = new LoadScreen(this);
+            ActiveWindow.LoadContent(Content);
             Level = null;
         }
         
@@ -109,6 +120,13 @@ namespace team5
         {
             SoundEngine.Clear();
             LoadLevel(Level.Identifier);
+        }
+        
+        public void AdvanceLoad()
+        {
+            if(ActiveWindow is LoadScreen){
+                RunOneFrame();
+            }
         }
 
         public bool Paused {
@@ -161,7 +179,7 @@ namespace team5
         protected override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
             ActiveWindow.Draw();
             TextEngine.DrawText();
         }

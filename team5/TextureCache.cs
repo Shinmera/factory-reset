@@ -7,18 +7,22 @@ namespace team5
 {
     public class TextureCache
     {
-        private readonly ContentManager Content;
+        private readonly Game1 Game;
         private readonly Dictionary<string, Texture2D> Cache = new Dictionary<string, Texture2D>();
         
-        public TextureCache(ContentManager content)
+        public TextureCache(Game1 game)
         {
-            Content = content;
+            Game = game;
         }
         
         public Texture2D Get(string texture)
         {
             if(!Cache.ContainsKey(texture))
-                Cache.Add(texture, Content.Load<Texture2D>("Textures/"+texture));
+            {
+                Cache.Add(texture, Game.Content.Load<Texture2D>("Textures/"+texture));
+                // Callback to advance load screen
+                Game.AdvanceLoad();
+            }
             return Cache[texture];
         }
         

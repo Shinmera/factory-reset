@@ -179,8 +179,11 @@ namespace team5
         
         public void Load(string effect)
         {
-            if(!SoundCache.ContainsKey(effect))
+            if(!SoundCache.ContainsKey(effect)){
                 SoundCache.Add(effect, Content.Load<SoundEffect>("Sounds/"+effect));
+                // Callback to advance load screen
+                Game.AdvanceLoad();
+            }
         }
         
         public bool Paused
