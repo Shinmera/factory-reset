@@ -46,6 +46,14 @@ namespace team5
             SetCache.Add("solid", CreateChunkTileset());
         }
         
+        public void UnloadContent()
+        {
+            VertexBuffer.Dispose();
+            IndexBuffer.Dispose();
+            TileEffect.Dispose();
+            // FIXME: remove SetCache in favour of generic texture cache.
+        }
+        
         public Texture2D Tileset(string tileset)
         {
             if(!SetCache.ContainsKey(tileset))

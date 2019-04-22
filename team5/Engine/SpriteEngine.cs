@@ -42,6 +42,14 @@ namespace team5
             TileEffect = content.Load<Effect>("Shaders/sprite");
         }
         
+        public void UnloadContent()
+        {
+            SolidTexture.Dispose();
+            VertexBuffer.Dispose();
+            IndexBuffer.Dispose();
+            TileEffect.Dispose();
+        }
+        
         public void Draw(Texture2D texture, Vector4 source)
         {
             GraphicsDevice device = Game.GraphicsDevice;

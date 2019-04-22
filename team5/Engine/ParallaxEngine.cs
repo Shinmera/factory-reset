@@ -39,6 +39,13 @@ namespace team5
             // Create shader
             Effect = content.Load<Effect>("Shaders/parallax");
         }
+        
+        public void UnloadContent()
+        {
+            VertexBuffer.Dispose();
+            IndexBuffer.Dispose();
+            Effect.Dispose();
+        }
 
         public void Draw(Texture2D parallax, Vector2 position, float scale)
         {

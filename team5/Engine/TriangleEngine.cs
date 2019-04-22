@@ -24,8 +24,12 @@ namespace team5
 
         public void LoadContent(ContentManager content)
         {
-
             TriangleEffect = content.Load<Effect>("Shaders/triangle");
+        }
+        
+        public void UnloadContent()
+        {
+            TriangleEffect.Dispose();
         }
 
         public void DrawTriangles(List<Vector2> triangles, Vector4 color)

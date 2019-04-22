@@ -75,7 +75,16 @@ namespace team5
         
         protected override void UnloadContent()
         {
-            // FIXME: Should probably do this
+            if(Level != null) Level.UnloadContent();
+            ParticleEmitter.UnloadContent();
+            SpriteEngine.UnloadContent();
+            TilemapEngine.UnloadContent();
+            TriangleEngine.UnloadContent();
+            TextEngine.UnloadContent();
+            ParallaxEngine.UnloadContent();
+            SoundEngine.UnloadContent();
+            //TextBox.LoadStaticContent();
+            //DialogBox.LoadStaticContent();
         }
 
         public void LoadLevel(object identifier)

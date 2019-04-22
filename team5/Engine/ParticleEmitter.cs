@@ -10,8 +10,8 @@ namespace team5
     {
         private Random Random;
         public Vector2 EmitterLocation { get; set; }
-        private List<Particle> particles;
-        private List<Texture2D> textures;
+        private List<Particle> Particles = new List<Particle>();
+        private List<Texture2D> Textures = new List<Texture2D>();
         private SpriteBatch SpriteBatch;
         private Game1 Game;
 
@@ -21,15 +21,13 @@ namespace team5
         public ParticleEmitter(Game1 game)
         {
             Game = game;
-            this.particles = new List<Particle>();
             Random = game.RNG;
             NoCull = new RasterizerState { CullMode = CullMode.None };
         }
 
-
         private Particle GenerateNewParticle()
         {
-            Texture2D texture = textures[Random.Next(textures.Count)];
+            Texture2D texture = Textures[Random.Next(Textures.Count)];
             Vector2 position = EmitterLocation;
             Vector2 velocity = new Vector2(
                 1f * (float)(Random.NextDouble() * 2 - 1),
@@ -46,9 +44,14 @@ namespace team5
         public void LoadContent(ContentManager content)
         {
             SpriteBatch = new SpriteBatch(Game.GraphicsDevice);
-            textures = new List<Texture2D>();
-            textures.Add(content.Load<Texture2D>("Textures/particle"));
-
+            Textures.Add(content.Load<Texture2D>("Textures/particle"));
+        }
+        
+        public void UnloadContent()
+        {
+            SpriteBatch.Dispose();
+            Textures.ForEach((tex)=>tex.Dispose());
+            Textures.Clear();
         }
 
         public void Update()
@@ -57,15 +60,15 @@ namespace team5
 
             for (int i = 0; i < total; i++)
             {
-                particles.Add(GenerateNewParticle());
+                Particles.Add(GenerateNewParticle());
             }
 
-            for (int particle = 0; particle < particles.Count; particle++)
+            for (int particle = 0; particle < Particles.Count; particle++)
             {
-                particles[particle].Update();
-                if (particles[particle].TTL <= 0)
+                Particles[particle].Update();
+                if (Particles[particle].TTL <= 0)
                 {
-                    particles.RemoveAt(particle);
+                    Particles.RemoveAt(particle);
                     particle--;
                 }
             }
@@ -77,9 +80,9 @@ namespace team5
             Game.Transforms.ResetView();
 
             SpriteBatch.Begin();
-            for (int i = 0; i < particles.Count; i++)
+            for (int i = 0; i < Particles.Count; i++)
             {
-                particles[i].Draw(SpriteBatch);
+                Particles[i].Draw(SpriteBatch);
             }
             SpriteBatch.End();
             Game.Transforms.PopView();

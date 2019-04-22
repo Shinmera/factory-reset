@@ -126,6 +126,15 @@ namespace team5
                 { "promptfont", content.Load<SpriteFont>("Fonts/promptfont") }
             };
         }
+        
+        public void UnloadContent()
+        {
+            QueuedText.Clear();
+            SpriteBatch.Dispose();
+            foreach (var font in Fonts)
+                font.Value.Texture.Dispose();
+            Fonts.Clear();
+        }
 
         public void QueueText(string text, Vector2 position, Color color, 
             string fontName=DefaultFont, float sizePx=DefaultSize, 
