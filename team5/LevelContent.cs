@@ -41,6 +41,7 @@ namespace team5
                 {
                     Stream stream = textures[chunk.layers[i]];
                     chunk.maps[i] = Texture2D.FromStream(device, stream);
+                    stream.Close();
                 }
             }
         }

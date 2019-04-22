@@ -84,22 +84,24 @@ namespace team5
 
         public override void LoadContent(ContentManager content)
         {
-            var data = LevelContent.Read(Identifier);
-            data.Resolve(Game.GraphicsDevice);
-            
-            foreach(var chunkdata in data.chunks)
+            using(var data = LevelContent.Read(Identifier))
             {
-                Chunk chunk = new Chunk(Game, this, chunkdata);
-                chunk.LoadContent(content);
-                Chunks.Add(chunk);
+                data.Resolve(Game.GraphicsDevice);
+            
+                foreach(var chunkdata in data.chunks)
+                {
+                    Chunk chunk = new Chunk(Game, this, chunkdata);
+                    chunk.LoadContent(content);
+                    Chunks.Add(chunk);
+                }
+                
+                ActiveChunk = Chunks[data.startChunk];
             }
             
             Player.LoadContent(content);
-            ActiveChunk = Chunks[data.startChunk];
             Player.Position = ActiveChunk.SpawnPosition;
             ActiveChunk.Activate(Player);
             LastActiveChunk = ActiveChunk;
-            
             
             //  Force camera to be still
             Camera.Position.X = Player.Position.X;
@@ -107,11 +109,15 @@ namespace team5
             Camera.UpdateChunk(ActiveChunk);
             Camera.SnapToLocation();
             Camera.Update();
-            //Alarm sound
             Alarm.LoadContent(content);
-
-            TextBox.LoadStaticContent(content);
-            DialogBox.LoadStaticContent(content);
+        }
+        
+        public override void UnloadContent()
+        {
+            foreach(var chunk in Chunks)
+                chunk.UnloadContent();
+            Player.UnloadContent();
+            Alarm.UnloadContent();
         }
         
         public override void Resize(int width, int height)

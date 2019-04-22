@@ -82,7 +82,7 @@ namespace team5
         private readonly Dictionary<string, SoundEffect> SoundCache = new Dictionary<string, SoundEffect>();
         private readonly List<Sound> ActiveSounds = new List<Sound>();
         
-        public class Sound
+        public class Sound : IDisposable
         {
             private SoundEngine SoundEngine;
             readonly SoundEffect Effect;
@@ -167,6 +167,16 @@ namespace team5
             Content = content;
         }
         
+        public void UnloadContent()
+        {
+            Clear();
+            foreach(var sound in SoundCache){
+                sound.Value.Dispose();
+            }
+            SoundCache.Clear();
+            ActiveSounds.Clear();
+        }
+        
         public void Load(string effect)
         {
             if(!SoundCache.ContainsKey(effect))
@@ -195,6 +205,14 @@ namespace team5
         {
             source = position;
             return false;
+        }
+        
+        public void Clear()
+        {
+            foreach(var sound in ActiveSounds){
+                sound.Stopped = true;
+                sound.Dispose();
+            }   
         }
         
         public void Update(Vector2 listener)   

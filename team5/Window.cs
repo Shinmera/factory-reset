@@ -17,8 +17,10 @@ namespace team5
             Game = game;
         }
 
-        public virtual void LoadContent(ContentManager content) {
-        }
+        public virtual void LoadContent(ContentManager content)
+        {}
+        public virtual void UnloadContent()
+        {}
         public abstract void Resize(int width, int height);
         public abstract void Update();
         public abstract void Draw();

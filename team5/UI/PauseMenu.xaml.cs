@@ -30,13 +30,13 @@ namespace team5.UI
             switch ((string)e.ClickedItem)
             {
                 case "Continue":
-                    Root.Current.Game.Game.Paused = false;
+                    Root.Current.Game.Paused = false;
                     break;
                 case "Restart":
-                    Root.Current.Game.Game.ReloadLevel();
+                    Root.Current.Game.QueueAction((game)=>game.ReloadLevel());
                     break;
                 case "Quit to Menu":
-                    Root.Current.Game.Game.UnloadLevel();
+                    Root.Current.Game.QueueAction((game)=>game.UnloadLevel());
                     Root.Current.ShowMenu();
                     break;
             }

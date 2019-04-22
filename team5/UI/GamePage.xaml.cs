@@ -3,12 +3,13 @@ using MonoGame.Framework;
 using Windows.UI.Xaml;
 using Windows.UI.Core;
 using System.Collections.Generic;
+using System;
 
 namespace team5.UI
 {
     public sealed partial class GamePage : Page, IPanel
     {
-        public readonly Game1 Game;
+        private readonly Game1 Game;
 
         public GamePage()
         {
@@ -30,6 +31,11 @@ namespace team5.UI
                 PauseMenu.Shown = value;
                 Game.Paused = value;
             }
+        }
+        
+        public void QueueAction(Action<Game1> action)
+        {
+            Game.QueueAction(action);
         }
 
         public void ShowScore(Dictionary<string, string> score)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -21,6 +22,7 @@ namespace team5
         public readonly Transforms Transforms = new Transforms();
         public readonly Random RNG;
         public readonly Controller Controller;
+        private readonly ConcurrentQueue<Action<Game1>> ActionQueue = new ConcurrentQueue<Action<Game1>>();
 
         public Window ActiveWindow { get; private set; }
         Level Level;
@@ -66,6 +68,8 @@ namespace team5
             TextEngine.LoadContent(Content);
             ParallaxEngine.LoadContent(Content);
             SoundEngine.LoadContent(Content);
+            TextBox.LoadStaticContent(Content);
+            DialogBox.LoadStaticContent(Content);
             ActiveWindow.LoadContent(Content);
         }
         
@@ -87,17 +91,16 @@ namespace team5
 
         public void UnloadLevel()
         {
-            //Level.UnloadContent();
-            //SoundEngine.UnloadContent(Content);
+            Level.UnloadContent();
+            SoundEngine.UnloadContent();
             ActiveWindow = new LoadScreen(this);
             Level = null;
         }
         
         public void ReloadLevel()
         {
-            object id = Level.Identifier;
-            UnloadLevel();
-            LoadLevel(id);
+            SoundEngine.Clear();
+            LoadLevel(Level.Identifier);
         }
 
         public bool Paused {
@@ -131,10 +134,17 @@ namespace team5
             TextEngine.Resize(width, height);
         }
         
+        public void QueueAction(Action<Game1> action)
+        {
+            ActionQueue.Enqueue(action);
+        }
+        
         protected override void Update(GameTime gameTime)
         {
-            Controller.Update();
             base.Update(gameTime);
+            if(ActionQueue.TryDequeue(out var action))
+                action(this);
+            Controller.Update();
             Transforms.Reset();
             Transforms.ResetView();
             ActiveWindow.Update();

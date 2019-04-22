@@ -21,9 +21,13 @@ namespace team5
         ///   Load any content for this object.
         /// </summary>
         public virtual void LoadContent(ContentManager content)
-        {
-            
-        }
+        {}
+        
+        /// <summary>
+        ///   Unload all content that this object /exclusively/ uses.
+        /// </summary>
+        public virtual void UnloadContent()
+        {}
 
         /// <summary>
         ///   Updates this object's physics/mechanics, with a reference to the chunk it's in.

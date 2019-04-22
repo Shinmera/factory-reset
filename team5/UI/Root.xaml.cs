@@ -52,9 +52,7 @@ namespace team5.UI
 
         public void LoadGame(object level)
         {
-            
-            Game.Game.LoadLevel(level);
-
+            Game.QueueAction((game)=>game.LoadLevel(level));
             ShowGame();
         }
         

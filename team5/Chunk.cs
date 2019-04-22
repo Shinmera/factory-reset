@@ -267,6 +267,13 @@ namespace team5
 
             CallAll(obj => obj.LoadContent(content));
         }
+        
+        public void UnloadContent()
+        {
+            foreach(var layer in Layers)
+                layer.Dispose();
+            CallAll(obj => obj.UnloadContent());
+        }
 
         public void ForEachCollidingTile(Movable source, Action<TileType> action)
         {
