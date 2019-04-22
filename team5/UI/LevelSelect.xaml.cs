@@ -30,7 +30,8 @@ namespace team5.UI
 
         private void LevelSelected(object sender, ItemClickEventArgs e)
         {
-            Root.Current.LoadGame(((LevelPreview)e.ClickedItem).FileName);
+            Root.Current.ShowGame();
+            Root.Current.Game.QueueAction((game)=>game.LoadLevel(((LevelPreview)e.ClickedItem).FileName));
         }
 
         private async void LoadLevels()
@@ -48,7 +49,8 @@ namespace team5.UI
         private void Sideload(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             string url = SideloadUrl.Text;
-            Root.Current.LoadGame(new Uri(url));
+            Root.Current.ShowGame();
+            Root.Current.Game.QueueAction((game)=>game.LoadLevel(new Uri(url)));
         }
     }
 

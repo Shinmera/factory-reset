@@ -49,12 +49,6 @@ namespace team5.UI
         {
             Show(Game);
         }
-
-        public void LoadGame(object level)
-        {
-            Game.QueueAction((game)=>game.LoadLevel(level));
-            ShowGame();
-        }
         
         private void OnBackRequested(object sender, BackRequestedEventArgs e)
         {
