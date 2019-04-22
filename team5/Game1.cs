@@ -90,6 +90,14 @@ namespace team5
             //Level.UnloadContent();
             //SoundEngine.UnloadContent(Content);
             ActiveWindow = new LoadScreen(this);
+            Level = null;
+        }
+        
+        public void ReloadLevel()
+        {
+            object id = Level.Identifier;
+            UnloadLevel();
+            LoadLevel(id);
         }
 
         public bool Paused {

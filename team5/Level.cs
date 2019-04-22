@@ -21,7 +21,7 @@ namespace team5
         public int DeathCounter = 0;
         public int AlertCounter = 0;
         
-        private readonly object Identifier;
+        public readonly object Identifier;
         private bool ChunkTrans = false;
         private List<Chunk> TransitionChunks = new List<Chunk>();
         private int TransitionDirection = 0;

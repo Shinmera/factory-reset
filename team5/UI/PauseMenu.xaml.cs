@@ -33,7 +33,7 @@ namespace team5.UI
                     Root.Current.Game.Game.Paused = false;
                     break;
                 case "Restart":
-                    // FIXME: Restart the level
+                    Root.Current.Game.Game.ReloadLevel();
                     break;
                 case "Quit to Menu":
                     Root.Current.Game.Game.UnloadLevel();
