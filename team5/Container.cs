@@ -10,12 +10,10 @@ namespace team5
 {
     abstract class Container
     {
-        public Controller Controller;
 
         protected Game1 Game;
         protected Window Parent;
 
-        public Vector2 Size;
         public Vector2 Position;
 
         public Container(Game1 game, Window parent)

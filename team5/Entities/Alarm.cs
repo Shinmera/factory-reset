@@ -22,7 +22,6 @@ namespace team5
         private AlarmState State = AlarmState.Clear;
 
         private float AlarmTime = 20;
-        private float AlertTime = 1;
         private float Timer = 0;
         private AnimatedSprite Sprite;
 

@@ -111,7 +111,7 @@ namespace team5
                 Level.Paused = value;
                 // Oh jeeze.
                 Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
-                    ()=>UI.Root.Current.Game.Paused = value);
+                    () => UI.Root.Current.Game.Paused = value).AsTask().Wait();
             }
         }
         
@@ -120,7 +120,7 @@ namespace team5
             Level.Paused = true;
             var score = Level.Score();
             Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
-                    ()=>UI.Root.Current.Game.ShowScore(score));
+                    () => UI.Root.Current.Game.ShowScore(score)).AsTask().Wait();
         }
 
         protected void Resize(int width, int height)
