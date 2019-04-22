@@ -118,7 +118,7 @@ namespace team5
                     else if(tile is TileGoal) Game.ShowScore();
                 });
             chunk.ForEachCollidingEntity(this, (entity)=>{
-                    if(entity is Pickup){
+                    if(entity is Pickup && !chunk.Level.Alarm.IsRaised){
                         Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position+new Vector2(0, 36));
                         Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
                         if(Controller.Interact){

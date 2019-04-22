@@ -132,6 +132,10 @@ namespace team5
                     break;
             }
         }
+        
+        public bool IsRaised {
+            get { return State == AlarmState.Raised; }
+        }
 
         public void Draw(Level level)
         {
