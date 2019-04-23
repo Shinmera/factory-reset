@@ -17,7 +17,7 @@ namespace team5
         public bool FallThrough => Controller.MoveDown;
 
         private Controller Controller;
-        private bool IsClimbing = false;
+        //private bool IsClimbing = false;
         private bool HasWallJumped = false;
         private float LongJump = 0;
         private int SoundFrame = 0;
@@ -33,9 +33,24 @@ namespace team5
         private readonly Vector2 WallJumpVelocity = new Vector2(200, 250);
         private readonly float WallSlideFriction = 0.9F;
 
-        private bool QueueHide = false;
-        private Vector2 HidingSpot;
-        public bool IsHiding { get; private set; }
+        //private bool QueueHide = false;
+        private Vector2 TargetSpot;
+        private Entity TargetEntity;
+
+        public enum PlayerState
+        {
+            Normal,
+            QueueHide,
+            Hiding,
+            Climbing,
+            QueueDoor,
+            OperatingDoor,
+            Dying
+        }
+
+        private PlayerState State = PlayerState.Normal;
+
+        public bool IsHiding { get { return State == PlayerState.Hiding; } }
         public bool IsCrouched { get; private set; }
         public float DeathTimer = 0;
         public const float DeathDuration = 2;
@@ -113,186 +128,203 @@ namespace team5
             // Apply gravity
             Velocity.Y -= dt * Gravity;
 
-            chunk.ForEachCollidingTile(this, (tile)=>{
-                    if(tile is TileSpike) Kill();
-                    else if(tile is TileGoal) Game.ShowScore();
-                });
-            chunk.ForEachCollidingEntity(this, (entity)=>{
-                if(entity is Pickup && !chunk.Level.Alarm.IsRaised){
-                    Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position+new Vector2(0, 36));
-                    Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
-                    if(Controller.Interact){
-                        if(chunk.NextItem < chunk.StoryItems.Length)
-                            chunk.Level.OpenDialogBox(chunk.StoryItems[chunk.NextItem++]);
-                        chunk.Die(entity);
-                    }
-                }
-                else if(entity is HidingSpot){
-                    Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position+new Vector2(0, 36));
-                    Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
-                    if(hide && !QueueHide && !IsHiding){
-                        HidingSpot = entity.Position;
-                        hide = false;
-                        QueueHide = true;
-                        IsClimbing = false;
-                    }
-                }
-                else if (entity is Door)
-                {
-                    Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position + new Vector2(0, 36));
-                    Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
-                    if (Controller.Interact)
-                    {
-                        ((Door)entity).Interact(chunk);
-                    }
-                }
+            chunk.ForEachCollidingTile(this, (tile) => {
+                if (tile is TileSpike) Kill();
+                else if (tile is TileGoal) Game.ShowScore();
             });
-            
-            if (!IsHiding && !QueueHide && DeathTimer <= 0)
+
+            switch (State)
             {
-                if (Grounded)
-                {
-                    HasWallJumped = false;
-                    if (jump)
+                case PlayerState.Climbing:
+                case PlayerState.Normal:
+                    chunk.ForEachCollidingEntity(this, (entity) => {
+                        if (entity is Pickup && !chunk.Level.Alarm.IsRaised)
+                        {
+                            Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position + new Vector2(0, 36));
+                            Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
+                            if (Controller.Interact)
+                            {
+                                if (chunk.NextItem < chunk.StoryItems.Length)
+                                    chunk.Level.OpenDialogBox(chunk.StoryItems[chunk.NextItem++]);
+                                chunk.Die(entity);
+                            }
+                        }
+                        else if (entity is HidingSpot)
+                        {
+                            Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position + new Vector2(0, 36));
+                            Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
+                            if (hide)
+                            {
+                                TargetSpot = entity.Position;
+                                hide = false;
+                                State = PlayerState.QueueHide;
+                            }
+                        }
+                        else if (entity is Door)
+                        {
+                            /*
+                            Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position + new Vector2(0, 36));
+                            Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
+                            if (Controller.Interact)
+                            {
+                                if (chunk.NextItem < chunk.StoryItems.Length)
+                                    chunk.Level.OpenDialogBox(chunk.StoryItems[chunk.NextItem++]);
+                                chunk.Die(entity);
+                            }
+                            */
+                        }
+                    });
+
+                    if(State == PlayerState.QueueHide)
                     {
-                        jump = false;
-                        Velocity.Y = JumpSpeed;
-                        LongJump = LongJumpTime * dt;
+                        break;
                     }
-                }
-                if (left != null || right != null || (IsClimbing && (leftCorner != null || rightCorner != null)))
-                {
-                    HasWallJumped = false;
-                    IsClimbing = false;
-                    if (Controller.Climb)
+
+                    if (left != null || right != null || (State == PlayerState.Climbing && (leftCorner != null || rightCorner != null)))
                     {
-                        IsClimbing = true;
-                        if (Controller.MoveUp && Velocity.Y < ClimbSpeed)
-                            Velocity.Y = +ClimbSpeed;
-                        else if (Controller.MoveDown)
-                            Velocity.Y = -ClimbSpeed;
-                        else if (Velocity.Y <= ClimbSpeed)
-                            Velocity.Y = 0;
+                        HasWallJumped = false;
+                        State = PlayerState.Normal;
+                        if (Controller.Climb)
+                        {
+                            State = PlayerState.Climbing;
+                            if (Controller.MoveUp && Velocity.Y < ClimbSpeed)
+                                Velocity.Y = +ClimbSpeed;
+                            else if (Controller.MoveDown)
+                                Velocity.Y = -ClimbSpeed;
+                            else if (Velocity.Y <= ClimbSpeed)
+                                Velocity.Y = 0;
 
-                        if(Velocity.X != 0)
-                        {
-                            IsClimbing = false;
-                        }
+                            if (Velocity.X != 0)
+                            {
+                                State = PlayerState.Normal;
+                            }
 
-                        // Push over corners
-                        if (leftCorner != null && left == null && Sprite.Direction == -1)
-                        {
-                            Velocity.X = -150;
-                            Velocity.Y = ClimbSpeed;
+                            // Push over corners
+                            if (leftCorner != null && left == null && Sprite.Direction == -1)
+                            {
+                                Velocity.X = -150;
+                                Velocity.Y = ClimbSpeed;
+                            }
+                            if (rightCorner != null && right == null && Sprite.Direction == +1)
+                            {
+                                Velocity.X = +150;
+                                Velocity.Y = ClimbSpeed;
+                            }
                         }
-                        if (rightCorner != null && right == null && Sprite.Direction == +1)
+                        else if (Velocity.Y < 0)
+                            Velocity.Y *= WallSlideFriction;
+
+                        if (jump && (!HasWallJumped || CanRepeatWallJump))
                         {
-                            Velocity.X = +150;
-                            Velocity.Y = ClimbSpeed;
+                            if (right != null)
+                            {
+                                Velocity.X = -WallJumpVelocity.X;
+                                Velocity.Y = WallJumpVelocity.Y;
+                                HasWallJumped = true;
+                                jump = false;
+                            }
+                            else if (left != null)
+                            {
+                                Velocity.X = WallJumpVelocity.X;
+                                Velocity.Y = WallJumpVelocity.Y;
+                                HasWallJumped = true;
+                                jump = false;
+                            }
                         }
                     }
-                    else if (Velocity.Y < 0)
-                        Velocity.Y *= WallSlideFriction;
-
-                    if (jump && (!HasWallJumped || CanRepeatWallJump))
+                    else
                     {
-                        if (right != null)
+                        State = PlayerState.Normal;
+                    }
+
+                    if (Grounded)
+                    {
+                        HasWallJumped = false;
+                        if (jump)
                         {
-                            Velocity.X = -WallJumpVelocity.X;
-                            Velocity.Y = WallJumpVelocity.Y;
-                            HasWallJumped = true;
                             jump = false;
-                        }
-                        else if (left != null)
-                        {
-                            Velocity.X = WallJumpVelocity.X;
-                            Velocity.Y = WallJumpVelocity.Y;
-                            HasWallJumped = true;
-                            jump = false;
+                            Velocity.Y = JumpSpeed;
+                            LongJump = LongJumpTime * dt;
                         }
                     }
-                }
-                else
-                {
-                    IsClimbing = false;
-                }
 
-                if (!IsClimbing || Grounded)
-                {
-                    float max = (IsCrouched)? CrouchSpeed : MaxVel;
-                    if (Controller.MoveRight && Velocity.X < max)
+                    if (State == PlayerState.Normal || Grounded)
+                    {
+                        float max = (IsCrouched) ? CrouchSpeed : MaxVel;
+                        if (Controller.MoveRight && Velocity.X < max)
+                        {
+                            // Allow quick turns on the ground
+                            if (Velocity.X < 0 && Grounded) Velocity.X = 0;
+                            Velocity.X += AccelRate * dt;
+                        }
+                        else if (Controller.MoveLeft && -max < Velocity.X)
+                        {
+                            // Allow quick turns on the ground
+                            if (0 < Velocity.X && Grounded) Velocity.X = 0;
+                            Velocity.X -= AccelRate * dt;
+                        }
+                        else if (!Controller.MoveLeft && !Controller.MoveRight)
+                        {
+                            // Deaccelerate in the air to accomodate wall jumps
+                            if (Grounded || Math.Abs(Velocity.X) < DeaccelRate * dt)
+                                Velocity.X = 0;
+                            else
+                                Velocity.X -= Math.Sign(Velocity.X) * DeaccelRate * dt;
+                        }
+                        else if (IsCrouched && max < Math.Abs(Velocity.X))
+                            Velocity.X = Math.Sign(Velocity.X) * max;
+                    }
+
+                    if (Controller.Jump && 0 < LongJump)
+                    {
+                        Velocity.Y += AccelRate * dt;
+                    }
+
+
+                    break;
+                   
+                case PlayerState.QueueHide:
+                    if (Position.X < TargetSpot.X && Velocity.X < MaxVel)
                     {
                         // Allow quick turns on the ground
                         if (Velocity.X < 0 && Grounded) Velocity.X = 0;
                         Velocity.X += AccelRate * dt;
                     }
-                    else if (Controller.MoveLeft && -max < Velocity.X)
+                    else if (Position.X > TargetSpot.X && -MaxVel < Velocity.X)
                     {
                         // Allow quick turns on the ground
                         if (0 < Velocity.X && Grounded) Velocity.X = 0;
                         Velocity.X -= AccelRate * dt;
                     }
-                    else if (!Controller.MoveLeft && !Controller.MoveRight)
+
+                    if (Math.Abs(Position.X - TargetSpot.X) <= MaxVel * dt)
                     {
-                        // Deaccelerate in the air to accomodate wall jumps
-                        if (Grounded || Math.Abs(Velocity.X) < DeaccelRate * dt)
-                            Velocity.X = 0;
-                        else
-                            Velocity.X -= Math.Sign(Velocity.X) * DeaccelRate * dt;
+                        HasWallJumped = false;
+                        State = PlayerState.Hiding;
+
+                        Position = TargetSpot + new Vector2(0, Size.Y - Chunk.TileSize / 2);
+                        Velocity.X = 0;
                     }
-                    else if(IsCrouched && max < Math.Abs(Velocity.X))
-                        Velocity.X = Math.Sign(Velocity.X)*max;
-                }
-
-                if (Controller.Jump && 0 < LongJump)
-                {
-                    Velocity.Y += AccelRate * dt;
-                }
-
-                if (0 < LongJump)
-                {
-                    LongJump -= dt;
-                    if (Velocity.Y < 0)
-                    {
-                        LongJump = 0;
-                    }
-                }
+                    break;
+                case PlayerState.Hiding:
+                    Velocity.X = 0;
+                    Velocity.Y = 0;
+                    if (hide)
+                        State = PlayerState.Normal;
+                    break;
+                case PlayerState.Dying:
+                    break;
             }
 
-            if (QueueHide)
+            if (0 < LongJump)
             {
-                if (Position.X < HidingSpot.X && Velocity.X < MaxVel)
+                LongJump -= dt;
+                if (Velocity.Y < 0)
                 {
-                    // Allow quick turns on the ground
-                    if (Velocity.X < 0 && Grounded) Velocity.X = 0;
-                    Velocity.X += AccelRate * dt;
-                }
-                else if (Position.X > HidingSpot.X && -MaxVel < Velocity.X)
-                {
-                    // Allow quick turns on the ground
-                    if (0 < Velocity.X && Grounded) Velocity.X = 0;
-                    Velocity.X -= AccelRate * dt;
-                }
-
-                if (Math.Abs(Position.X - HidingSpot.X) <= MaxVel * dt)
-                {
-                    HasWallJumped = false;
-                    QueueHide = false;
-
-                    IsHiding = true;
-
-                    Position = HidingSpot + new Vector2(0, Size.Y - Chunk.TileSize / 2);
+                    LongJump = 0;
                 }
             }
 
-            if (IsHiding)
-            {
-                Velocity.X = 0;
-                Velocity.Y = 0;
-                if(hide)
-                    IsHiding = false;
-            }
-            
             // Now that all movement has been updated, check for collisions
             HandleCollisions(dt, chunk, true);
 
@@ -301,7 +333,7 @@ namespace team5
                 Sprite.Play("die");
             else
             {
-                if (IsClimbing || (Velocity.Y < 0 && (left != null || right != null)))
+                if (State == PlayerState.Climbing || (Velocity.Y < 0 && (left != null || right != null)))
                 {
                     Sprite.Play("climb");
                     if(Velocity.Y < 0) Sprite.FrameStep = -1;
@@ -311,7 +343,7 @@ namespace team5
                     if(right != null) Sprite.Direction = +1;
                     if(Velocity.Y == 0 || !Controller.Climb) Sprite.Reset();
                 }
-                else if(IsHiding || QueueHide)
+                else if(State == PlayerState.Hiding)
                 {
                     Sprite.Play("hide");
                 }
@@ -405,7 +437,6 @@ namespace team5
                     }
                     else if (-MaxVel < Velocity.X)
                     {
-                        // Allow quick turns on the ground
                         if (0 < Velocity.X && Grounded) Velocity.X = 0;
                         Velocity.X -= AccelRate * dt;
                     }
@@ -432,7 +463,6 @@ namespace team5
                     }
                     else if (Velocity.X < MaxVel)
                     {
-                        // Allow quick turns on the ground
                         if (Velocity.X < 0 && Grounded) Velocity.X = 0;
                         Velocity.X += AccelRate * dt;
                     }

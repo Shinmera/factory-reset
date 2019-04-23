@@ -25,7 +25,7 @@ namespace team5
 
         private EState State = EState.Closing;
 
-        public Door(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize * 2, Chunk.TileSize))
+        public Door(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize * 3, Chunk.TileSize))
         {
             Position = position + Vector2.UnitY * (Chunk.TileSize / 2);
             Sprite = new AnimatedSprite(null, game, new Vector2(16, 32));
