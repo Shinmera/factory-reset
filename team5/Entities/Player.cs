@@ -162,16 +162,14 @@ namespace team5
                         }
                         else if (entity is Door)
                         {
-                            /*
-                            Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position + new Vector2(0, 36));
+                            float dir = Math.Sign(entity.Position.X - Position.X);
+                            Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position + new Vector2(dir*1F*Chunk.TileSize, 16));
                             Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
                             if (Controller.Interact)
                             {
-                                if (chunk.NextItem < chunk.StoryItems.Length)
-                                    chunk.Level.OpenDialogBox(chunk.StoryItems[chunk.NextItem++]);
-                                chunk.Die(entity);
+                                ((Door)entity).Interact(chunk);
                             }
-                            */
+                            
                         }
                     });
 
@@ -394,10 +392,12 @@ namespace team5
         {
             if(DeathTimer <= 0)
                 DeathTimer = DeathDuration;
+            State = PlayerState.Dying;
         }
 
         public override void Respawn(Chunk chunk)
         {
+            State = PlayerState.Normal;
             Velocity = chunk.SpawnVelocity;
             Position = chunk.SpawnPosition;
 
