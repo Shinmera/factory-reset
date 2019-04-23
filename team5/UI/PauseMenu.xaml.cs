@@ -18,6 +18,7 @@ namespace team5.UI
             {
                 this.Visibility = (value) ? Visibility.Visible : Visibility.Collapsed;
                 PauseMenuList.Focus(FocusState.Keyboard);
+                PauseMenuList.SelectedIndex = 0;
             }
         }
 
