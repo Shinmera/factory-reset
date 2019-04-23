@@ -12,6 +12,7 @@ var solids = {
     Spike:          0xFF0000FF, // A death spike
     Pickup:         0xFF00EEFF, // An information pickup item
     Goal:           0xFFFFEE00, // A goal tile leading to end-of-level
+	Door:           0xFF00337F, // A door which can be opened and closed
 };
 
 const tileSize = 16;
