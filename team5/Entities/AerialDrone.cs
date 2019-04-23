@@ -127,6 +127,9 @@ namespace team5
                 {new Point(startx, starty) }
             };
 
+            float bestDist = float.PositiveInfinity;
+            Point bestPoint = default(Point);
+
             while (openSet.Count > 0)
             {
 
@@ -169,10 +172,16 @@ namespace team5
 
                         if (!openSet.Contains(neighbor))
                         {
+                            float dist = GetDist(neighbor.X, neighbor.Y, targetx, targety);
                             cameFrom.Add(neighbor, current);
                             gScore.Add(neighbor, tentative_gScore);
-                            fScore.Add(neighbor, gScore[neighbor] + GetDist(neighbor.X, neighbor.Y, targetx, targety));
+                            fScore.Add(neighbor, gScore[neighbor] + dist);
                             openSet.Add(neighbor);
+                            if(dist < bestDist)
+                            {
+                                bestDist = dist;
+                                bestPoint = neighbor;
+                            }
                         }
                         else
                         {
@@ -194,7 +203,18 @@ namespace team5
                 }
             }
 
-            return null;
+            Vector2 offset = new Vector2(chunk.BoundingBox.X + Chunk.TileSize / 2, chunk.BoundingBox.Y + Chunk.TileSize / 2);
+            if(cameFrom.ContainsKey(bestPoint))
+            {
+                return ReconstructPath(cameFrom, cameFrom[bestPoint], chunk, bestPoint.ToVector2() * Chunk.TileSize + offset);
+            }
+            else
+            {
+                return new List<Vector2>
+                {
+                    bestPoint.ToVector2() * Chunk.TileSize + offset
+                };
+            }
         }
 
         /// <summary> Reconstructs a path based on a connection graph</summary>
