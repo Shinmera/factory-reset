@@ -165,6 +165,18 @@
 /processorParam:TextureFormat=Color
 /build:Textures/dialog-box.png
 
+#begin Textures/door.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/door.png
+
 #begin Textures/ground-drone.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -236,18 +248,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Textures/walkie_talkie.png
-
-#begin Textures/walkie_talkie_Blank.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Textures/walkie_talkie_Blank.png
 
 #begin Textures/walkie_talkie_Blank.png
 /importer:TextureImporter

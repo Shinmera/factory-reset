@@ -28,6 +28,7 @@ namespace team5
             Spike          = 0xFF0000FF, // A death spike
             Pickup         = 0xFF00EEFF, // An information pickup item
             Goal           = 0xFFFFEE00, // A goal tile leading to end-of-level
+            Door           = 0xFF00337F, // A door which can be opened and closed
         }
 
         public const int TileSize = 16;
@@ -257,11 +258,16 @@ namespace team5
                                 if(GetTile(x, y-1) == (uint)Colors.SolidPlatform)
                                     CollidingEntities.Add(new HidingSpot(position, Game));
                                 break;
+                            case (uint)Colors.Door:
+                                if (GetTile(x, y - 1) == (uint)Colors.SolidPlatform)
+                                {
+                                    CollidingEntities.Add(new Door(position, Game));
+                                    SolidTiles[(Height - y - 1) * Width + x] = (uint)Colors.SolidPlatform;
+                                    SolidTiles[(Height - (y+1) - 1) * Width + x] = (uint)Colors.SolidPlatform;
+                                }
+                                break;
                         }
                     }
-
-
-
                 }
             }
 
@@ -305,6 +311,14 @@ namespace team5
         #endregion
 
         #region Public Functions
+
+        public uint GetTileLocation(Vector2 position)
+        {
+            int x = (int)Math.Floor((position.X - BoundingBox.X) / TileSize);
+            int y = (int)Math.Floor((position.Y - BoundingBox.Y) / TileSize);
+
+            return (uint)((Height - y - 1) * Width + x);
+        }
 
         public uint GetTile(int x, int y)
         {

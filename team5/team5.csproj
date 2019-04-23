@@ -112,6 +112,7 @@
     </Compile>
     <Compile Include="Container.cs" />
     <Compile Include="Engine\ParallaxEngine.cs" />
+    <Compile Include="Entities\Door.cs" />
     <Compile Include="Entities\HidingSpot.cs" />
     <Compile Include="Entities\TileGoal.cs" />
     <Compile Include="LoadScreen.cs" />

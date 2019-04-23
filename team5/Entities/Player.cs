@@ -118,26 +118,35 @@ namespace team5
                     else if(tile is TileGoal) Game.ShowScore();
                 });
             chunk.ForEachCollidingEntity(this, (entity)=>{
-                    if(entity is Pickup && !chunk.Level.Alarm.IsRaised){
-                        Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position+new Vector2(0, 36));
-                        Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
-                        if(Controller.Interact){
-                            if(chunk.NextItem < chunk.StoryItems.Length)
-                                chunk.Level.OpenDialogBox(chunk.StoryItems[chunk.NextItem++]);
-                            chunk.Die(entity);
-                        }
+                if(entity is Pickup && !chunk.Level.Alarm.IsRaised){
+                    Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position+new Vector2(0, 36));
+                    Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
+                    if(Controller.Interact){
+                        if(chunk.NextItem < chunk.StoryItems.Length)
+                            chunk.Level.OpenDialogBox(chunk.StoryItems[chunk.NextItem++]);
+                        chunk.Die(entity);
                     }
-                    else if(entity is HidingSpot){
-                        Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position+new Vector2(0, 36));
-                        Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
-                        if(hide && !QueueHide && !IsHiding){
-                            HidingSpot = entity.Position;
-                            hide = false;
-                            QueueHide = true;
-                            IsClimbing = false;
-                        }
+                }
+                else if(entity is HidingSpot){
+                    Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position+new Vector2(0, 36));
+                    Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
+                    if(hide && !QueueHide && !IsHiding){
+                        HidingSpot = entity.Position;
+                        hide = false;
+                        QueueHide = true;
+                        IsClimbing = false;
                     }
-                });
+                }
+                else if (entity is Door)
+                {
+                    Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position + new Vector2(0, 36));
+                    Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
+                    if (Controller.Interact)
+                    {
+                        ((Door)entity).Interact(chunk);
+                    }
+                }
+            });
             
             if (!IsHiding && !QueueHide && DeathTimer <= 0)
             {
