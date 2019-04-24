@@ -80,6 +80,10 @@ namespace team5
             Sprite.Add("crouch",54, 55, 1.0);
             Sprite.Add("crouchwalk", 55, 67, 1.0);
             Sprite.Add("call",  67, 76, 0.8, 75);
+            // Door should play opening animation on frame 78.
+            Sprite.Add("open",  76, 87, 1.0, -1, 0);
+            // Door should play crash animation on frame 88.
+            Sprite.Add("crash", 87, 94, 0.6, -1, 1);
             
             Game.SoundEngine.Load("footstep");
         }
