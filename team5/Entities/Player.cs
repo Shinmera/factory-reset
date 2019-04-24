@@ -77,8 +77,9 @@ namespace team5
             Sprite.Add("die",   38, 46, 0.8, 45);
             Sprite.Add("jump",  46, 49, 0.5, 48);
             Sprite.Add("fall",  49, 54, 0.3, 51);
-            Sprite.Add("crouch", 54, 55, 1.0);
+            Sprite.Add("crouch",54, 55, 1.0);
             Sprite.Add("crouchwalk", 55, 67, 1.0);
+            Sprite.Add("call",  67, 76, 0.8, 75);
             
             Game.SoundEngine.Load("footstep");
         }
