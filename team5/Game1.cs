@@ -11,7 +11,7 @@ namespace team5
         public const float DeltaT = 1 / 60.0F;
         public const string FirstLevel = "lobby";
 
-        GraphicsDeviceManager DeviceManager;
+        public readonly GraphicsDeviceManager DeviceManager;
         public readonly TextureCache TextureCache;
         public readonly SpriteEngine SpriteEngine;
         public readonly TilemapEngine TilemapEngine;
@@ -111,9 +111,10 @@ namespace team5
             Level.UnloadContent();
             SoundEngine.UnloadContent();
             TextureCache.UnloadContent();
-            ActiveWindow = new LoadScreen(this);
-            ActiveWindow.LoadContent(Content);
+            var Loader = new LoadScreen(this);
+            Loader.LoadContent(Content);
             Level = null;
+            ActiveWindow = Loader;
         }
         
         public void ReloadLevel()

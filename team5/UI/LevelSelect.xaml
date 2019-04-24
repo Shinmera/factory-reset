@@ -43,7 +43,8 @@
                             <ColumnDefinition Width="20*"/>
                             <ColumnDefinition Width="5*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBox x:Name="SideloadUrl" PlaceholderText="http://example.com/..." Header="Level Archive URL" Grid.Column="0" Width="300"/>
+                        <TextBox x:Name="SideloadUrl" PlaceholderText="http://example.com/..." Header="Level Archive URL" Grid.Column="0" Width="300"
+                                 InputScope="Url" />
                         <Button Content="Load" Grid.Column="1" VerticalAlignment="Bottom" Click="Sideload" />
                     </Grid>
                 </Flyout>

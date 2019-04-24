@@ -14,6 +14,11 @@
                     ValueChanged="MasterVolume_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
             <Slider x:Name="TextSpeed" Header="Text scroll speed" Maximum="100"
                     ValueChanged="TextSpeed_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+            <ComboBox x:Name="TvMode" Header="TV Mode"
+                      SelectionChanged="TvMode_SelectionChanged" HorizontalAlignment="Stretch" SelectedIndex="0">
+                <ComboBoxItem>TV Safe</ComboBoxItem>
+                <ComboBoxItem>Full</ComboBoxItem>
+            </ComboBox>
         </StackPanel>
     </Grid>
 </Page>

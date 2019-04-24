@@ -30,8 +30,9 @@ namespace team5.UI
 
         private void LevelSelected(object sender, ItemClickEventArgs e)
         {
+            String level = ((LevelPreview)e.ClickedItem).FileName;
             Root.Current.ShowGame();
-            Root.Current.Game.QueueAction((game)=>game.LoadLevel(((LevelPreview)e.ClickedItem).FileName));
+            Root.Current.Game.QueueAction((game)=>game.LoadLevel(level));
         }
 
         private async void LoadLevels()
