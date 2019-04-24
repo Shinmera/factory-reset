@@ -33,9 +33,9 @@ namespace team5
         {
             Sprite.Texture = Game.TextureCache["door"];
             Sprite.Add("closed", 0, 1, 1.0);
-            Sprite.Add("closing", 2, 8, 0.9, -1, 0);
-            Sprite.Add("opening", 2, 8, 0.9, -1, 4);
-            Sprite.Add("crash", 8, 14, 0.2, -1, 4);
+            Sprite.Add("closing", 2, 8, 0.7, -1, 0);
+            Sprite.Add("opening", 2, 8, 0.7, -1, 4);
+            Sprite.Add("crash", 8, 14, 0.6, -1, 4);
             Sprite.Add("open", 14, 15, 1.0);
             Sprite.Play("closed");
         }

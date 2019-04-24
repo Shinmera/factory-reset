@@ -42,7 +42,8 @@ namespace team5
             Hiding,
             Climbing,
             QueueDoor,
-            OperatingDoor,
+            CrashDoor,
+            OpeningDoor,
             Dying
         }
 
@@ -81,9 +82,9 @@ namespace team5
             Sprite.Add("crouchwalk", 55, 67, 1.0);
             Sprite.Add("call",  67, 76, 0.8, 75);
             // Door should play opening animation on frame 78.
-            Sprite.Add("open",  76, 87, 1.0, -1, 0);
+            Sprite.Add("open",  76, 86, 1.0, -1, 0);
             // Door should play crash animation on frame 88.
-            Sprite.Add("crash", 87, 94, 0.6, -1, 1);
+            Sprite.Add("crash", 86, 94, 0.6, -1, 1);
             
             Game.SoundEngine.Load("footstep");
         }
@@ -356,18 +357,22 @@ namespace team5
                     if (Math.Abs(Position.X - TargetSpot.X) <= MaxVel * dt)
                     {
                         HasWallJumped = false;
-                        State = PlayerState.OperatingDoor;
-
-                        ((Door)TargetEntity).Interact(chunk,false);
+                        State = PlayerState.OpeningDoor;
 
                         Position = TargetSpot;
                         Velocity.X = 0;
                     }
                     break;
-                case PlayerState.OperatingDoor:
+                case PlayerState.CrashDoor:
+                case PlayerState.OpeningDoor:
                     Velocity.X = 0;
                     Velocity.Y = 0;
-                    if(((Door)TargetEntity).State == Door.EState.Closed || ((Door)TargetEntity).State == Door.EState.Open)
+                    if(Sprite.Frame == 78)
+                    {
+                        ((Door)TargetEntity).Interact(chunk, false);
+                    }
+
+                    if(Sprite.Frame == 0)
                     {
                         State = PlayerState.Normal;
                         TargetEntity = null;
@@ -390,64 +395,89 @@ namespace team5
             HandleCollisions(dt, chunk, true);
 
             // Animations
-            if(0 < DeathTimer)
-                Sprite.Play("die");
-            else
+
+            switch (State)
             {
-                if (State == PlayerState.Climbing || (Velocity.Y < 0 && (left != null || right != null)))
-                {
-                    Sprite.Play("climb");
-                    if(Velocity.Y < 0) Sprite.FrameStep = -1;
-                    else               Sprite.FrameStep = +1;
-                    // Force direction to face wall
-                    if(left != null) Sprite.Direction = -1;
-                    if(right != null) Sprite.Direction = +1;
-                    if(Velocity.Y == 0 || !Controller.Climb) Sprite.Reset();
-                }
-                else if(State == PlayerState.Hiding)
-                {
-                    Sprite.Play("hide");
-                }
-                else
-                {
-                    if(0 < Velocity.Y){
-                        if(Sprite.Frame == 46 && SoundFrame != Sprite.Frame){
-                            SoundFrame = Sprite.Frame;
-                            var sound = Game.SoundEngine.Play("footstep", Position, 1);
-                            chunk.MakeSound(sound, 60, Position);
-                        }
-                        Sprite.Play("jump");
-                    }else if(Velocity.Y < 0)
-                        Sprite.Play("fall");
-                    else if(Velocity.X != 0){
-                        if(IsCrouched)
+                case PlayerState.QueueDoor:
+                case PlayerState.QueueHide:
+                case PlayerState.Normal:
+                    if ((Velocity.Y < 0 && (left != null || right != null)))
+                    {
+                        Sprite.Play("climb");
+                        if (Velocity.Y < 0) Sprite.FrameStep = -1;
+                        else Sprite.FrameStep = +1;
+                        // Force direction to face wall
+                        if (left != null) Sprite.Direction = -1;
+                        if (right != null) Sprite.Direction = +1;
+                        if (Velocity.Y == 0 || !Controller.Climb) Sprite.Reset();
+                    }
+                    else
+                    {
+                        if (0 < Velocity.Y)
                         {
-                            Sprite.Play("crouchwalk");
-                        }
-                        else
-                        {
-                            Sprite.Play("run");
-                            if((Sprite.Frame == 10 || Sprite.Frame == 18) && SoundFrame != Sprite.Frame){
+                            if (Sprite.Frame == 46 && SoundFrame != Sprite.Frame)
+                            {
                                 SoundFrame = Sprite.Frame;
-                                var sound = Game.SoundEngine.Play("footstep", Position, 0.9F);
+                                var sound = Game.SoundEngine.Play("footstep", Position, 1);
                                 chunk.MakeSound(sound, 60, Position);
                             }
+                            Sprite.Play("jump");
                         }
-                    }else{
-                        SoundFrame = 0;
-                        if(IsCrouched)
-                            Sprite.Play("crouch");
+                        else if (Velocity.Y < 0)
+                            Sprite.Play("fall");
+                        else if (Velocity.X != 0)
+                        {
+                            if (IsCrouched)
+                            {
+                                Sprite.Play("crouchwalk");
+                            }
+                            else
+                            {
+                                Sprite.Play("run");
+                                if ((Sprite.Frame == 10 || Sprite.Frame == 18) && SoundFrame != Sprite.Frame)
+                                {
+                                    SoundFrame = Sprite.Frame;
+                                    var sound = Game.SoundEngine.Play("footstep", Position, 0.9F);
+                                    chunk.MakeSound(sound, 60, Position);
+                                }
+                            }
+                        }
                         else
-                            Sprite.Play("idle");
+                        {
+                            SoundFrame = 0;
+                            if (IsCrouched)
+                                Sprite.Play("crouch");
+                            else
+                                Sprite.Play("idle");
+                        }
                     }
-                    // Base direction on movement
-                    if (Velocity.X < 0)
-                        Sprite.Direction = -1;
-                    if (0 < Velocity.X)
-                        Sprite.Direction = +1;
-                }
+                    break;
+                case PlayerState.Climbing:
+                    Sprite.Play("climb");
+                    if (Velocity.Y < 0) Sprite.FrameStep = -1;
+                    else Sprite.FrameStep = +1;
+                    // Force direction to face wall
+                    if (left != null) Sprite.Direction = -1;
+                    if (right != null) Sprite.Direction = +1;
+                    if (Velocity.Y == 0 || !Controller.Climb) Sprite.Reset();
+                    break;
+                case PlayerState.Hiding:
+                    Sprite.Play("hide");
+                    break;
+                case PlayerState.OpeningDoor:
+                    Sprite.Play("open");
+                    break;
+                case PlayerState.Dying:
+                    Sprite.Play("die");
+                    break;
             }
-            
+
+            // Base direction on movement
+            if (Velocity.X < 0)
+                Sprite.Direction = -1;
+            if (0 < Velocity.X)
+                Sprite.Direction = +1;
+
             Game.SoundEngine.Update(Position);
         }
         
