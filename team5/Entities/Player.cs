@@ -177,7 +177,7 @@ namespace team5
                                 Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
                                 if (entity == TargetEntity)
                                 {
-                                    if (Controller.Interact)
+                                    if (Controller.Interact && !IsCrouched)
                                     {
                                         InteractTimer -= Game1.DeltaT;
                                         if (InteractTimer <= 0)
