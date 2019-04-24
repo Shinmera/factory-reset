@@ -144,12 +144,17 @@ namespace team5
             Player = null;
         }
 
+        public void RespawnAll()
+        {
+            CallAll((GameObject x) => { if (x is Entity) ((Entity)x).Respawn(this); });
+        }
+
         public void Die(Entity entity)
         {
 
             if (entity is Player)
             {
-                CallAll((GameObject x) => { if (x is Entity) ((Entity)x).Respawn(this); });
+                Level.RespawnAll();
                 //reset the alarm behavior
                 Level.Alarm.Detected = false;
                 Level.Alarm.ClearAlarm(this);
@@ -195,6 +200,7 @@ namespace team5
                 int mid = ((Layers.Length-1)/2)+1;
                 for(int i=1; i<mid; ++i)
                     Game.TilemapEngine.Draw(Layers[i], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
+                CallAll(x => x.DrawBackground());
                 CallAll(x => x.Draw());
                 for (int i=mid; i<Layers.Length; ++i)
                     Game.TilemapEngine.Draw(Layers[i], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));

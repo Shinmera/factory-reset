@@ -125,6 +125,12 @@ namespace team5
             Camera.Resize(width, height);
         }
 
+        public void RespawnAll()
+        {
+            foreach (var chunk in Chunks)
+                chunk.RespawnAll();
+        }
+
         public override void Update()
         {
             if (Paused)

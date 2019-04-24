@@ -38,6 +38,14 @@ namespace team5
         }
 
         /// <summary>
+        ///   Draws this object behind all other objects
+        /// </summary>
+        public virtual void DrawBackground()
+        {
+
+        }
+
+        /// <summary>
         ///   Draws this object.
         /// </summary>
         public virtual void Draw()

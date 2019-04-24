@@ -17,7 +17,6 @@ namespace team5
         public bool FallThrough => Controller.MoveDown;
 
         private Controller Controller;
-        //private bool IsClimbing = false;
         private bool HasWallJumped = false;
         private float LongJump = 0;
         private int SoundFrame = 0;
@@ -33,7 +32,6 @@ namespace team5
         private readonly Vector2 WallJumpVelocity = new Vector2(200, 250);
         private readonly float WallSlideFriction = 0.9F;
 
-        //private bool QueueHide = false;
         private Vector2 TargetSpot;
         private Entity TargetEntity;
 
@@ -54,6 +52,9 @@ namespace team5
         public bool IsCrouched { get; private set; }
         public float DeathTimer = 0;
         public const float DeathDuration = 2;
+
+        public float InteractTimer = 0;
+        public const float InteractHold = 0.2F;
 
         private AnimatedSprite Sprite;
 
@@ -160,20 +161,43 @@ namespace team5
                                 State = PlayerState.QueueHide;
                             }
                         }
-                        else if (entity is Door)
+                        else if (entity is Door && ((Door)entity).State == Door.EState.Closed)
                         {
-                            float dir = Math.Sign(entity.Position.X - Position.X);
-                            Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position + new Vector2(dir*1F*Chunk.TileSize, 16));
-                            Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
-                            if (Controller.Interact)
-                            {
-                                ((Door)entity).Interact(chunk);
-                            }
                             
+                            float dir = Math.Sign(Position.X - entity.Position.X);
+                            if (-Sprite.Direction == dir)
+                            {
+                                Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position + new Vector2(dir * 1.1F * Chunk.TileSize, 36));
+                                Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
+                                if (entity == TargetEntity)
+                                {
+                                    if (Controller.Interact)
+                                    {
+                                        InteractTimer -= Game1.DeltaT;
+                                        if (InteractTimer <= 0)
+                                        {
+                                            ((Door)entity).Interact(chunk,true);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        State = PlayerState.QueueDoor;
+                                        TargetSpot = entity.Position + new Vector2(dir * 1F * Chunk.TileSize, 0);
+                                    }
+                                }
+                                else
+                                {
+                                    if (Controller.Interact)
+                                    {
+                                        TargetEntity = entity;
+                                        InteractTimer = InteractHold;
+                                    }
+                                }
+                            }
                         }
                     });
 
-                    if(State == PlayerState.QueueHide)
+                    if(State == PlayerState.QueueHide || State == PlayerState.QueueDoor)
                     {
                         break;
                     }
@@ -310,6 +334,40 @@ namespace team5
                     if (hide)
                         State = PlayerState.Normal;
                     break;
+                case PlayerState.QueueDoor:
+                    if (Position.X < TargetSpot.X && Velocity.X < MaxVel)
+                    {
+                        // Allow quick turns on the ground
+                        if (Velocity.X < 0 && Grounded) Velocity.X = 0;
+                        Velocity.X += AccelRate * dt;
+                    }
+                    else if (Position.X > TargetSpot.X && -MaxVel < Velocity.X)
+                    {
+                        // Allow quick turns on the ground
+                        if (0 < Velocity.X && Grounded) Velocity.X = 0;
+                        Velocity.X -= AccelRate * dt;
+                    }
+
+                    if (Math.Abs(Position.X - TargetSpot.X) <= MaxVel * dt)
+                    {
+                        HasWallJumped = false;
+                        State = PlayerState.OperatingDoor;
+
+                        ((Door)TargetEntity).Interact(chunk,false);
+
+                        Position = TargetSpot;
+                        Velocity.X = 0;
+                    }
+                    break;
+                case PlayerState.OperatingDoor:
+                    Velocity.X = 0;
+                    Velocity.Y = 0;
+                    if(((Door)TargetEntity).State == Door.EState.Closed || ((Door)TargetEntity).State == Door.EState.Open)
+                    {
+                        State = PlayerState.Normal;
+                        TargetEntity = null;
+                    }
+                    break;
                 case PlayerState.Dying:
                     break;
             }
@@ -400,6 +458,7 @@ namespace team5
             State = PlayerState.Normal;
             Velocity = chunk.SpawnVelocity;
             Position = chunk.SpawnPosition;
+            TargetEntity = null;
 
             if (0 < Velocity.Y)
             {
