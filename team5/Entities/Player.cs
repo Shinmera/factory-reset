@@ -87,6 +87,7 @@ namespace team5
             Sprite.Add("open",  76, 86, 1.0, -1, 0);
             // Door should play crash animation on frame 88.
             Sprite.Add("crash", 86, 94, 0.6, -1, 1);
+            Sprite.Add("slide", 94, 103, 0.9, 102);
             
             Game.SoundEngine.Load("footstep");
         }
