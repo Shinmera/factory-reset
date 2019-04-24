@@ -34,10 +34,11 @@ namespace team5
         public override void LoadContent(ContentManager content)
         {
             Sprite.Texture = Game.TextureCache["door"];
-            Sprite.Add("open", 0, 1, 0.5);
-            Sprite.Add("closing", 1, 12, 1);
-            Sprite.Add("closed", 12, 13, 0.5);
-            Sprite.Add("opening", 13, 24, 1);
+            Sprite.Add("open", 0, 1, 1.0);
+            Sprite.Add("closing", 2, 9, 0.7);
+            Sprite.Add("opening", 2, 9, 0.7);
+            Sprite.Add("crash", 9, 15, 0.6);
+            Sprite.Add("closed", 15, 16, 1.0);
         }
 
         public void Interact(Chunk chunk)
