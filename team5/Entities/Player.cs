@@ -42,8 +42,10 @@ namespace team5
             Hiding,
             Climbing,
             QueueDoor,
-            CrashDoor,
+            
             OpeningDoor,
+            QueueCrash,
+            CrashDoor,
             Dying
         }
 
@@ -182,7 +184,8 @@ namespace team5
                                         InteractTimer -= Game1.DeltaT;
                                         if (InteractTimer <= 0)
                                         {
-                                            ((Door)entity).Interact(chunk,true);
+                                            State = PlayerState.QueueCrash;
+                                            TargetSpot = entity.Position + new Vector2(dir * 1F * Chunk.TileSize, 0);
                                         }
                                     }
                                     else
@@ -203,7 +206,7 @@ namespace team5
                         }
                     });
 
-                    if(State == PlayerState.QueueHide || State == PlayerState.QueueDoor)
+                    if(State == PlayerState.QueueHide || State == PlayerState.QueueDoor || State == PlayerState.QueueCrash)
                     {
                         break;
                     }
@@ -363,7 +366,7 @@ namespace team5
                         Velocity.X = 0;
                     }
                     break;
-                case PlayerState.CrashDoor:
+                
                 case PlayerState.OpeningDoor:
                     Velocity.X = 0;
                     Velocity.Y = 0;
@@ -373,6 +376,55 @@ namespace team5
                     }
 
                     if(Sprite.Frame == 0)
+                    {
+                        State = PlayerState.Normal;
+                        TargetEntity = null;
+                    }
+                    break;
+                case PlayerState.QueueCrash:
+                    if (Position.X < TargetSpot.X && Velocity.X < MaxVel)
+                    {
+                        // Allow quick turns on the ground
+                        if (Velocity.X < 0 && Grounded) Velocity.X = 0;
+                        Velocity.X += AccelRate * dt;
+                    }
+                    else if (Position.X > TargetSpot.X && -MaxVel < Velocity.X)
+                    {
+                        // Allow quick turns on the ground
+                        if (0 < Velocity.X && Grounded) Velocity.X = 0;
+                        Velocity.X -= AccelRate * dt;
+                    }
+
+                    if (Math.Abs(Position.X - TargetSpot.X) <= MaxVel * (dt + 0.6F/4))
+                    {
+                        HasWallJumped = false;
+                        State = PlayerState.CrashDoor;
+                        TargetSpot = TargetSpot + 999 * Vector2.UnitX * Math.Sign(TargetEntity.Position.X - Position.X);
+                        Velocity.X = MaxVel * Math.Sign(TargetSpot.X-Position.X);
+                    }
+                    break;
+                case PlayerState.CrashDoor:
+
+                    Velocity.Y = 0;
+                    if (Sprite.Frame >= 88 && Sprite.Frame <= 91)
+                    {
+                        if (Velocity.X < 0 && Grounded) Velocity.X = 0;
+                        if (Velocity.X < MaxVel)
+                            Velocity.X += Math.Sign(TargetSpot.X - Position.X) * 0.5F * AccelRate * dt;
+                    }
+                    else
+                    {
+                        if (Velocity.X < 0 && Grounded) Velocity.X = 0;
+                        if(Velocity.X < MaxVel)
+                            Velocity.X += Math.Sign(TargetSpot.X - Position.X) * AccelRate * dt;
+                    }
+
+                    if (Sprite.Frame == 88)
+                    {
+                        ((Door)TargetEntity).Interact(chunk, true);
+                    }
+
+                    if (Sprite.Frame == 6)
                     {
                         State = PlayerState.Normal;
                         TargetEntity = null;
@@ -466,6 +518,9 @@ namespace team5
                     break;
                 case PlayerState.OpeningDoor:
                     Sprite.Play("open");
+                    break;
+                case PlayerState.CrashDoor:
+                    Sprite.Play("crash");
                     break;
                 case PlayerState.Dying:
                     Sprite.Play("die");

@@ -92,7 +92,7 @@ namespace team5
                     }
                     break;
                 case EState.Crash:
-                    if (Sprite.Frame == 11)
+                    if (Sprite.Frame == 9)
                     {
                         chunk.SolidTiles[chunk.GetTileLocation(Position - Vector2.UnitY * Chunk.TileSize / 2)] = (uint)Chunk.Colors.BackgroundWall;
                         chunk.SolidTiles[chunk.GetTileLocation(Position + Vector2.UnitY * Chunk.TileSize / 2)] = (uint)Chunk.Colors.BackgroundWall;
