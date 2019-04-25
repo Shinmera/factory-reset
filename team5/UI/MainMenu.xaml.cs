@@ -38,7 +38,6 @@ namespace team5.UI
             var item = (MenuPage)e.ClickedItem;
             if(item.Name.Equals("New Game"))
             {
-                System.Diagnostics.Debug.WriteLine("Loading Game...");
                 Root.Current.ShowGame();
                 Root.Current.Game.QueueAction((game)=>game.LoadLevel(Game1.FirstLevel));
             }
@@ -60,7 +59,7 @@ namespace team5.UI
 
         public void Back(BackRequestedEventArgs e)
         {
-
+            e.Handled = true;
         }
     }
 

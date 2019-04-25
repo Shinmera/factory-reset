@@ -171,7 +171,7 @@ namespace team5
         {
             Clear();
             foreach(var sound in SoundCache){
-                System.Diagnostics.Debug.WriteLine("[SoundEngine] Unloading "+sound.Key);
+                Game1.Log("SoundEngine","Unloading {0}",sound.Key);
                 sound.Value.Dispose();
             }
             SoundCache.Clear();
@@ -180,7 +180,7 @@ namespace team5
         public void Load(string effect)
         {
             if(!SoundCache.ContainsKey(effect)){
-                System.Diagnostics.Debug.WriteLine("[SoundEngine] Loading "+effect);
+                Game1.Log("SoundEngine","Loading {0}",effect);
                 SoundCache.Add(effect, Content.Load<SoundEffect>("Sounds/"+effect));
                 // Callback to advance load screen
                 Game.AdvanceLoad();

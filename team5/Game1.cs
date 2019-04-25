@@ -89,13 +89,13 @@ namespace team5
 
         public void LoadLevel(object identifier)
         {
+            Game1.Log("Game", "Loading level from {0}...", identifier);
             var sw = new System.Diagnostics.Stopwatch();
             sw.Start();
 
-            System.Diagnostics.Debug.WriteLine(String.Format("Loading level from {0}...", identifier));
             Level = new Level(this, identifier);
             Level.LoadContent(Content);
-            System.Diagnostics.Debug.WriteLine("Level loaded in "+(sw.ElapsedMilliseconds/100.0f)+"s");
+            Game1.Log("Game", "Level loaded in {0}s", sw.ElapsedMilliseconds/100.0f);
             // Pad out load time so that the load screen doesn't just "pop in" for a fraction of a second.
             while(sw.ElapsedMilliseconds < 1000){
                 RunOneFrame();
@@ -109,6 +109,7 @@ namespace team5
 
         public void UnloadLevel()
         {
+            Game1.Log("Game", "Unloading level...");
             Level.UnloadContent();
             SoundEngine.UnloadContent();
             TextureCache.UnloadContent();
@@ -135,6 +136,13 @@ namespace team5
                 RunOneFrame();
             }
         }
+        
+        public static void Log(string source, string format, params object[] args)
+        {
+            if(!System.Diagnostics.Debugger.IsAttached) return;
+            string content = String.Format(format, args);
+            System.Diagnostics.Debug.WriteLine(String.Format("[{0,-16}] {1}", source, content));
+        }
 
         public bool Paused {
             get
@@ -159,7 +167,7 @@ namespace team5
         protected void Resize(int width, int height)
         {
             Transforms.ProjectionMatrix = Matrix.CreateOrthographicOffCenter(0, width, 0, height, -10, 10);
-            System.Diagnostics.Debug.WriteLine("Viewport: " + width + "x" + height);
+            Game1.Log("Game", "Viewport: " + width + "x" + height);
             ActiveWindow.Resize(width, height);
             TextEngine.Resize(width, height);
         }
