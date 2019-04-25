@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
 using System;
@@ -181,7 +180,7 @@ namespace team5
         {
             if(!SoundCache.ContainsKey(effect)){
                 Game1.Log("SoundEngine","Loading {0}",effect);
-                SoundCache.Add(effect, Content.Load<SoundEffect>("Sounds/"+effect));
+                SoundCache.Add(effect, Content.ReadAsset<SoundEffect>("Sounds/"+effect));
                 // Callback to advance load screen
                 Game.AdvanceLoad();
             }

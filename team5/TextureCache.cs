@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace team5
@@ -20,7 +18,7 @@ namespace team5
             if(!Cache.ContainsKey(texture))
             {
                 Game1.Log("TextureCache","Loading {0}",texture);
-                Cache.Add(texture, Game.Content.Load<Texture2D>("Textures/"+texture));
+                Cache.Add(texture, Game.Content.ReadAsset<Texture2D>("Textures/"+texture));
                 // Callback to advance load screen
                 Game.AdvanceLoad();
             }
