@@ -25,6 +25,7 @@ namespace team5
         public string name;
         public string description;
         public string preview;
+        public string next;
         public bool startChase;
         public int startChunk;
         public Chunk[] chunks;

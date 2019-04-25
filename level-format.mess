@@ -54,6 +54,7 @@ Level: {
   name: String,
   description: String,
   preview: Null | Path,
+  next: Null | String
   startChase: Boolean,
   startChunk: Integer,
   chunks: [ Chunk ]
@@ -91,6 +92,7 @@ And the following would be the JSON encoded contents of the ``level.json`` file:
   "name": "Example",
   "description": "An example level for the specification.",
   "preview": "preview.png",
+  "next": "other-example",
   "startChase": false,
   "startChunk": 0,
   "chunks": [

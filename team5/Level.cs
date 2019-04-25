@@ -20,6 +20,7 @@ namespace team5
         public float Time = 0;
         public int DeathCounter = 0;
         public int AlertCounter = 0;
+        public string Next = null;
         
         public readonly object Identifier;
         private bool ChunkTrans = false;
@@ -96,6 +97,7 @@ namespace team5
                 }
                 
                 ActiveChunk = Chunks[data.startChunk];
+                Next = data.next;
             }
             
             Player.LoadContent(content);

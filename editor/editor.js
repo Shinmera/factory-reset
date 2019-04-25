@@ -605,6 +605,7 @@ class Level{
         this.name = init.name || "level";
         this.description = init.description || "";
         this.preview = init.preview || null;
+        this.next = init.next || null;
         this.startChase = init.startChase || false;
         this.startChunk = init.startChunk || 0;
         this.defaultTileset = init.defaultTileset || solidset;
@@ -650,6 +651,7 @@ class Level{
             name: this.name,
             description: this.description,
             preview: (this.preview)? "preview.png" : null,
+            next: this.next,
             startChase: this.startChase,
             startChunk: this.startChunk,
             chunks: chunks
@@ -1003,8 +1005,6 @@ var editChunk = function(chunk){
 var newLevel = function(){
     return showPrompt(".prompt.level")
         .then(async (prompt)=>{
-            var name = prompt.querySelector("#level-name").value;
-            var description = prompt.querySelector("#level-description").value;
             var preview = null;
             var tileset = null;
             if(prompt.querySelector("#level-preview").value)
@@ -1014,11 +1014,12 @@ var newLevel = function(){
             if(prompt.querySelector("#level-tileset").value)
                 tileset = await loadTileset(prompt.querySelector("#level-tileset"));
             return new Level({
-                    name: name,
-                    description: description,
-                    preview: preview,
-                    startChase: startChase,
-                    defaultTileset: tileset,
+                name: prompt.querySelector("#level-name").value,
+                description: prompt.querySelector("#level-description").value,
+                next: prompt.querySelector("#level-next").value,
+                preview: preview,
+                startChase: false,
+                defaultTileset: tileset,
             });});
 };
 
@@ -1026,11 +1027,13 @@ var editLevel = function(){
     return showPrompt(".prompt.level", {
         "#level-name": level.name,
         "#level-description": level.description,
+        "#level-next": level.next || "",
         "#level-tileset+img": {src: (level.defaultTileset)?level.defaultTileset.image.src:""},
         "#level-preview+img": {src: (level.preview)?level.preview.src:""}})
         .then(async (prompt)=>{
             level.name = prompt.querySelector("#level-name").value;
             level.description = prompt.querySelector("#level-description").value;
+            level.next = prompt.querySelector("#level-next").value || null;
             level.uiElement.querySelector("header label").innerText = level.name;
             if(prompt.querySelector("#level-preview").value)
                 await loadFile(prompt.querySelector("#level-preview"), "data")
