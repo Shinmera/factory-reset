@@ -456,7 +456,7 @@ namespace team5
                 case PlayerState.Normal:
                     if ((Velocity.Y < 0 && (left != null || right != null)))
                     {
-                        Sprite.Play("climb");
+                        Sprite.Play("slide");
                         if (Velocity.Y < 0) Sprite.FrameStep = -1;
                         else Sprite.FrameStep = +1;
                         // Force direction to face wall
