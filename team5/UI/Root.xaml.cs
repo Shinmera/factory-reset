@@ -1,4 +1,5 @@
-﻿using Windows.UI.Core;
+﻿using System;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 
 namespace team5.UI
@@ -40,6 +41,12 @@ namespace team5.UI
         private void OnBackRequested(object sender, BackRequestedEventArgs e)
         {
             VisiblePage.Back(e);
+        }
+        
+        public void QueueAction(Action<Root> action)
+        {
+            Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
+                                                                                                  ()=>action(this)).AsTask();
         }
     }
 }

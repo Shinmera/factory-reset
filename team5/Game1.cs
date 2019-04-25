@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using team5.UI;
 
 namespace team5
 {
@@ -123,6 +124,11 @@ namespace team5
             LoadLevel(Level.Identifier);
         }
         
+        public object NextLevel =>
+            (Level == null || Level.Next == null)
+            ? null
+            : Level.Next;
+        
         public void AdvanceLoad()
         {
             if(ActiveWindow is LoadScreen){
@@ -139,9 +145,7 @@ namespace team5
             {
                 if (value == Paused) return;
                 Level.Paused = value;
-                // Oh jeeze.
-                Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
-                    () => UI.Root.Current.Game.Paused = value).AsTask().Wait();
+                Root.Current.QueueAction((root) => root.Game.Paused = value);
             }
         }
         
@@ -149,8 +153,7 @@ namespace team5
         {
             Level.Paused = true;
             var score = Level.Score();
-            Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,
-                    () => UI.Root.Current.Game.ShowScore(score)).AsTask().Wait();
+            Root.Current.QueueAction((root)=>root.Game.ShowScore(score));
         }
 
         protected void Resize(int width, int height)

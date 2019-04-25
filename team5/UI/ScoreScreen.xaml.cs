@@ -33,7 +33,12 @@ namespace team5.UI
         private void Continue_Click(object sender, RoutedEventArgs e)
         {
             Shown = false;
-            // TODO: Advance level
+            Root.Current.Game.QueueAction((game)=>{
+                    if(game.NextLevel != null)
+                        game.LoadLevel(game.NextLevel);
+                    else // FIXME: Show a proper end credits screen
+                        Root.Current.QueueAction((root)=>root.ShowMenu());
+                });
         }
     }
 
