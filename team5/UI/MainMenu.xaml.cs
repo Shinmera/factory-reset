@@ -15,6 +15,7 @@ namespace team5.UI
             Pages.Add(new MenuPage("New Game", null));
             Pages.Add(new MenuPage("Select Level", new LevelSelect()));
             Pages.Add(new MenuPage("Options", new Options()));
+            Pages.Add(new MenuPage("Credits", new Credits()));
             Pages.Add(new MenuPage("Quit", null));
             SidePanel.ItemsSource = Pages;
         }
