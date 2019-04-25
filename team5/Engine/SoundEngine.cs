@@ -171,15 +171,16 @@ namespace team5
         {
             Clear();
             foreach(var sound in SoundCache){
+                System.Diagnostics.Debug.WriteLine("[SoundEngine] Unloading "+sound.Key);
                 sound.Value.Dispose();
             }
             SoundCache.Clear();
-            ActiveSounds.Clear();
         }
         
         public void Load(string effect)
         {
             if(!SoundCache.ContainsKey(effect)){
+                System.Diagnostics.Debug.WriteLine("[SoundEngine] Loading "+effect);
                 SoundCache.Add(effect, Content.Load<SoundEffect>("Sounds/"+effect));
                 // Callback to advance load screen
                 Game.AdvanceLoad();
@@ -215,7 +216,8 @@ namespace team5
             foreach(var sound in ActiveSounds){
                 sound.Stopped = true;
                 sound.Dispose();
-            }   
+            }
+            ActiveSounds.Clear();
         }
         
         public void Update(Vector2 listener)   

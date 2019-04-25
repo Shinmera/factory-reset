@@ -19,6 +19,7 @@ namespace team5
         {
             if(!Cache.ContainsKey(texture))
             {
+                System.Diagnostics.Debug.WriteLine("[TextureCache] Loading "+texture);
                 Cache.Add(texture, Game.Content.Load<Texture2D>("Textures/"+texture));
                 // Callback to advance load screen
                 Game.AdvanceLoad();
@@ -29,7 +30,10 @@ namespace team5
         public void UnloadContent()
         {
             foreach(var texture in Cache)
+            {
+                System.Diagnostics.Debug.WriteLine("[TextureCache] Unloading "+texture.Key);
                 texture.Value.Dispose();
+            }
             Cache.Clear();
         }
         
