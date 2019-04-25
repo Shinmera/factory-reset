@@ -27,8 +27,26 @@ namespace team5
         public readonly Controller Controller;
         private readonly ConcurrentQueue<Action<Game1>> ActionQueue = new ConcurrentQueue<Action<Game1>>();
 
-        public Window ActiveWindow { get; private set; }
-        Level Level;
+        private Window RealActiveWindow;
+        public Window ActiveWindow { 
+            get{
+                return RealActiveWindow;
+            }
+            private set{
+                if(value != null)
+                    value.Resize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
+                RealActiveWindow = value;
+            }
+        }
+        
+        private Level Level {
+            get{ return (ActiveWindow is Level)? (Level)ActiveWindow : null; }
+        }
+        
+        public object NextLevelId =>
+            (ActiveWindow is Level)
+            ? Level.Next
+            : null;
 
         public Game1()
         {
@@ -48,8 +66,7 @@ namespace team5
             Content.RootDirectory = "Content";
 
             IsFixedTimeStep = true;
-
-            ActiveWindow = new LoadScreen(this);
+            RealActiveWindow = new LoadScreen(this);
         }
 
         protected override void Initialize()
@@ -92,11 +109,11 @@ namespace team5
         public void LoadLevel(object identifier)
         {
             Game1.Log("Game", "Loading level from {0}...", identifier);
+            
             var sw = new System.Diagnostics.Stopwatch();
             sw.Start();
-
-            Level = new Level(this, identifier);
-            Level.LoadContent(Content);
+            Level level = new Level(this, identifier);
+            level.LoadContent(Content);
             Game1.Log("Game", "Level loaded in {0}s", sw.ElapsedMilliseconds/100.0f);
             // Pad out load time so that the load screen doesn't just "pop in" for a fraction of a second.
             while(sw.ElapsedMilliseconds < 1000){
@@ -105,32 +122,28 @@ namespace team5
             }
             sw.Stop();
 
-            ActiveWindow = Level;
-            Resize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
+            ActiveWindow = level;
         }
 
         public void UnloadLevel()
         {
             Game1.Log("Game", "Unloading level...");
-            Level.UnloadContent();
+            ActiveWindow.UnloadContent();
             SoundEngine.UnloadContent();
             TextureCache.UnloadContent();
+            // Reload engine that got purged in texture unload
+            ParticleEmitter.LoadContent(Content);
             var Loader = new LoadScreen(this);
             Loader.LoadContent(Content);
-            Level = null;
             ActiveWindow = Loader;
         }
         
         public void ReloadLevel()
         {
+            if(!(ActiveWindow is Level)) return;
             SoundEngine.Clear();
             LoadLevel(Level.Identifier);
         }
-        
-        public object NextLevel =>
-            (Level == null || Level.Next == null)
-            ? null
-            : Level.Next;
         
         public void AdvanceLoad()
         {
@@ -149,11 +162,11 @@ namespace team5
         public bool Paused {
             get
             {
-                return (ActiveWindow != Level || Level.Paused);
+                return (!(ActiveWindow is Level) || Level.Paused);
             }
             set
             {
-                if (value == Paused) return;
+                if (value == Paused || Level == null) return;
                 Level.Paused = value;
                 Root.Current.QueueAction((root) => root.Game.Paused = value);
             }

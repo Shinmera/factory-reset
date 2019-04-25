@@ -34,8 +34,8 @@ namespace team5.UI
         {
             Shown = false;
             Root.Current.Game.QueueAction((game)=>{
-                    if(game.NextLevel != null)
-                        game.LoadLevel(game.NextLevel);
+                    if(game.NextLevelId != null)
+                        game.LoadLevel(game.NextLevelId);
                     else // FIXME: Show a proper end credits screen
                         Root.Current.QueueAction((root)=>root.ShowMenu());
                 });
