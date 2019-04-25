@@ -108,7 +108,7 @@ namespace team5
             //  Force camera to be still
             Camera.Position.X = Player.Position.X;
             Camera.Position.Y = Player.Position.Y;
-            Camera.UpdateChunk(ActiveChunk);
+            Camera.UpdateChunk(ActiveChunk, 0);
             Camera.SnapToLocation();
             Camera.Update();
             Alarm.LoadContent(content);
@@ -271,7 +271,7 @@ namespace team5
                                         }
                                     }
 
-                                    Camera.UpdateChunk(TargetChunk);
+                                    Camera.UpdateChunk(TargetChunk, TransitionDirection);
                                 }
                             }
                         }

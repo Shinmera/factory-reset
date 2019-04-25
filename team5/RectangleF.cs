@@ -40,6 +40,10 @@ namespace team5
             {
                 return Y;
             }
+            set
+            {
+                Y = value;
+            }
         }
 
         public float Top
@@ -47,6 +51,10 @@ namespace team5
             get
             {
                 return Y + Height;
+            }
+            set
+            {
+                Height = value - Y;
             }
         }
 
@@ -56,6 +64,10 @@ namespace team5
             {
                 return X;
             }
+            set
+            {
+                X = value;
+            }
         }
 
         public float Right
@@ -63,6 +75,10 @@ namespace team5
             get
             {
                 return X + Width;
+            }
+            set
+            {
+                Width = value - X;
             }
         }
 
