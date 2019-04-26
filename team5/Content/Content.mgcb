@@ -327,6 +327,18 @@
 /processorParam:TextureFormat=Color
 /build:Textures/tilesheet-interior-modern.png
 
+#begin Textures/tilesheet-rooftops.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/tilesheet-rooftops.png
+
 #begin Textures/walkie_talkie.png
 /importer:TextureImporter
 /processor:TextureProcessor
