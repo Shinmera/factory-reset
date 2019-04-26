@@ -93,6 +93,7 @@ namespace team5
             Game.SoundEngine.Load("climb", "Player_Climb1", "Player_Climb2", "Player_Climb3");
             Game.SoundEngine.Load("hide", "Player_Hide");
             Game.SoundEngine.Load("jump", "Player_Jump");
+            Game.SoundEngine.Load("walljump", "Player_JumpWall");
             Game.SoundEngine.Load("land", "Player_Landing");
             Game.SoundEngine.Load("run", "Player_LoudStep1", "Player_LoudStep2", "Player_LoudStep3");
             Game.SoundEngine.Load("crouch", "Player_QuietStep1", "Player_QuietStep2", "Player_QuietStep3");
@@ -261,6 +262,7 @@ namespace team5
                         {
                             if (right != null)
                             {
+                                MakeSound(chunk, "walljump");
                                 Velocity.X = -WallJumpVelocity.X;
                                 Velocity.Y = WallJumpVelocity.Y;
                                 HasWallJumped = true;
@@ -268,6 +270,7 @@ namespace team5
                             }
                             else if (left != null)
                             {
+                                MakeSound(chunk, "walljump");
                                 Velocity.X = WallJumpVelocity.X;
                                 Velocity.Y = WallJumpVelocity.Y;
                                 HasWallJumped = true;
@@ -285,6 +288,7 @@ namespace team5
                         HasWallJumped = false;
                         if (jump)
                         {
+                            MakeSound(chunk, "jump");
                             jump = false;
                             Velocity.Y = JumpSpeed;
                             LongJump = LongJumpTime * dt;
@@ -464,7 +468,6 @@ namespace team5
             }
 
             bool HardFall = (Velocity.Y < HardFallVelocity);
-            if(HardFall) Game1.Log("D", "{0}", Velocity.Y);
             
             // Now that all movement has been updated, check for collisions
             HandleCollisions(dt, chunk, true);
@@ -496,8 +499,6 @@ namespace team5
                         if (0 < Velocity.Y)
                         {
                             Sprite.Play("jump");
-                            if (Sprite.Frame == 46)
-                                MakeSound(chunk, "jump");
                         }
                         else if (Velocity.Y < 0)
                         {
