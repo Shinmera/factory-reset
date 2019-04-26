@@ -388,7 +388,7 @@ namespace team5
                     Velocity.Y = 0;
                     if(Sprite.Frame == 78)
                     {
-                        ((Door)TargetEntity).Interact(chunk, false);
+                        ((Door)TargetEntity).Interact(chunk, false, TargetEntity.Position.X < Position.X);
                     }
 
                     if(Sprite.Frame == 0)
@@ -437,7 +437,7 @@ namespace team5
 
                     if (Sprite.Frame == 88)
                     {
-                        ((Door)TargetEntity).Interact(chunk, true);
+                        ((Door)TargetEntity).Interact(chunk, true, TargetEntity.Position.X < Position.X);
                     }
 
                     if (Sprite.Frame == 6)

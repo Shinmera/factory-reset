@@ -83,7 +83,7 @@ namespace team5
             Sprite.Play("closed");
         }
 
-        public void Interact(Chunk chunk, bool fast)
+        public void Interact(Chunk chunk, bool fast, bool fromRight)
         {
             if (State != EState.Closed)
                 return;
@@ -97,6 +97,9 @@ namespace team5
                 State = EState.Opening;
                 Sprite.Play("opening");
             }
+
+            if (fromRight)
+                Sprite.Direction = -1;
         }
 
         public override void Update(Chunk chunk)
