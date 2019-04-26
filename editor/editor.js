@@ -581,9 +581,9 @@ class Chunk{
 
     delete(){
         console.log("Deleting", this);
+        this.uiElement.parentNode.removeChild(this.uiElement);
         var index = level.chunks.indexOf(this);
         level.chunks.splice(index, 1);
-        this.uiElement.parentNode.removeChild(this.uiElement);
         level.chunk = index;
     }
 
