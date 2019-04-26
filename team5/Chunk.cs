@@ -538,6 +538,159 @@ namespace team5
                     }
                 }
             }
+
+            foreach(IOccludingEntity entity in OccludingEntities)
+            {
+                Vector2 entityPosition = entity.GetOcclusionBox().Center;
+
+                var dir = pos - entityPosition;
+                var cornerOffset = new Vector2(dir.X > 0 ? 1 : -1, dir.Y > 0 ? 1 : -1);
+
+                Vector2 entitySize = 0.5F * new Vector2(entity.GetOcclusionBox().Width, entity.GetOcclusionBox().Height);
+                Vector2 dircorner = dir - cornerOffset * entitySize;
+
+                if (Math.Sign(dir.X) == Math.Sign(dircorner.X))
+                {
+                    Vector2 point1;
+                    Vector2 point2;
+                    if (cornerOffset.X == cornerOffset.Y)
+                    {
+                        point1 = entityPosition + cornerOffset * entitySize;
+                        point2 = entityPosition + new Vector2(cornerOffset.X, -cornerOffset.Y) * entitySize;
+                    }
+                    else
+                    {
+                        point2 = entityPosition + cornerOffset * entitySize;
+                        point1 = entityPosition + new Vector2(cornerOffset.X, -cornerOffset.Y) * entitySize;
+                    }
+
+                    float angle1 = ConeEntity.ConvertAngle((float)Math.Atan2(point1.Y - pos.Y, point1.X - pos.X) - startingangle);
+
+                    float angle2 = ConeEntity.ConvertAngle((float)Math.Atan2(point2.Y - pos.Y, point2.X - pos.X) - startingangle);
+
+                    if ((inAngle(point1) || inAngle(point2)) && (inRange(point1) || inRange(point2)))
+                    {
+                        if (!inAngle(point1))
+                        {
+                            angle1 = angle1 - 2 * (float)Math.PI;
+                        }
+                        if (!inRange(point1) || !inRange(point2))
+                        {
+                            if (ConeEntity.IntersectCircle(point1, point2, radius, pos, 1, out float t))
+                            {
+                                Vector2 newPoint = point1 + (point2 - point1) * t;
+
+                                if (!inRange(point1))
+                                {
+                                    point1 = newPoint;
+                                    angle1 = ConeEntity.ConvertAngle((float)Math.Atan2(newPoint.Y - pos.Y, newPoint.X - pos.X) - startingangle);
+                                }
+                                else
+                                {
+                                    point2 = newPoint;
+                                    angle2 = ConeEntity.ConvertAngle((float)Math.Atan2(newPoint.Y - pos.Y, newPoint.X - pos.X) - startingangle);
+                                }
+                            }
+                        }
+
+                        if (points.TryGetValue(angle1, out var point1Entry) && point1Entry.Item1 != point1)
+                        {
+                            if ((point1 - pos).LengthSquared() < (point1Entry.Item2 - pos).LengthSquared())
+                            {
+                                points[angle1] = new Tuple<Vector2, Vector2>(point1, point2);
+                            }
+                        }
+                        else
+                        {
+                            points[angle1] = new Tuple<Vector2, Vector2>(point1, point2);
+                        }
+
+                        if (points.TryGetValue(angle2, out var point2Entry))
+                        {
+                            if (point2Entry.Item1 != point2 && (point2 - pos).LengthSquared() < (point2Entry.Item2 - pos).LengthSquared())
+                            {
+                                points[angle2] = new Tuple<Vector2, Vector2>(point2, new Vector2(float.NaN)); ;
+                            }
+                        }
+                        else
+                        {
+                            points[angle2] = new Tuple<Vector2, Vector2>(point2, new Vector2(float.NaN));
+                        }
+                    }
+                }
+
+                if (Math.Sign(dir.Y) == Math.Sign(dircorner.Y))
+                {
+                    Vector2 point1;
+                    Vector2 point2;
+                    if (cornerOffset.X == cornerOffset.Y)
+                    {
+                        point2 = entityPosition + cornerOffset * entitySize;
+                        point1 = entityPosition + new Vector2(-cornerOffset.X, cornerOffset.Y) * entitySize;
+                    }
+                    else
+                    {
+                        point1 = entityPosition + cornerOffset * entitySize;
+                        point2 = entityPosition + new Vector2(-cornerOffset.X, cornerOffset.Y) * entitySize;
+                    }
+
+                    float angle1 = ConeEntity.ConvertAngle((float)Math.Atan2(point1.Y - pos.Y, point1.X - pos.X) - startingangle);
+
+                    float angle2 = ConeEntity.ConvertAngle((float)Math.Atan2(point2.Y - pos.Y, point2.X - pos.X) - startingangle);
+
+                    if ((inAngle(point1) || inAngle(point2)) && (inRange(point1) || inRange(point2)))
+                    {
+                        if (!inAngle(point1))
+                        {
+                            angle1 = angle1 - 2 * (float)Math.PI;
+                        }
+                        if (!inRange(point1) || !inRange(point2))
+                        {
+                            if (ConeEntity.IntersectCircle(point1, point2, radius, pos, 1, out float t))
+                            {
+                                Vector2 newPoint = point1 + (point2 - point1) * t;
+
+                                if (!inRange(point1))
+                                {
+                                    point1 = newPoint;
+                                    angle1 = ConeEntity.ConvertAngle((float)Math.Atan2(newPoint.Y - pos.Y, newPoint.X - pos.X) - startingangle);
+                                }
+                                else
+                                {
+                                    point2 = newPoint;
+                                    angle2 = ConeEntity.ConvertAngle((float)Math.Atan2(newPoint.Y - pos.Y, newPoint.X - pos.X) - startingangle);
+                                }
+                            }
+                        }
+
+                        if (points.TryGetValue(angle1, out var point1Entry) && point1Entry.Item1 != point1)
+                        {
+                            if ((point1 - pos).LengthSquared() < (point1Entry.Item2 - pos).LengthSquared())
+                            {
+                                points[angle1] = new Tuple<Vector2, Vector2>(point1, point2);
+                            }
+                        }
+                        else
+                        {
+                            points[angle1] = new Tuple<Vector2, Vector2>(point1, point2);
+                        }
+
+                        if (points.TryGetValue(angle2, out var point2Entry))
+                        {
+                            if (point2Entry.Item1 != point2 && (point2 - pos).LengthSquared() < (point2Entry.Item2 - pos).LengthSquared())
+                            {
+                                points[angle2] = new Tuple<Vector2, Vector2>(point2, new Vector2(float.NaN)); ;
+                            }
+                        }
+                        else
+                        {
+                            points[angle2] = new Tuple<Vector2, Vector2>(point2, new Vector2(float.NaN));
+                        }
+                    }
+                }
+            }
+        
+
             return points;
         }
 
@@ -565,7 +718,7 @@ namespace team5
             return null;
         }
         
-        public bool IntersectLine(Vector2 Source, Vector2 Dir, float length, out float location, bool backgroundwall = true)
+        public bool IntersectLine(Vector2 Source, Vector2 Dir, float length, out float location, bool backgroundwall = true, bool aerialdronewall = false)
         {
             Vector2 relSource = Source - new Vector2(BoundingBox.X, BoundingBox.Y);
 
@@ -582,6 +735,8 @@ namespace team5
 
             int xincrement = Dir.X > 0 ? 1 : -1;
             int yincrement = Dir.Y > 0 ? 1 : -1;
+
+            location = -1;
 
             for (int x = (Dir.X > 0 ? minX : (maxX-1)); x < maxX && x >= minX; x += xincrement)
             {
@@ -621,19 +776,19 @@ namespace team5
 
                 for(int y = (Dir.Y > 0 ? localMinY : (localMaxY - 1)); y < localMaxY && y >= localMinY; y += yincrement)
                 {
-                    if(GetTile(x,y) == (uint)Colors.SolidPlatform || (backgroundwall && GetTile(x, y) == (uint)Colors.BackgroundWall))
+                    if(GetTile(x,y) == (uint)Colors.SolidPlatform || (backgroundwall && GetTile(x, y) == (uint)Colors.BackgroundWall) || (aerialdronewall && GetTile(x, y) == (uint)Colors.AerialDroneWall))
                     {
                         if(y == (Dir.Y > 0 ? localMinY : (localMaxY - 1)))
                         {
                             location = prevLength;
                             if (location < length)
                             {
-                                return true;
+                                goto ExitLoop;
                             }
                             else
                             {
                                 location = -1;
-                                return false;
+                                goto ExitLoop;
                             }
                         }
 
@@ -642,12 +797,12 @@ namespace team5
                             location = prevLength;
                             if (location < length)
                             {
-                                return true;
+                                goto ExitLoop;
                             }
                             else
                             {
                                 location = -1;
-                                return false;
+                                goto ExitLoop;
                             }
                         }
 
@@ -657,12 +812,12 @@ namespace team5
 
                         if (location <= length)
                         {
-                            return true;
+                            goto ExitLoop;
                         }
                         else
                         {
                             location = -1;
-                            return false;
+                            goto ExitLoop;
                         }
                     }
                 }
@@ -670,9 +825,44 @@ namespace team5
                 prevLength = nextLength;
             }
             
+            //Yes, it's a goto. Sue me. I need to exit nested loops and frankly this is the easiest way to do it.
+            ExitLoop:
 
-            location = -1;
-            return false;
+            foreach (IOccludingEntity entity in OccludingEntities)
+            {
+                Vector2 invDir;
+                invDir.X = 1.0f / Dir.X;
+                invDir.Y = 1.0f / Dir.Y;
+
+                RectangleF box = entity.GetOcclusionBox();
+
+                // lb is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
+                // r.org is origin of ray
+                float t1 = (box.Left - Source.X) * invDir.X;
+                float t2 = (box.Right - Source.X) * invDir.X;
+                float t3 = (box.Bottom - Source.Y) * invDir.Y;
+                float t4 = (box.Top - Source.Y) * invDir.Y;
+
+                float tmin = Math.Max(Math.Min(t1, t2), Math.Min(t3, t4));
+                float tmax = Math.Min(Math.Max(t1, t2), Math.Max(t3, t4));
+
+                // if tmax < 0, ray (line) is intersecting AABB, but the whole AABB is behind us
+                if (tmax < 0)
+                {
+                    continue;
+                }
+
+                // if tmin > tmax, ray doesn't intersect AABB
+                if ((location != -1 && tmin > location) || tmin > length)
+                {
+                    continue;
+                }
+
+                location = tmin;
+                return true;
+            }
+            
+            return location != -1;
         }
 
         public bool CollideSolid(Entity source, float timestep, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetVel)

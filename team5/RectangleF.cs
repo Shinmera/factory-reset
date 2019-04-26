@@ -82,6 +82,14 @@ namespace team5
             }
         }
 
+        public Vector2 Center
+        {
+            get
+            {
+                return new Vector2(X + Width / 2, Y + Height / 2);
+            }
+        }
+
         public bool Intersects(RectangleF target)
         {
             return X < target.X + target.Width &&

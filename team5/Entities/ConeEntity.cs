@@ -297,6 +297,8 @@ namespace team5
                             break;
                         }
 
+                        closestLine = null;
+
                         if (atBeginning && angle >= 0)
                         {
                             atBeginning = false;

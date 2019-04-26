@@ -12,10 +12,10 @@ namespace team5
     {
         private class DoorCollision : BoxEntity, IOccludingEntity
         {
-            public static readonly RectangleF NoCollide = new RectangleF(float.NaN, float.NaN, float.NaN, float.NaN);
+            public static readonly RectangleF NoCollide = new RectangleF(float.PositiveInfinity, float.PositiveInfinity, 0, 0);
             public bool Open = false;
 
-            public DoorCollision(Vector2 position, Game1 game) : base(game, new Vector2(1, Chunk.TileSize))
+            public DoorCollision(Vector2 position, Game1 game) : base(game, new Vector2(1, 0.99F*Chunk.TileSize))
             {
                 Position = position;
             }
@@ -60,7 +60,7 @@ namespace team5
         {
             Position = position + Vector2.UnitY * (Chunk.TileSize / 2);
             Sprite = new AnimatedSprite(null, game, new Vector2(32, 32));
-            doorCollision = new DoorCollision(position, game);
+            doorCollision = new DoorCollision(Position, game);
         }
 
         private void Close(Chunk chunk)
@@ -68,8 +68,8 @@ namespace team5
             Sprite.Play("closed");
             State = EState.Closed;
             doorCollision.Open = false;
-            chunk.SolidTiles[chunk.GetTileLocation(Position)] = (uint)Chunk.Colors.SolidPlatform;
-            chunk.SolidTiles[chunk.GetTileLocation(Position + Vector2.UnitY * Chunk.TileSize)] = (uint)Chunk.Colors.AerialDroneWall;
+            chunk.SolidTiles[chunk.GetTileLocation(Position - Vector2.UnitY * Chunk.TileSize / 2)] = (uint)Chunk.Colors.AerialDroneWall;
+            chunk.SolidTiles[chunk.GetTileLocation(Position + Vector2.UnitY * Chunk.TileSize / 2)] = (uint)Chunk.Colors.AerialDroneWall;
         }
 
         public override void LoadContent(ContentManager content)

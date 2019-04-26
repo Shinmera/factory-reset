@@ -363,12 +363,12 @@ namespace team5
             point1 *= Size.X;
             var point2 = -point1;
 
-            if (chunk.IntersectLine(Position + point1, dir, maxDist, out float distToIntersect1, false))
+            if (chunk.IntersectLine(Position + point1, dir, maxDist, out float distToIntersect1, false, true))
             {
                 maxDist = distToIntersect1;
             }
 
-            if (chunk.IntersectLine(Position + point2, dir, maxDist, out float distToIntersect2, false))
+            if (chunk.IntersectLine(Position + point2, dir, maxDist, out float distToIntersect2, false, true))
             {
                 maxDist = distToIntersect2;
             }
@@ -700,7 +700,7 @@ namespace team5
 
                     Vector2 dir = new Vector2((float)Math.Sin(angle), (float)Math.Cos(angle));
 
-                    if(chunk.IntersectLine(position, dir, dist + Size.X, out float location))
+                    if(chunk.IntersectLine(position, dir, dist + Size.X, out float location, false))
                     {
                         dist = location - Size.X;
                     }
@@ -777,7 +777,7 @@ namespace team5
                 point2 += reducedPath.Last();
                     
 
-                if(chunk.IntersectLine(point1, dir, 1, out float location1) || chunk.IntersectLine(point2, dir, 1, out float location2))
+                if(chunk.IntersectLine(point1, dir, 1, out float location1, false, true) || chunk.IntersectLine(point2, dir, 1, out float location2, false, true))
                 {
 
                     if (Path != null)
