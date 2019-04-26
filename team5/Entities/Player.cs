@@ -195,13 +195,13 @@ namespace team5
                                         if (InteractTimer <= 0)
                                         {
                                             State = PlayerState.QueueCrash;
-                                            TargetSpot = entity.Position + new Vector2(dir * 1F * Chunk.TileSize, 0);
+                                            TargetSpot = entity.Position + new Vector2(dir * (0.5F * Chunk.TileSize + 1), 0);
                                         }
                                     }
                                     else
                                     {
                                         State = PlayerState.QueueDoor;
-                                        TargetSpot = entity.Position + new Vector2(dir * 1F * Chunk.TileSize, 0);
+                                        TargetSpot = entity.Position + new Vector2(dir * (0.5F * Chunk.TileSize + 1), 0);
                                     }
                                 }
                                 else

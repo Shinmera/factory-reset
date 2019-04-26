@@ -15,6 +15,7 @@ namespace team5
         private const float EdgeWaitTime = 1;
         private static readonly Vector2 PatrolSpeed = new Vector2(50, 0);
         private static readonly Vector2 ConeOffset = new Vector2(0, -2.5F);
+        private Vector2 Spawn;
 
         private bool NoDirSwitch = false;
 
@@ -32,6 +33,7 @@ namespace team5
         public GroundDrone(Vector2 position, Game1 game) : base( game, new Vector2(Chunk.TileSize/3, Chunk.TileSize/2))
         {
             Position = position;
+            Spawn = position;
             Sprite = new AnimatedSprite(null, game, new Vector2(32, 32));
             AlertSignal = new AnimatedSprite(null, game, new Vector2(16, 16));
             ViewCone = new ConeEntity(game)
@@ -144,6 +146,11 @@ namespace team5
             ViewCone.Draw();
             Sprite.Draw(Position+new Vector2(0, Size.Y));
             AlertSignal.Draw(Position+new Vector2(0, Size.Y+8));
+        }
+
+        public override void Respawn(Chunk chunk)
+        {
+            Position = Spawn;
         }
 
         public void HearSound(Vector2 position, float volume, Chunk chunk)
