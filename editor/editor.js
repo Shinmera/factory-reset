@@ -575,7 +575,7 @@ class Chunk{
             layers: layers,
             tileset: this.tileset.name,
             storyItems: this.storyItems,
-            background: this.background
+            background: this.background.name,
         };
     }
 
