@@ -89,7 +89,7 @@ namespace team5
             Sprite.Add("crash", 86, 94, 0.6, -1, 1);
             Sprite.Add("slide", 94, 103, 0.9, 102);
             
-            Game.SoundEngine.Load("footstep");
+            Game.SoundEngine.Load("Player_LoudStep1");
         }
 
         public override void Draw()
@@ -471,7 +471,7 @@ namespace team5
                             if (Sprite.Frame == 46 && SoundFrame != Sprite.Frame)
                             {
                                 SoundFrame = Sprite.Frame;
-                                var sound = Game.SoundEngine.Play("footstep", Position, 1);
+                                var sound = Game.SoundEngine.Play("Player_LoudStep1", Position, 1);
                                 chunk.MakeSound(sound, 60, Position);
                             }
                             Sprite.Play("jump");
@@ -490,7 +490,7 @@ namespace team5
                                 if ((Sprite.Frame == 10 || Sprite.Frame == 18) && SoundFrame != Sprite.Frame)
                                 {
                                     SoundFrame = Sprite.Frame;
-                                    var sound = Game.SoundEngine.Play("footstep", Position, 0.9F);
+                                    var sound = Game.SoundEngine.Play("Player_LoudStep1", Position, 0.9F);
                                     chunk.MakeSound(sound, 60, Position);
                                 }
                             }

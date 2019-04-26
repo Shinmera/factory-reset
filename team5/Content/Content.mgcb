@@ -63,23 +63,113 @@
 /processorParam:Quality=Best
 /build:Sounds/Alert.mp3
 
-#begin Sounds/fart.mp3
-/importer:Mp3Importer
+#begin Sounds/Player_Climb1.wav
+/importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Sounds/fart.mp3
+/build:Sounds/Player_Climb1.wav
 
-#begin Sounds/footstep.mp3
-/importer:Mp3Importer
+#begin Sounds/Player_Climb2.wav
+/importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Sounds/footstep.mp3
+/build:Sounds/Player_Climb2.wav
 
-#begin Sounds/submarine.mp3
-/importer:Mp3Importer
+#begin Sounds/Player_Climb3.wav
+/importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:Sounds/submarine.mp3
+/build:Sounds/Player_Climb3.wav
+
+#begin Sounds/Player_Hide.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_Hide.wav
+
+#begin Sounds/Player_Jump.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_Jump.wav
+
+#begin Sounds/Player_JumpWall.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_JumpWall.wav
+
+#begin Sounds/Player_Landing.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_Landing.wav
+
+#begin Sounds/Player_LoudStep1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_LoudStep1.wav
+
+#begin Sounds/Player_LoudStep2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_LoudStep2.wav
+
+#begin Sounds/Player_LoudStep3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_LoudStep3.wav
+
+#begin Sounds/Player_QuietStep1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_QuietStep1.wav
+
+#begin Sounds/Player_QuietStep2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_QuietStep2.wav
+
+#begin Sounds/Player_QuietStep3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_QuietStep3.wav
+
+#begin Sounds/Player_Sliding.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_Sliding.wav
+
+#begin Sounds/Player_WalkieEnd.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_WalkieEnd.wav
+
+#begin Sounds/Player_WalkieTalk1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_WalkieTalk1.wav
+
+#begin Sounds/Player_WalkieTalk2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_WalkieTalk2.wav
+
+#begin Sounds/Player_WalkieTalkie.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_WalkieTalkie.wav
 
 #begin Textures/aerial-drone.png
 /importer:TextureImporter
