@@ -109,6 +109,7 @@ namespace team5
         public void LoadLevel(object identifier)
         {
             Game1.Log("Game", "Loading level from {0}...", identifier);
+            // FIXME: Handle errors during load.
             
             var sw = new System.Diagnostics.Stopwatch();
             sw.Start();
