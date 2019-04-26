@@ -16,6 +16,7 @@ namespace team5
         // Tile identifiers     AABBGGRR
         public enum Colors: uint{
             Empty          = 0xFFFFFFFF, // Nothing. All tiles with alpha 0 are also nothing
+            AerialDroneWall= 0xFFEEEEEE, // Technically nothing, but prevents drones from pathfinding through.
             SolidPlatform  = 0xFF000000, // A solid wall or platform
             HidingSpot     = 0xFF404040, // A hiding spot for the player
             BackgroundWall = 0xFF808080, // A wall for enemies, but not the player
@@ -81,6 +82,8 @@ namespace team5
 
         //things that will be removed at the end of the update (to ensure that collections are not modified during loops)
         List<Entity> PendingDeletion = new List<Entity>();
+
+        List<IOccludingEntity> OccludingEntities = new List<IOccludingEntity>();
 
         #endregion
 
@@ -267,9 +270,12 @@ namespace team5
                             case (uint)Colors.Door:
                                 if (GetTile(x, y - 1) == (uint)Colors.SolidPlatform)
                                 {
-                                    CollidingEntities.Add(new Door(position, Game));
-                                    SolidTiles[(Height - y - 1) * Width + x] = (uint)Colors.SolidPlatform;
-                                    SolidTiles[(Height - (y+1) - 1) * Width + x] = (uint)Colors.SolidPlatform;
+                                    var door = new Door(position, Game);
+                                    CollidingEntities.Add(door);
+                                    OccludingEntities.Add(door.GetOcclusionEntity);
+                                    SolidEntities.Add(door.GetSolidEntity);
+                                    SolidTiles[(Height - y - 1) * Width + x] = (uint)Colors.AerialDroneWall;
+                                    SolidTiles[(Height - (y+1) - 1) * Width + x] = (uint)Colors.AerialDroneWall;
                                 }
                                 break;
                         }
@@ -685,6 +691,10 @@ namespace team5
                 Vector2 velocity = (entity is Movable)? ((Movable)entity).Velocity : new Vector2();
                 if (entity.Collide(source, timestep, out tempDirection, out tempTime, out tempCorner))
                 {
+                    if (float.IsNaN(entity.GetBoundingBox().X))
+                    {
+                        bool wrong = true;
+                    }
                     if (tempTime < time || (tempTime == time && (corner && !tempCorner)))
                     {
                         corner = tempCorner;

@@ -70,7 +70,7 @@ namespace team5
         }
 
         /// <summary> Finds a path from a source to a target within a chunk. Path is in reverse order.</summary>
-        public static List<Vector2> FindPath(Chunk chunk, int startx, int starty, Vector2 target)
+        public static List<Vector2> FindPath(Chunk chunk, int startx, int starty, Vector2 target, bool isDrone = true)
         {
             int targetx = (int)Math.Floor((target.X - chunk.BoundingBox.X) / Chunk.TileSize);
             int targety = (int)Math.Floor((target.Y - chunk.BoundingBox.Y) / Chunk.TileSize);
@@ -148,7 +148,7 @@ namespace team5
                     {
                         Point neighbor = current + new Point(xoffset, yoffset);
                         if ((xoffset == 0 && yoffset == 0) || neighbor.X < 0 || neighbor.X >= chunk.Width || neighbor.Y < 0 || neighbor.Y >= chunk.Height
-                            || chunk.GetTile(neighbor.X, neighbor.Y) == (uint)Chunk.Colors.SolidPlatform)
+                            || chunk.GetTile(neighbor.X, neighbor.Y) == (uint)Chunk.Colors.SolidPlatform || (isDrone && chunk.GetTile(neighbor.X, neighbor.Y) == (uint)Chunk.Colors.AerialDroneWall))
                         {
                             continue;
                         }
@@ -156,7 +156,9 @@ namespace team5
                         if (Math.Abs(xoffset) + Math.Abs(yoffset) == 2)
                         {
                             if (chunk.GetTile(current.X + xoffset, current.Y) == (uint)Chunk.Colors.SolidPlatform
-                                || chunk.GetTile(current.X, current.Y + yoffset) == (uint)Chunk.Colors.SolidPlatform)
+                                || chunk.GetTile(current.X, current.Y + yoffset) == (uint)Chunk.Colors.SolidPlatform
+                                || (isDrone && chunk.GetTile(current.X + xoffset, current.Y) == (uint)Chunk.Colors.AerialDroneWall)
+                                || (isDrone && chunk.GetTile(current.X, current.Y + yoffset) == (uint)Chunk.Colors.AerialDroneWall))
                             {
                                 continue;
                             }

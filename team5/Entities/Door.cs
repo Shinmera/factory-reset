@@ -10,6 +10,40 @@ namespace team5
 {
     class Door : BoxEntity
     {
+        private class DoorCollision : BoxEntity, IOccludingEntity
+        {
+            public static readonly RectangleF NoCollide = new RectangleF(float.NaN, float.NaN, float.NaN, float.NaN);
+            public bool Open = false;
+
+            public DoorCollision(Vector2 position, Game1 game) : base(game, new Vector2(1, Chunk.TileSize))
+            {
+                Position = position;
+            }
+
+            public RectangleF GetOcclusionBox()
+            {
+                return GetBoundingBox();
+            }
+
+            public override RectangleF GetBoundingBox()
+            {
+                if (!Open)
+                {
+                    return base.GetBoundingBox();
+                }
+                else
+                {
+                    return NoCollide;
+                }
+            }
+        }
+
+        private readonly DoorCollision doorCollision;
+
+        public BoxEntity GetSolidEntity { get{ return doorCollision; } }
+
+        public IOccludingEntity GetOcclusionEntity { get { return doorCollision; } }
+
         private AnimatedSprite Sprite;
 
         public enum EState
@@ -17,7 +51,6 @@ namespace team5
             Open,
             Opening,
             Closed,
-            Closing,
             Crash
         };
 
@@ -27,6 +60,16 @@ namespace team5
         {
             Position = position + Vector2.UnitY * (Chunk.TileSize / 2);
             Sprite = new AnimatedSprite(null, game, new Vector2(32, 32));
+            doorCollision = new DoorCollision(position, game);
+        }
+
+        private void Close(Chunk chunk)
+        {
+            Sprite.Play("closed");
+            State = EState.Closed;
+            doorCollision.Open = false;
+            chunk.SolidTiles[chunk.GetTileLocation(Position)] = (uint)Chunk.Colors.SolidPlatform;
+            chunk.SolidTiles[chunk.GetTileLocation(Position + Vector2.UnitY * Chunk.TileSize)] = (uint)Chunk.Colors.AerialDroneWall;
         }
 
         public override void LoadContent(ContentManager content)
@@ -67,17 +110,10 @@ namespace team5
                 case EState.Closed:
                 case EState.Open:
                     break;
-                case EState.Closing:
-                    
-                    if(Sprite.Frame == 0)
-                    {
-                        Sprite.Play("closed");
-                        State = EState.Closed;
-                    }
-                    break;
                 case EState.Opening:
                     if (Sprite.Frame == 6)
                     {
+                        doorCollision.Open = true;
                         chunk.SolidTiles[chunk.GetTileLocation(Position - Vector2.UnitY * Chunk.TileSize / 2)] = (uint)Chunk.Colors.BackgroundWall;
                         chunk.SolidTiles[chunk.GetTileLocation(Position + Vector2.UnitY * Chunk.TileSize / 2)] = (uint)Chunk.Colors.BackgroundWall;
                     }
@@ -95,6 +131,7 @@ namespace team5
                 case EState.Crash:
                     if (Sprite.Frame == 9)
                     {
+                        doorCollision.Open = true;
                         chunk.SolidTiles[chunk.GetTileLocation(Position - Vector2.UnitY * Chunk.TileSize / 2)] = (uint)Chunk.Colors.BackgroundWall;
                         chunk.SolidTiles[chunk.GetTileLocation(Position + Vector2.UnitY * Chunk.TileSize / 2)] = (uint)Chunk.Colors.BackgroundWall;
                     }
@@ -117,10 +154,7 @@ namespace team5
 
         public override void Respawn(Chunk chunk)
         {
-            Sprite.Play("closed");
-            State = EState.Closed;
-            chunk.SolidTiles[chunk.GetTileLocation(Position)] = (uint)Chunk.Colors.SolidPlatform;
-            chunk.SolidTiles[chunk.GetTileLocation(Position + Vector2.UnitY * Chunk.TileSize)] = (uint)Chunk.Colors.SolidPlatform;
+            Close(chunk);
         }
     }
 }
