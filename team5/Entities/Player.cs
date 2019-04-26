@@ -592,7 +592,8 @@ namespace team5
         
         public void Kill()
         {
-            if(DeathTimer <= 0)
+            Controller.Vibrate(1f, 1f, 0.5f);
+            if (DeathTimer <= 0)
                 DeathTimer = DeathDuration;
             State = PlayerState.Dying;
         }

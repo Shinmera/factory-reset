@@ -68,10 +68,17 @@ namespace team5
         
         readonly int gamepadIndex;
         public State Is, Was;
+        private float VibrationTimer = 0;
         
         public Controller(int gamepadIndex=0)
         {
             this.gamepadIndex = gamepadIndex;
+        }
+
+        public void Vibrate(float left, float right, float duration)
+        {
+            GamePad.SetVibration(gamepadIndex, left, right);
+            VibrationTimer = duration;
         }
 
         public bool MoveLeft => Is.MoveLeft;
@@ -91,6 +98,12 @@ namespace team5
         {
             Was = Is;
             Is = new State(Keyboard.GetState(), GamePad.GetState(gamepadIndex));
+            if (VibrationTimer > 0)
+            {
+                VibrationTimer -= Game1.DeltaT;
+                if (VibrationTimer <= 0)
+                    GamePad.SetVibration(gamepadIndex, 0, 0);
+            }
         }
     }
 }

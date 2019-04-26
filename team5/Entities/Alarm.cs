@@ -99,6 +99,7 @@ namespace team5
                 case AlarmState.Clear:
                     break;
                 case AlarmState.Raised:
+                    Game.Controller.Vibrate(1f, 1f, 0.2f);
                     Game.SoundEngine.Play("Alert");
                     break;
             }
