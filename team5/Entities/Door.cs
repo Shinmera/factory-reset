@@ -87,8 +87,9 @@ namespace team5
                         Sprite.Play("open");
                         Sprite.Update(0);
                         State = EState.Open;
-                        var sound = Game.SoundEngine.Play("footstep", Position, 0.4F);
-                        chunk.MakeSound(sound, 60, Position);
+                        // FIXME: Proper sounds
+                        //var sound = Game.SoundEngine.Play("footstep", Position, 0.4F);
+                        //chunk.MakeSound(sound, 60, Position);
                     }
                     break;
                 case EState.Crash:
@@ -102,8 +103,8 @@ namespace team5
                         Sprite.Play("open");
                         Sprite.Update(0);
                         State = EState.Open;
-                        var sound = Game.SoundEngine.Play("footstep", Position, 1F);
-                        chunk.MakeSound(sound, 90, Position);
+                        //var sound = Game.SoundEngine.Play("footstep", Position, 1F);
+                        //chunk.MakeSound(sound, 90, Position);
                     }
                     break;
             }

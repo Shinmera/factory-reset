@@ -29,6 +29,7 @@ namespace team5
         private readonly float CrouchSpeed = 50;
         private readonly float JumpSpeed = 150;
         private readonly float LongJumpTime = 15;
+        private readonly float HardFallVelocity = -300;
         private readonly Vector2 WallJumpVelocity = new Vector2(200, 250);
         private readonly float WallSlideFriction = 0.9F;
 
@@ -42,7 +43,7 @@ namespace team5
             Hiding,
             Climbing,
             QueueDoor,
-            
+            QueueCall,
             OpeningDoor,
             QueueCrash,
             CrashDoor,
@@ -60,6 +61,8 @@ namespace team5
         public const float InteractHold = 0.2F;
 
         private AnimatedSprite Sprite;
+        private SoundEngine.Sound Sound;
+        private bool StopSoundLoop;
 
         public Player(Vector2 position, Game1 game):base(game, new Vector2(Chunk.TileSize/2, 0.98F*Chunk.TileSize))
         {
@@ -83,13 +86,18 @@ namespace team5
             Sprite.Add("crouch",54, 55, 1.0);
             Sprite.Add("crouchwalk", 55, 67, 1.0);
             Sprite.Add("call",  67, 76, 0.8, 75);
-            // Door should play opening animation on frame 78.
             Sprite.Add("open",  76, 86, 1.0, -1, 0);
-            // Door should play crash animation on frame 88.
             Sprite.Add("crash", 86, 94, 0.6, -1, 1);
-            Sprite.Add("slide", 94, 103, 0.9, 102);
+            Sprite.Add("slide", 94, 103, 0.5, 102);
             
-            Game.SoundEngine.Load("Player_LoudStep1");
+            Game.SoundEngine.Load("climb", "Player_Climb1", "Player_Climb2", "Player_Climb3");
+            Game.SoundEngine.Load("hide", "Player_Hide");
+            Game.SoundEngine.Load("jump", "Player_Jump");
+            Game.SoundEngine.Load("land", "Player_Landing");
+            Game.SoundEngine.Load("run", "Player_LoudStep1", "Player_LoudStep2", "Player_LoudStep3");
+            Game.SoundEngine.Load("crouch", "Player_QuietStep1", "Player_QuietStep2", "Player_QuietStep3");
+            Game.SoundEngine.Load("slide", "Player_Sliding");
+            Game.SoundEngine.Load("call", "Player_WalkieTalkie");
         }
 
         public override void Draw()
@@ -155,7 +163,7 @@ namespace team5
                             if (Controller.Interact)
                             {
                                 if (chunk.NextItem < chunk.StoryItems.Length)
-                                    chunk.Level.OpenDialogBox(chunk.StoryItems[chunk.NextItem++]);
+                                    State = PlayerState.QueueCall;
                                 chunk.Die(entity);
                             }
                         }
@@ -207,7 +215,10 @@ namespace team5
                         }
                     });
 
-                    if(State == PlayerState.QueueHide || State == PlayerState.QueueDoor || State == PlayerState.QueueCrash)
+                    if(State == PlayerState.QueueHide 
+                       || State == PlayerState.QueueDoor
+                       || State == PlayerState.QueueCrash
+                       || State == PlayerState.QueueCall)
                     {
                         break;
                     }
@@ -431,6 +442,14 @@ namespace team5
                         TargetEntity = null;
                     }
                     break;
+                case PlayerState.QueueCall:
+                    Velocity.X = 0;
+                    // FIXME: should wait a bit longer.
+                    if(Sprite.Frame == 75){
+                        chunk.Level.OpenDialogBox(chunk.StoryItems[chunk.NextItem++]);
+                        State = PlayerState.Normal;
+                    }
+                    break;
                 case PlayerState.Dying:
                     break;
             }
@@ -444,55 +463,59 @@ namespace team5
                 }
             }
 
+            bool HardFall = (Velocity.Y < HardFallVelocity);
+            if(HardFall) Game1.Log("D", "{0}", Velocity.Y);
+            
             // Now that all movement has been updated, check for collisions
             HandleCollisions(dt, chunk, true);
+            
+            if(Grounded && HardFall)
+                MakeSound(chunk, "land", 70);
 
             // Animations
-
+            StopSoundLoop = true;
             switch (State)
             {
+                case PlayerState.QueueCall:
+                    Sprite.Play("call");
+                    LoopSound("call");
+                    break;
                 case PlayerState.QueueDoor:
                 case PlayerState.QueueHide:
                 case PlayerState.Normal:
                     if ((Velocity.Y < 0 && (left != null || right != null)))
                     {
                         Sprite.Play("slide");
-                        if (Velocity.Y < 0) Sprite.FrameStep = -1;
-                        else Sprite.FrameStep = +1;
+                        LoopSound("slide");
                         // Force direction to face wall
                         if (left != null) Sprite.Direction = -1;
                         if (right != null) Sprite.Direction = +1;
-                        if (Velocity.Y == 0 || !Controller.Climb) Sprite.Reset();
                     }
                     else
                     {
                         if (0 < Velocity.Y)
                         {
-                            if (Sprite.Frame == 46 && SoundFrame != Sprite.Frame)
-                            {
-                                SoundFrame = Sprite.Frame;
-                                var sound = Game.SoundEngine.Play("Player_LoudStep1", Position, 1);
-                                chunk.MakeSound(sound, 60, Position);
-                            }
                             Sprite.Play("jump");
+                            if (Sprite.Frame == 46)
+                                MakeSound(chunk, "jump");
                         }
                         else if (Velocity.Y < 0)
+                        {
                             Sprite.Play("fall");
+                        }
                         else if (Velocity.X != 0)
                         {
                             if (IsCrouched)
                             {
                                 Sprite.Play("crouchwalk");
+                                if (Sprite.Frame == 58 || Sprite.Frame == 63)
+                                    MakeSound(chunk, "crouch", 5);
                             }
                             else
                             {
                                 Sprite.Play("run");
-                                if ((Sprite.Frame == 10 || Sprite.Frame == 18) && SoundFrame != Sprite.Frame)
-                                {
-                                    SoundFrame = Sprite.Frame;
-                                    var sound = Game.SoundEngine.Play("Player_LoudStep1", Position, 0.9F);
-                                    chunk.MakeSound(sound, 60, Position);
-                                }
+                                if (Sprite.Frame == 10 || Sprite.Frame == 18)
+                                    MakeSound(chunk, "run");
                             }
                         }
                         else
@@ -507,6 +530,9 @@ namespace team5
                     break;
                 case PlayerState.Climbing:
                     Sprite.Play("climb");
+                    if(Sprite.Frame == 26 || Sprite.Frame == 31)
+                        MakeSound(chunk, "climb");
+                    
                     if (Velocity.Y < 0) Sprite.FrameStep = -1;
                     else Sprite.FrameStep = +1;
                     // Force direction to face wall
@@ -516,6 +542,8 @@ namespace team5
                     break;
                 case PlayerState.Hiding:
                     Sprite.Play("hide");
+                    if(Sprite.Frame == 34)
+                        MakeSound(chunk, "hide", 5);
                     break;
                 case PlayerState.OpeningDoor:
                     Sprite.Play("open");
@@ -527,6 +555,9 @@ namespace team5
                     Sprite.Play("die");
                     break;
             }
+            
+            if(StopSoundLoop)
+                StopSound();
 
             // Base direction on movement
             if (Velocity.X < 0)
@@ -535,6 +566,27 @@ namespace team5
                 Sprite.Direction = +1;
 
             Game.SoundEngine.Update(Position);
+        }
+        
+        private void MakeSound(Chunk chunk, string sound, float aiVolume=60, float volume=0.9f)
+        {
+            if(SoundFrame == Sprite.Frame) return;
+            SoundFrame = Sprite.Frame;
+            chunk.MakeSound(Game.SoundEngine.Play(sound, Position, volume), aiVolume, Position);
+        }
+        
+        private void LoopSound(string sound, float volume=0.9f)
+        {
+            StopSoundLoop = false;
+            if(Sound != null) return;
+            Sound = Game.SoundEngine.Play(sound, Position, volume, true);
+        }
+        
+        private void StopSound()
+        {
+            if(Sound == null) return;
+            Sound.Stopped = true;
+            Sound = null;
         }
         
         public void Kill()

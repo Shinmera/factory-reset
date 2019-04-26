@@ -78,8 +78,36 @@ namespace team5
         
         private Game1 Game;
         private ContentManager Content;
-        private readonly Dictionary<string, SoundEffect> SoundCache = new Dictionary<string, SoundEffect>();
+        private readonly Dictionary<string, SoundPool> SoundCache = new Dictionary<string, SoundPool>();
         private readonly List<Sound> ActiveSounds = new List<Sound>();
+        
+        private class SoundPool : IDisposable
+        {
+            public readonly string Name;
+            public readonly SoundEffect[] Effects;
+            private int LastIndex = -1;
+            
+            public SoundPool(string name, SoundEffect[] effects)
+            {
+                Name = name;
+                Effects = effects;
+            }
+            
+            public SoundEffect Next()
+            {
+                // Cycle through effects to avoid repetition.
+                LastIndex = (LastIndex+1) % Effects.Length;
+                return Effects[LastIndex];
+            }
+            
+            public void Dispose()
+            {
+                foreach(var sound in Effects){
+                    Game1.Log("SoundEngine","Unloading {0}/{1}", Name, sound);
+                    sound.Dispose();
+                }
+            }
+        }
         
         public class Sound : IDisposable
         {
@@ -89,13 +117,14 @@ namespace team5
             public float RelativeVolume;
             public Vector2 Position = new Vector2(0,0);
 
-            public Sound(SoundEngine soundEngine, SoundEffect effect, Vector2 position, float relativeVolume = 1)
+            public Sound(SoundEngine soundEngine, SoundEffect effect, Vector2 position, float relativeVolume=1, bool loop=false)
             {
                 RelativeVolume = relativeVolume;
                 SoundEngine = soundEngine;
                 Effect = effect;
                 Instance = effect.CreateInstance();
                 Position = position;
+                Loop = loop;
                 Update();
                 Instance.Play();
                 SoundEngine.ActiveSounds.Add(this);
@@ -169,20 +198,28 @@ namespace team5
         public void UnloadContent()
         {
             Clear();
-            foreach(var sound in SoundCache){
-                Game1.Log("SoundEngine","Unloading {0}",sound.Key);
-                sound.Value.Dispose();
-            }
+            foreach (var entry in SoundCache)
+                entry.Value.Dispose();
             SoundCache.Clear();
         }
         
         public void Load(string effect)
         {
-            if(!SoundCache.ContainsKey(effect)){
-                Game1.Log("SoundEngine","Loading {0}",effect);
-                SoundCache.Add(effect, Content.ReadAsset<SoundEffect>("Sounds/"+effect));
-                // Callback to advance load screen
-                Game.AdvanceLoad();
+            Load(effect, effect);
+        }
+        
+        public void Load(string name, params object[] assets)
+        {
+            if(!SoundCache.ContainsKey(name)){
+                SoundEffect[] effects = new SoundEffect[assets.Length];
+                for(int i=0; i<effects.Length; ++i)
+                {
+                    Game1.Log("SoundEngine","Loading {0}/{1}", name, assets[i]);
+                    effects[i] = Content.ReadAsset<SoundEffect>("Sounds/"+assets[i]);
+                    // Callback to advance load screen
+                    Game.AdvanceLoad();
+                }
+                SoundCache.Add(name, new SoundPool(name, effects));
             }
         }
         
@@ -193,14 +230,14 @@ namespace team5
             }
         }
         
-        public Sound Play(string effect)
+        public Sound Play(string effect, float volume=1, bool loop=false)
         {
-            return new Sound(this, SoundCache[effect], Listener);
+            return Play(effect, Listener, volume, loop);
         }
         
-        public Sound Play(string effect, Vector2 position, float volume = 1)
+        public Sound Play(string effect, Vector2 position, float volume=1, bool loop=false)
         {
-            var sound = new Sound(this, SoundCache[effect], position, volume);
+            var sound = new Sound(this, SoundCache[effect].Next(), position, volume, loop);
             return sound;
         }
         
