@@ -859,9 +859,31 @@ namespace team5
                 }
 
                 location = tmin;
-                return true;
             }
-            
+
+            {
+                Vector2 invDir;
+                invDir.X = 1.0f / Dir.X;
+                invDir.Y = 1.0f / Dir.Y;
+
+                RectangleF box = BoundingBox;
+
+                // lb is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
+                // r.org is origin of ray
+                float t1 = (box.Left - Source.X) * invDir.X;
+                float t2 = (box.Right - Source.X) * invDir.X;
+                float t3 = (box.Bottom - Source.Y) * invDir.Y;
+                float t4 = (box.Top - Source.Y) * invDir.Y;
+
+                float t = Math.Min(Math.Max(t1, t2), Math.Max(t3, t4));
+
+                if (t >= 0 && !(location != -1 && t > location) && (t < length))
+                {
+                    location = t;
+                }
+
+            }
+
             return location != -1;
         }
 
