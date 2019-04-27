@@ -90,6 +90,10 @@ namespace team5
             if (fast)
             {
                 State = EState.Crash;
+                if (fromRight)
+                    Game.Controller.Vibrate(1f, 0.5f, 0.4f);
+                else
+                    Game.Controller.Vibrate(0.5f, 1f, 0.4f);
                 Sprite.Play("crash");
             }
             else
