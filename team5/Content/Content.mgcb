@@ -63,6 +63,60 @@
 /processorParam:Quality=Best
 /build:Sounds/Alert.mp3
 
+#begin Sounds/Door_Crash.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Door_Crash.wav
+
+#begin Sounds/Door_Open.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Door_Open.wav
+
+#begin Sounds/Enemy_Alarmed.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Enemy_Alarmed.wav
+
+#begin Sounds/Enemy_CamBase.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Enemy_CamBase.wav
+
+#begin Sounds/Enemy_Detected.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Enemy_Detected.wav
+
+#begin Sounds/Enemy_DroneBase.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Enemy_DroneBase.wav
+
+#begin Sounds/Enemy_DroneFly.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Enemy_DroneFly.wav
+
+#begin Sounds/Enemy_DroneWalk.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Enemy_DroneWalk.wav
+
+#begin Sounds/Enemy_Kill.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Enemy_Kill.wav
+
 #begin Sounds/Player_Climb1.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -141,6 +195,24 @@
 /processorParam:Quality=Best
 /build:Sounds/Player_QuietStep3.wav
 
+#begin Sounds/Player_QuiteStep1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_QuiteStep1.wav
+
+#begin Sounds/Player_QuiteStep2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_QuiteStep2.wav
+
+#begin Sounds/Player_QuiteStep3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_QuiteStep3.wav
+
 #begin Sounds/Player_Sliding.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -170,6 +242,24 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Sounds/Player_WalkieTalkie.wav
+
+#begin Sounds/Player_WalkieTalkie2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_WalkieTalkie2.wav
+
+#begin Sounds/UI_Button.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/UI_Button.wav
+
+#begin Sounds/UI_Win.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/UI_Win.wav
 
 #begin Textures/aerial-drone.png
 /importer:TextureImporter

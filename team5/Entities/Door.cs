@@ -81,6 +81,9 @@ namespace team5
             Sprite.Add("crash", 8, 14, 0.6, -1, 4);
             Sprite.Add("open", 14, 15, 1.0);
             Sprite.Play("closed");
+
+            Game.SoundEngine.Load("open", "Door_Open");
+            Game.SoundEngine.Load("crash", "Door_Crash");
         }
 
         public void Interact(Chunk chunk, bool fast, bool fromRight)
@@ -95,11 +98,15 @@ namespace team5
                 else
                     Game.Controller.Vibrate(0.5f, 1f, 0.4f);
                 Sprite.Play("crash");
+                var sound = Game.SoundEngine.Play("crash", Position, 1F);
+                chunk.MakeSound(sound, 90, Position);
             }
             else
             {
                 State = EState.Opening;
                 Sprite.Play("opening");
+                var sound = Game.SoundEngine.Play("open", Position, 1F);
+                chunk.MakeSound(sound, 60, Position);
             }
 
             if (fromRight)
@@ -131,8 +138,6 @@ namespace team5
                         Sprite.Update(0);
                         State = EState.Open;
                         // FIXME: Proper sounds
-                        //var sound = Game.SoundEngine.Play("footstep", Position, 0.4F);
-                        //chunk.MakeSound(sound, 60, Position);
                     }
                     break;
                 case EState.Crash:
@@ -147,8 +152,7 @@ namespace team5
                         Sprite.Play("open");
                         Sprite.Update(0);
                         State = EState.Open;
-                        //var sound = Game.SoundEngine.Play("footstep", Position, 1F);
-                        //chunk.MakeSound(sound, 90, Position);
+
                     }
                     break;
             }
