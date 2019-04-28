@@ -147,7 +147,7 @@ namespace team5
             // Apply gravity
             Velocity.Y -= dt * Gravity;
 
-            chunk.ForEachCollidingTile(this, (tile) => {
+            chunk.ForEachCollidingTile(this, (tile, pos) => {
                 if (tile is TileSpike) Kill();
                 else if (tile is TileGoal) Game.ShowScore();
             });
@@ -213,6 +213,11 @@ namespace team5
                                     }
                                 }
                             }
+                        }
+                        else if (entity is ButtonPrompt)
+                        {
+                            Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position + new Vector2(0, 36));
+                            Game.TextEngine.QueueButton(((ButtonPrompt)entity).Button, buttonPos);
                         }
                     });
 

@@ -13,6 +13,12 @@ var solids = {
     Pickup:         0xFF00EEFF, // An information pickup item
     Goal:           0xFFFFEE00, // A goal tile leading to end-of-level
 	Door:           0xFF00337F, // A door which can be opened and closed
+	
+	ClimbPrompt:	0xFF0199AA,
+	CrouchPrompt:	0xFF0299AA,
+	JumpPrompt:		0xFF0399AA,
+	UpRightPrompt:	0xFF0499AA,
+	DownPrompt:		0xFF0599AA
 };
 
 const tileSize = 16;

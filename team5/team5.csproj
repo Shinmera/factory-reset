@@ -117,6 +117,7 @@
     <Compile Include="Entities\HidingSpot.cs" />
     <Compile Include="Entities\OccludingEntity.cs" />
     <Compile Include="Entities\TileGoal.cs" />
+    <Compile Include="Entities\ButtonPrompt.cs" />
     <Compile Include="LoadScreen.cs" />
     <Compile Include="TextureCache.cs" />
     <Compile Include="UI\Credits.xaml.cs">

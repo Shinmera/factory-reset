@@ -30,7 +30,11 @@ namespace team5
             Pickup         = 0xFF00EEFF, // An information pickup item
             Goal           = 0xFFFFEE00, // A goal tile leading to end-of-level
             Door           = 0xFF00337F, // A door which can be opened and closed
+
+            Prompt         = 0xFF0099AA, // A button Prompt (apply mask to get button type)
         }
+
+        public const uint ColorMask = 0xFF00FFFF;
 
         public const int TileSize = 16;
 
@@ -280,6 +284,15 @@ namespace team5
                                 break;
                         }
                     }
+                    else if((tile & ColorMask) == (uint)Colors.Prompt)
+                    {
+                        Vector2 position = new Vector2(x * TileSize + BoundingBox.X + TileSize / 2,
+                               y * TileSize + BoundingBox.Y + TileSize / 2);
+
+                        uint buttontype = (tile & ~ColorMask) / 0x10000;
+                        CollidingEntities.Add(ButtonPrompt.GetPrompt(Game, buttontype, position));
+                        
+                    }
                 }
             }
 
@@ -293,7 +306,7 @@ namespace team5
             CallAll(obj => obj.UnloadContent());
         }
 
-        public void ForEachCollidingTile(Movable source, Action<TileType> action)
+        public void ForEachCollidingTile(Movable source, Action<TileType, Vector2> action)
         {
             var sourceBB = source.GetBoundingBox();
 
@@ -307,7 +320,7 @@ namespace team5
                 for (int y = minY; y < maxY; ++y)
                 {
                     if (TileObjects.ContainsKey(GetTile(x, y)))
-                        action(TileObjects[GetTile(x, y)]);
+                        action(TileObjects[GetTile(x, y)], new Vector2(BoundingBox.X + (x+0.5F) * TileSize, BoundingBox.Y + (y + 0.5F) * TileSize));
                 }
             }
         }
