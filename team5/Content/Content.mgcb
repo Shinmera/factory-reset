@@ -195,24 +195,6 @@
 /processorParam:Quality=Best
 /build:Sounds/Player_QuietStep3.wav
 
-#begin Sounds/Player_QuiteStep1.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Sounds/Player_QuiteStep1.wav
-
-#begin Sounds/Player_QuiteStep2.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Sounds/Player_QuiteStep2.wav
-
-#begin Sounds/Player_QuiteStep3.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Sounds/Player_QuiteStep3.wav
-
 #begin Sounds/Player_Sliding.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
