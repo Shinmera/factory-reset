@@ -1,0 +1,41 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
+
+namespace team5
+{
+    class ButtonPrompt:BoxEntity
+    {
+        public readonly TextEngine.Button Button;
+
+        public const int PromptCount = 5;
+
+        private static Dictionary<uint, TextEngine.Button> Buttons;
+
+        static ButtonPrompt()
+        {
+            Buttons = new Dictionary<uint, TextEngine.Button>
+            {
+                { 0x1, TextEngine.Button.R2 },
+                { 0x2, TextEngine.Button.L },
+                { 0x3, TextEngine.Button.A },
+                { 0x4, TextEngine.Button.AUR },
+                { 0x5, TextEngine.Button.AD }
+            };
+        }
+
+        private ButtonPrompt(Game1 game, TextEngine.Button button, Vector2 position) : base(game, new Vector2(Chunk.TileSize*2F))
+        {
+            Button = button;
+            Position = position;
+        }
+
+        public static ButtonPrompt GetPrompt(Game1 game, uint id, Vector2 position)
+        {
+            return new ButtonPrompt(game, Buttons[id], position);
+        }
+    }
+}
