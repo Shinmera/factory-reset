@@ -175,7 +175,7 @@ namespace team5
                 float distance = clamp(DeadZone, direction.Length(), AudibleDistance);
                 float panFactor = clamp(0, (distance-DeadZone)/(MidRange-DeadZone), 1);
                 float attenuation = clamp(0, Attenuation(distance, DeadZone, AudibleDistance, Rolloff), 1);
-                Instance.Volume = attenuation * SoundEngine.Volume * RelativeVolume;
+                Instance.Volume = distance >= AudibleDistance ? 0 : attenuation * SoundEngine.Volume * RelativeVolume;
                 Instance.Pan = Math.Sign(direction.X)*panFactor;
             }
             

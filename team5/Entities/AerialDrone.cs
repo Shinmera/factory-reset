@@ -267,6 +267,7 @@ namespace team5
         /// <summary> The direction this drone is currently facing</summary>
         private float Direction = 0;
 
+        private SoundEngine.Sound FlyingSound;
         #endregion
 
         #region Public Fields
@@ -646,6 +647,9 @@ namespace team5
             
             AlertSignal.Update(dt);
             Sprite.Update(dt);
+
+            FlyingSound.Position = Position;
+
             base.Update(chunk);
         }
 
@@ -658,6 +662,12 @@ namespace team5
             AlertSignal.Add("none", 20, 21, 1);
             AlertSignal.Add("noise", 0, 10, 1, -1, 0);
             AlertSignal.Add("alert", 10, 20, 1, -1, 0);
+
+            Game.SoundEngine.Load("Enemy_DroneBase");
+            Game.SoundEngine.Load("Enemy_DroneFly");
+            Game.SoundEngine.Load("Enemy_CamBase");
+
+            FlyingSound = Game.SoundEngine.Play("Enemy_DroneFly", Position, 1, true);
         }
 
         public override void Draw()
@@ -741,7 +751,7 @@ namespace team5
         public void ClearAlarm(Chunk chunk)
         {
             Return(chunk);
-
+            Game.SoundEngine.Play("Enemy_DroneBase", Position, 1);
         }
 
         #endregion

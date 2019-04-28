@@ -23,6 +23,9 @@ namespace team5
         private const float MinVolume = 15;
         private const float AlertVolume = 5;
 
+        private bool PlayedThisCycle = false;
+        private SoundEngine.Sound WalkSound;
+
         private AnimatedSprite Sprite;
         private AnimatedSprite AlertSignal;
         private float EdgeTimer = 0;
@@ -54,6 +57,9 @@ namespace team5
             AlertSignal.Add("none", 20, 21, 1);
             AlertSignal.Add("noise", 0, 10, 1, -1, 0);
             AlertSignal.Add("alert", 10, 20, 1, -1, 0);
+
+            Game.SoundEngine.Load("Enemy_DroneWalk");
+            Game.SoundEngine.Load("Enemy_CamBase");
         }
 
         /// <summary>
@@ -93,6 +99,10 @@ namespace team5
                         {
                             EdgeTimer = EdgeWaitTime;
                             SetState(AIState.Waiting);
+                            if(WalkSound != null)
+                            {
+                                WalkSound.Stopped = true;
+                            }
                         }
                     }
                     break;
@@ -114,11 +124,24 @@ namespace team5
                     SetState(AIState.Patrolling);
                     break;
             }
-            
-            if(Velocity.X == 0)
+
+            if (Velocity.X == 0)
                 Sprite.Play("idle");
-            else 
+            else
+            {
                 Sprite.Play("run");
+
+                if(Sprite.Frame == 0)
+                {
+                    PlayedThisCycle = false;
+                }
+
+                if(Sprite.Frame == 2 && ! PlayedThisCycle)
+                {
+                    WalkSound = Game.SoundEngine.Play("Enemy_DroneWalk", Position, 1);
+                    PlayedThisCycle = true;
+                }
+            }
                 
             if(Velocity.X < 0)
                 Sprite.Direction = -1;
