@@ -60,6 +60,9 @@ namespace team5
         public float InteractTimer = 0;
         public const float InteractHold = 0.2F;
 
+        private float CallTimer = 0;
+        private const float CallDuration = 0.5F;
+
         private AnimatedSprite Sprite;
         private SoundEngine.Sound Sound;
         private bool StopSoundLoop;
@@ -455,8 +458,23 @@ namespace team5
                     Velocity.X = 0;
                     // FIXME: should wait a bit longer.
                     if(Sprite.Frame == 75){
-                        chunk.Level.OpenDialogBox(chunk.StoryItems[chunk.NextItem++]);
-                        State = PlayerState.Normal;
+                        CallTimer -= dt;
+                        if(CallTimer == float.PositiveInfinity)
+                        {
+                            State = PlayerState.Normal;
+                            CallTimer = 0;
+                            break;
+                        }
+                        if (CallTimer < 0)
+                        {
+                            chunk.Level.OpenDialogBox(chunk.StoryItems[chunk.NextItem++]);
+                            
+                            CallTimer = float.PositiveInfinity;
+                        }
+                    }
+                    else
+                    {
+                        CallTimer = CallDuration;
                     }
                     break;
                 case PlayerState.Dying:
@@ -485,8 +503,11 @@ namespace team5
             switch (State)
             {
                 case PlayerState.QueueCall:
-                    Sprite.Play("call");
-                    LoopSound("call");
+                    if (CallTimer == CallDuration)
+                    {
+                        Sprite.Play("call");
+                        LoopSound("call");
+                    }
                     break;
                 case PlayerState.QueueDoor:
                 case PlayerState.QueueHide:

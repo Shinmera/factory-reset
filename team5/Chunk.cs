@@ -916,10 +916,6 @@ namespace team5
                 Vector2 velocity = (entity is Movable)? ((Movable)entity).Velocity : new Vector2();
                 if (entity.Collide(source, timestep, out tempDirection, out tempTime, out tempCorner))
                 {
-                    if (float.IsNaN(entity.GetBoundingBox().X))
-                    {
-                        bool wrong = true;
-                    }
                     if (tempTime < time || (tempTime == time && (corner && !tempCorner)))
                     {
                         corner = tempCorner;

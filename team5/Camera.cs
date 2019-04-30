@@ -10,12 +10,6 @@ namespace team5
         public Vector2 Position = new Vector2(0, 0);
         private Vector2 Velocity = new Vector2(0,0);
         private Chunk ChunkInFocus;
-        private Chunk PrevChunk;
-
-        private int TransitionDirection;
-        private bool WaitForAlign = false;
-        private bool FullyTransitioned = true;
-
         private RectangleF ChunkClamps;
         public float Zoom = 1.0f;
         public float ViewScale{ get; private set; }
@@ -37,20 +31,15 @@ namespace team5
             ViewScale = 1;
         }
 
-        private void UpdateClampData(RectangleF rect)
-        {
-            float lx = rect.X;
-            float ly = rect.Y;
-            float lw = rect.Width;
-            float lh = rect.Height;
-            float cw = TargetSize.X;
-            float ch = TargetSize.Y;
-            ChunkClamps = new RectangleF(lx + cw, ly + ch, -2 * cw + lw, -2 * ch + lh);
-        }
-
         private void UpdateClampData()
         {
-            UpdateClampData(ChunkInFocus.BoundingBox);
+            float lx = ChunkInFocus.BoundingBox.X;
+            float ly = ChunkInFocus.BoundingBox.Y;
+            float lw = ChunkInFocus.Size.X;
+            float lh = ChunkInFocus.Size.Y;
+            float cw = TargetSize.X;
+            float ch = TargetSize.Y;
+            ChunkClamps = new RectangleF(lx + cw, ly + ch, -2 * cw + lw * 2, -2 * ch + lh * 2);
         }
 
         public void Resize(int width, int height)
@@ -60,55 +49,10 @@ namespace team5
             UpdateClampData();
         }   
 
-        public void UpdateChunk(Chunk chunk, int direction)
+        public void UpdateChunk(Chunk chunk)
         {
-            PrevChunk = ChunkInFocus;
             ChunkInFocus = chunk;
             UpdateClampData();
-            FullyTransitioned = false;
-            TransitionDirection = direction;
-            switch (direction)
-            {
-                case Chunk.Left:
-                case Chunk.Right:
-                    if (Position.Y < ChunkClamps.Bottom || Position.Y > ChunkClamps.Top)
-                    {
-                        WaitForAlign = true;
-                        RectangleF AlignedBox = PrevChunk.BoundingBox;
-                        AlignedBox.Bottom = Math.Max(PrevChunk.BoundingBox.Bottom, ChunkInFocus.BoundingBox.Bottom);
-                        AlignedBox.Top = Math.Min(PrevChunk.BoundingBox.Top, ChunkInFocus.BoundingBox.Top);
-                        UpdateClampData(AlignedBox);
-                    }
-                    else
-                    {
-                        RectangleF AlignedBoxH = ChunkInFocus.BoundingBox;
-                        AlignedBoxH.Bottom = Math.Max(PrevChunk.BoundingBox.Bottom, ChunkInFocus.BoundingBox.Bottom);
-                        AlignedBoxH.Top = Math.Min(PrevChunk.BoundingBox.Top, ChunkInFocus.BoundingBox.Top);
-                        UpdateClampData(AlignedBoxH);
-                    }
-                    break;
-                case Chunk.Up:
-                case Chunk.Down:
-                    if (Position.X < ChunkClamps.Left || Position.X > ChunkClamps.Right)
-                    {
-                        WaitForAlign = true;
-                        RectangleF AlignedBox = PrevChunk.BoundingBox;
-                        AlignedBox.Left = Math.Max(PrevChunk.BoundingBox.Left, ChunkInFocus.BoundingBox.Left);
-                        AlignedBox.Right = Math.Min(PrevChunk.BoundingBox.Right, ChunkInFocus.BoundingBox.Right);
-                        UpdateClampData(AlignedBox);
-                    }
-                    else
-                    {
-                        RectangleF AlignedBoxV = ChunkInFocus.BoundingBox;
-                        AlignedBoxV.Left = Math.Max(PrevChunk.BoundingBox.Left, ChunkInFocus.BoundingBox.Left);
-                        AlignedBoxV.Right = Math.Min(PrevChunk.BoundingBox.Right, ChunkInFocus.BoundingBox.Right);
-                        UpdateClampData(AlignedBoxV);
-                    }
-                    break;
-                case 0:
-                    FullyTransitioned = true;
-                    break;
-            }
         }
 
         public bool IsVisible(RectangleF target)
@@ -140,42 +84,14 @@ namespace team5
             Vector2 direction = intendedPosition - Position;
             float length = (float)Math.Max(1.0, direction.Length());
 
-            if (length <= 1 || SnapOnNext || (WaitForAlign && length <= 20))
+            if (length <= 3 || SnapOnNext)
             {
-                if (WaitForAlign)
-                {
-                    WaitForAlign = false;
-                    switch (TransitionDirection)
-                    {
-                        case Chunk.Left:
-                        case Chunk.Right:
-                            RectangleF AlignedBoxH = ChunkInFocus.BoundingBox;
-                            AlignedBoxH.Bottom = Math.Max(PrevChunk.BoundingBox.Bottom, ChunkInFocus.BoundingBox.Bottom);
-                            AlignedBoxH.Top = Math.Min(PrevChunk.BoundingBox.Top, ChunkInFocus.BoundingBox.Top);
-                            UpdateClampData(AlignedBoxH);
-                            break;
-                        case Chunk.Up:
-                        case Chunk.Down:
-                            RectangleF AlignedBoxV = ChunkInFocus.BoundingBox;
-                            AlignedBoxV.Left = Math.Max(PrevChunk.BoundingBox.Left, ChunkInFocus.BoundingBox.Left);
-                            AlignedBoxV.Right = Math.Min(PrevChunk.BoundingBox.Right, ChunkInFocus.BoundingBox.Right);
-                            UpdateClampData(AlignedBoxV);
-                            break;
-                    }
-                }
-                else if(!FullyTransitioned)
-                {
-                    FullyTransitioned = true;
-                    UpdateClampData();
-                }
                 SnapOnNext = false;
                 Position = intendedPosition;
             }
             else
             {
                 float ease = (float)Math.Max(0.0, Math.Min(20.0, 0.2 + (Math.Pow(length, 1.5) / 100)));
-                if (WaitForAlign)
-                    ease = 10;
                 Position += direction * ease / length;
             }
 
