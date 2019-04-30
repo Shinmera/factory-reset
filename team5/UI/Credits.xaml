@@ -5,40 +5,39 @@
     xmlns:local="using:team5.UI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
-    <ScrollViewer>
-        <RichTextBlock Style="{StaticResource Credits}">
-                <Paragraph FontSize="36" Margin="0,50,0,0">Production</Paragraph>
-                <Paragraph>
-                    Nicolas Hafner
-                </Paragraph>
-                <Paragraph FontSize="36" Margin="0,50,0,0">Game Design</Paragraph>
-                <Paragraph>
-                    Amir Hossein Heidari, 
-              Gengyan Li, 
-              Nicolas Hafner, 
-              Nicole Manojlavic, 
-              Pulkit Singh
-                </Paragraph>
-                <Paragraph FontSize="36" Margin="0,50,0,0">Programming</Paragraph>
-                <Paragraph>
-                    Amirhossein Heidari, 
-              Gengyan Li, 
-              Nicolas Hafner
-                </Paragraph>
-                <Paragraph FontSize="36" Margin="0,50,0,0">Character Design &amp; Animation</Paragraph>
-                <Paragraph>
-                    Nicolas Hafner
-                </Paragraph>
-                <Paragraph FontSize="36" Margin="0,50,0,0">Environment Design</Paragraph>
-                <Paragraph>
-                    Nicolas Hafner, 
-              Pulkit Singh
-                </Paragraph>
-                <Paragraph FontSize="36" Margin="0,50,0,0">Sound Design</Paragraph>
-                <Paragraph>
-                    Nicole Manojlovic
-                </Paragraph>
-            </RichTextBlock>
-        </ScrollViewer>
+    mc:Ignorable="d"
+    Style="{StaticResource Credits}">
+  <ScrollViewer>
+    <RichTextBlock Style="{StaticResource CreditsText}">
+      <Paragraph FontSize="36" Margin="10,50,0,0">Production</Paragraph>
+      <Paragraph>Nicolas Hafner</Paragraph>
+
+      <Paragraph FontSize="36" Margin="10,50,0,0">Game Design</Paragraph>
+      <Paragraph>Nicolas Hafner</Paragraph>
+      <Paragraph>Gengyan Li</Paragraph>
+      <Paragraph>Pulkit Singh</Paragraph>
+      <Paragraph>Nicole Manojlavic</Paragraph>
+      <Paragraph>Amir Hossein Heidari</Paragraph>
+
+      <Paragraph FontSize="36" Margin="10,50,0,0">Programming</Paragraph>
+      <Paragraph>Gengyan Li</Paragraph>
+      <Paragraph>Nicolas Hafner</Paragraph>
+      <Paragraph>Amir Hossein Heidari</Paragraph>
+      
+      <Paragraph FontSize="36" Margin="10,50,0,0">Character Design &amp; Animation</Paragraph>
+      <Paragraph>Nicolas Hafner</Paragraph>
+      
+      <Paragraph FontSize="36" Margin="10,50,0,0">Enemy Design &amp; Animation</Paragraph>
+      <Paragraph>Pulkit Singh</Paragraph>
+      
+      <Paragraph FontSize="36" Margin="10,50,0,0">Environment Design</Paragraph>
+      <Paragraph FontSize="30" Margin="15,5,0,0">Rooftops &amp; Office</Paragraph>
+      <Paragraph>Nicolas Hafner</Paragraph>
+      <Paragraph FontSize="30" Margin="15,5,0,0">Factory</Paragraph>
+      <Paragraph>Pulkit Singh</Paragraph>
+      
+      <Paragraph FontSize="36" Margin="10,50,0,0">Sound Design</Paragraph>
+      <Paragraph>Nicole Manojlovic</Paragraph>
+    </RichTextBlock>
+  </ScrollViewer>
 </Page>

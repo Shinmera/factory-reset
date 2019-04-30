@@ -32,7 +32,7 @@
         <Setter Property="FocusVisualSecondaryThickness" Value="0"/>
     </Style>
     <Style x:Key="Level" TargetType="StackPanel">
-        <Setter Property="Margin" Value="20,20,20,20"/>
+        <Setter Property="Margin" Value="10,10,10,10"/>
     </Style>
     <Style x:Key="LevelPreview" TargetType="Image">
         <Setter Property="Width" Value="256"/>
@@ -80,14 +80,16 @@
     </Style>
     <Style x:Key="ScoreContinue" TargetType="Button">
         <Setter Property="FontFamily" Value="{StaticResource Wellbutrin}" />
-        <Setter Property="Background" Value="Transparent" />
         <Setter Property="FocusVisualPrimaryThickness" Value="0"/>
         <Setter Property="FocusVisualSecondaryThickness" Value="0"/>
     </Style>
-    <Style x:Key="Credits" TargetType="RichTextBlock">
-        <Setter Property="Margin" Value="0, 20, 0, 20"/>
+    <Style x:Key="Credits" TargetType="Page">
+        <Setter Property="Background" Value="#80000000"/>
+    </Style>
+    <Style x:Key="CreditsText" TargetType="RichTextBlock">
+        <Setter Property="Margin" Value="50, 20, 50, 20"/>
         <Setter Property="FontFamily" Value="{StaticResource Wellbutrin}" />
         <Setter Property="FontSize" Value="20" />
-        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="TextAlignment" Value="Left" />
     </Style>
 </ResourceDictionary>

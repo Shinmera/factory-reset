@@ -23,7 +23,7 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </SplitView.Pane>
-            <Grid x:Name="Content" Padding="10,10,10,10"/>
+            <Grid x:Name="Content"/>
         </SplitView>
     </Grid>
 </Page>
