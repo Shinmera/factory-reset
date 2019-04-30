@@ -23,7 +23,6 @@ var solids = {
 
 const tileSize = 16;
 const defaultLayers = 5;
-const tilesPerRow = 32;
 const layerNames = ["Solids", "Background", "Decals", "Ground", "Foreground", "Special"];
 const minSize = [40,26];
 var tilemap = document.querySelector("#tilemap");
@@ -266,6 +265,7 @@ class Tileset{
         this.rgMap = init.rgMap || {};
         this.tileMap = init.tileMap || [];
         this.currentTile = [0, 0];
+        this.tilesPerRow = 32;
 
         if(this.tileMap.length == 0 && (init.image || init.pixels))
             this.preprocess(init.image, init.pixels);
@@ -275,7 +275,7 @@ class Tileset{
         }
     }
 
-    preprocess(image, pixels){
+    preprocess(image, pixels, compress){
         if(!pixels)
             pixels = getImagePixels(image);
         if(!image){
@@ -285,18 +285,19 @@ class Tileset{
         // First compute maps
         var tileW = pixels.width / tileSize;
         var tileH = pixels.height / tileSize;
-        this.tileMap[0] = new Array(tilesPerRow);
+        this.tilesPerRow = tileW;
+        this.tileMap[0] = new Array(this.tilesPerRow);
         var tx=0, ty=0;
         for(var iy=0; iy<tileH; iy++){
             for(var ix=0; ix<tileW; ix++){
-                if(!isTileEmpty(pixels, ix, iy)){
+                if(!isTileEmpty(pixels, ix, iy) || !compress){
                     this.tileMap[ty][tx] = [ix, iy, 0];
                     this.rgMap[(ix<<8) + iy] = [tx, ty];
                     tx++;
-                    if(tilesPerRow <= tx){
+                    if(this.tilesPerRow <= tx){
                         tx = 0;
                         ty++;
-                        this.tileMap[ty] = new Array(tilesPerRow);
+                        this.tileMap[ty] = new Array(this.tilesPerRow);
                     }
                 }
             }
@@ -340,6 +341,8 @@ class Tileset{
 
     show(){
         console.log("Showing", this);
+        tilelist.width = this.tileMap[0].length*tileSize;
+        tilelist.height = this.tileMap.length*tileSize;
         fillCheckerboard(tilelist);
         listctx.drawImage(this.image, 0, 0);
         return this;
@@ -854,7 +857,7 @@ var toggleLevel = function(level){
 var createSolidTileset = function(){
     var tileToRG = [[]];
     var RGToTile = {};
-    var pixels = new ImageData(tileSize*tilesPerRow, tileSize);
+    var pixels = new ImageData(tileSize*32, tileSize);
     var x=0, y=0;
     for(var key in solids){
         var color = solids[key];
@@ -891,9 +894,10 @@ var selectTileEvent = function(ev){
     var tileset = level.chunk.getTileset();
     if(ev instanceof WheelEvent){
         var delta = -Math.sign(ev.deltaY);
-        var i = tileset.selected[0]+tileset.selected[1]*tilesPerRow;
+        var i = tileset.selected[0]+tileset.selected[1]*tileset.tilesPerRow;
         i += delta;
-        tileset.selected = [i % tilesPerRow, Math.floor(i / tilesPerRow)];
+        tileset.selected = [i % tileset.tilesPerRow,
+                            Math.floor(i / tileset.tilesPerRow)];
     }else if(ev instanceof MouseEvent){
         var x = Math.floor(ev.offsetX/tilelist.clientWidth*tilelist.width/tileSize);
         var y = Math.floor(ev.offsetY/tilelist.clientHeight*tilelist.height/tileSize);
