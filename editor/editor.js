@@ -61,13 +61,17 @@ var pad = function(string, length, char){
     return string;
 };
 
-var getPixel = function(data, x, y){
-    var index = (x+y*data.width)*4;
-    var r = data.data[index+0];
-    var g = data.data[index+1];
-    var b = data.data[index+2];
-    var a = data.data[index+3];
+var arrayToPixel = function(arr, offset){
+    offset = offset || 0;
+    var r = arr[offset+0];
+    var g = arr[offset+1];
+    var b = arr[offset+2];
+    var a = arr[offset+3] || 255;
     return ((r << 24) + (g << 16) + (b << 8) + a) >>> 0;
+};
+
+var getPixel = function(data, x, y){
+    return arrayToPixel(data.data, (x+y*data.width)*4);
 };
 
 var formatRGB = function(pixel){
@@ -530,7 +534,7 @@ class Chunk{
         var pi = (x, y)=>((pixels.width*y)+x)*4;
         var p = (x, y)=>{
             let i = pi(x,y);
-            return ((pixels.data[i+0]<<24) + (pixels.data[i+1]<<16)) >>> 0;
+            return arrayToPixel(pixels.data, i);
         };
         var sp = (x, y, tile)=>{
             let i = pi(x,y);
@@ -552,10 +556,12 @@ class Chunk{
             var queue = [[x,y]];
             var find = p(x,y);
             var width = pixels.width, height = pixels.height;
+            if(find === arrayToPixel(fill))
+                return this;
             while(0<queue.length){
                 let c = queue.pop();
-                let n = c[0], y = c[1];
-                let w = n, e = n;
+                let w = c[0], e = c[0];
+                let y = c[1];
                 while(0 < w && p(w-1, y) === find)
                     w--;
                 while(e < width-1 && p(e+1, y) === find)
