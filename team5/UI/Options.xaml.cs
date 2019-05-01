@@ -15,6 +15,7 @@ namespace team5.UI
         {
             MasterVolume.Value = SoundEngine.Volume * 100;
             ScreenShake.Value = Camera.ScreenShakeMultiplier * 100;
+            Vibration.Value = Controller.VibrationMultiplier * 100;
             // Map 0.0 ... 0.05 to 100 ... 0
             TextSpeed.Value = 100-(DialogBox.TimePerLetter*100/0.05f);
         }
@@ -56,6 +57,11 @@ namespace team5.UI
         private void ScreenShake_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             Camera.ScreenShakeMultiplier = (float)e.NewValue / 100;
+        }
+
+        private void Vibration_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            Controller.VibrationMultiplier = (float)e.NewValue / 100;
         }
     }
 }

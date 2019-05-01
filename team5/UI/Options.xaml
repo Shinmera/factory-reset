@@ -16,6 +16,8 @@
                     ValueChanged="TextSpeed_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
             <Slider x:Name="ScreenShake" Header="Screen Shake Strength" Maximum="100"
                     ValueChanged="ScreenShake_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+            <Slider x:Name="Vibration" Header="Controller Vibration" Maximum="100"
+                    ValueChanged="Vibration_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
             <ComboBox x:Name="TvMode" Header="TV Mode"
                       SelectionChanged="TvMode_SelectionChanged" HorizontalAlignment="Stretch" SelectedIndex="0">
                 <ComboBoxItem>TV Safe</ComboBoxItem>
