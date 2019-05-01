@@ -14,14 +14,24 @@ namespace team5
         public float Zoom = 1.0f;
         public float ViewScale{ get; private set; }
         // Target view half-size
-        public const float TargetWidth = 40 * Chunk.TileSize / 2.0f;
+        public const float TargetWidth = 30 * Chunk.TileSize / 2.0f;
         private Vector2 TargetSize = new Vector2(TargetWidth, 26*Chunk.TileSize/2.0f);
+
+        private float ShakeDuration = 0;
+        private float ShakeIntensity;
+
+        public static float ScreenShakeMultiplier = 1;
 
         private bool SnapOnNext = false;
 
         public Vector2 GetTargetSize()
         {
             return TargetSize;
+        }
+
+        public void Shake(float intensity, float duration = 1F)
+        {
+            ShakeDuration = Math.Max(ShakeDuration, duration);
         }
 
         public Camera(Player player, Game1 game)
@@ -80,9 +90,16 @@ namespace team5
             intendedPosition.X = clamp(ChunkClamps.Left, intendedPosition.X, ChunkClamps.Right);
             intendedPosition.Y = clamp(ChunkClamps.Bottom, intendedPosition.Y, ChunkClamps.Top);
 
+            
+
             // Ease towards intended position
             Vector2 direction = intendedPosition - Position;
             float length = (float)Math.Max(1.0, direction.Length());
+
+            if(ShakeDuration > 0)
+            {
+                float dist = (float)Game.RNG.NextDouble();
+            }
 
             if (length <= 3 || SnapOnNext)
             {

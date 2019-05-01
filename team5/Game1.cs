@@ -180,7 +180,7 @@ namespace team5
             Root.Current.QueueAction((root)=>root.Game.ShowScore(score));
         }
 
-        protected void Resize(int width, int height)
+        public void Resize(int width, int height)
         {
             Transforms.ProjectionMatrix = Matrix.CreateOrthographicOffCenter(0, width, 0, height, -10, 10);
             Game1.Log("Game", "Viewport: " + width + "x" + height);

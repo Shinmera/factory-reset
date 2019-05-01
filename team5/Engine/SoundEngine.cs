@@ -69,7 +69,7 @@ namespace team5
         /// <summary>The rolloff factor for the attenuation function.</summary>
         public const float Rolloff = 1f;
         /// <summary>The attenuation function used for sound distance volume scaling.</summary>
-        public static readonly Attenuation Attenuation = Attenuations.Exponential;
+        public static readonly Attenuation Attenuation = Attenuations.InverseExponential;
 
         private Vector2 Listener;
         

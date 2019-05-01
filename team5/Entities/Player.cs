@@ -296,6 +296,7 @@ namespace team5
                         HasWallJumped = false;
                         if (jump)
                         {
+                            IsCrouched = false;
                             MakeSound(chunk, "jump");
                             jump = false;
                             Velocity.Y = JumpSpeed;

@@ -51,7 +51,9 @@ namespace team5.UI
                 game.DeviceManager.PreferredBackBufferWidth = width;
                 game.DeviceManager.PreferredBackBufferHeight = height;
                 game.DeviceManager.ApplyChanges();
+                game.Resize(width, height);
             });
+
         }
 
         private void ScreenShake_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)

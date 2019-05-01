@@ -10,6 +10,7 @@ namespace team5
 {
     public class Controller
     {
+        public static float VibrationMultiplier = 0.5F;
         public struct State{
             public readonly bool MoveLeft, MoveRight, MoveUp, MoveDown, Jump, Climb, Hide, Crouch, Pause, Interact, Advance, Back;
             public State(KeyboardState key, GamePadState pad){
@@ -77,7 +78,7 @@ namespace team5
 
         public void Vibrate(float left, float right, float duration)
         {
-            GamePad.SetVibration(gamepadIndex, left, right);
+            GamePad.SetVibration(gamepadIndex, left*VibrationMultiplier, right*VibrationMultiplier);
             VibrationTimer = duration;
         }
 
