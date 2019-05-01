@@ -1,4 +1,4 @@
-# Level File Specification
+&# Level File Specification
 This is a specification for a level data package. A level is a ZIP file with a set file structure. You can find an example at the end of the document.
 
 ## ZIP Contents
@@ -63,6 +63,7 @@ Level: {
 Chunk: {
   name: String,
   position: Vector,
+  outside: Boolean,
   tileset: String,
   background: Null | String,
   storyItems: [ [ String ] ],
@@ -99,6 +100,7 @@ And the following would be the JSON encoded contents of the ``level.json`` file:
     {
       "name": "first",
       "position": [0, 0],
+      "outside": false,
       "layers": [
         "chunks/first-0.png",
         "chunks/first-1.png",

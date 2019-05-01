@@ -69,6 +69,7 @@ namespace team5
         public uint Width;
         public uint Height;
         public readonly Vector2 Position;
+        public readonly bool IsOutside;
         public Vector2 Size;
         public RectangleF BoundingBox;
         public bool ChunkAlarmState = false;
@@ -108,6 +109,7 @@ namespace team5
             Level = level;
             Position = new Vector2(chunk.position[0], chunk.position[1]);
             Layers = chunk.maps;
+            IsOutside = chunk.outside;
             TileSetName = chunk.tileset;
             BackgroundName = chunk.background;
             StoryItems = chunk.storyItems;

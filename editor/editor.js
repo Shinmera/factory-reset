@@ -12,13 +12,12 @@ var solids = {
     Spike:          0xFF0000FF, // A death spike
     Pickup:         0xFF00EEFF, // An information pickup item
     Goal:           0xFFFFEE00, // A goal tile leading to end-of-level
-	Door:           0xFF00337F, // A door which can be opened and closed
-	
-	ClimbPrompt:	0xFF0199AA,
-	CrouchPrompt:	0xFF0299AA,
-	JumpPrompt:		0xFF0399AA,
-	UpRightPrompt:	0xFF0499AA,
-	DownPrompt:		0xFF0599AA
+    Door:           0xFF00337F, // A door which can be opened and closed
+    ClimbPrompt:    0xFF0199AA,
+    CrouchPrompt:   0xFF0299AA,
+    JumpPrompt:     0xFF0399AA,
+    UpRightPrompt:  0xFF0499AA,
+    DownPrompt:     0xFF0599AA
 };
 
 const tileSize = 16;
@@ -369,7 +368,8 @@ class Chunk{
         this.name = init.name || "chunk";
         this.position = init.position || [0, 0];
         this.currentLayer = 0;
-        this.background = init.background || null;
+        this.outside = init.outside || false;
+        this.background = init.background || new Image();
         this.tileset = init.tileset || level.defaultTileset;
         this.storyItems = init.storyItems || [];
         this.pixels = init.pixels;
@@ -589,6 +589,7 @@ class Chunk{
             position: [ this.position[0]*tileSize, this.position[1]*tileSize ],
             layers: layers,
             tileset: this.tileset.name,
+            outside: this.outside,
             storyItems: this.storyItems,
             background: this.background.name,
         };
@@ -966,6 +967,7 @@ var newChunk = function(level){
             var name = prompt.querySelector("#chunk-name").value;
             var w = parseInt(prompt.querySelector("#chunk-width").value);
             var h = parseInt(prompt.querySelector("#chunk-height").value);
+            var outside = prompt.querySelector("#chunk-outside").checked;
             var tileset = level.defaultTileset;
             var background = null;
             if(prompt.querySelector("#chunk-tileset").value)
@@ -996,12 +998,14 @@ var editChunk = function(chunk){
         "#chunk-name": chunk.name,
         "#chunk-width": chunk.width,
         "#chunk-height": chunk.height,
+        "#chunk-outside": {checked: chunk.outside},
         "#chunk-storyitems": printStory(chunk.storyItems),
         "#chunk-tileset+img": {src: chunk.tileset.image.src},
         "#chunk-background+img": {src: (chunk.background)?chunk.background.src:""}})
         .then(async (prompt)=>{
             chunk.name = prompt.querySelector("#chunk-name").value;
             chunk.storyItems = parseStory(prompt.querySelector("#chunk-storyitems").value);
+            chunk.outside = prompt.querySelector("#chunk-outside").checked;
             chunk.resize(parseInt(prompt.querySelector("#chunk-width").value),
                          parseInt(prompt.querySelector("#chunk-height").value));
             chunk.uiElement.querySelector("header label").innerText = chunk.name;
