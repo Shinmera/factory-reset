@@ -19,6 +19,9 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style x:Key="MenuPage" TargetType="Page">
+        <Setter Property="Padding" Value="5,5,5,5"/>
+    </Style>
     <Style TargetType="ListViewItem">
         <Setter Property="FocusVisualPrimaryThickness" Value="0"/>
         <Setter Property="FocusVisualSecondaryThickness" Value="0"/>
