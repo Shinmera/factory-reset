@@ -1038,7 +1038,7 @@ var newLevel = function(){
                 description: prompt.querySelector("#level-description").value,
                 next: prompt.querySelector("#level-next").value,
                 preview: preview,
-                startChase: false,
+                startChase: prompt.querySelector("#level-startchase").checked,
                 defaultTileset: tileset,
             });});
 };
@@ -1048,12 +1048,14 @@ var editLevel = function(){
         "#level-name": level.name,
         "#level-description": level.description,
         "#level-next": level.next || "",
+        "#level-startchase": {checked: level.startChase},
         "#level-tileset+img": {src: (level.defaultTileset)?level.defaultTileset.image.src:""},
         "#level-preview+img": {src: (level.preview)?level.preview.src:""}})
         .then(async (prompt)=>{
             level.name = prompt.querySelector("#level-name").value;
             level.description = prompt.querySelector("#level-description").value;
             level.next = prompt.querySelector("#level-next").value || null;
+            level.startChase = prompt.querySelector("#level-startchase").checked;
             level.uiElement.querySelector("header label").innerText = level.name;
             if(prompt.querySelector("#level-preview").value)
                 await loadFile(prompt.querySelector("#level-preview"), "data")

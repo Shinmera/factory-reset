@@ -23,6 +23,7 @@ namespace team5
         public string Next = null;
         
         public readonly object Identifier;
+        private bool StartChase = false;
         private bool ChunkTrans = false;
         private List<Chunk> TransitionChunks = new List<Chunk>();
         private int TransitionDirection = 0;
@@ -96,6 +97,7 @@ namespace team5
                     Chunks.Add(chunk);
                 }
                 
+                StartChase = data.startChase;
                 ActiveChunk = Chunks[data.startChunk];
                 Next = data.next;
             }
