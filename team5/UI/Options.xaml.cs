@@ -14,18 +14,19 @@ namespace team5.UI
         private new void Loaded(object sender, RoutedEventArgs e)
         {
             MasterVolume.Value = SoundEngine.Volume * 100;
+            ScreenShake.Value = Camera.ScreenShakeMultiplier * 100;
             // Map 0.0 ... 0.05 to 100 ... 0
             TextSpeed.Value = 100-(DialogBox.TimePerLetter*100/0.05f);
         }
 
         private void MasterVolume_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            SoundEngine.Volume = (float)((Slider)sender).Value / 100;
+            SoundEngine.Volume = (float)e.NewValue / 100;
         }
 
         private void TextSpeed_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            DialogBox.TimePerLetter = (100-((float)((Slider)sender).Value))*0.05f/100;
+            DialogBox.TimePerLetter = (float)(100-e.NewValue)*0.05f/100;
         }
 
         private void TvMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -50,6 +51,11 @@ namespace team5.UI
                 game.DeviceManager.PreferredBackBufferHeight = height;
                 game.DeviceManager.ApplyChanges();
             });
+        }
+
+        private void ScreenShake_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            Camera.ScreenShakeMultiplier = (float)e.NewValue / 100;
         }
     }
 }

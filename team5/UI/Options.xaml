@@ -8,12 +8,14 @@
     mc:Ignorable="d"
     Loaded="Loaded">
     <Grid>
-        <StackPanel HorizontalAlignment="Center" Width="200">
+        <StackPanel HorizontalAlignment="Left" Width="200">
             <TextBlock Text="Options" FontSize="24" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             <Slider x:Name="MasterVolume" Header="Master volume" Maximum="100"
                     ValueChanged="MasterVolume_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
             <Slider x:Name="TextSpeed" Header="Text scroll speed" Maximum="100"
                     ValueChanged="TextSpeed_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+            <Slider x:Name="ScreenShake" Header="Screen Shake Strength" Maximum="100"
+                    ValueChanged="ScreenShake_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
             <ComboBox x:Name="TvMode" Header="TV Mode"
                       SelectionChanged="TvMode_SelectionChanged" HorizontalAlignment="Stretch" SelectedIndex="0">
                 <ComboBoxItem>TV Safe</ComboBoxItem>
