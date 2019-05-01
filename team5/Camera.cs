@@ -20,7 +20,7 @@ namespace team5
         private float ShakeDuration = 0;
         private float ShakeIntensity;
 
-        public static float ScreenShakeMultiplier = 1;
+        public static float ScreenShakeMultiplier = 0.5F;
 
         private bool SnapOnNext = false;
 
@@ -32,6 +32,7 @@ namespace team5
         public void Shake(float intensity, float duration = 1F)
         {
             ShakeDuration = Math.Max(ShakeDuration, duration);
+            ShakeIntensity = Math.Max(ShakeIntensity, intensity);
         }
 
         public Camera(Player player, Game1 game)
@@ -90,18 +91,27 @@ namespace team5
             intendedPosition.X = clamp(ChunkClamps.Left, intendedPosition.X, ChunkClamps.Right);
             intendedPosition.Y = clamp(ChunkClamps.Bottom, intendedPosition.Y, ChunkClamps.Top);
 
-            
+            if(ShakeDuration > 0)
+            {
+                float dist = (float)Math.Sqrt(Game.RNG.NextDouble()) * ShakeIntensity * ScreenShakeMultiplier;
+                float angle = (float)Game.RNG.NextDouble() * 2 * (float)Math.PI;
+                Vector2 offset = dist * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+
+                Position += offset;
+
+                ShakeDuration -= Game1.DeltaT;
+                if(ShakeDuration <= 0)
+                {
+                    ShakeIntensity = 0;
+                }
+            }
 
             // Ease towards intended position
             Vector2 direction = intendedPosition - Position;
+
             float length = (float)Math.Max(1.0, direction.Length());
 
-            if(ShakeDuration > 0)
-            {
-                float dist = (float)Game.RNG.NextDouble();
-            }
-
-            if (length <= 3 || SnapOnNext)
+            if (length <= 1 || SnapOnNext)
             {
                 SnapOnNext = false;
                 Position = intendedPosition;

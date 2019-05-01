@@ -151,7 +151,7 @@ namespace team5
             Velocity.Y -= dt * Gravity;
 
             chunk.ForEachCollidingTile(this, (tile, pos) => {
-                if (tile is TileSpike) Kill();
+                if (tile is TileSpike && State != PlayerState.Dying) Kill();
                 else if (tile is TileGoal) Game.ShowScore();
             });
 
@@ -619,10 +619,15 @@ namespace team5
         
         public void Kill()
         {
-            Controller.Vibrate(1f, 1f, 0.5f);
             if (DeathTimer <= 0)
                 DeathTimer = DeathDuration;
-            State = PlayerState.Dying;
+            if(State != PlayerState.Dying)
+            {
+                State = PlayerState.Dying;
+                Controller.Vibrate(1f, 1f, 0.5f);
+                if (Game.ActiveWindow is Level)
+                    ((Level)Game.ActiveWindow).Camera.Shake(10, 0.5F);
+            }
         }
 
         public override void Respawn(Chunk chunk)

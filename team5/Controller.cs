@@ -79,6 +79,7 @@ namespace team5
         public void Vibrate(float left, float right, float duration)
         {
             GamePad.SetVibration(gamepadIndex, left*VibrationMultiplier, right*VibrationMultiplier);
+            
             VibrationTimer = duration;
         }
 

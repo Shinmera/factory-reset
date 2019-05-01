@@ -91,7 +91,7 @@ namespace team5
             });
         }
 
-        public void SetState(AlarmState state )
+        public void SetState(AlarmState state, Chunk chunk)
         {
             State = state;
             switch (state)
@@ -100,6 +100,7 @@ namespace team5
                     break;
                 case AlarmState.Raised:
                     Game.Controller.Vibrate(1f, 1f, 0.2f);
+                    chunk.Level.Camera.Shake(10, 0.2F);
                     Game.SoundEngine.Play("Alert");
                     break;
             }
@@ -117,7 +118,7 @@ namespace team5
                     if (Detected)
                     {
                         Timer = AlarmTime;
-                        SetState(AlarmState.Raised);
+                        SetState(AlarmState.Raised, chunk);
                     }
                     break;
                 case AlarmState.Raised:
@@ -127,7 +128,7 @@ namespace team5
                         Timer = 0;
                         Detected = false;
                         ClearAlarm(chunk);
-                        SetState(AlarmState.Clear);
+                        SetState(AlarmState.Clear, chunk);
                     }
                     break;
             }

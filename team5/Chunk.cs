@@ -167,7 +167,7 @@ namespace team5
                 //reset the alarm behavior
                 Level.Alarm.Detected = false;
                 Level.Alarm.ClearAlarm(this);
-                Level.Alarm.SetState(Alarm.AlarmState.Clear);
+                Level.Alarm.SetState(Alarm.AlarmState.Clear, this);
                 Level.Alarm.Drones = false;
                 Level.Camera.SnapToLocation();
             }

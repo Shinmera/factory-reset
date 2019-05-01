@@ -152,6 +152,7 @@ namespace team5
 
             { // Kill if touched.
                 if (!chunk.Level.Player.IsHiding
+                    && chunk.Level.Player.DeathTimer <= 0
                     && GetBoundingBox().Intersects(chunk.Level.Player.GetBoundingBox()))
                 {
                     chunk.Level.Alarm.Detected = false;

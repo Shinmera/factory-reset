@@ -97,6 +97,7 @@ namespace team5
                     Game.Controller.Vibrate(1f, 0.5f, 0.4f);
                 else
                     Game.Controller.Vibrate(0.5f, 1f, 0.4f);
+                chunk.Level.Camera.Shake(6, 0.2F);
                 Sprite.Play("crash");
                 var sound = Game.SoundEngine.Play("crash", Position, 1F);
                 chunk.MakeSound(sound, 90, Position);
