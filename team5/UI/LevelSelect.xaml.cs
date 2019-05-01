@@ -12,6 +12,8 @@ namespace team5.UI
 {
     public sealed partial class LevelSelect : Page
     {
+        Dictionary<string, LevelPreview> LevelNames = new Dictionary<string, LevelPreview>();
+
         ObservableCollection<LevelPreview> Previews = new ObservableCollection<LevelPreview>();
 
         public LevelSelect()
@@ -40,10 +42,44 @@ namespace team5.UI
             StorageFolder appInstalledFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
             StorageFolder content = await appInstalledFolder.GetFolderAsync("Content");
             StorageFolder levels = await content.GetFolderAsync("Levels");
+
+            var UnsortedPreviews = new List<LevelPreview>();
+
             foreach(var file in await levels.GetFilesAsync())
             {
                 if (file.Name.EndsWith(".zip"))
-                    Previews.Add(new LevelPreview(file.Name.Substring(0, file.Name.Length - 4)));
+                {
+                    var preview = new LevelPreview(file.Name.Substring(0, file.Name.Length - 4));
+                    UnsortedPreviews.Add(preview);
+                    LevelNames[file.Name.Substring(0, file.Name.Length - 4)] = preview;
+                }
+            }
+
+            var previewEnum = Previews.GetEnumerator();
+
+            for (int i = 0; i < UnsortedPreviews.Count; ++i)
+            {
+                var level = UnsortedPreviews[i];
+                if(level.Next != null)
+                {
+                    int nextLevelPos = UnsortedPreviews.IndexOf(LevelNames[level.Next]);
+
+                    if(nextLevelPos == -1)
+                    {
+                        continue;
+                    }
+
+                    if(nextLevelPos < i)
+                    {
+                        UnsortedPreviews.RemoveAt(i);
+
+                        UnsortedPreviews.Insert(nextLevelPos, level);
+                    }
+                }
+            }
+                
+            foreach (var level in UnsortedPreviews){
+                Previews.Add(level);
             }
         }
 
@@ -60,8 +96,10 @@ namespace team5.UI
         public readonly string FileName;
         public string Name => Content.name;
         public string Description => Content.description;
+        public string Next => Content.next;
         public SoftwareBitmapSource Preview { get; }
         private LevelContent Content;
+
 
         public LevelPreview(string fileName)
         {
