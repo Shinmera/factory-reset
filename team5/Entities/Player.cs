@@ -104,6 +104,7 @@ namespace team5
             Game.SoundEngine.Load("crouch_inside", "Player_QuietStep1", "Player_QuietStep2", "Player_QuietStep3");
             Game.SoundEngine.Load("slide", "Player_Sliding");
             Game.SoundEngine.Load("call", "Player_WalkieTalkie");
+            Game.SoundEngine.Load("win", "UI_Win");
         }
 
         public override void Draw()
@@ -155,7 +156,11 @@ namespace team5
 
             chunk.ForEachCollidingTile(this, (tile, pos) => {
                 if (tile is TileSpike && State != PlayerState.Dying) Kill();
-                else if (tile is TileGoal) Game.ShowScore();
+                else if (tile is TileGoal)
+                {
+                    Game.SoundEngine.Play("win");
+                    Game.ShowScore();
+                }
             });
 
             switch (State)
