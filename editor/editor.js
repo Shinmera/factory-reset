@@ -629,6 +629,7 @@ class Level{
         this.startChunk = init.startChunk || 0;
         this.defaultTileset = init.defaultTileset || solidset;
         this.chunks = init.chunks || [ new Chunk({tileset: this.defaultTileset}) ];
+        this.storyItems = init.storyItems || [];
         this.currentChunk = 0;
     }
 
@@ -673,6 +674,7 @@ class Level{
             next: this.next,
             startChase: this.startChase,
             startChunk: this.startChunk,
+            storyItems: this.storyItems,
             chunks: chunks
         };
     }
@@ -1042,6 +1044,7 @@ var newLevel = function(){
                 next: prompt.querySelector("#level-next").value,
                 preview: preview,
                 startChase: prompt.querySelector("#level-startchase").checked,
+                storyItems: parseStory(prompt.querySelector("#level-storyitems").value),
                 defaultTileset: tileset,
             });});
 };
@@ -1053,12 +1056,14 @@ var editLevel = function(){
         "#level-next": level.next || "",
         "#level-startchase": {checked: level.startChase},
         "#level-tileset+img": {src: (level.defaultTileset)?level.defaultTileset.image.src:""},
-        "#level-preview+img": {src: (level.preview)?level.preview.src:""}})
+        "#level-preview+img": {src: (level.preview)?level.preview.src:""},
+        "#level-storyitems": printStory(level.storyItems)})
         .then(async (prompt)=>{
             level.name = prompt.querySelector("#level-name").value;
             level.description = prompt.querySelector("#level-description").value;
             level.next = prompt.querySelector("#level-next").value || null;
             level.startChase = prompt.querySelector("#level-startchase").checked;
+            level.storyItems = parseStory(prompt.querySelector("#level-storyitems").value);
             level.uiElement.querySelector("header label").innerText = level.name;
             if(prompt.querySelector("#level-preview").value)
                 await loadFile(prompt.querySelector("#level-preview"), "data")

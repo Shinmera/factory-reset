@@ -57,6 +57,7 @@ Level: {
   next: Null | String
   startChase: Boolean,
   startChunk: Integer,
+  storyItems: [ [ String ] ],
   chunks: [ Chunk ]
 }
 
@@ -96,6 +97,7 @@ And the following would be the JSON encoded contents of the ``level.json`` file:
   "next": "other-example",
   "startChase": false,
   "startChunk": 0,
+  "storyItems": [[".. Wrong number."]],
   "chunks": [
     {
       "name": "first",
@@ -109,7 +111,7 @@ And the following would be the JSON encoded contents of the ``level.json`` file:
       ],
       "tileset": "sampleset",
       "background": null,
-      "storyItems": ["Hello there, welcome to the game!"]
+      "storyItems": [["Hello there, welcome to the game!"]]
     }
   ]
 }

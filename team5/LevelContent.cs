@@ -29,6 +29,7 @@ namespace team5
         public string next;
         public bool startChase;
         public int startChunk;
+        public string[][] storyItems;
         public Chunk[] chunks;
         public Stream previewData;
         public Dictionary<string, Stream> textures = new Dictionary<string, Stream>();
