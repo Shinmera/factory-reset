@@ -8,7 +8,7 @@
     mc:Ignorable="d"
     Loaded="Loaded"
     Style="{StaticResource MenuPage}">
-    <Grid>
+    <ScrollViewer>
         <StackPanel HorizontalAlignment="Left" Width="200">
             <TextBlock Text="Options" FontSize="24" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             <Slider x:Name="MasterVolume" Header="Master volume" Maximum="100"
@@ -24,6 +24,9 @@
                 <ComboBoxItem>TV Safe</ComboBoxItem>
                 <ComboBoxItem>Full</ComboBoxItem>
             </ComboBox>
+            <TextBlock Text="Debug Options" Margin="0,20,0,0"/>
+            <CheckBox x:Name="ShowSolids" Content="Show Solids" HorizontalAlignment="Stretch"
+                      Click="ShowSolids_Click"/>
         </StackPanel>
-    </Grid>
+    </ScrollViewer>
 </Page>

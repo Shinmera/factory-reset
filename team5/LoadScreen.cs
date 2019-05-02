@@ -34,6 +34,7 @@ namespace team5
         
         public override void Draw()
         {
+            Game.GraphicsDevice.Clear(Color.Black);
             Vector2 position = new Vector2(TargetSize.X*2-16-Sprite.FrameSize.X,Sprite.FrameSize.Y);
             Game.TextEngine.QueueText("Loading...", position+new Vector2(-Sprite.FrameSize.X-8, 0),
                                       16, Color.White, TextEngine.Orientation.Right, TextEngine.Orientation.Center);

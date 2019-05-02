@@ -65,5 +65,10 @@ namespace team5.UI
         {
             Controller.VibrationMultiplier = (float)e.NewValue / 100;
         }
+
+        private void ShowSolids_Click(object sender, RoutedEventArgs e)
+        {
+            Chunk.DrawSolids = ((CheckBox)sender).IsChecked.Value;
+        }
     }
 }

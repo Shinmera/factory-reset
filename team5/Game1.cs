@@ -207,7 +207,7 @@ namespace team5
         protected override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.White);
             ActiveWindow.Draw();
             TextEngine.DrawText();
         }

@@ -61,7 +61,7 @@ namespace team5
 
         public Level Level;
 
-        public bool DrawSolids = false;
+        public static bool DrawSolids = false;
 
         public Texture2D[] Layers;
         public Vector2 SpawnPosition;
