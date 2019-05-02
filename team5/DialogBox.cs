@@ -93,12 +93,17 @@ namespace team5
                 else
                 {
                     ++CurText;
-                    if(CurText>= TextArray.Length)
+
+                    
+
+                    if (CurText>= TextArray.Length)
                     {
+                        Game.SoundEngine.Play("Player_WalkieEnd");
                         Level.ClosePopup();
                     }
                     else
                     {
+                        Game.SoundEngine.Play("UI_Button", 1);
                         SetText(TextArray[CurText]);
                         CurNumLines = Text.Split('\n').Length;
                         CurLine = 0;

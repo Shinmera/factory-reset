@@ -115,6 +115,9 @@ namespace team5
             Camera.SnapToLocation();
             Camera.Update();
             Alarm.LoadContent(content);
+
+            Game.SoundEngine.Load("UI_Button");
+            Game.SoundEngine.Load("Player_WalkieEnd");
         }
         
         public override void UnloadContent()
