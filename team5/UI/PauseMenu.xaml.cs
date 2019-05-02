@@ -25,8 +25,7 @@ namespace team5.UI
         private void PauseItemClick(object sender, ItemClickEventArgs e)
         {
             if(!Shown) return;
-            Shown = false;
-
+            
             var item = (string)e.ClickedItem;
             switch ((string)e.ClickedItem)
             {
@@ -34,9 +33,11 @@ namespace team5.UI
                     Root.Current.Game.Paused = false;
                     break;
                 case "Restart":
+                    Shown = false;
                     Root.Current.Game.QueueAction((game)=>game.ReloadLevel());
                     break;
                 case "Quit to Menu":
+                    Shown = false;
                     Root.Current.Game.QueueAction((game)=>game.UnloadLevel());
                     Root.Current.ShowMenu();
                     break;

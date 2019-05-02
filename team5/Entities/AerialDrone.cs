@@ -55,8 +55,8 @@ namespace team5
         private const int WanderSearchAttempts = 15;
 
         private const float BaseVolume = 100;
-        private const float MinVolume = 7;
-        private const float AlertVolume = 4;
+        private const float ClearSensitivity = 3F;
+        private const float AlertSensitivity = 5F;
         private const float HearingPrecision = Chunk.TileSize * 8;
 
         private int PositionKnown = 0;
@@ -267,7 +267,7 @@ namespace team5
         /// <summary> The direction this drone is currently facing</summary>
         private float Direction = 0;
 
-        private SoundEngine.Sound FlyingSound;
+        private SoundEngine.Sound FlyingSound = null;
         #endregion
 
         #region Public Fields
@@ -474,7 +474,10 @@ namespace team5
 
         public override void Update(Chunk chunk)
         {
-            if(PositionKnown > 0)
+            if(FlyingSound == null)
+                FlyingSound = Game.SoundEngine.Play("Enemy_DroneFly", Position, 1, true);
+
+            if (PositionKnown > 0)
                 --PositionKnown;
 
             float dt = Game1.DeltaT;
@@ -667,8 +670,9 @@ namespace team5
             Game.SoundEngine.Load("Enemy_DroneBase");
             Game.SoundEngine.Load("Enemy_DroneFly");
             Game.SoundEngine.Load("Enemy_CamBase");
+            Game.SoundEngine.Load("Enemy_Alarmed");
 
-            FlyingSound = Game.SoundEngine.Play("Enemy_DroneFly", Position, 1, true);
+            
         }
 
         public override void Draw()
@@ -692,31 +696,35 @@ namespace team5
                 return;
             }
 
+            float dist = (float)Math.Sqrt(sqrDist);
+
             if (chunk.IntersectLine(position, Position - position, 1, out float temp, false))
             {
                 volume /= 2;
             }
 
-            if (((volume > MinVolume) || chunk.ChunkAlarmState && (volume > AlertVolume)))
+            float sensitivity = (chunk.ChunkAlarmState ? AlertSensitivity : ClearSensitivity);
+
+            volume -= dist / sensitivity;
+
+            if (volume > 0)
             {
                 float precision = Math.Min(1, volume / BaseVolume);
-
-
 
                 for(int i = 0; i < 10; ++i)
                 {
                     float angle = (float)Game.RNG.NextDouble() * 2 * (float)Math.PI;
 
-                    float dist = (1 - precision) * HearingPrecision;
+                    float distOffset = (1 - precision) * HearingPrecision;
 
                     Vector2 dir = new Vector2((float)Math.Sin(angle), (float)Math.Cos(angle));
 
-                    if(chunk.IntersectLine(position, dir, dist + Size.X, out float location, false))
+                    if(chunk.IntersectLine(position, dir, distOffset + Size.X, out float location, false))
                     {
-                        dist = location - Size.X;
+                        distOffset = location - Size.X;
                     }
                     
-                    if (Target(position + dir * dist, chunk))
+                    if (Target(position + dir * distOffset, chunk))
                     {
                         if(State == AIState.Searching)
                         {
@@ -727,6 +735,7 @@ namespace team5
                         {
                             State = AIState.Investigating;
                             AlertSignal.Play("noise");
+                            Game.SoundEngine.Play("Enemy_Alarmed", Position, 1);
                             ViewCone.SetColor(ConeEntity.InspectColor);
                         }
                         break;

@@ -10,6 +10,7 @@ namespace team5
         public enum AIState{
             Patrolling,
             Waiting,
+            HeardSound,
         };
         
         private const float EdgeWaitTime = 1;
@@ -20,8 +21,8 @@ namespace team5
         private bool NoDirSwitch = false;
 
         private const float BaseVolume = 100;
-        private const float MinVolume = 15;
-        private const float AlertVolume = 5;
+        private const float ClearSensitivity = 2;
+        private const float AlertSensitivity = 4;
 
         private bool PlayedThisCycle = false;
         private SoundEngine.Sound WalkSound;
@@ -60,6 +61,7 @@ namespace team5
 
             Game.SoundEngine.Load("Enemy_DroneWalk");
             Game.SoundEngine.Load("Enemy_CamBase");
+            Game.SoundEngine.Load("Enemy_Alarmed");
         }
 
         /// <summary>
@@ -75,6 +77,10 @@ namespace team5
                     Velocity.Y = PatrolSpeed.Y * Sprite.Direction;
                     break;
                 case AIState.Waiting:
+                    Velocity.X = 0;
+                    Velocity.Y = 0;
+                    break;
+                case AIState.HeardSound:
                     Velocity.X = 0;
                     Velocity.Y = 0;
                     break;
@@ -110,8 +116,7 @@ namespace team5
                 case AIState.Waiting:
                     if(EdgeTimer <= 0)
                     {
-                        if(!NoDirSwitch) Sprite.Direction *= -1;
-                        NoDirSwitch = false;
+                        Sprite.Direction *= -1;
                         SetState(AIState.Patrolling);
                     }
                     else
@@ -119,7 +124,21 @@ namespace team5
                         EdgeTimer -= dt;
                     }
                     break;
-                    
+                case AIState.HeardSound:
+                    if (EdgeTimer <= 0)
+                    {
+                        if (!NoDirSwitch) Sprite.Direction *= -1;
+                        NoDirSwitch = false;
+                        SetState(AIState.Patrolling);
+                        if(!chunk.ChunkAlarmState)
+                            ViewCone.SetColor(ConeEntity.ClearColor);
+                    }
+                    else
+                    {
+                        EdgeTimer -= dt;
+                    }
+                    break;
+
                 default:
                     SetState(AIState.Patrolling);
                     break;
@@ -186,12 +205,18 @@ namespace team5
                 return;
             }
 
+            float dist = (float) Math.Sqrt(sqrDist);
+
             if (chunk.IntersectLine(position, Position - position, 1, out float temp, false))
             {
                 volume /= 2;
             }
 
-            if (((volume > MinVolume) || chunk.ChunkAlarmState && (volume > AlertVolume)) && Math.Abs(position.Y - Position.Y) < Chunk.TileSize * 4 && Math.Sign(position.X - Position.X) != Sprite.Direction)
+            float sensitivity = (chunk.ChunkAlarmState ? AlertSensitivity : ClearSensitivity);
+
+            volume -= dist / sensitivity;
+
+            if (volume > 0 && Math.Abs(position.Y - Position.Y) < Chunk.TileSize * 4 && Math.Sign(position.X - Position.X) != Sprite.Direction)
             {
                 Sprite.Direction *= -1;
                 EdgeTimer = EdgeWaitTime* 1.5F;
@@ -199,8 +224,11 @@ namespace team5
                 {
                     NoDirSwitch = true;
                 }
-                SetState(AIState.Waiting);
+                if(!chunk.ChunkAlarmState)
+                    ViewCone.SetColor(ConeEntity.InspectColor);
+                SetState(AIState.HeardSound);
                 AlertSignal.Play("noise");
+                Game.SoundEngine.Play("Enemy_Alarmed", Position, 1);
             }
         }
 

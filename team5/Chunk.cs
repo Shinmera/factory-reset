@@ -124,7 +124,7 @@ namespace team5
 
             CallAll(x => {
                 if (x is IEnemy && x is Entity) {
-                    ((IEnemy) x).HearSound(position, volume * sound.getRelativeVolumeAt(((Entity)x).Position),this);
+                    ((IEnemy) x).HearSound(position, volume, this);
                 }
             });
         }

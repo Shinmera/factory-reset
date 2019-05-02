@@ -98,8 +98,10 @@ namespace team5
             Game.SoundEngine.Load("jump", "Player_Jump");
             Game.SoundEngine.Load("walljump", "Player_JumpWall");
             Game.SoundEngine.Load("land", "Player_Landing");
-            Game.SoundEngine.Load("run", "Player_LoudStep1", "Player_LoudStep2", "Player_LoudStep3");
-            Game.SoundEngine.Load("crouch", "Player_QuietStep1", "Player_QuietStep2", "Player_QuietStep3");
+            Game.SoundEngine.Load("run_outside", "Player_QuietStep1", "Player_QuietStep2", "Player_QuietStep3");
+            Game.SoundEngine.Load("run_inside", "Player_LoudStep1", "Player_LoudStep2", "Player_LoudStep3");
+            Game.SoundEngine.Load("crouch_outside", "Player_QuietStep1", "Player_QuietStep2", "Player_QuietStep3");
+            Game.SoundEngine.Load("crouch_inside", "Player_QuietStep1", "Player_QuietStep2", "Player_QuietStep3");
             Game.SoundEngine.Load("slide", "Player_Sliding");
             Game.SoundEngine.Load("call", "Player_WalkieTalkie");
         }
@@ -111,6 +113,7 @@ namespace team5
 
         public override void Update(Chunk chunk)
         {
+
             float dt = Game1.DeltaT;
             Controller.Update();
             Sprite.Update(dt);
@@ -497,7 +500,7 @@ namespace team5
             HandleCollisions(dt, chunk, true);
             
             if(Grounded && HardFall)
-                MakeSound(chunk, "land", 70);
+                MakeSound(chunk, "land", 80);
 
             // Animations
             StopSoundLoop = true;
@@ -537,13 +540,13 @@ namespace team5
                             {
                                 Sprite.Play("crouchwalk");
                                 if (Sprite.Frame == 58 || Sprite.Frame == 63)
-                                    MakeSound(chunk, "crouch", 5);
+                                    MakeSound(chunk, chunk.IsOutside ? "crouch_outside" : "crouch_inside" , 5);
                             }
                             else
                             {
                                 Sprite.Play("run");
                                 if (Sprite.Frame == 10 || Sprite.Frame == 18)
-                                    MakeSound(chunk, "run");
+                                    MakeSound(chunk, chunk.IsOutside ? "run_outside" : "run_inside", chunk.IsOutside? 50 : 70);
                             }
                         }
                         else
@@ -559,7 +562,7 @@ namespace team5
                 case PlayerState.Climbing:
                     Sprite.Play("climb");
                     if(Sprite.Frame == 26 || Sprite.Frame == 31)
-                        MakeSound(chunk, "climb");
+                        MakeSound(chunk, "climb", 20);
                     
                     if (Velocity.Y < 0) Sprite.FrameStep = -1;
                     else Sprite.FrameStep = +1;
@@ -596,7 +599,7 @@ namespace team5
             Game.SoundEngine.Update(Position);
         }
         
-        private void MakeSound(Chunk chunk, string sound, float aiVolume=60, float volume=0.9f)
+        private void MakeSound(Chunk chunk, string sound, float aiVolume=70, float volume=0.9f)
         {
             if(SoundFrame == Sprite.Frame) return;
             SoundFrame = Sprite.Frame;

@@ -29,6 +29,7 @@ namespace team5
         private int TransitionDirection = 0;
         private Chunk LastActiveChunk;
         private Chunk TargetChunk;
+
         private int TransitionLingerTimer = 0;
         private const int TransitionLingerDuration = 40;
         private float DeathFadeLingerTimer = 0F;
@@ -96,7 +97,7 @@ namespace team5
                     chunk.LoadContent(content);
                     Chunks.Add(chunk);
                 }
-                
+
                 StartChase = data.startChase;
                 ActiveChunk = Chunks[data.startChunk];
                 Next = data.next;
