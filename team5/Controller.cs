@@ -55,6 +55,7 @@ namespace team5
                     || pad.Buttons.Start == ButtonState.Pressed;
 
                 Interact = key.IsKeyDown(Keys.E)
+                    || pad.Buttons.X == ButtonState.Pressed
                     || pad.Buttons.Y == ButtonState.Pressed;
                 
                 Advance = key.IsKeyDown(Keys.Space)
