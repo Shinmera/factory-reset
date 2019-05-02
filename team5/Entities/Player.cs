@@ -242,6 +242,13 @@ namespace team5
                                 ItemDialog = false;
                             }
 
+                            chunk.Die(entity);
+                        }
+                        else if (entity is AlarmTrigger)
+                        {
+                            ((AlarmTrigger)entity).Triggered = true;
+                            chunk.Level.Alarm.Detected = true;
+                            chunk.Level.Alarm.Alert(Position, chunk);
                         }
                     });
 

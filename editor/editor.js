@@ -13,7 +13,8 @@ var solids = {
     Pickup:         0xFF00EEFF, // An information pickup item
     Goal:           0xFFFFEE00, // A goal tile leading to end-of-level
     Door:           0xFF00337F, // A door which can be opened and closed
-    DialogTrigger   0xFFDC00FF, // Triggers a dialog like a pickup.
+    DialogTrigger:  0xFFDC00FF, // Triggers a dialog like a pickup.
+	AlarmTrigger:   0xFF0000BB, // Triggers alarm when touched
 	
 	ClimbPrompt:    0xFF0199AA,
     CrouchPrompt:   0xFF0299AA,
