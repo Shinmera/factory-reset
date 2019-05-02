@@ -30,6 +30,8 @@ namespace team5
             Pickup         = 0xFF00EEFF, // An information pickup item
             Goal           = 0xFFFFEE00, // A goal tile leading to end-of-level
             Door           = 0xFF00337F, // A door which can be opened and closed
+            DialogTrigger  = 0xFFDC00FF, // Triggers a call on touch
+
 
             Prompt         = 0xFF0099AA, // A button Prompt (apply mask to get button type)
         }
@@ -283,6 +285,9 @@ namespace team5
                                     SolidTiles[(Height - y - 1) * Width + x] = (uint)Colors.AerialDroneWall;
                                     SolidTiles[(Height - (y+1) - 1) * Width + x] = (uint)Colors.AerialDroneWall;
                                 }
+                                break;
+                            case (uint)Colors.DialogTrigger:
+                                CollidingEntities.Add(new DialogTrigger(position, Game));
                                 break;
                         }
                     }

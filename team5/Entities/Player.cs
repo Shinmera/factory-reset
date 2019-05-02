@@ -225,6 +225,11 @@ namespace team5
                             Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position + new Vector2(0, 36));
                             Game.TextEngine.QueueButton(((ButtonPrompt)entity).Button, buttonPos);
                         }
+                        else if (entity is DialogTrigger)
+                        {
+                            if (chunk.NextItem < chunk.StoryItems.Length)
+                                State = PlayerState.QueueCall;
+                        }
                     });
 
                     if(State == PlayerState.QueueHide 
