@@ -12,7 +12,7 @@ namespace team5
     {
         public static float VibrationMultiplier = 0.5F;
         public struct State{
-            public readonly bool MoveLeft, MoveRight, MoveUp, MoveDown, Jump, Climb, Hide, Crouch, Pause, Interact, Advance, Back;
+            public readonly bool MoveLeft, MoveRight, MoveUp, MoveDown, Jump, Climb, Hide, Crouch, Pause, Call, Interact, Advance, Back;
             public State(KeyboardState key, GamePadState pad){
                 MoveLeft = key.IsKeyDown(Keys.A)
                     || key.IsKeyDown(Keys.Left)
@@ -53,6 +53,10 @@ namespace team5
         
                 Pause = key.IsKeyDown(Keys.Escape)
                     || pad.Buttons.Start == ButtonState.Pressed;
+                
+                Call = key.IsKeyDown(Keys.C)
+                    // Not sure if this is actually SELECT
+                    || pad.Buttons.Back == ButtonState.Pressed;
 
                 Interact = key.IsKeyDown(Keys.E)
                     || pad.Buttons.X == ButtonState.Pressed
@@ -93,6 +97,7 @@ namespace team5
         public bool Hide => Is.Hide;
         public bool Crouch => Is.Crouch;
         public bool Pause => Is.Pause;
+        public bool Call => Is.Call;
         public bool Interact => Is.Interact;
         public bool Advance => Is.Advance;
         public bool Back => Is.Back;
