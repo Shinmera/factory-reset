@@ -53,8 +53,14 @@ namespace team5
         private readonly string TileSetName, BackgroundName;
         private Player Player;
         private Texture2D Tileset, Solidset, Background;
+
         public string[][] StoryItems;
+        public string[][] RandomDialogs;
+        public string[][] TriggeredDialogs;
+
         public int NextItem = 0;
+        public int NextTrigger = 0;
+        public int NextRandomDialog = 0;
         private Dictionary<uint, TileType> TileObjects;
 
         #endregion

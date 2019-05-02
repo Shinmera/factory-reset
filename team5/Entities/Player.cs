@@ -56,6 +56,7 @@ namespace team5
         public bool IsCrouched { get; private set; }
         public float DeathTimer = 0;
         public const float DeathDuration = 2;
+        private bool ItemDialog;
 
         public float InteractTimer = 0;
         public const float InteractHold = 0.2F;
@@ -175,7 +176,10 @@ namespace team5
                             if (Controller.Interact)
                             {
                                 if (chunk.NextItem < chunk.StoryItems.Length)
+                                {
                                     State = PlayerState.QueueCall;
+                                    ItemDialog = true;
+                                }
                                 chunk.Die(entity);
                             }
                         }
@@ -232,8 +236,12 @@ namespace team5
                         }
                         else if (entity is DialogTrigger)
                         {
-                            if (chunk.NextItem < chunk.StoryItems.Length)
+                            if (chunk.NextTrigger < chunk.TriggeredDialogs.Length)
+                            {
                                 State = PlayerState.QueueCall;
+                                ItemDialog = false;
+                            }
+
                         }
                     });
 
@@ -481,7 +489,14 @@ namespace team5
                         }
                         if (CallTimer < 0)
                         {
-                            chunk.Level.OpenDialogBox(chunk.StoryItems[chunk.NextItem++]);
+                            if (ItemDialog)
+                            {
+                                chunk.Level.OpenDialogBox(chunk.StoryItems[chunk.NextItem++]);
+                            }
+                            else
+                            {
+                                chunk.Level.OpenDialogBox(chunk.TriggeredDialogs[chunk.NextTrigger++]);
+                            }
                             
                             CallTimer = float.PositiveInfinity;
                         }
