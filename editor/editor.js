@@ -999,6 +999,18 @@ var zoomEvent = function(){
     level.zoom(parseFloat(document.querySelector("#zoom").value));
 };
 
+var keyEvent = function(e){
+    console.log(e);
+    if(e.ctrlKey || e.metaKey){
+        if(e.keyCode == 90) level.undo();
+        if(e.keyCode == 89) level.redo();
+        if(e.keyCode == 83) saveLevel();
+        e.preventDefault();
+        return false;
+    }
+    return true;
+};
+
 var openTileset = function(){
     return openFile(".png,image/png")
         .then(async input => {
@@ -1259,6 +1271,7 @@ var initEvents = function(){
     window.addEventListener("wheel", selectTileEvent);
     window.onbeforeunload = stopUnload;
     window.addEventListener("beforeunload", stopUnload);
+    window.addEventListener("keyup", keyEvent);
     tilelist.addEventListener("click", selectTileEvent);
     tilemap.addEventListener("mousedown", function(ev){button = ev.button; editMapEvent(ev);});
     tilemap.addEventListener("mousemove", editMapEvent);
