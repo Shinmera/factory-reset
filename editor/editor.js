@@ -72,6 +72,15 @@ var arrayToPixel = function(arr, offset){
     return ((r << 24) + (g << 16) + (b << 8) + a) >>> 0;
 };
 
+var pixelToArray = function(pixel){
+    var arr = [];
+    arr[0] = (pixel >>> 24) & 0xFF;
+    arr[1] = (pixel >>> 16) & 0xFF;
+    arr[2] = (pixel >>>  8) & 0xFF;
+    arr[3] = (pixel >>>  0) & 0XFF;
+    return arr;
+};
+
 var getPixel = function(data, x, y){
     return arrayToPixel(data.data, (x+y*data.width)*4);
 };
@@ -531,9 +540,16 @@ class Chunk{
         return this;
     }
 
-    edit(x, y, action, layer){
-        if(layer === undefined)layer = this.currentLayer;
-        var pixels = this.pixels[layer];
+    getPixel(x, y, layer){
+        var pixels = this.pixels[layer || this.currentLayer];
+        var i = ((pixels.width*y)+x)*4;
+        return pixels.data.slice(i, i+4);
+    }
+
+    edit(options){
+        let tileset = this.getTileset(options.layer);
+        var fill = options.tile;
+        var pixels = this.pixels[options.layer];
         var pi = (x, y)=>((pixels.width*y)+x)*4;
         var p = (x, y)=>{
             let i = pi(x,y);
@@ -546,18 +562,12 @@ class Chunk{
             pixels.data[i+2] = tile[2];
             pixels.data[i+3] = (tile[3] === undefined)? 255 : tile[3];
         };
-        if(action === "place"){
-            let tileset = this.getTileset(layer);
-            sp(x, y, tileset.tileMap[tileset.selected[1]][tileset.selected[0]]);
-            this.drawPos(x,y);
-        }else if(action === "erase"){
-            sp(x, y, [0,0,0,0]);
-            this.drawPos(x,y);
-        }else if(action === "fill"){
-            let tileset = this.getTileset(layer);
-            var fill = tileset.tileMap[tileset.selected[1]][tileset.selected[0]];
-            var queue = [[x,y]];
-            var find = p(x,y);
+        if(options.action === "place"){
+            sp(options.x, options.y, fill);
+            this.drawPos(options.x,options.y);
+        }else if(options.action === "fill"){
+            var queue = [[options.x, options.y]];
+            var find = p(options.x,options.y);
             var width = pixels.width, height = pixels.height;
             if(find === arrayToPixel(fill))
                 return this;
@@ -579,7 +589,6 @@ class Chunk{
             }
             this.show();
         }
-        //console.log("Edited",this,":",layer,"(",x,"x",y,")");
         return this;
     }
 
@@ -631,6 +640,8 @@ class Level{
         this.chunks = init.chunks || [ new Chunk({tileset: this.defaultTileset}) ];
         this.storyItems = init.storyItems || [];
         this.currentChunk = 0;
+        this.undoHistory = [];
+        this.undoPointer = 0;
     }
 
     get uiElement(){ return document.querySelector(".sidebar"); }
@@ -677,6 +688,43 @@ class Level{
             storyItems: this.storyItems,
             chunks: chunks
         };
+    }
+
+    edit(options){
+        // Defaults and history remember
+        options.chunk = options.chunk || this.chunk;
+        options.layer = options.layer || options.chunk.currentLayer;
+        options.prevTile = options.chunk.getPixel(options.x, options.y, options.layer);
+        // If last history item was the same, don't bother.
+        var prev = this.undoHistory[this.undoPointer-1];
+        if(prev
+           && prev.x == options.x
+           && prev.y == options.y
+           && prev.chunk === options.chunk
+           && prev.layer === options.layer
+           && prev.tile === options.tile
+           && prev.action === options.action) return;
+        // Truncate history and push new item.
+        this.undoHistory.length = this.undoPointer;
+        this.undoHistory.push(options);
+        this.undoPointer++;
+        // Perform edit.
+        options.chunk.edit(options);
+    }
+
+    undo(){
+        if(this.undoPointer <= 0) return;
+        this.undoPointer--;
+        var lastItem = Object.assign({}, this.undoHistory[this.undoPointer]);
+        lastItem.tile = lastItem.prevTile;
+        lastItem.chunk.edit(lastItem);
+    }
+
+    redo(){
+        if(this.undoHistory.length <= this.undoPointer) return;
+        var lastItem = this.undoHistory[this.undoPointer];
+        lastItem.chunk.edit(lastItem);
+        this.undoPointer++;
     }
 
     use(force){
@@ -922,6 +970,8 @@ var editMapEvent = function(ev){
     ev.preventDefault();
     var x = Math.floor(ev.offsetX/tilemap.clientWidth*tilemap.width/tileSize);
     var y = Math.floor(ev.offsetY/tilemap.clientHeight*tilemap.height/tileSize);
+    var stile = level.chunk.tileset.selected;
+    var ctile = level.chunk.tileset.tileMap[stile[1]][stile[0]];
     if(ev.buttons){
         if(ev.altKey || ev.metaKey){
             var pixelIndex = ((level.chunk.layer.width*y)+x)*4;
@@ -930,10 +980,10 @@ var editMapEvent = function(ev){
             console.log(r, g);
             level.chunk.tileset.selected = level.chunk.tileset.rgMap[(r<<8) + g];
         }else if(ev.ctrlKey){
-            level.chunk.edit(x, y, "fill");
+            level.edit({x: x, y: y, action: "fill", tile: ctile});
         }else{
-            var action = (button == 2)? "erase" : "place";
-            level.chunk.edit(x, y, action);
+            var tile = (button==2)? [0,0,0,0]: ctile;
+            level.edit({x: x, y: y, action: "place", tile: ctile});
         }
     }
     if(ev.altKey || ev.metaKey){
@@ -1202,6 +1252,8 @@ var initEvents = function(){
     document.querySelector("#open-level").addEventListener("click", openLevel);
     document.querySelector("#save-level").addEventListener("click", saveLevel);
     document.querySelector("#open-tileset").addEventListener("click", openTileset);
+    document.querySelector("#undo").addEventListener("click", ()=>level.undo());
+    document.querySelector("#redo").addEventListener("click", ()=>level.redo());
     document.querySelector("#zoom").addEventListener("change", zoomEvent);
     document.querySelector("label[for=zoom]").addEventListener("dblclick", ()=> level.zoom(1.0));
     window.addEventListener("wheel", selectTileEvent);
