@@ -13,10 +13,16 @@ namespace team5
     {
         private AnimatedSprite Sprite;
 
+        private float Phase = 0;
+        private const float PhaseRate = (float)(Math.PI);
+        private float CurOffset = 0;
+        private const float MaxOffset = 1.5F;
+
         public Pickup(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize * 0.75F))
         {
             Position = position;
             Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize * 0.75F));
+            Phase = (float)(2*Math.PI*game.RNG.NextDouble());
         }
 
         public override void LoadContent(ContentManager content)
@@ -25,9 +31,16 @@ namespace team5
             Sprite.Add("idle", 0, 1, 1.0);
         }
 
+        public override void Update(Chunk chunk)
+        {
+            Phase += Game1.DeltaT * PhaseRate;
+            Phase %= (float)(2 * Math.PI);
+            CurOffset = (float) Math.Sin(Phase) * MaxOffset;
+        }
+
         public override void Draw()
         {
-            Sprite.Draw(Position);
+            Sprite.Draw(Position + Vector2.UnitY * CurOffset);
         }
     }
 }
