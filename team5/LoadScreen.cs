@@ -38,7 +38,11 @@ namespace team5
         {
             Game.GraphicsDevice.Clear(Color.Black);
             Vector2 position = new Vector2(TargetSize.X*2-16-Sprite.FrameSize.X,Sprite.FrameSize.Y);
-            Game.TextEngine.QueueText("Loading"+LevelName+"...", position+new Vector2(-Sprite.FrameSize.X-8, 0),
+            Game.TextEngine.QueueText(LevelName, TargetSize,
+                                      24, Color.White, TextEngine.Orientation.Center, TextEngine.Orientation.Center);
+            
+
+            Game.TextEngine.QueueText("Loading...", position+new Vector2(-Sprite.FrameSize.X-8, 0),
                                       16, Color.White, TextEngine.Orientation.Right, TextEngine.Orientation.Center);
             Sprite.Draw(position);
         }
