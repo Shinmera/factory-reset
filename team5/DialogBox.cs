@@ -75,6 +75,13 @@ namespace team5
                 
             }
 
+            if(Game.Controller.Call && !Game.Controller.Was.Call)
+            {
+                Game.SoundEngine.Play("Player_WalkieEnd");
+                Level.ClosePopup();
+                return;
+            }
+
             if ((!Game.Controller.Advance && Game.Controller.Was.Advance))
             {
                 if (CurLetters < CurMaxLetters)
