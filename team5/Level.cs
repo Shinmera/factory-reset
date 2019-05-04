@@ -41,7 +41,16 @@ namespace team5
 
         private List<Vector2> OverlayTriangles;
 
-        public bool Paused = false;
+        private bool InternalPaused = false;
+
+        public bool Paused
+        {
+            get { return InternalPaused; }
+            set {
+                InternalPaused = value;
+                Game.SoundEngine.Paused = value;
+            }
+        }
 
         private readonly List<Container> Popups = new List<Container>();
         private readonly List<Container> DeletedPopups = new List<Container>();
@@ -118,6 +127,11 @@ namespace team5
 
             Game.SoundEngine.Load("UI_Button");
             Game.SoundEngine.Load("Player_WalkieEnd");
+
+            if (StartChase)
+            {
+                Alarm.Alert(Player.Position, ActiveChunk);
+            }
         }
         
         public override void UnloadContent()
