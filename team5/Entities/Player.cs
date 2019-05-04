@@ -240,7 +240,7 @@ namespace team5
                         }
                         else if (entity is DialogTrigger)
                         {
-                            if (chunk.NextTrigger < chunk.TriggeredDialogs.Length)
+                            if (chunk.Level.NextTrigger < chunk.Level.TriggeredDialogs.Length)
                             {
                                 State = PlayerState.QueueInCall;
                                 ItemDialog = false;
@@ -509,7 +509,7 @@ namespace team5
                             }
                             else
                             {
-                                chunk.Level.OpenDialogBox(chunk.TriggeredDialogs[chunk.NextTrigger++]);
+                                chunk.Level.OpenDialogBox(chunk.Level.TriggeredDialogs[chunk.Level.NextTrigger++]);
                             }
                             
                             CallTimer = float.PositiveInfinity;

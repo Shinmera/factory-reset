@@ -200,6 +200,7 @@
     <Content Include="Content\Levels\1stLevel.zip" />
     <Content Include="Content\Levels\4thLevelEnd.zip" />
     <Content Include="Content\Levels\office-demo.zip" />
+    <Content Include="Content\Levels\OfficeVer1.zip" />
     <None Include="team5_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

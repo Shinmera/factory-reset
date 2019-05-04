@@ -55,11 +55,10 @@ namespace team5
         private Texture2D Tileset, Solidset, Background;
 
         public string[][] StoryItems;
-        public string[][] TriggeredDialogs;
+        
 
         public int NextItem = 0;
-        public int NextTrigger = 0;
-        public int NextRandomDialog = 0;
+
         private Dictionary<uint, TileType> TileObjects;
 
         #endregion
@@ -120,9 +119,6 @@ namespace team5
             TileSetName = chunk.tileset;
             BackgroundName = chunk.background;
             StoryItems = chunk.storyItems;
-
-            //TODO: Fix
-            TriggeredDialogs = chunk.storyItems;
         }
 
         #endregion

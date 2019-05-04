@@ -23,6 +23,8 @@ namespace team5
         public int DeathCounter = 0;
         public int AlertCounter = 0;
         public string Next = null;
+        public string[][] TriggeredDialogs;
+        public int NextTrigger = 0;
 
         public static string[][] RandomDialogs;
 
@@ -187,7 +189,8 @@ namespace team5
                 Next = data.next;
 
                 Name = data.name;
-                //TODO: add random dialog imports;
+
+                TriggeredDialogs = data.storyItems;
             }
 
             for(int i = 0; i < RandomDialogs.Length - 2; ++i)
