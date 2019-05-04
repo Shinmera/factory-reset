@@ -55,7 +55,6 @@ namespace team5
         private Texture2D Tileset, Solidset, Background;
 
         public string[][] StoryItems;
-        public string[][] RandomDialogs;
         public string[][] TriggeredDialogs;
 
         public int NextItem = 0;
@@ -121,6 +120,9 @@ namespace team5
             TileSetName = chunk.tileset;
             BackgroundName = chunk.background;
             StoryItems = chunk.storyItems;
+
+            //TODO: Fix
+            TriggeredDialogs = chunk.storyItems;
         }
 
         #endregion
@@ -178,6 +180,7 @@ namespace team5
                 Level.Alarm.SetState(Alarm.AlarmState.Clear, this);
                 Level.Alarm.Drones = false;
                 Level.Camera.SnapToLocation();
+                Level.DeathCounter++;
             }
 
             if(entity is Pickup || entity is DialogTrigger)
@@ -226,7 +229,7 @@ namespace team5
 
         public void LoadContent(ContentManager content)
         {
-            if(BackgroundName != null)
+            if(BackgroundName != null && BackgroundName != "")
                 Background = Game.TextureCache[BackgroundName];
             Tileset = Game.TextureCache[TileSetName];
             Solidset = Game.TilemapEngine.SolidSet;

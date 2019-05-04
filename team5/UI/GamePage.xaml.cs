@@ -33,6 +33,11 @@ namespace team5.UI
             }
         }
         
+        public void InvokeAction(Action<Game1> action)
+        {
+            action(Game);
+        }
+
         public void QueueAction(Action<Game1> action)
         {
             Game.QueueAction(action);

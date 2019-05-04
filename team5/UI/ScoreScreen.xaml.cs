@@ -34,10 +34,15 @@ namespace team5.UI
         {
             Shown = false;
             Root.Current.Game.QueueAction((game)=>{
-                    if(game.NextLevelId != null)
-                        game.LoadLevel(game.NextLevelId);
-                    else // FIXME: Show a proper end credits screen
-                        Root.Current.QueueAction((root)=>root.ShowMenu());
+                if (game.NextLevelId != null)
+                {
+                    object next = game.NextLevelId;
+                    game.UnloadLevel();
+                    game.UpdateLoadName(next);
+                    game.LoadLevel(next);
+                }
+                else // FIXME: Show a proper end credits screen
+                    Root.Current.QueueAction((root) => root.ShowMenu());
                 });
         }
     }

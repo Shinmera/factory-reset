@@ -12,6 +12,8 @@ namespace team5
 {
     class Level:Window
     {
+        public string Name;
+
         public List<Chunk> Chunks = new List<Chunk>();
         public Chunk ActiveChunk = null;
         public Player Player;
@@ -21,7 +23,18 @@ namespace team5
         public int DeathCounter = 0;
         public int AlertCounter = 0;
         public string Next = null;
-        
+        public string[][] RandomDialogs;
+
+        private int InternalNRD = 0;
+        public int NextRandomDialog {
+            get {
+                return Math.Min(RandomDialogs.Length-1,InternalNRD);
+            }
+            set {
+                ++InternalNRD;
+            }
+        }
+
         public readonly object Identifier;
         private bool StartChase = false;
         private bool ChunkTrans = false;
@@ -110,6 +123,20 @@ namespace team5
                 StartChase = data.startChase;
                 ActiveChunk = Chunks[data.startChunk];
                 Next = data.next;
+
+                Name = data.name;
+
+                RandomDialogs = new string[0][];
+                //TODO: add random dialog imports;
+            }
+
+            for(int i = 0; i < RandomDialogs.Length - 2; ++i)
+            {
+                int newIndex = i + (int)Math.Floor(Game.RNG.NextDouble() * (RandomDialogs.Length - i - 1));
+
+                string[] temp = RandomDialogs[i];
+                RandomDialogs[i] = RandomDialogs[newIndex];
+                RandomDialogs[newIndex] = temp;
             }
             
             Player.LoadContent(content);
@@ -130,6 +157,7 @@ namespace team5
 
             if (StartChase)
             {
+                Alarm.Detected = true;
                 Alarm.Alert(Player.Position, ActiveChunk);
             }
         }

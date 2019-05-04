@@ -43,7 +43,8 @@ namespace team5
             Hiding,
             Climbing,
             QueueDoor,
-            QueueCall,
+            QueueInCall,
+            QueueOutCall,
             OpeningDoor,
             QueueCrash,
             CrashDoor,
@@ -68,7 +69,7 @@ namespace team5
         private SoundEngine.Sound Sound;
         private bool StopSoundLoop;
 
-        public Player(Vector2 position, Game1 game):base(game, new Vector2(Chunk.TileSize/2, 0.98F*Chunk.TileSize))
+        public Player(Vector2 position, Game1 game):base(game, new Vector2(Chunk.TileSize/2, 15.5F))
         {
             Sprite = new AnimatedSprite(null, game, new Vector2(32, 40));
 
@@ -110,7 +111,7 @@ namespace team5
 
         public override void Draw()
         {
-            Sprite.Draw(Position+new Vector2(0, 4+ 0.02F * Chunk.TileSize));
+            Sprite.Draw(Position+new Vector2(0, 4+ 0.5F));
         }
 
         public override void Update(Chunk chunk)
@@ -177,7 +178,7 @@ namespace team5
                             {
                                 if (chunk.NextItem < chunk.StoryItems.Length)
                                 {
-                                    State = PlayerState.QueueCall;
+                                    State = PlayerState.QueueInCall;
                                     ItemDialog = true;
                                 }
                                 chunk.Die(entity);
@@ -197,34 +198,37 @@ namespace team5
                         else if (entity is Door && ((Door)entity).State == Door.EState.Closed)
                         {
                             
-                            float dir = Math.Sign(Position.X - entity.Position.X);
-                            if (-Sprite.Direction == dir)
+                            if(entity.GetBoundingBox().Bottom <= GetBoundingBox().Bottom)
                             {
-                                Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position + new Vector2(dir * 1.1F * Chunk.TileSize, 36));
-                                Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
-                                if (entity == TargetEntity)
+                                float dir = Math.Sign(Position.X - entity.Position.X);
+                                if (-Sprite.Direction == dir)
                                 {
-                                    if (Controller.Interact && !IsCrouched)
+                                    Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position + new Vector2(dir * 1.1F * Chunk.TileSize, 36));
+                                    Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
+                                    if (entity == TargetEntity)
                                     {
-                                        InteractTimer -= Game1.DeltaT;
-                                        if (InteractTimer <= 0)
+                                        if (Controller.Interact && !IsCrouched)
                                         {
-                                            State = PlayerState.QueueCrash;
+                                            InteractTimer -= Game1.DeltaT;
+                                            if (InteractTimer <= 0)
+                                            {
+                                                State = PlayerState.QueueCrash;
+                                                TargetSpot = entity.Position + new Vector2(dir * (0.5F * Chunk.TileSize + 1), 0);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            State = PlayerState.QueueDoor;
                                             TargetSpot = entity.Position + new Vector2(dir * (0.5F * Chunk.TileSize + 1), 0);
                                         }
                                     }
                                     else
                                     {
-                                        State = PlayerState.QueueDoor;
-                                        TargetSpot = entity.Position + new Vector2(dir * (0.5F * Chunk.TileSize + 1), 0);
-                                    }
-                                }
-                                else
-                                {
-                                    if (Controller.Interact)
-                                    {
-                                        TargetEntity = entity;
-                                        InteractTimer = InteractHold;
+                                        if (Controller.Interact)
+                                        {
+                                            TargetEntity = entity;
+                                            InteractTimer = InteractHold;
+                                        }
                                     }
                                 }
                             }
@@ -238,7 +242,7 @@ namespace team5
                         {
                             if (chunk.NextTrigger < chunk.TriggeredDialogs.Length)
                             {
-                                State = PlayerState.QueueCall;
+                                State = PlayerState.QueueInCall;
                                 ItemDialog = false;
                             }
 
@@ -255,7 +259,7 @@ namespace team5
                     if(State == PlayerState.QueueHide 
                        || State == PlayerState.QueueDoor
                        || State == PlayerState.QueueCrash
-                       || State == PlayerState.QueueCall)
+                       || State == PlayerState.QueueInCall)
                     {
                         break;
                     }
@@ -329,6 +333,10 @@ namespace team5
                             jump = false;
                             Velocity.Y = JumpSpeed;
                             LongJump = LongJumpTime * dt;
+                        }
+                        else if(Controller.Call)
+                        {
+
                         }
                     }
 
@@ -415,7 +423,7 @@ namespace team5
                         HasWallJumped = false;
                         State = PlayerState.OpeningDoor;
 
-                        Position = TargetSpot;
+                        Position.X = TargetSpot.X;
                         Velocity.X = 0;
                     }
                     break;
@@ -483,9 +491,8 @@ namespace team5
                         TargetEntity = null;
                     }
                     break;
-                case PlayerState.QueueCall:
+                case PlayerState.QueueInCall:
                     Velocity.X = 0;
-                    // FIXME: should wait a bit longer.
                     if(Sprite.Frame == 75){
                         CallTimer -= dt;
                         if(CallTimer == float.PositiveInfinity)
@@ -505,6 +512,29 @@ namespace team5
                                 chunk.Level.OpenDialogBox(chunk.TriggeredDialogs[chunk.NextTrigger++]);
                             }
                             
+                            CallTimer = float.PositiveInfinity;
+                        }
+                    }
+                    else
+                    {
+                        CallTimer = CallDuration;
+                    }
+                    break;
+                case PlayerState.QueueOutCall:
+                    Velocity.X = 0;
+                    if (Sprite.Frame == 75)
+                    {
+                        CallTimer -= dt;
+                        if (CallTimer == float.PositiveInfinity)
+                        {
+                            State = PlayerState.Normal;
+                            CallTimer = 0;
+                            break;
+                        }
+                        if (CallTimer < 0)
+                        {
+                            chunk.Level.OpenDialogBox(chunk.Level.RandomDialogs[chunk.Level.NextRandomDialog++]);
+
                             CallTimer = float.PositiveInfinity;
                         }
                     }
@@ -538,7 +568,8 @@ namespace team5
             StopSoundLoop = true;
             switch (State)
             {
-                case PlayerState.QueueCall:
+                case PlayerState.QueueInCall:
+                case PlayerState.QueueOutCall:
                     if (CallTimer == CallDuration)
                     {
                         Sprite.Play("call");

@@ -33,6 +33,7 @@ namespace team5.UI
         private void LevelSelected(object sender, ItemClickEventArgs e)
         {
             String level = ((LevelPreview)e.ClickedItem).FileName;
+            Root.Current.Game.InvokeAction((game) => game.UpdateLoadName(level));
             Root.Current.ShowGame();
             Root.Current.Game.QueueAction((game)=>game.LoadLevel(level));
         }
@@ -81,11 +82,14 @@ namespace team5.UI
             foreach (var level in UnsortedPreviews){
                 Previews.Add(level);
             }
+
+            Root.Current.Game.InvokeAction((game) => game.FirstLevel = Previews[0].FileName);
         }
 
         private void Sideload(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             string url = SideloadUrl.Text;
+            Root.Current.Game.InvokeAction((game) => game.UpdateLoadName(null));
             Root.Current.ShowGame();
             Root.Current.Game.QueueAction((game)=>game.LoadLevel(new Uri(url)));
         }

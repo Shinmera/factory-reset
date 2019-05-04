@@ -197,6 +197,9 @@
     <Content Include="Content\Fonts\Wellbutrin.ttf" />
     <Content Include="Content\Levels\lobby.zip" />
     <Content Include="Content\Levels\rooftops-demo.zip" />
+    <Content Include="Content\Levels\1stLevel.zip" />
+    <Content Include="Content\Levels\4thLevelEnd.zip" />
+    <Content Include="Content\Levels\office-demo.zip" />
     <None Include="team5_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

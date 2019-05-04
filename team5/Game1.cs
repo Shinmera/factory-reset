@@ -10,7 +10,7 @@ namespace team5
     public class Game1 : Game
     {
         public const float DeltaT = 1 / 60.0F;
-        public const string FirstLevel = "lobby";
+        public string FirstLevel = "lobby";
 
         public new readonly ContentManager Content;
         public readonly GraphicsDeviceManager DeviceManager;
@@ -106,8 +106,23 @@ namespace team5
             ActiveWindow.UnloadContent();
         }
 
+        public void UpdateLoadName(object identifier)
+        {
+            if(identifier == null)
+            {
+                ((LoadScreen)RealActiveWindow).LevelName = "";
+            }
+            else
+            {
+                ((LoadScreen)RealActiveWindow).LevelName = " " + LevelContent.Read(identifier, true).name;
+            }
+            AdvanceLoad();
+        }
+
         public void LoadLevel(object identifier)
         {
+            UpdateLoadName(identifier);
+
             Game1.Log("Game", "Loading level from {0}...", identifier);
             // FIXME: Handle errors during load.
             
@@ -143,6 +158,7 @@ namespace team5
         {
             if(!(ActiveWindow is Level)) return;
             SoundEngine.Clear();
+            UpdateLoadName(Level.Identifier);
             LoadLevel(Level.Identifier);
         }
         
