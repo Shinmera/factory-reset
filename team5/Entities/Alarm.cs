@@ -143,15 +143,15 @@ namespace team5
             if(!Detected) return;
             Game.Transforms.PushView();
             Game.Transforms.ResetView();
-            Game.Transforms.TranslateView(new Vector2(Camera.TargetWidth, 300));
+            Game.Transforms.TranslateView(new Vector2(Camera.TargetWidth, 210));
             Game.Transforms.ScaleView(level.Camera.ViewScale);
             Sprite.Draw();
-            float full = (float)Math.Truncate(Timer);
-            float rest = Timer - full;
+            float full = (float)Math.Truncate(Timer + Game1.DeltaT);
+            float rest = (Timer + Game1.DeltaT) - full;
             Game.Transforms.PopView();
-            Game.TextEngine.QueueText(full.ToString("00"), new Vector2(Camera.TargetWidth+5,300), 26,
+            Game.TextEngine.QueueText(full.ToString("00"), new Vector2(Camera.TargetWidth+5, 210), 26,
                                       Color.White, TextEngine.Orientation.Right, TextEngine.Orientation.Center);
-            Game.TextEngine.QueueText(rest.ToString(".00"), new Vector2(Camera.TargetWidth+5,300-3), 16,
+            Game.TextEngine.QueueText(rest.ToString(".00"), new Vector2(Camera.TargetWidth+5, 210- 3), 16,
                                       Color.LightGray, TextEngine.Orientation.Left, TextEngine.Orientation.Center);
         }
 
