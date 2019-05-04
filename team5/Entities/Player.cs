@@ -336,7 +336,7 @@ namespace team5
                         }
                         else if(Controller.Call)
                         {
-
+                            State = PlayerState.QueueOutCall;
                         }
                     }
 
@@ -533,7 +533,7 @@ namespace team5
                         }
                         if (CallTimer < 0)
                         {
-                            chunk.Level.OpenDialogBox(chunk.Level.RandomDialogs[chunk.Level.NextRandomDialog++]);
+                            chunk.Level.OpenDialogBox(Level.RandomDialogs[chunk.Level.NextRandomDialog++]);
 
                             CallTimer = float.PositiveInfinity;
                         }

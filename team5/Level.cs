@@ -23,7 +23,69 @@ namespace team5
         public int DeathCounter = 0;
         public int AlertCounter = 0;
         public string Next = null;
-        public string[][] RandomDialogs;
+
+        public static string[][] RandomDialogs;
+
+        static Level()
+        {
+            RandomDialogs = new string[7][];
+
+            RandomDialogs[0] = new string[]{
+                "You: Charlie, are you there?",
+                "Charlie: Is there a problem?",
+                "You: No, I just wanted to hear your voice.",
+                "Charlie: We're doing fine, mom. Stay safe and come back soon."
+            };
+
+            RandomDialogs[1] = new string[]
+            {
+                "You: Hey dear! Still alive?",
+                "Charlie: Yes of course, but are you still alive?",
+                "You: No, I'm actually a ghost!\n" +
+                "BOOooooOoOo!",
+                "Charlie: Spooky."
+            };
+
+            RandomDialogs[2] = new string[]
+            {
+                "You: How are things going out there, Charlie?",
+                "Charlie: Not so good. I'm sad and I miss the internet. I still can't believe it's gone!",
+                "You: I'll call again later when you reached the acceptance stage of grief.",
+                "Charlie: That's very sympathetic of you.\nThanks mom."
+            };
+
+            RandomDialogs[3] = new string[]
+            {
+                "You: I really wonder how things could get so far.",
+                "Charlie: Humanity just got lazy, I suppose.",
+                "You: What? No, I'm talking about architects designing places so unhandy for standard human movement! No wonder our city never attracted a lot of tourism!",
+                "Charlie: Huh."
+            };
+
+            RandomDialogs[4] = new string[]
+            {
+                "You: Charlie?",
+                "?: Hey, grandma!",
+                "You: Oh, it's you! Hey there, little one! Is Charlie there?",
+                "?: ...Charlie, stop crying! Grandma is here!",
+                "You: I'll call again later."
+            };
+
+            RandomDialogs[5] = new string[]
+            {
+                "You: Charlie.",
+                "Charlie: Yes, mom?",
+                "You: I... I forgot what I wanted to say.",
+                "Charlie: Stay safe, mom."
+            };
+
+            RandomDialogs[6] = new string[]
+            {
+                "You: Charlie?",
+                "<No response>",
+                "You: Maybe they're busy."
+            };
+        }
 
         private int InternalNRD = 0;
         public int NextRandomDialog {
@@ -125,8 +187,6 @@ namespace team5
                 Next = data.next;
 
                 Name = data.name;
-
-                RandomDialogs = new string[0][];
                 //TODO: add random dialog imports;
             }
 
