@@ -31,7 +31,7 @@ namespace team5
             Goal           = 0xFFFFEE00, // A goal tile leading to end-of-level
             Door           = 0xFF00337F, // A door which can be opened and closed
             DialogTrigger  = 0xFFDC00FF, // Triggers a call on touch
-            AlarmTrigger   = 0xFF0000BB, // Triggers alaram when touched
+            AlarmTrigger   = 0xFF0000BB, // Triggers alarm when touched
 
             Prompt         = 0xFF0099AA, // A button Prompt (apply mask to get button type)
         }
