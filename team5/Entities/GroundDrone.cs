@@ -98,19 +98,18 @@ namespace team5
             switch(State)
             {
                 case AIState.Patrolling:
-                    if(chunk.CollideSolid(this, dt, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetVel) 
-                        || (chunk.CollidePoint(Position + new Vector2(Sprite.Direction*Size.X,-Size.Y)) == null)
-                        || !chunk.BoundingBox.Contains(Position + Vector2.UnitX*(Sprite.Direction * Size.X + 1)))
+                    if((chunk.CollideSolid(this, dt, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetVel) 
+                        && (Sprite.Direction == 1 && (direction & Chunk.Right) != 0)
+                            || (Sprite.Direction == -1 && (direction & Chunk.Left) != 0))
+                        || (chunk.CollidePoint(Position + new Vector2(Sprite.Direction*Size.X,-Size.Y - 1)) == null)
+                        || !chunk.BoundingBox.Contains(Position + Vector2.UnitX*(Sprite.Direction * (Size.X + 1))))
                     {
-                        if ((Sprite.Direction == 1 && (direction & Chunk.Right) != 0)
-                            || Sprite.Direction == -1 && (direction & Chunk.Left) != 0)
+
+                        EdgeTimer = EdgeWaitTime;
+                        SetState(AIState.Waiting);
+                        if(WalkSound != null)
                         {
-                            EdgeTimer = EdgeWaitTime;
-                            SetState(AIState.Waiting);
-                            if(WalkSound != null)
-                            {
-                                WalkSound.Stopped = true;
-                            }
+                            WalkSound.Stopped = true;
                         }
                     }
                     break;
