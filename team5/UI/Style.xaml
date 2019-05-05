@@ -83,8 +83,6 @@
     </Style>
     <Style x:Key="ScoreContinue" TargetType="Button">
         <Setter Property="FontFamily" Value="{StaticResource Wellbutrin}" />
-        <Setter Property="FocusVisualPrimaryThickness" Value="0"/>
-        <Setter Property="FocusVisualSecondaryThickness" Value="0"/>
     </Style>
     <Style x:Key="Credits" TargetType="Page">
         <Setter Property="Background" Value="#80000000"/>

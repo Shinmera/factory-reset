@@ -31,7 +31,8 @@ namespace team5.UI
         private new void Loaded(object sender, RoutedEventArgs e)
         {
             // Apply control defaults
-            MasterVolume.Value = SoundEngine.Volume * 100;
+            SoundVolume.Value = SoundEngine.Volume * 100;
+            MusicVolume.Value = MusicEngine.Volume * 100;
             ScreenShake.Value = Camera.ScreenShakeMultiplier * 100;
             Vibration.Value = Controller.VibrationMultiplier * 100;
             TextSpeed.Value = 100-(DialogBox.TimePerLetter*100/0.05f);
