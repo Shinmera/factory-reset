@@ -23,7 +23,7 @@ namespace team5
         private AlarmState State = AlarmState.Clear;
 
         private float AlarmTime = 20;
-        private float Timer = 0;
+        public float Timer = 0;
         private AnimatedSprite Sprite;
 
         public Alarm(Game1 game) : base( game)
@@ -64,6 +64,10 @@ namespace team5
 
             LastKnowPos = pos;
             Timer = AlarmTime;
+            if (chunk.Level.StartChase)
+            {
+                Timer = 99.99F;
+            }
             //Drones = true;
 
             chunk.ChunkAlarmState = true;
@@ -138,9 +142,14 @@ namespace team5
                     }
                     break;
                 case AlarmState.Raised:
+                    if (chunk.Level.StartChase)
+                    {
+                        Timer = 99.99F;
+                    }
                     Timer -= dt;
                     if (Timer <= 0)
                     {
+                        
                         Timer = 0;
                         Detected = false;
                         ClearAlarm(chunk);

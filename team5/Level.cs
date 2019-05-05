@@ -100,7 +100,7 @@ namespace team5
         }
 
         public readonly object Identifier;
-        private bool StartChase = false;
+        public bool StartChase = false;
         private bool ChunkTrans = false;
         private List<Chunk> TransitionChunks = new List<Chunk>();
         private int TransitionDirection = 0;
@@ -220,12 +220,6 @@ namespace team5
             Game.MusicEngine.Play("Ambient");
             Game.SoundEngine.Load("UI_Button");
             Game.SoundEngine.Load("Player_WalkieEnd");
-
-            if (StartChase)
-            {
-                Alarm.Detected = true;
-                Alarm.Alert(Player.Position, ActiveChunk);
-            }
         }
         
         public override void UnloadContent()
@@ -258,6 +252,13 @@ namespace team5
             }
             else
             {
+                if (StartChase)
+                {
+                    if (Alarm.Detected)
+                    {
+                        Alarm.Timer = 99.99F;
+                    }
+                }
                 Camera.Update();
                 Time += Game1.DeltaT;
 
