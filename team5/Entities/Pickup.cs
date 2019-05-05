@@ -16,7 +16,7 @@ namespace team5
         private float Phase = 0;
         private const float PhaseRate = (float)(Math.PI);
         private float CurOffset = 0;
-        private const float MaxOffset = 1.5F;
+        private const float MaxOffset = 2.5F;
 
         public Pickup(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize * 0.75F))
         {

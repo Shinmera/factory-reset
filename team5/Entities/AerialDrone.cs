@@ -354,6 +354,11 @@ namespace team5
 
             var dir = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
 
+            return QueryWander(location, dir, distance, chunk);
+        }
+
+        private bool QueryWander(Vector2 location, Vector2 dir, float distance, Chunk chunk)
+        {
             Vector2 p1 = Position;
             Vector2 p2 = p1 + dir;
 
@@ -396,7 +401,6 @@ namespace team5
                     return false;
                 }
             }
-
         }
 
         #endregion
@@ -449,7 +453,10 @@ namespace team5
             StateTimer = time;
             TargetLocation = target;
             WanderLocation = target;
-            FindWander(TargetLocation, SearchRange, chunk);
+
+            var dir = new Vector2((float)Math.Cos(Direction), (float)Math.Sin(Direction));
+            QueryWander(TargetLocation, dir, SearchRange, chunk);
+
             State = cursory? AIState.CursorySearching : AIState.Searching;
             ViewCone.SetColor(cursory ? ConeEntity.InspectColor : ConeEntity.AlertColor);
         }

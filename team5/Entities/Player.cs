@@ -92,7 +92,7 @@ namespace team5
             Sprite.Add("crouchwalk", 55, 67, 1.0);
             Sprite.Add("call",  67, 76, 0.8, 75);
             Sprite.Add("open",  76, 86, 1.0, -1, 0);
-            Sprite.Add("crash", 86, 94, 0.6, -1, 1);
+            Sprite.Add("crash", 86, 94, 0.4, -1, 1);
             Sprite.Add("slide", 94, 103, 0.5, 102);
             
             Game.SoundEngine.Load("climb", "Player_Climb1", "Player_Climb2", "Player_Climb3");
