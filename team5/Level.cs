@@ -263,29 +263,16 @@ namespace team5
                 Time += Game1.DeltaT;
 
                 RectangleF PlayerBB = Player.GetBoundingBox();
-
+                /*
                 if (FallFadeTimer > 0)
                 {
                     FallFadeTimer -= Game1.DeltaT;
 
                     TargetChunk.Update();
-
-                    if (FallFadeTimer <= 0)
-                    {
-                        FallFadeTimer = 0;
-                        DeathFadeLingerTimer = DeathFadeLingerDuration;
-                        ActiveChunk = LastActiveChunk;
-                        ActiveChunk.Activate(Player, false);
-                        ActiveChunk.Die(Player);
-                        ChunkTrans = false;
-                        TransitionChunks.Clear();
-                        TransitionDirection = 0;
-                        Player.Velocity = new Vector2(0);
-                        return;
-                    }
                 }
                 else
                 {
+                */
                     if (!ChunkTrans)
                     {
                         if (Player.DeathTimer > 0)
@@ -429,11 +416,19 @@ namespace team5
                         }
                         else if (TransitionChunks.Count == 0)
                         {
-                            FallFadeTimer = FallFadeDuration;
-                            return;
+                            Player.Kill();
                         }
 
-                        Player.Update(TransitionDirection, TransitionLingerTimer, TargetChunk);
+                        if(Player.Update(TransitionDirection, TransitionLingerTimer, TargetChunk))
+                        {
+                            DeathFadeLingerTimer = DeathFadeLingerDuration;
+                            ActiveChunk = LastActiveChunk;
+                            ActiveChunk.Activate(Player, false);
+                            ChunkTrans = false;
+                            TransitionChunks.Clear();
+                            TransitionDirection = 0;
+                            Player.Velocity = new Vector2(0);
+                        }
                     }
                     else
                     {
@@ -443,7 +438,7 @@ namespace team5
                             Alarm.Update(ActiveChunk);
                         }
                     }
-                }
+                //}
             }
 
             if(DeathFadeLingerTimer > 0)

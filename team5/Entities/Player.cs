@@ -711,12 +711,26 @@ namespace team5
             }
         }
 
-        public void Update(int direction, int lingerCounter, Chunk targetChunk)
+        public bool Update(int direction, int lingerCounter, Chunk targetChunk)
         {
 
             float dt = Game1.DeltaT;
             Controller.Update();
             Sprite.Update(dt);
+
+
+            if (0 < DeathTimer)
+            {
+                DeathTimer -= dt;
+                if (DeathTimer <= 0)
+                {
+                    targetChunk.Die(this);
+                    Respawn(targetChunk);
+                    return true;
+                }
+                if (Grounded)
+                    Velocity.X = 0;
+            }
 
             switch (direction)
             {
@@ -794,6 +808,8 @@ namespace team5
                 Sprite.Direction = -1;
             if (0 < Velocity.X)
                 Sprite.Direction = +1;
+
+            return false;
         }
     }
 }
