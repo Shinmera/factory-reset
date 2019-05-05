@@ -98,7 +98,8 @@ namespace team5
             switch(State)
             {
                 case AIState.Patrolling:
-                    if(chunk.CollideSolid(this, dt, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetVel))
+                    if(chunk.CollideSolid(this, dt, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetVel) 
+                        || (chunk.CollidePoint(Position + new Vector2(Sprite.Direction*Size.X,-Size.Y)) == null))
                     {
                         if ((Sprite.Direction == 1 && (direction & Chunk.Right) != 0)
                             || Sprite.Direction == -1 && (direction & Chunk.Left) != 0)

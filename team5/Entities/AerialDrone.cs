@@ -261,7 +261,7 @@ namespace team5
         /// <summary> Location the drone is pathfinding towards</summary>
         private Vector2 TargetLocation;
 
-        private Vector2 LastTarget = Position;
+        private Vector2 LastTarget;
         /// <summary> Next place the drone is heading towards as part of a search or patrol</summary>
         private Vector2 WanderLocation;
         /// <summary> Timer used to control state transitions (like waiting)</summary>
@@ -287,6 +287,7 @@ namespace team5
             Position = position;
             WanderLocation = Position;
             TargetLocation = Position;
+            LastTarget = Position;
             Sprite = new AnimatedSprite(null, game, new Vector2(32, 32));
             AlertSignal = new AnimatedSprite(null, game, new Vector2(16, 16));
             ViewCone = new ConeEntity(game, false);
@@ -408,6 +409,11 @@ namespace team5
             if(State == AIState.Targeting && (TargetLocation-LastTarget).LengthSquared() < Chunk.TileSize*Chunk.TileSize*16 && Path.Count > 2)
             {
                 return false;
+            }
+
+            if(State == AIState.Targeting && (TargetLocation - LastTarget).LengthSquared() < Chunk.TileSize * Chunk.TileSize * 16 && Path.Count > 2)
+            {
+
             }
 
             LastTarget = target;
