@@ -100,7 +100,7 @@ namespace team5
                 case AIState.Patrolling:
                     if(chunk.CollideSolid(this, dt, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetVel) 
                         || (chunk.CollidePoint(Position + new Vector2(Sprite.Direction*Size.X,-Size.Y)) == null)
-                        || chunk.BoundingBox.Contains(Position + Vector2.UnitX*(Sprite.Direction * Size.X + 1)))
+                        || !chunk.BoundingBox.Contains(Position + Vector2.UnitX*(Sprite.Direction * Size.X + 1)))
                     {
                         if ((Sprite.Direction == 1 && (direction & Chunk.Right) != 0)
                             || Sprite.Direction == -1 && (direction & Chunk.Left) != 0)
