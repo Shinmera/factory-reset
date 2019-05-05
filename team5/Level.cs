@@ -333,7 +333,7 @@ namespace team5
                             if (TargetChunk == null)
                             {
                                 TargetChunk = LastActiveChunk;
-                                if (TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right)
+                                if (TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right || TransitionDirection == Chunk.Up)
                                 {
                                     ChunkTrans = false;
                                 }
