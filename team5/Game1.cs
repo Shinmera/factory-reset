@@ -11,6 +11,7 @@ namespace team5
     {
         public const float DeltaT = 1 / 60.0F;
         public const string FirstLevel = "lobby";
+        public static float Volume = 1.0f;
 
         public new readonly ContentManager Content;
         public readonly GraphicsDeviceManager DeviceManager;

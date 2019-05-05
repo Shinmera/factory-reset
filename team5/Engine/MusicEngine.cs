@@ -83,7 +83,6 @@ namespace team5
                     MediaPlayer.Play(Song);
                 else
                     MediaPlayer.Play(Song, PauseTime);
-                MediaPlayer.Volume = MusicEngine.Volume;
             }
             
             public void Update()
@@ -154,6 +153,7 @@ namespace team5
         
         public void Update()
         {
+            MediaPlayer.Volume = MusicEngine.Volume * Game1.Volume;
             foreach(var track in PlayStack)
                 track.Update();
         }

@@ -19,6 +19,7 @@ namespace team5.UI
                 return (T)Settings.Values[key];
             }
             // Set defaults and restore in one.
+            Game1.Volume = setDefault("MasterVolume", Game1.Volume);
             SoundEngine.Volume = setDefault("SoundVolume", SoundEngine.Volume);
             MusicEngine.Volume = setDefault("MusicVolume", MusicEngine.Volume);
             Camera.ScreenShakeMultiplier = setDefault("ScreenShake", Camera.ScreenShakeMultiplier);
@@ -26,11 +27,13 @@ namespace team5.UI
             DialogBox.TimePerLetter = setDefault("TextSpeed", DialogBox.TimePerLetter);
             Chunk.DrawSolids = setDefault("ShowSolids", Chunk.DrawSolids);
             setDefault("TvMode", 1);
+            TvMode_SelectionChanged(null, null);
         }
 
         private new void Loaded(object sender, RoutedEventArgs e)
         {
             // Apply control defaults
+            MasterVolume.Value = Game1.Volume * 100;
             SoundVolume.Value = SoundEngine.Volume * 100;
             MusicVolume.Value = MusicEngine.Volume * 100;
             ScreenShake.Value = Camera.ScreenShakeMultiplier * 100;
@@ -42,13 +45,13 @@ namespace team5.UI
 
         private void MasterVolume_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            //SoundEngine.Volume = (float)MasterVolume.Value / 100;
-            //Settings.Values["MasterVolume"] = SoundEngine.Volume;
+            Game1.Volume = (float)MasterVolume.Value / 100;
+            Settings.Values["MasterVolume"] = SoundEngine.Volume;
         }
 
         private void SoundVolume_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            SoundEngine.Volume = (float)MasterVolume.Value / 100;
+            SoundEngine.Volume = (float)SoundVolume.Value / 100;
             Settings.Values["SoundVolume"] = SoundEngine.Volume;
         }
 
