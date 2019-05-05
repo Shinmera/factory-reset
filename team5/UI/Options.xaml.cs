@@ -19,7 +19,8 @@ namespace team5.UI
                 return (T)Settings.Values[key];
             }
             // Set defaults and restore in one.
-            SoundEngine.Volume = setDefault("MasterVolume", SoundEngine.Volume);
+            SoundEngine.Volume = setDefault("SoundVolume", SoundEngine.Volume);
+            MusicEngine.Volume = setDefault("MusicVolume", MusicEngine.Volume);
             Camera.ScreenShakeMultiplier = setDefault("ScreenShake", Camera.ScreenShakeMultiplier);
             Controller.VibrationMultiplier = setDefault("Vibration", Controller.VibrationMultiplier);
             DialogBox.TimePerLetter = setDefault("TextSpeed", DialogBox.TimePerLetter);
@@ -40,8 +41,20 @@ namespace team5.UI
 
         private void MasterVolume_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
+            //SoundEngine.Volume = (float)MasterVolume.Value / 100;
+            //Settings.Values["MasterVolume"] = SoundEngine.Volume;
+        }
+
+        private void SoundVolume_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
             SoundEngine.Volume = (float)MasterVolume.Value / 100;
-            Settings.Values["MasterVolume"] = SoundEngine.Volume;
+            Settings.Values["SoundVolume"] = SoundEngine.Volume;
+        }
+
+        private void MusicVolume_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            MusicEngine.Volume = (float)MusicVolume.Value / 100;
+            Settings.Values["MusicVolume"] = MusicEngine.Volume;
         }
 
         private void TextSpeed_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)

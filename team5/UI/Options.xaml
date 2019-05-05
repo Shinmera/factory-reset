@@ -11,8 +11,12 @@
     <ScrollViewer>
         <StackPanel HorizontalAlignment="Left" Width="200">
             <TextBlock Text="Options" FontSize="24" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-            <Slider x:Name="MasterVolume" Header="Master volume" Maximum="100"
+            <Slider x:Name="MasterVolume" Header="Master Volume" Maximum="100"
                     ValueChanged="MasterVolume_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+            <Slider x:Name="SoundVolume" Header="Sound Effect Volume" Maximum="100"
+                    ValueChanged="SoundVolume_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+            <Slider x:Name="MusicVolume" Header="Music Volume" Maximum="100"
+                    ValueChanged="MusicVolume_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
             <Slider x:Name="TextSpeed" Header="Text scroll speed" Maximum="100"
                     ValueChanged="TextSpeed_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
             <Slider x:Name="ScreenShake" Header="Screen Shake Strength" Maximum="100"
