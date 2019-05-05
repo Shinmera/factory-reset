@@ -26,7 +26,8 @@ namespace team5
                 get { return IsStopped; }
                 set {
                     if(value == IsStopped) return;
-                    if(value){
+                    IsStopped = value;
+                    if (value){
                         // Check if top
                         MediaPlayer.Stop();
                         Engine.PlayStack.Pop();
@@ -66,11 +67,14 @@ namespace team5
             
             public void Play()
             {
-                if(Engine.PlayStack.TryPeek(out var top))
-                    if(top != this){
+                if (Engine.PlayStack.TryPeek(out var top))
+                {
+                     if (top != this)
+                    {
                         top.Paused = true;
                         Engine.PlayStack.Push(this);
                     }
+                }
                 else
                     Engine.PlayStack.Push(this);
                 IsStopped = false;
