@@ -754,12 +754,16 @@ namespace team5
                 State = AIState.Targeting;
                 AlertSignal.Play("alert");
                 ViewCone.SetColor(ConeEntity.AlertColor);
+                ViewCone.Radius = 2 * ViewSize;
+                ViewCone.FromDegrees(Direction, 30);
             }
 
         }
 
         public void ClearAlarm(Chunk chunk)
         {
+            ViewCone.Radius = 2 * ViewSize;
+            ViewCone.FromDegrees(Direction, 30);
             Return(chunk);
             Game.SoundEngine.Play("Enemy_DroneBase", Position, 1);
         }

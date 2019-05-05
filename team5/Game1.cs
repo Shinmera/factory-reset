@@ -112,6 +112,11 @@ namespace team5
 
         public void UpdateLoadName(object identifier)
         {
+            if(!(RealActiveWindow is LoadScreen))
+            {
+                return;
+            }
+
             if(identifier == null)
             {
                 ((LoadScreen)RealActiveWindow).LevelName = "";

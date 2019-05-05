@@ -42,6 +42,7 @@ namespace team5.UI
                     game.LoadLevel(next);
                 }
                 else // FIXME: Show a proper end credits screen
+                    game.UnloadLevel();
                     Root.Current.QueueAction((root) => root.ShowMenu());
                 });
         }

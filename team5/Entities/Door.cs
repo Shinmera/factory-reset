@@ -166,7 +166,7 @@ namespace team5
 
         public override void Respawn(Chunk chunk)
         {
-            Close(chunk);
+            //Close(chunk);
         }
     }
 }
