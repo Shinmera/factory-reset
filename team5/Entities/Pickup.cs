@@ -21,7 +21,7 @@ namespace team5
         public Pickup(Vector2 position, Game1 game) : base(game, new Vector2(Chunk.TileSize * 0.75F))
         {
             Position = position;
-            Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize * 0.75F));
+            Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize));
             Phase = (float)(2*Math.PI*game.RNG.NextDouble());
         }
 
