@@ -82,8 +82,6 @@ namespace team5.UI
             foreach (var level in UnsortedPreviews){
                 Previews.Add(level);
             }
-
-            Root.Current.Game.InvokeAction((game) => game.FirstLevel = Previews[0].FileName);
         }
 
         private void Sideload(object sender, Windows.UI.Xaml.RoutedEventArgs e)

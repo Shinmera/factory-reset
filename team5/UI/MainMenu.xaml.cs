@@ -38,9 +38,9 @@ namespace team5.UI
             var item = (MenuPage)e.ClickedItem;
             if(item.Name.Equals("New Game"))
             {
-                Root.Current.Game.InvokeAction((game) => game.UpdateLoadName(game.FirstLevel));
+                Root.Current.Game.InvokeAction((game) => game.UpdateLoadName(Game1.FirstLevel));
                 Root.Current.ShowGame();
-                Root.Current.Game.QueueAction((game)=>game.LoadLevel(game.FirstLevel));
+                Root.Current.Game.QueueAction((game)=>game.LoadLevel(Game1.FirstLevel));
             }
             else if(item.Name.Equals("Quit"))
             {
