@@ -260,6 +260,8 @@ namespace team5
 
         /// <summary> Location the drone is pathfinding towards</summary>
         private Vector2 TargetLocation;
+
+        private Vector2 LastTarget = Position;
         /// <summary> Next place the drone is heading towards as part of a search or patrol</summary>
         private Vector2 WanderLocation;
         /// <summary> Timer used to control state transitions (like waiting)</summary>
@@ -403,10 +405,12 @@ namespace team5
         /// <summary> Sets the state to targeting and pathfinds towards the target location, then searches after it reaches it.</summary>
         public bool Target(Vector2 target, Chunk chunk)
         {
-            if(State == AIState.Targeting && (TargetLocation-target).LengthSquared() < Chunk.TileSize*Chunk.TileSize*16 && Path.Count > 2)
+            if(State == AIState.Targeting && (TargetLocation-LastTarget).LengthSquared() < Chunk.TileSize*Chunk.TileSize*16 && Path.Count > 2)
             {
                 return false;
             }
+
+            LastTarget = target;
 
             Velocity = new Vector2();
 
