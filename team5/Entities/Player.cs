@@ -96,17 +96,18 @@ namespace team5
             Sprite.Add("slide", 94, 103, 0.5, 102);
             
             Game.SoundEngine.Load("climb", "Player_Climb1", "Player_Climb2", "Player_Climb3");
-            Game.SoundEngine.Load("hide", "Player_Hide");
+            Game.SoundEngine.Load("hide", "Player_Hide_NEW");
             Game.SoundEngine.Load("jump", "Player_Jump");
             Game.SoundEngine.Load("walljump", "Player_JumpWall");
             Game.SoundEngine.Load("land", "Player_Landing");
-            Game.SoundEngine.Load("run_outside", "Player_QuietStep1", "Player_QuietStep2", "Player_QuietStep3");
+            Game.SoundEngine.Load("run_outside", "Player_OutsideStep1", "Player_OutsideStep2", "Player_OutsideStep3");
             Game.SoundEngine.Load("run_inside", "Player_LoudStep1", "Player_LoudStep2", "Player_LoudStep3");
             Game.SoundEngine.Load("crouch_outside", "Player_QuietStep1", "Player_QuietStep2", "Player_QuietStep3");
             Game.SoundEngine.Load("crouch_inside", "Player_QuietStep1", "Player_QuietStep2", "Player_QuietStep3");
             Game.SoundEngine.Load("slide", "Player_Sliding");
             Game.SoundEngine.Load("call", "Player_WalkieTalkie");
             Game.SoundEngine.Load("win", "UI_Win");
+            Game.SoundEngine.Load("die", "Enemy_Kill_NEW");
         }
 
         public override void Draw()
@@ -609,7 +610,7 @@ namespace team5
                             {
                                 Sprite.Play("run");
                                 if (Sprite.Frame == 10 || Sprite.Frame == 18)
-                                    MakeSound(chunk, chunk.IsOutside ? "run_outside" : "run_inside", chunk.IsOutside? 50 : 70);
+                                    MakeSound(chunk, chunk.IsOutside ? "run_outside" : "run_inside", 70);
                             }
                         }
                         else
@@ -689,6 +690,7 @@ namespace team5
                 DeathTimer = DeathDuration;
             if(State != PlayerState.Dying)
             {
+                Game.SoundEngine.Play("die", Position, 1);
                 State = PlayerState.Dying;
                 Controller.Vibrate(1f, 1f, 0.5f);
                 if (Game.ActiveWindow is Level)

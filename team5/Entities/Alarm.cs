@@ -18,6 +18,8 @@ namespace team5
         public Vector2 LastKnowPos;
         public bool Drones = false;
 
+        private bool AlarmedThisTick = false;
+
         private AlarmState State = AlarmState.Clear;
 
         private float AlarmTime = 20;
@@ -51,6 +53,15 @@ namespace team5
 
         public void Alert(Vector2 pos, Chunk chunk)
         {
+            if (AlarmedThisTick)
+            {
+                return;
+            }
+            else
+            {
+                AlarmedThisTick = true;
+            }
+
             LastKnowPos = pos;
             Timer = AlarmTime;
             //Drones = true;
@@ -113,6 +124,8 @@ namespace team5
         public override void Update(Chunk chunk)
         {
             float dt = Game1.DeltaT;
+
+            AlarmedThisTick = false;
 
             switch (State)
             {

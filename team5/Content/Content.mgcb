@@ -33,18 +33,6 @@
 /processorParam:Quality=Best
 /build:Music/future ambient.mp3
 
-#begin Music/future ambient.mp3
-/importer:Mp3Importer
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:Music/future ambient.mp3
-
-#begin Music/future chase.mp3
-/importer:Mp3Importer
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:Music/future chase.mp3
-
 #begin Music/future chase.mp3
 /importer:Mp3Importer
 /processor:SongProcessor
@@ -141,6 +129,12 @@
 /processorParam:Quality=Best
 /build:Sounds/Enemy_Kill.wav
 
+#begin Sounds/Enemy_Kill_NEW.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Enemy_Kill_NEW.wav
+
 #begin Sounds/Player_Climb1.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -164,6 +158,12 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Sounds/Player_Hide.wav
+
+#begin Sounds/Player_Hide_NEW.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_Hide_NEW.wav
 
 #begin Sounds/Player_Jump.wav
 /importer:WavImporter
@@ -200,6 +200,24 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Sounds/Player_LoudStep3.wav
+
+#begin Sounds/Player_OutsideStep1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_OutsideStep1.wav
+
+#begin Sounds/Player_OutsideStep2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_OutsideStep2.wav
+
+#begin Sounds/Player_OutsideStep3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_OutsideStep3.wav
 
 #begin Sounds/Player_QuietStep1.wav
 /importer:WavImporter

@@ -406,12 +406,12 @@ namespace team5
         /// <summary> Sets the state to targeting and pathfinds towards the target location, then searches after it reaches it.</summary>
         public bool Target(Vector2 target, Chunk chunk)
         {
-            if(State == AIState.Targeting && (TargetLocation-LastTarget).LengthSquared() < Chunk.TileSize*Chunk.TileSize*16 && Path.Count > 2)
+            if(State == AIState.Targeting && (LastTarget - target).LengthSquared() < Chunk.TileSize*Chunk.TileSize*16 && Path.Count > 2)
             {
                 return false;
             }
 
-            if(State == AIState.Targeting && (TargetLocation - LastTarget).LengthSquared() < Chunk.TileSize * Chunk.TileSize * 0.25F && Path.Count > 1)
+            if(State == AIState.Targeting && (LastTarget - target).LengthSquared() < 1 && Path.Count > 1)
             {
                 return false;
             }
@@ -759,14 +759,20 @@ namespace team5
         public void Alert(Vector2 position, Chunk chunk)
         {
             PositionKnown = 2;
+
+            if (State != AIState.Targeting && State != AIState.Searching)
+            {
+                ViewCone.Radius = 2 * ViewSize;
+                ViewCone.FromDegrees(Direction, 30);
+            }
+
             if (Target(position, chunk))
             {
                 State = AIState.Targeting;
                 AlertSignal.Play("alert");
                 ViewCone.SetColor(ConeEntity.AlertColor);
-                ViewCone.Radius = 2 * ViewSize;
-                ViewCone.FromDegrees(Direction, 30);
             }
+
 
         }
 
