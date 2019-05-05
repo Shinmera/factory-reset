@@ -113,6 +113,7 @@
     <Compile Include="Container.cs" />
     <Compile Include="ContentManager.cs" />
     <Compile Include="Engine\ParallaxEngine.cs" />
+    <Compile Include="Engine\MusicEngine.cs" />
     <Compile Include="Entities\AlarmTrigger.cs" />
     <Compile Include="Entities\DialogTrigger.cs" />
     <Compile Include="Entities\Door.cs" />

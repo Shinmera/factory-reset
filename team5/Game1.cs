@@ -19,6 +19,7 @@ namespace team5
         public readonly TilemapEngine TilemapEngine;
         public readonly TriangleEngine TriangleEngine;
         public readonly SoundEngine SoundEngine;
+        public readonly MusicEngine MusicEngine;
         public readonly TextEngine TextEngine;
         public readonly ParallaxEngine ParallaxEngine;
         public readonly ParticleEmitter ParticleEmitter;
@@ -57,6 +58,7 @@ namespace team5
             TilemapEngine = new TilemapEngine(this);
             TriangleEngine = new TriangleEngine(this);
             SoundEngine = new SoundEngine(this);
+            MusicEngine = new MusicEngine(this);
             TextEngine = new TextEngine(this);
             ParallaxEngine = new ParallaxEngine(this);
             ParticleEmitter = new ParticleEmitter(this);
@@ -90,6 +92,7 @@ namespace team5
             TextEngine.LoadContent(Content);
             ParallaxEngine.LoadContent(Content);
             SoundEngine.LoadContent(Content);
+            MusicEngine.LoadContent(Content);
             ActiveWindow.LoadContent(Content);
         }
         
@@ -103,6 +106,7 @@ namespace team5
             TextEngine.UnloadContent();
             ParallaxEngine.UnloadContent();
             SoundEngine.UnloadContent();
+            MusicEngine.UnloadContent();
             ActiveWindow.UnloadContent();
         }
 
@@ -146,6 +150,7 @@ namespace team5
             Game1.Log("Game", "Unloading level...");
             ActiveWindow.UnloadContent();
             SoundEngine.UnloadContent();
+            MusicEngine.UnloadContent();
             TextureCache.UnloadContent();
             // Reload engine that got purged in texture unload
             ParticleEmitter.LoadContent(Content);
@@ -158,6 +163,7 @@ namespace team5
         {
             if(!(ActiveWindow is Level)) return;
             SoundEngine.Clear();
+            MusicEngine.Clear();
             UpdateLoadName(Level.Identifier);
             LoadLevel(Level.Identifier);
         }
@@ -215,6 +221,7 @@ namespace team5
             if(ActionQueue.TryDequeue(out var action))
                 action(this);
             Controller.Update();
+            MusicEngine.Update();
             Transforms.Reset();
             Transforms.ResetView();
             ActiveWindow.Update();

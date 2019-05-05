@@ -27,6 +27,30 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/wellbutrin.spritefont
 
+#begin Music/future ambient.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/future ambient.mp3
+
+#begin Music/future ambient.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/future ambient.mp3
+
+#begin Music/future chase.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/future chase.mp3
+
+#begin Music/future chase.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/future chase.mp3
+
 #begin Shaders/cone.fx
 /importer:EffectImporter
 /processor:EffectProcessor
