@@ -227,7 +227,14 @@ namespace team5
         {
             if(BackgroundName != null && BackgroundName != "")
                 Background = Game.TextureCache[BackgroundName];
-            Tileset = Game.TextureCache[TileSetName];
+            if (TileSetName.Equals("solids"))
+            {
+                Tileset = new Texture2D(Game.GraphicsDevice, 1, 1);
+            }
+            else
+            {
+                Tileset = Game.TextureCache[TileSetName];
+            }
             Solidset = Game.TilemapEngine.SolidSet;
 
             Width = (uint)Layers[0].Width;
