@@ -31,6 +31,7 @@ namespace team5
 
         public override void LoadContent(ContentManager content)
         {
+            Game.MusicEngine.Load("Alert", "future chase", 12);
             Game.SoundEngine.Load("Alert", "Enemy_Detected");
             Sprite.Texture = Game.TextureCache["alert-backdrop"];
             Sprite.Add("alert", 0, 1, 1.0);
@@ -97,11 +98,13 @@ namespace team5
             switch (state)
             {
                 case AlarmState.Clear:
+                    Game.MusicEngine.Stop();
                     break;
                 case AlarmState.Raised:
                     Game.Controller.Vibrate(1f, 1f, 0.2f);
                     chunk.Level.Camera.Shake(10, 0.2F);
                     Game.SoundEngine.Play("Alert");
+                    Game.MusicEngine.Play("Alert");
                     break;
             }
 

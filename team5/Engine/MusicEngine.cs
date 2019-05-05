@@ -154,6 +154,12 @@ namespace team5
                 track.Update();
         }
         
+        public void Stop()
+        {
+            if(PlayStack.TryPeek(out var top))
+                top.Stopped = true;
+        }
+        
         public bool Paused
         {
             get { return PlayStack.Count == 0 || PlayStack.Peek().Paused; }

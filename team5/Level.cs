@@ -215,6 +215,8 @@ namespace team5
             Camera.Update();
             Alarm.LoadContent(content);
 
+            Game.MusicEngine.Load("Ambient", "future ambient", 12);
+            Game.MusicEngine.Play("Ambient");
             Game.SoundEngine.Load("UI_Button");
             Game.SoundEngine.Load("Player_WalkieEnd");
 
