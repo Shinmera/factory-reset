@@ -93,11 +93,27 @@ namespace team5
 
             if(ShakeDuration > 0)
             {
-                float dist = (float)Math.Sqrt(Game.RNG.NextDouble()) * ShakeIntensity * ScreenShakeMultiplier;
-                float angle = (float)Game.RNG.NextDouble() * 2 * (float)Math.PI;
-                Vector2 offset = dist * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
 
-                Position += offset;
+                if (ChunkClamps.Contains(Position))
+                {
+                    Vector2 OrigPosition = Position;
+                    do
+                    {
+                        Position = OrigPosition;
+                        float dist = (float)Math.Sqrt(Game.RNG.NextDouble()) * ShakeIntensity * ScreenShakeMultiplier;
+                        float angle = (float)Game.RNG.NextDouble() * 2 * (float)Math.PI;
+                        Vector2 offset = dist * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+
+                        Position += offset;
+                    } while (!ChunkClamps.Contains(Position));
+                }
+                else
+                {
+                    float dist = (float)Math.Sqrt(Game.RNG.NextDouble()) * ShakeIntensity * ScreenShakeMultiplier;
+                    float angle = (float)Game.RNG.NextDouble() * 2 * (float)Math.PI;
+                    Vector2 offset = dist * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+                    Position += offset;
+                }
 
                 ShakeDuration -= Game1.DeltaT;
                 if(ShakeDuration <= 0)
