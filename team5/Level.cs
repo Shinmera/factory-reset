@@ -126,6 +126,7 @@ namespace team5
             set {
                 InternalPaused = value;
                 Game.SoundEngine.Paused = value;
+                Game.MusicEngine.Paused = value;
             }
         }
 
