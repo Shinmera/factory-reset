@@ -970,8 +970,8 @@ var editMapEvent = function(ev){
     ev.preventDefault();
     var x = Math.floor(ev.offsetX/tilemap.clientWidth*tilemap.width/tileSize);
     var y = Math.floor(ev.offsetY/tilemap.clientHeight*tilemap.height/tileSize);
-    var stile = level.chunk.tileset.selected;
-    var ctile = level.chunk.tileset.tileMap[stile[1]][stile[0]];
+    var stile = level.chunk.getTileset().selected;
+    var ctile = level.chunk.getTileset().tileMap[stile[1]][stile[0]];
     if(ev.buttons){
         if(ev.altKey || ev.metaKey){
             var pixelIndex = ((level.chunk.layer.width*y)+x)*4;
