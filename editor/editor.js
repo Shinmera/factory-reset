@@ -982,7 +982,7 @@ var editMapEvent = function(ev){
         }else if(ev.ctrlKey){
             level.edit({x: x, y: y, action: "fill", tile: ctile});
         }else{
-            var tile = (button==2)? [0,0,0,0]: ctile;
+            ctile = (button==2)? [0,0,0,0]: ctile;
             level.edit({x: x, y: y, action: "place", tile: ctile});
         }
     }
