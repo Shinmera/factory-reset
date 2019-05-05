@@ -411,9 +411,9 @@ namespace team5
                 return false;
             }
 
-            if(State == AIState.Targeting && (TargetLocation - LastTarget).LengthSquared() < Chunk.TileSize * Chunk.TileSize * 16 && Path.Count > 2)
+            if(State == AIState.Targeting && (TargetLocation - LastTarget).LengthSquared() < Chunk.TileSize * Chunk.TileSize * 0.25F && Path.Count > 1)
             {
-
+                return false;
             }
 
             LastTarget = target;
