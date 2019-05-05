@@ -30,7 +30,7 @@ namespace team5
         };
 
         /// <summary> The range of the viewcone</summary>
-        private const float ViewSize = 60;
+        private const float ViewSize = 70;
         /// <summary> The minimum distance the drone will move in one wander segment</summary>
         private const float MinMovement = 30;
         /// <summary> The speed of the drone while patrolling</summary>
@@ -475,6 +475,17 @@ namespace team5
 
         #region Overrides
 
+        public override void Activate()
+        {
+            if(FlyingSound != null)
+                FlyingSound.Paused = false;
+        }
+
+        public override void Deactivate()
+        {
+            FlyingSound.Paused = true;
+        }
+
         public override void Respawn(Chunk chunk)
         {
             Direction = (float)Game.RNG.NextDouble() * 2 * (float)Math.PI;
@@ -778,8 +789,8 @@ namespace team5
 
         public void ClearAlarm(Chunk chunk)
         {
-            ViewCone.Radius = 2 * ViewSize;
-            ViewCone.FromDegrees(Direction, 30);
+            ViewCone.Radius = ViewSize;
+            ViewCone.FromDegrees(Direction, 50);
             Return(chunk);
             Game.SoundEngine.Play("Enemy_DroneBase", Position, 1);
         }

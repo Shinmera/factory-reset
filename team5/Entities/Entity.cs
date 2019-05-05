@@ -25,6 +25,16 @@ namespace team5
 
         }
 
+        public virtual void Activate()
+        {
+
+        }
+
+        public virtual void Deactivate()
+        {
+
+        }
+
         /// <summary>
         ///   Tests collision from a given entity. In general, only the source entity's motion will be considered.
         /// </summary>

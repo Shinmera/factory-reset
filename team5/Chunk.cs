@@ -152,11 +152,14 @@ namespace team5
                 SpawnPosition = player.Position;
                 SpawnVelocity = player.Velocity;
             }
+
+            CallAll((GameObject x) => { if (x is Entity) ((Entity)x).Activate(); });
         }
 
         public void Deactivate()
         {
             Player = null;
+            CallAll((GameObject x) => { if (x is Entity) ((Entity)x).Deactivate(); });
         }
 
         public void RespawnAll()
@@ -369,10 +372,15 @@ namespace team5
 
         public uint GetTile(int x, int y)
         {
+            x = Math.Clamp(x, 0, (int)Width - 1);
+            y = Math.Clamp(y, 0, (int)Height - 1);
+
+            /*
             if(x < 0 || x >= Width || y < 0 || y >= Height)
             {
                 throw new IndexOutOfRangeException("No such tile exists");
             }
+            */
 
             return SolidTiles[(Height - y - 1)*Width + x];
         }
@@ -982,10 +990,10 @@ namespace team5
             motionBB.Width = sourceBB.Width + Math.Abs(sourceMotion.X);
             motionBB.Height = sourceBB.Height + Math.Abs(sourceMotion.Y);
 
-            int minX = (int)Math.Max(Math.Floor((motionBB.Left - BoundingBox.X - 1) / TileSize), 0);
-            int minY = (int)Math.Max(Math.Floor((motionBB.Bottom - BoundingBox.Y - 1) / TileSize), 0);
-            int maxX = (int)Math.Min(Math.Floor((motionBB.Right - BoundingBox.X + 1) / TileSize) + 1, Width);
-            int maxY = (int)Math.Min(Math.Floor((motionBB.Top - BoundingBox.Y + 1) / TileSize) + 1, Height);
+            int minX = (int)Math.Floor((motionBB.Left - BoundingBox.X - 1) / TileSize);
+            int minY = (int)Math.Floor((motionBB.Bottom - BoundingBox.Y - 1) / TileSize);
+            int maxX = (int)Math.Floor((motionBB.Right - BoundingBox.X + 1) / TileSize) + 1;
+            int maxY = (int)Math.Floor((motionBB.Top - BoundingBox.Y + 1) / TileSize) + 1;
 
             if (source is Movable)
             {
