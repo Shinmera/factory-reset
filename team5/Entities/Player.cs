@@ -334,7 +334,7 @@ namespace team5
                             Velocity.Y = JumpSpeed;
                             LongJump = LongJumpTime * dt;
                         }
-                        else if(Controller.Call)
+                        else if(!chunk.ChunkAlarmState && Controller.Call)
                         {
                             State = PlayerState.QueueOutCall;
                         }
