@@ -263,182 +263,174 @@ namespace team5
                 Time += Game1.DeltaT;
 
                 RectangleF PlayerBB = Player.GetBoundingBox();
-                /*
-                if (FallFadeTimer > 0)
-                {
-                    FallFadeTimer -= Game1.DeltaT;
 
-                    TargetChunk.Update();
-                }
-                else
+                if (!ChunkTrans)
                 {
-                */
-                    if (!ChunkTrans)
+                    if (Player.DeathTimer > 0)
                     {
-                        if (Player.DeathTimer > 0)
-                        {
-                            DeathFadeLingerTimer = DeathFadeLingerDuration;
-                        }
+                        DeathFadeLingerTimer = DeathFadeLingerDuration;
+                    }
 
-                        if (PlayerBB.Right + Game1.DeltaT * Player.Velocity.X > ActiveChunk.BoundingBox.Right && Player.Velocity.X > 0)
-                        {
-                            TransitionDirection = Chunk.Right;
-                            ChunkTrans = true;
-                        }
-                        else if (PlayerBB.Left + Game1.DeltaT * Player.Velocity.X < ActiveChunk.BoundingBox.Left && Player.Velocity.X < 0)
-                        {
-                            TransitionDirection = Chunk.Left;
-                            ChunkTrans = true;
-                        }
-                        else if (PlayerBB.Top >= ActiveChunk.BoundingBox.Top && Player.Velocity.Y > 0)
-                        {
-                            TransitionDirection = Chunk.Up;
-                            ChunkTrans = true;
-                        }
-                        else if (PlayerBB.Bottom <= ActiveChunk.BoundingBox.Bottom && Player.Velocity.Y < 0)
-                        {
-                            TransitionDirection = Chunk.Down;
-                            ChunkTrans = true;
-                        }
-
-                        if (ChunkTrans)
-                        {
-                            TransitionLingerTimer = 0;
-                            TargetChunk = null;
-                            foreach (var chunk in Chunks)
-                            {
-                                PlayerBB.X += Math.Min(0, Game1.DeltaT * Player.Velocity.X);
-                                PlayerBB.Width += Math.Abs(Game1.DeltaT * Player.Velocity.X);
-                                if (PlayerBB.Intersects(chunk.BoundingBox))
-                                {
-                                    if (chunk != ActiveChunk)
-                                    {
-                                        TargetChunk = chunk;
-                                    }
-                                }
-                            }
-
-                            if (TargetChunk == null)
-                            {
-                                TargetChunk = LastActiveChunk;
-                                if (TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right || TransitionDirection == Chunk.Up)
-                                {
-                                    ChunkTrans = false;
-                                }
-                            }
-                            if (ChunkTrans)
-                            {
-                                if ((TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right) &&
-                                    TargetChunk.CollideSolid(Player, Game1.DeltaT, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetvel))
-                                {
-                                    ChunkTrans = false;
-                                }
-                                else
-                                {
-                                    if (TransitionDirection == Chunk.Up)
-                                    {
-                                        Player.Velocity.Y = 350;
-                                    }
-                                    Player.Position.X += Player.Velocity.X * Game1.DeltaT;
-                                    ActiveChunk.Deactivate();
-                                    LastActiveChunk = ActiveChunk;
-                                    ActiveChunk = null;
-
-                                    if (TargetChunk.ChunkAlarmState != Alarm.Detected)
-                                    {
-                                        if (Alarm.Detected)
-                                        {
-                                            Vector2 posOffset = Vector2.Zero;
-                                            switch (TransitionDirection)
-                                            {
-                                                case Chunk.Up:
-                                                    posOffset = Vector2.UnitY;
-                                                    break;
-                                                case Chunk.Down:
-                                                    posOffset = -Vector2.UnitY;
-                                                    break;
-                                                case Chunk.Right:
-                                                    posOffset = Vector2.UnitX;
-                                                    break;
-                                                case Chunk.Left:
-                                                    posOffset = -Vector2.UnitX;
-                                                    break;
-                                            }
-
-                                            Alarm.ContinueAlert(Player.Position + Chunk.TileSize * 2F * posOffset, TargetChunk);
-                                        }
-                                        else
-                                        {
-                                            Alarm.ResetAlarm(TargetChunk);
-                                        }
-                                    }
-
-                                    Camera.UpdateChunk(TargetChunk);
-                                }
-                            }
-                        }
+                    if (PlayerBB.Right + Game1.DeltaT * Player.Velocity.X > ActiveChunk.BoundingBox.Right && Player.Velocity.X > 0)
+                    {
+                        TransitionDirection = Chunk.Right;
+                        ChunkTrans = true;
+                    }
+                    else if (PlayerBB.Left + Game1.DeltaT * Player.Velocity.X < ActiveChunk.BoundingBox.Left && Player.Velocity.X < 0)
+                    {
+                        TransitionDirection = Chunk.Left;
+                        ChunkTrans = true;
+                    }
+                    else if (PlayerBB.Top >= ActiveChunk.BoundingBox.Top && Player.Velocity.Y > 0)
+                    {
+                        TransitionDirection = Chunk.Up;
+                        ChunkTrans = true;
+                    }
+                    else if (PlayerBB.Bottom <= ActiveChunk.BoundingBox.Bottom && Player.Velocity.Y < 0)
+                    {
+                        TransitionDirection = Chunk.Down;
+                        ChunkTrans = true;
                     }
 
                     if (ChunkTrans)
                     {
-                        TransitionChunks.Clear();
-
-                        TargetChunk.Update();
-
+                        TransitionLingerTimer = 0;
+                        TargetChunk = null;
                         foreach (var chunk in Chunks)
                         {
+                            PlayerBB.X += Math.Min(0, Game1.DeltaT * Player.Velocity.X);
+                            PlayerBB.Width += Math.Abs(Game1.DeltaT * Player.Velocity.X);
                             if (PlayerBB.Intersects(chunk.BoundingBox))
                             {
-                                TransitionChunks.Add(chunk);
+                                if (chunk != ActiveChunk)
+                                {
+                                    TargetChunk = chunk;
+                                }
                             }
                         }
 
-                        if (TransitionChunks.Count == 1 && TargetChunk != LastActiveChunk)
+                        if (TargetChunk == null)
                         {
-                            if ((TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right))
+                            TargetChunk = LastActiveChunk;
+                            if (TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right || TransitionDirection == Chunk.Up)
                             {
-                                TransitionLingerTimer++;
+                                ChunkTrans = false;
+                            }
+                        }
+                        if (ChunkTrans)
+                        {
+                            if ((TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right) &&
+                                TargetChunk.CollideSolid(Player, Game1.DeltaT, out int direction, out float time, out RectangleF[] targetBB, out Vector2[] targetvel))
+                            {
+                                ChunkTrans = false;
                             }
                             else
                             {
-                                TransitionLingerTimer = TransitionLingerDuration;
+                                if (TransitionDirection == Chunk.Up)
+                                {
+                                    Player.Velocity.Y = 350;
+                                }
+                                Player.Position.X += Player.Velocity.X * Game1.DeltaT;
+                                ActiveChunk.Deactivate();
+                                LastActiveChunk = ActiveChunk;
+                                ActiveChunk = null;
+
+                                if (TargetChunk.ChunkAlarmState != Alarm.Detected)
+                                {
+                                    if (Alarm.Detected)
+                                    {
+                                        Vector2 posOffset = Vector2.Zero;
+                                        switch (TransitionDirection)
+                                        {
+                                            case Chunk.Up:
+                                                posOffset = Vector2.UnitY;
+                                                break;
+                                            case Chunk.Down:
+                                                posOffset = -Vector2.UnitY;
+                                                break;
+                                            case Chunk.Right:
+                                                posOffset = Vector2.UnitX;
+                                                break;
+                                            case Chunk.Left:
+                                                posOffset = -Vector2.UnitX;
+                                                break;
+                                        }
+
+                                        Alarm.ContinueAlert(Player.Position + Chunk.TileSize * 2F * posOffset, TargetChunk);
+                                    }
+                                    else
+                                    {
+                                        Alarm.ResetAlarm(TargetChunk);
+                                    }
+                                }
+
+                                Camera.UpdateChunk(TargetChunk);
                             }
                         }
-
-                        if (TransitionLingerTimer == TransitionLingerDuration)
-                        {
-                            TransitionLingerTimer = 0;
-                            ActiveChunk = TargetChunk;
-                            ActiveChunk.Activate(Player);
-                            ChunkTrans = false;
-                            TransitionChunks.Clear();
-                            TransitionDirection = 0;
-                        }
-                        else if (TransitionChunks.Count == 0)
-                        {
-                            Player.Kill();
-                        }
-
-                        if(Player.Update(TransitionDirection, TransitionLingerTimer, TargetChunk))
-                        {
-                            DeathFadeLingerTimer = DeathFadeLingerDuration;
-                            ActiveChunk = LastActiveChunk;
-                            ActiveChunk.Activate(Player, false);
-                            ChunkTrans = false;
-                            TransitionChunks.Clear();
-                            TransitionDirection = 0;
-                            Player.Velocity = new Vector2(0);
-                        }
                     }
-                    else
+                }
+
+                if (ChunkTrans)
+                {
+                    TransitionChunks.Clear();
+
+                    TargetChunk.Update();
+
+                    foreach (var chunk in Chunks)
                     {
-                        if (ActiveChunk != null)
+                        if (PlayerBB.Intersects(chunk.BoundingBox))
                         {
-                            ActiveChunk.Update();
-                            Alarm.Update(ActiveChunk);
+                            TransitionChunks.Add(chunk);
                         }
                     }
-                //}
+
+                    if (TransitionChunks.Count == 1 && TargetChunk != LastActiveChunk)
+                    {
+                        if ((TransitionDirection == Chunk.Left || TransitionDirection == Chunk.Right))
+                        {
+                            TransitionLingerTimer++;
+                        }
+                        else
+                        {
+                            TransitionLingerTimer = TransitionLingerDuration;
+                        }
+                    }
+
+                    if (TransitionLingerTimer == TransitionLingerDuration)
+                    {
+                        TransitionLingerTimer = 0;
+                        ActiveChunk = TargetChunk;
+                        LastActiveChunk = ActiveChunk;
+                        ActiveChunk.Activate(Player);
+                        ChunkTrans = false;
+                        TransitionChunks.Clear();
+                        TransitionDirection = 0;
+                    }
+                    else if (TransitionChunks.Count == 0)
+                    {
+                        Player.Kill();
+                    }
+
+                    if(Player.Update(TransitionDirection, TransitionLingerTimer, TargetChunk))
+                    {
+                        DeathFadeLingerTimer = DeathFadeLingerDuration;
+                        ActiveChunk = LastActiveChunk;
+                        LastActiveChunk = ActiveChunk;
+                        ActiveChunk.Activate(Player, false);
+                        ChunkTrans = false;
+                        TransitionChunks.Clear();
+                        TransitionDirection = 0;
+                        Player.Velocity = new Vector2(0);
+                    }
+                }
+                else
+                {
+                    if (ActiveChunk != null)
+                    {
+                        ActiveChunk.Update();
+                        Alarm.Update(ActiveChunk);
+                    }
+                }
             }
 
             if(DeathFadeLingerTimer > 0)

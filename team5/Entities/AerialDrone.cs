@@ -454,8 +454,17 @@ namespace team5
             TargetLocation = target;
             WanderLocation = target;
 
-            var dir = new Vector2((float)Math.Cos(Direction), (float)Math.Sin(Direction));
-            QueryWander(TargetLocation, dir, SearchRange, chunk);
+            for (int i = 0; i < 5; ++i)
+            {
+                float offset = (float)((-0.15F + Game.RNG.NextDouble() * 0.3F) * Math.PI);
+                var dir = new Vector2((float)Math.Cos(Direction + offset), (float)Math.Sin(Direction + offset));
+                if (QueryWander(TargetLocation, dir, SearchRange, chunk))
+                {
+                    TargetLocation = WanderLocation;
+                    break;
+                }
+            }
+
 
             State = cursory? AIState.CursorySearching : AIState.Searching;
             ViewCone.SetColor(cursory ? ConeEntity.InspectColor : ConeEntity.AlertColor);

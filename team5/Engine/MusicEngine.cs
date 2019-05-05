@@ -48,10 +48,12 @@ namespace team5
                     {
                         PauseTime = MediaPlayer.PlayPosition;
                         MediaPlayer.Pause();
+                        MediaPlayer.Stop();
                     }
                     else
                     {
-                        MediaPlayer.Resume();
+                        //MediaPlayer.Resume();
+                        MediaPlayer.Play(Song, PauseTime);
                     }
                 }
             }

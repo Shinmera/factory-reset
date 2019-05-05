@@ -326,6 +326,7 @@ namespace team5
 
                     if (Grounded)
                     {
+                        SoundFrame = -1;
                         HasWallJumped = false;
                         if (jump)
                         {
@@ -371,6 +372,10 @@ namespace team5
                     if (Controller.Jump && 0 < LongJump)
                     {
                         Velocity.Y += AccelRate * dt;
+                    }
+                    else
+                    {
+                        LongJump = 0;
                     }
 
 
