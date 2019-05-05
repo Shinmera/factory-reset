@@ -1153,7 +1153,11 @@ var openLevel = function(){
                         if(tilesets.indexOf(chunk.tileset) < 0) tilesets.push(chunk.tileset);
                         chunk.position = [ chunk.position[0]/tileSize, chunk.position[1]/tileSize ];
                         chunk.pixels = [];
-                        chunk.tileset = new Tileset({name: chunk.tileset});
+                        chunk.tileset = new Tileset({name: chunk.tileset,
+                                                     image: solidset.image,
+                                                     pixels: solidset.pixels,
+                                                     rgMap: solidset.rgMap,
+                                                     tileMap: solidset.tileMap});
                         if(chunk.background){
                             var name = chunk.background;
                             chunk.background = new Image();
