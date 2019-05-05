@@ -16,7 +16,7 @@
       <Paragraph>Nicolas Hafner</Paragraph>
       <Paragraph>Gengyan Li</Paragraph>
       <Paragraph>Pulkit Singh</Paragraph>
-      <Paragraph>Nicole Manojlavic</Paragraph>
+      <Paragraph>Nicole Manojlovic</Paragraph>
       <Paragraph>Amir Hossein Heidari</Paragraph>
 
       <Paragraph FontSize="36" Margin="10,50,0,0">Programming</Paragraph>
@@ -38,6 +38,17 @@
       
       <Paragraph FontSize="36" Margin="10,50,0,0">Sound Design</Paragraph>
       <Paragraph>Nicole Manojlovic</Paragraph>
+      
+      <Paragraph FontSize="36" Margin="10,50,0,0">Music</Paragraph>
+      <Paragraph>Nicolas Hafner</Paragraph>
+      
+      <Paragraph FontSize="36" Margin="10,50,0,0">Level Design</Paragraph>
+      <Paragraph FontSize="30" Margin="15,5,0,0">Rooftops</Paragraph>
+      <Paragraph>Nicole Manojlovic</Paragraph>
+      <Paragraph FontSize="30" Margin="15,5,0,0">Office</Paragraph>
+      <Paragraph>Amir Hossein Heidari</Paragraph>
+      <Paragraph FontSize="30" Margin="15,5,0,0">Factory</Paragraph>
+      <Paragraph>Pulkit Singh</Paragraph>
     </RichTextBlock>
   </ScrollViewer>
 </Page>
