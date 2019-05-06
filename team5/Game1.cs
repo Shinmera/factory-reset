@@ -111,7 +111,7 @@ namespace team5
             ActiveWindow.UnloadContent();
         }
 
-        public void UpdateLoadName(object identifier)
+        private void UpdateLoadName(object identifier)
         {
             if(!(RealActiveWindow is LoadScreen))
             {
