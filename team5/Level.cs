@@ -220,6 +220,7 @@ namespace team5
             Game.MusicEngine.Play("Ambient");
             Game.SoundEngine.Load("UI_Button");
             Game.SoundEngine.Load("Player_WalkieEnd");
+            Game.SoundEngine.Load("Player_WalkieTalk1");
         }
         
         public override void UnloadContent()

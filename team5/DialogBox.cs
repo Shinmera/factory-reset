@@ -23,6 +23,8 @@ namespace team5
         private float TimeBeforeSkipDuration = 0.3f;
         public static float TimePerLetter = 0.02f;
 
+        private SoundEngine.Sound CallSound;
+
         private Texture2D AvatarTexture;
         private AnimatedSprite Avatar;
         private Vector2 AvatarOffset = new Vector2(-197, 38);
@@ -52,7 +54,11 @@ namespace team5
 
         public override void Update()
         {
-            if(TimeBeforeSkip > 0)
+            if(CallSound == null) {
+                CallSound = Game.SoundEngine.Play("Player_WalkieTalk1", 1, true);
+            }
+
+            if (TimeBeforeSkip > 0)
             {
                 TimeBeforeSkip -= Game1.DeltaT;
             }
@@ -71,6 +77,7 @@ namespace team5
                     CurLetters = CurMaxLetters;
                     if(TimePerLetter > 0)
                         TimeBeforeSkip = TimeBeforeSkipDuration;
+                    CallSound.Stopped = true;
                 }
                 
             }
@@ -78,6 +85,7 @@ namespace team5
             if(Game.Controller.Call && !Game.Controller.Was.Call)
             {
                 Game.SoundEngine.Play("Player_WalkieEnd");
+                CallSound.Stopped = true;
                 Level.ClosePopup();
                 return;
             }
@@ -87,6 +95,7 @@ namespace team5
                 if (CurLetters < CurMaxLetters)
                 {
                     CurLetters = CurMaxLetters;
+                    CallSound.Stopped = true;
                 }
                 else if(TimeBeforeSkip > 0)
                 {
@@ -101,16 +110,18 @@ namespace team5
                 {
                     ++CurText;
 
-                    
-
                     if (CurText>= TextArray.Length)
                     {
+                        CallSound.Stopped = true;
                         Game.SoundEngine.Play("Player_WalkieEnd");
                         Level.ClosePopup();
                     }
                     else
                     {
                         Game.SoundEngine.Play("UI_Button", 1);
+
+                        CallSound = Game.SoundEngine.Play("Player_WalkieTalk1", 1, true);
+                        
                         SetText(TextArray[CurText]);
                         CurNumLines = Text.Split('\n').Length;
                         CurLine = 0;

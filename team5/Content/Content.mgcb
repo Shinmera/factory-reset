@@ -255,6 +255,12 @@
 /processorParam:Quality=Best
 /build:Sounds/Player_WalkieTalk1.wav
 
+#begin Sounds/Player_WalkieTalk1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/Player_WalkieTalk1.wav
+
 #begin Sounds/Player_WalkieTalk2.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
