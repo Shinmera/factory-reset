@@ -114,7 +114,10 @@ namespace team5
             float textY = center.Y + (Background.Height/2 - TopPadding);
             Game.TextEngine.QueueText(Text.Substring(0,CurLetters), new Vector2(textX, textY + TextOffset), Color.White, Font, SizePx, TextEngine.Orientation.Left, TextEngine.Orientation.Top);
 
-            Game.TextEngine.DrawText(new RectangleF(textX, textY - (Background.Height - TopPadding - BottomPadding), (Background.Width - LeftPadding - RightPadding), (Background.Height - TopPadding - BottomPadding)));
+            float textHeight = (Background.Height - TopPadding - BottomPadding);
+            textHeight = (float)Math.Floor(textHeight / SizePx) * SizePx;
+
+            Game.TextEngine.DrawText(new RectangleF(textX, textY - textHeight, (Background.Width - LeftPadding - RightPadding), textHeight));
 
             Game.Transforms.PopView();
         }

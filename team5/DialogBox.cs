@@ -94,7 +94,7 @@ namespace team5
                 }
                 else if (CurLine + MaxLines < CurNumLines)
                 {
-                    CurLine += (int)Math.Floor(MaxLines - 0.3F);
+                    CurLine += (int)Math.Floor(MaxLines);
                     TextOffset = CurLine * SizePx;
                 }
                 else
