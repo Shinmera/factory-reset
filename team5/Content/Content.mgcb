@@ -381,6 +381,18 @@
 /processorParam:TextureFormat=Color
 /build:Textures/door.png
 
+#begin Textures/Factory_Tilesheet-sheet.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Factory_Tilesheet-sheet.png
+
 #begin Textures/ground-drone.png
 /importer:TextureImporter
 /processor:TextureProcessor
