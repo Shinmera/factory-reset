@@ -39,8 +39,8 @@
         <Setter Property="Margin" Value="10,10,10,10"/>
     </Style>
     <Style x:Key="LevelPreview" TargetType="Image">
-        <Setter Property="Width" Value="128"/>
-        <Setter Property="Height" Value="128"/>
+        <Setter Property="Width" Value="200"/>
+        <Setter Property="Height" Value="200"/>
         <Setter Property="Margin" Value="0,0,0,10"/>
     </Style>
     <Style x:Key="LevelName" TargetType="TextBlock">
