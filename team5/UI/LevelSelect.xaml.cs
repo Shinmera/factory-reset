@@ -59,23 +59,34 @@ namespace team5.UI
 
             for (int i = UnsortedPreviews.Count - 1; i >= 0; --i)
             {
-                var level = UnsortedPreviews[i];
-
-                if (level.Next != null)
+                while (true)
                 {
-                    var nextLevel = LevelNames[level.Next];
-                    int nextLevelPos = UnsortedPreviews.IndexOf(nextLevel); 
+                    var level = UnsortedPreviews[i];
 
-                    if (nextLevelPos == -1)
+                    if (level.Next != null)
                     {
-                        continue;
+                        var nextLevel = LevelNames[level.Next];
+                        int nextLevelPos = UnsortedPreviews.IndexOf(nextLevel);
+
+                        if (nextLevelPos == -1)
+                        {
+                            break;
+                        }
+
+                        if (nextLevelPos < i)
+                        {
+                            UnsortedPreviews.RemoveAt(nextLevelPos);
+
+                            UnsortedPreviews.Insert(i, nextLevel);
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
-
-                    if(nextLevelPos < i)
+                    else
                     {
-                        UnsortedPreviews.RemoveAt(nextLevelPos);
-
-                        UnsortedPreviews.Insert(i, nextLevel);
+                        break;
                     }
                 }
             }
