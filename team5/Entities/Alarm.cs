@@ -138,6 +138,7 @@ namespace team5
                     if (Detected)
                     {
                         Timer = AlarmTime;
+                        chunk.Level.AlertCounter++;
                         SetState(AlarmState.Raised, chunk);
                     }
                     break;
