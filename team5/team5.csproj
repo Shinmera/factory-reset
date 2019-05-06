@@ -196,9 +196,6 @@
     </AppxManifest>
     <None Include=".editorconfig" />
     <Content Include="Content\Fonts\Wellbutrin.ttf" />
-    <Content Include="Content\Levels\lobby.zip" />
-    <Content Include="Content\Levels\rooftops-demo.zip" />
-    <Content Include="Content\Levels\office-demo.zip" />
     <Content Include="Content\Levels\Office.zip" />
     <Content Include="Content\Levels\factory.zip" />
     <Content Include="Content\Levels\Intro.zip" />
@@ -226,7 +223,7 @@
       <Version>6.2.3</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.1</Version>
+      <Version>12.0.2</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

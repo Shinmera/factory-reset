@@ -35,7 +35,7 @@ namespace team5.UI
         
         public void InvokeAction(Action<Game1> action)
         {
-            action(Game);
+            Game.QueueAction(action);
         }
 
         public void QueueAction(Action<Game1> action)

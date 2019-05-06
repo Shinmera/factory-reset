@@ -20,7 +20,8 @@
         </Setter>
     </Style>
     <Style x:Key="MenuPage" TargetType="Page">
-        <Setter Property="Margin" Value="5,5,5,5"/>
+        <Setter Property="FontSize" Value="24"/>
+        <Setter Property="Background" Value="#80000000"/>
     </Style>
     <Style TargetType="ListViewItem">
         <Setter Property="FocusVisualPrimaryThickness" Value="0"/>
@@ -88,7 +89,7 @@
         <Setter Property="Background" Value="#80000000"/>
     </Style>
     <Style x:Key="CreditsText" TargetType="RichTextBlock">
-        <Setter Property="Margin" Value="50, 20, 50, 20"/>
+        <Setter Property="Margin" Value="10, 20, 5, 20"/>
         <Setter Property="FontFamily" Value="{StaticResource Wellbutrin}" />
         <Setter Property="FontSize" Value="20" />
         <Setter Property="TextAlignment" Value="Left" />

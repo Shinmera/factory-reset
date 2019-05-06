@@ -8,7 +8,7 @@
     mc:Ignorable="d"
     Loaded="Loaded"
     Style="{StaticResource MenuPage}">
-    <ScrollViewer>
+    <ScrollViewer Margin="10,5,5,5">
         <StackPanel HorizontalAlignment="Left" Width="200">
             <TextBlock Text="Options" FontSize="24" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
             <Slider x:Name="MasterVolume" Header="Master Volume" Maximum="100"

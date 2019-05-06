@@ -38,13 +38,14 @@ namespace team5.UI
                 {
                     object next = game.NextLevelId;
                     game.UnloadLevel();
-                    game.UpdateLoadName(next);
                     game.LoadLevel(next);
                 }
-                else // FIXME: Show a proper end credits screen
+                else
+                { // FIXME: Show a proper end credits screen
                     game.UnloadLevel();
                     Root.Current.QueueAction((root) => root.ShowMenu());
-                });
+                }
+            });
         }
     }
 
