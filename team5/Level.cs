@@ -444,10 +444,18 @@ namespace team5
         {
             foreach (Chunk chunk in Chunks)
                 if (Camera.IsVisible(chunk.BoundingBox))
+                    chunk.DrawBackground();
+
+            foreach (Chunk chunk in Chunks)
+                if (Camera.IsVisible(chunk.BoundingBox))
                     chunk.Draw();
 
             if (ChunkTrans)
                 Player.Draw();
+
+            foreach (Chunk chunk in Chunks)
+                if (Camera.IsVisible(chunk.BoundingBox))
+                    chunk.DrawForeground();
 
             Alarm.Draw(this);
 

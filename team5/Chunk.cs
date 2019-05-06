@@ -204,6 +204,16 @@ namespace team5
             });
         }
 
+        public void DrawBackground()
+        {
+            if (!DrawSolids)
+            {
+                if (Background != null)
+                    Game.ParallaxEngine.Draw(Background, Level.Camera.Position, Level.Camera.ViewScale);
+
+            }
+        }
+
         public void Draw()
         {
             if (DrawSolids)
@@ -213,15 +223,21 @@ namespace team5
             }
             else
             {
-                if(Background != null)
-                    Game.ParallaxEngine.Draw(Background, Level.Camera.Position, Level.Camera.ViewScale);
-                
                 int mid = ((Layers.Length-1)/2)+1;
                 for(int i=1; i<mid; ++i)
                     Game.TilemapEngine.Draw(Layers[i], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
                 CallAll(x => x.DrawBackground());
+
+            }
+        }
+
+        public void DrawForeground()
+        {
+            if (!DrawSolids)
+            {
+                int mid = ((Layers.Length - 1) / 2) + 1;
                 CallAll(x => x.Draw());
-                for (int i=mid; i<Layers.Length; ++i)
+                for (int i = mid; i < Layers.Length; ++i)
                     Game.TilemapEngine.Draw(Layers[i], Tileset, new Vector2(BoundingBox.X, BoundingBox.Y));
             }
         }
