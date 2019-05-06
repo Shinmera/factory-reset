@@ -15,7 +15,7 @@ namespace team5
             Sprite = new AnimatedSprite(null, game, new Vector2(Chunk.TileSize, Chunk.TileSize));
             ViewCone = new ConeEntity(game);
             ViewCone.FromDegrees(degrees, 33);
-            ViewCone.Radius = Chunk.TileSize * 13;
+            ViewCone.Radius = Chunk.TileSize * 999;
             ViewCone.UpdatePosition(position);
         }
         

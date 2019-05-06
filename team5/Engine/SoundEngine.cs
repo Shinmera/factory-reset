@@ -143,7 +143,7 @@ namespace team5
                     }
                 }
             }
-            
+
             public bool Paused
             {
                 get { return Instance.State == SoundState.Paused; }

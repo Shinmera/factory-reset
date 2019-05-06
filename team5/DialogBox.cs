@@ -12,6 +12,7 @@ namespace team5
     class DialogBox : TextBox
     {
         private string[] TextArray;
+        private string[] CurLines;
         private int CurText = 0;
         private int CurNumLines;
         private int CurLine = 0;
@@ -20,7 +21,7 @@ namespace team5
         private int CurMaxLetters;
 
         private float TimeBeforeSkip;
-        private float TimeBeforeSkipDuration = 0.3f;
+        private float TimeBeforeSkipDuration = 0.4f;
         public static float TimePerLetter = 0.02f;
 
         private SoundEngine.Sound CallSound;
@@ -48,14 +49,23 @@ namespace team5
 
             SetText(TextArray[0]);
             CurLetters = 1;
-            CurMaxLetters = Text.Length;
-            CurNumLines = Text.Split('\n',StringSplitOptions.RemoveEmptyEntries).Length;
+            //CurMaxLetters = Text.Length;
+            CurLines = Text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            CurNumLines = CurLines.Length;
+
+            CurMaxLetters = 0;
+            for(int i = 0; i < Math.Min(Math.Floor(MaxLines),CurNumLines); ++i)
+            {
+                CurMaxLetters++;
+                CurMaxLetters += CurLines[i].Length;
+            }
+            CurMaxLetters--;
         }
 
         public override void Update()
         {
             if(CallSound == null) {
-                CallSound = Game.SoundEngine.Play("Player_WalkieTalk1", 1, true);
+                CallSound = Game.SoundEngine.Play("Player_WalkieTalk1", 1, false);
             }
 
             if (TimeBeforeSkip > 0)
@@ -77,9 +87,17 @@ namespace team5
                     CurLetters = CurMaxLetters;
                     if(TimePerLetter > 0)
                         TimeBeforeSkip = TimeBeforeSkipDuration;
+                }
+
+                if(CurLetters < Math.Max(CurMaxLetters-5,2))
+                    PlaySound();
+            }
+            else
+            {
+                if(TimeBeforeSkip <= 0)
+                {
                     CallSound.Stopped = true;
                 }
-                
             }
 
             if(Game.Controller.Call && !Game.Controller.Was.Call)
@@ -104,6 +122,15 @@ namespace team5
                 else if (CurLine + MaxLines < CurNumLines)
                 {
                     CurLine += (int)Math.Floor(MaxLines);
+
+                    CurMaxLetters = 0;
+                    for (int i = 0; i < Math.Min(CurLine + Math.Floor(MaxLines), CurNumLines); ++i)
+                    {
+                        CurMaxLetters++;
+                        CurMaxLetters += CurLines[i].Length;
+                    }
+                    CurMaxLetters--;
+
                     TextOffset = CurLine * SizePx;
                 }
                 else
@@ -120,17 +147,35 @@ namespace team5
                     {
                         Game.SoundEngine.Play("UI_Button", 1);
 
-                        CallSound = Game.SoundEngine.Play("Player_WalkieTalk1", 1, true);
-                        
+                        PlaySound();
+
                         SetText(TextArray[CurText]);
-                        CurNumLines = Text.Split('\n').Length;
+                        CurLines = Text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                        CurNumLines = CurLines.Length;
                         CurLine = 0;
                         TextOffset = 0;
                         CurLetters = 1;
-                        CurMaxLetters = Text.Length;
+                        //CurMaxLetters = Text.Length;
+
+                        CurMaxLetters = 0;
+                        for (int i = 0; i < Math.Min(CurLine + Math.Floor(MaxLines), CurNumLines); ++i)
+                        {
+                            CurMaxLetters++;
+                            CurMaxLetters += CurLines[i].Length;
+                        }
+                        CurMaxLetters--;
                         LetterTimer = 0;
                     }
                 }
+            }
+        }
+
+
+        public void PlaySound()
+        {
+            if (CallSound.Stopped)
+            {
+                CallSound = Game.SoundEngine.Play("Player_WalkieTalk1", 1, false);
             }
         }
 
