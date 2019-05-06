@@ -1,6 +1,7 @@
 ## Level 1: Intro  & Tutorial
 The player starts on some rooftops and immediately gets a call.
 
+### Trigger (Level) Story Items
 You: Hello? Is that you, Charlie?
 
 Charlie: Mom! Good grief, you're fine! Where are you right now?
@@ -82,6 +83,7 @@ With all the office workers gone due to the riots, now is the perfect time to sn
 ## Level 2: The Office
 The player is in an office to search for some information. The level starts with a call.
 
+### Trigger (Level) Story Items
 Charlie: You didn't really break in somewhere, did you?
 
 You: Sure did!
@@ -94,6 +96,27 @@ You: I’ll call you later with some results, Charlie.
 
 Charlie: Good luck, mom.
 ---
+Charlie: I'm sorry for calling you again, Mom. I'm just too worried! And I'm not so sure about this anymore.
+Maybe the riots will stop and the Big Drought just.. ends after some more days?
+Everything will be fine, right?
+
+You: I'm not so sure, dear. Even if the power goes back up, we can’t stay dependent on these machines forever.
+It's the right thing to do.
+
+Charlie: Do you know where our greedy corporate overlords keep their library?
+The important one, with information about making pies and such.
+
+You: Not quite yet, but I just found the door to the office’s main archive.
+I'm sure there will be some plans or documents there with the library's whereabouts.
+
+Charlie: Good work.
+... Maybe this is the right call after all.
+
+You: You'll never be able to make fun of my parkour hobby after this, kid.
+
+Charlie: Damn it! My body isn't ready for manual labour!
+
+### Pickup (Chunk) Story Items
 You: This pretty much confirms it.
 
 Charlie: What is it, mom?
@@ -134,30 +157,11 @@ is there also something about pies in the book?
 You: No, sadly not. But I promise you, we'll learn all about pies and more, as soon as I know where they keep the rest of these books!
 
 Charlie: I sure hope so.
----
-Charlie: I'm sorry for calling you again, Mom. I'm just too worried! And I'm not so sure about this anymore.
-Maybe the riots will stop and the Big Drought just.. ends after some more days?
-Everything will be fine, right?
-
-You: I'm not so sure, dear. Even if the power goes back up, we can’t stay dependent on these machines forever.
-It's the right thing to do.
-
-Charlie: Do you know where our greedy corporate overlords keep their library?
-The important one, with information about making pies and such.
-
-You: Not quite yet, but I just found the door to the office’s main archive.
-I'm sure there will be some plans or documents there with the library's whereabouts.
-
-Charlie: Good work.
-... Maybe this is the right call after all.
-
-You: You'll never be able to make fun of my parkour hobby after this, kid.
-
-Charlie: Damn it! My body isn't ready for manual labour!
 
 ## Level 3: The Facility
 The player is in the facility at last and gets another call at the level start.
 
+### Trigger (Level) Story Items
 Charlie: You're there?
 
 You: Yes!
@@ -170,6 +174,20 @@ You: I suppose the latter. There were a lot of drones in the office and I can al
 
 Charlie: You can do this. I believe in you!
 ---
+Charlie: Mom, I think you need to hurry up! Some of the security robots just spewed flyers all over. I actually went outside for a moment to get one.
+
+You: What does it say?
+
+Charlie: I'm not sure. They want us to keep calm while they isolate any 'remaining threats'.
+
+You: ... Does that refer to me?
+I'm almost finished here. I think I have an idea on where they keep their old-world information now.
+
+Charlie: How are you planning on transporting all those books? I suppose they're quite heavy.
+
+You: That's my little secret, Charlie. Don't even think about it.
+
+### Pickup (Chunk) Story Items
 You: I'm making good progress finding stuff. These poor books are just lying around everywhere, ripe for the picking!
 
 Charlie: Do you really think people will want to return to manual labour?
@@ -219,23 +237,11 @@ Charlie: I'm scared to ask.
 You: No risk, no fun!
 
 Charlie: ... We will all tragically die to our own stupidity.
----
-Charlie: Mom, I think you need to hurry up! Some of the security robots just spewed flyers all over. I actually went outside for a moment to get one.
-
-You: What does it say?
-
-Charlie: I'm not sure. They want us to keep calm while they isolate any 'remaining threats'.
-
-You: ... Does that refer to me?
-I'm almost finished here. I think I have an idea on where they keep their old-world information now.
-
-Charlie: How are you planning on transporting all those books? I suppose they're quite heavy.
-
-You: That's my little secret, Charlie. Don't even think about it.
 
 ## Level 4: The Escape
 The player is back on the rooftops when getting a last call. Being immediately in chase mode, they're not able to make calls themselves anymore!
 
+### Trigger (Level) Story Items
 Charlie: I prepared everything for your return.
 I actually got to talk to some of the remaining rioters. I told them about your plan and they are very excited by your idea!
 
