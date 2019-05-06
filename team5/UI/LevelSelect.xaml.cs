@@ -57,23 +57,25 @@ namespace team5.UI
 
             var previewEnum = Previews.GetEnumerator();
 
-            for (int i = 0; i < UnsortedPreviews.Count; ++i)
+            for (int i = UnsortedPreviews.Count - 1; i >= 0; --i)
             {
                 var level = UnsortedPreviews[i];
-                if(level.Next != null)
-                {
-                    int nextLevelPos = UnsortedPreviews.IndexOf(LevelNames[level.Next]);
 
-                    if(nextLevelPos == -1)
+                if (level.Next != null)
+                {
+                    var nextLevel = LevelNames[level.Next];
+                    int nextLevelPos = UnsortedPreviews.IndexOf(nextLevel); 
+
+                    if (nextLevelPos == -1)
                     {
                         continue;
                     }
 
                     if(nextLevelPos < i)
                     {
-                        UnsortedPreviews.RemoveAt(i);
+                        UnsortedPreviews.RemoveAt(nextLevelPos);
 
-                        UnsortedPreviews.Insert(nextLevelPos, level);
+                        UnsortedPreviews.Insert(i, nextLevel);
                     }
                 }
             }
