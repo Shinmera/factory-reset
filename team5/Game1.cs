@@ -10,7 +10,7 @@ namespace team5
     public class Game1 : Game
     {
         public const float DeltaT = 1 / 60.0F;
-        public const string FirstLevel = "lobby";
+        public const string FirstLevel = "Intro";
         public static float Volume = 1.0f;
 
         public new readonly ContentManager Content;
