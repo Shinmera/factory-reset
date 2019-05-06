@@ -33,7 +33,7 @@ namespace team5.UI
         private void LevelSelected(object sender, ItemClickEventArgs e)
         {
             String level = ((LevelPreview)e.ClickedItem).FileName;
-            Root.Current.Game.InvokeAction((game) => game.UpdateLoadName(level));
+            Root.Current.Game.QueueAction((game) => game.UpdateLoadName(level));
             Root.Current.ShowGame();
             Root.Current.Game.QueueAction((game)=>game.LoadLevel(level));
         }
