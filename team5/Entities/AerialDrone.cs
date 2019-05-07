@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -70,7 +72,7 @@ namespace team5
         }
 
         /// <summary> Finds a path from a source to a target within a chunk. Path is in reverse order.</summary>
-        public static List<Vector2> FindPath(Chunk chunk, int startx, int starty, Vector2 target, bool isDrone = true)
+        public static List<Vector2> FindPath(Chunk chunk, int startx, int starty, Vector2 target, CancellationToken token, bool isDrone = true)
         {
             int targetx = (int)Math.Floor((target.X - chunk.BoundingBox.X) / Chunk.TileSize);
             int targety = (int)Math.Floor((target.Y - chunk.BoundingBox.Y) / Chunk.TileSize);
@@ -131,6 +133,7 @@ namespace team5
 
             while (openSet.Count > 0)
             {
+                token.ThrowIfCancellationRequested();
 
                 Point current = openSet.First();
 
@@ -268,6 +271,12 @@ namespace team5
         private float StateTimer = 0;
         /// <summary> The direction this drone is currently facing</summary>
         private float Direction = 0;
+
+        private Task<List<Vector2>> Pathfinding = null;
+        private CancellationTokenSource PathfindingTokens;
+        private Action FinishPath = null;
+        private AIState NextState;
+
 
         private SoundEngine.Sound FlyingSound = null;
         #endregion
@@ -408,9 +417,31 @@ namespace team5
         #region State Switches
 
         /// <summary> Sets the state to targeting and pathfinds towards the target location, then searches after it reaches it.</summary>
-        public bool Target(Vector2 target, Chunk chunk)
+        public bool Target(Vector2 target, Chunk chunk, AIState nextState)
         {
-            if(State == AIState.Targeting && (LastTarget - target).LengthSquared() < Chunk.TileSize*Chunk.TileSize*16 && Path.Count > 2)
+            if(!chunk.IntersectLine(Position, target-Position, 1, out float loc, true, false))
+            {
+                Vector2 dir = chunk.Level.Player.Position - Position;
+                if (dir.LengthSquared() <= ViewSize * ViewSize * 4)
+                {
+                    float targetDirection = (float)Math.Atan2(dir.Y, dir.X);
+
+                    if (ConeEntity.ConvertAngle(targetDirection - Direction) <= 2 * Game1.DeltaT * TurnAngularVelocity || ConeEntity.ConvertAngle(Direction - targetDirection) <= 2 * Game1.DeltaT * TurnAngularVelocity)
+                    {
+                        Direction = targetDirection;
+                    }
+                    else if (ConeEntity.ConvertAngle(targetDirection - Direction) < Math.PI)
+                    {
+                        Direction += Game1.DeltaT * TurnAngularVelocity;
+                    }
+                    else
+                    {
+                        Direction -= Game1.DeltaT * TurnAngularVelocity;
+                    }
+                }
+            }
+
+            if(State == AIState.Targeting && (LastTarget - target).LengthSquared() < Chunk.TileSize*Chunk.TileSize && Path.Count > 2)
             {
                 return false;
             }
@@ -430,20 +461,28 @@ namespace team5
             int startx = (int)Math.Floor((Position.X - chunk.BoundingBox.X) / Chunk.TileSize);
             int starty = (int)Math.Floor((Position.Y - chunk.BoundingBox.Y) / Chunk.TileSize);
 
-            var newPath = FindReducedPath(chunk, FindPath(chunk, startx, starty, target), Size);
+            TargetLocation = target;
 
-            if (newPath.Count <= 1)
+            if (Pathfinding == null || NextState != nextState)
             {
-                return false;
-            }
-            else {
-                Path = newPath;
-
-                NextNode = 1;
-
-                TargetLocation = target;
+                if(Pathfinding != null)
+                {
+                    PathfindingTokens.Cancel();
+                    Pathfinding.Wait();
+                    Pathfinding.Dispose();
+                }
+                if(PathfindingTokens != null)
+                    PathfindingTokens.Dispose();
+                PathfindingTokens = new CancellationTokenSource();
+                var token = PathfindingTokens.Token;
+                Pathfinding = Task.Run( () => FindReducedPath(chunk, FindPath(chunk, startx, starty, target, token), Size, Position, Path, NextNode, token), token);
+                NextState = nextState;
 
                 return true;
+            }
+            else
+            {
+                return false;
             }
         }
         /// <summary> Wanders around a target location without waiting between new wanders</summary>
@@ -472,9 +511,8 @@ namespace team5
         /// <summary> Pathfinds back to the spawn</summary>
         public void Return(Chunk chunk)
         {
-            if(Target(Spawn, chunk))
-                State = AIState.Returning;
-            ViewCone.SetColor(ConeEntity.ClearColor);
+            if(Target(Spawn, chunk, AIState.Returning))
+                FinishPath = () => ViewCone.SetColor(ConeEntity.ClearColor);
         }
         /// <summary> Waits, swiveling the camera back and forth</summary>
         public void Wait()
@@ -511,6 +549,30 @@ namespace team5
 
         public override void Update(Chunk chunk)
         {
+            if(Pathfinding != null)
+            {
+                if (Pathfinding.IsCompleted)
+                {
+                    
+
+                    var newPath = Pathfinding.Result;
+
+                    Pathfinding.Dispose();
+                    Pathfinding = null;
+
+                    if (newPath.Count > 1)
+                    {
+                        Path = newPath;
+
+                        NextNode = 1;
+                    }
+
+                    State = NextState;
+
+                    FinishPath.Invoke();
+                }
+            }
+
             if(FlyingSound == null)
                 FlyingSound = Game.SoundEngine.Play("Enemy_DroneFly", Position, 1, true);
 
@@ -544,7 +606,7 @@ namespace team5
                         }
                         if (!foundSearch)
                         {
-                            Target(TargetLocation, chunk);
+                            Target(TargetLocation, chunk, AIState.Targeting);
                         }
                     }
                     break;
@@ -563,7 +625,7 @@ namespace team5
                         }
                         if (!foundSearch)
                         {
-                            Target(TargetLocation, chunk);
+                            Target(TargetLocation, chunk, AIState.Investigating);
                         }
                     }
 
@@ -637,6 +699,48 @@ namespace team5
                         else
                         {
                             MoveTo(Path[NextNode], TargetSpeed);
+
+                            if (Path.Count - NextNode <= 1)
+                            {
+                                Vector2 dir = chunk.Level.Player.Position - Position;
+                                if (dir.LengthSquared() <= ViewSize * ViewSize * 4)
+                                {
+                                    float targetDirection = (float)Math.Atan2(dir.Y, dir.X);
+                                    if (ConeEntity.ConvertAngle(targetDirection - Direction) <= 2 * Game1.DeltaT * TurnAngularVelocity || ConeEntity.ConvertAngle(Direction - targetDirection) <= 2 * Game1.DeltaT * TurnAngularVelocity)
+                                    {
+                                        Direction = targetDirection;
+                                    }
+                                    else if (ConeEntity.ConvertAngle(targetDirection - Direction) < Math.PI)
+                                    {
+                                        Direction += Game1.DeltaT * TurnAngularVelocity;
+                                    }
+                                    else
+                                    {
+                                        Direction -= Game1.DeltaT * TurnAngularVelocity;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else if (Path.Count - NextNode <= 1)
+                    {
+                        Vector2 dir = chunk.Level.Player.Position - Position;
+                        if (dir.LengthSquared() <= ViewSize * ViewSize * 4)
+                        {
+                            float targetDirection = (float)Math.Atan2(dir.Y, dir.X);
+
+                            if (ConeEntity.ConvertAngle(targetDirection - Direction) <= 2 * Game1.DeltaT * TurnAngularVelocity || ConeEntity.ConvertAngle(Direction - targetDirection) <= 2 * Game1.DeltaT * TurnAngularVelocity)
+                            {
+                                Direction = targetDirection;
+                            }
+                            else if (ConeEntity.ConvertAngle(targetDirection - Direction) < Math.PI)
+                            {
+                                Direction += Game1.DeltaT * TurnAngularVelocity;
+                            }
+                            else
+                            {
+                                Direction -= Game1.DeltaT * TurnAngularVelocity;
+                            }
                         }
                     }
                     break;
@@ -748,36 +852,34 @@ namespace team5
             {
                 float precision = Math.Min(1, volume / BaseVolume);
 
-                for(int i = 0; i < 10; ++i)
+                float angle = (float)Game.RNG.NextDouble() * 2 * (float)Math.PI;
+
+                float distOffset = (1 - precision) * HearingPrecision;
+
+                Vector2 dir = new Vector2((float)Math.Sin(angle), (float)Math.Cos(angle));
+
+                if(chunk.IntersectLine(position, dir, distOffset + Size.X, out float location, false))
                 {
-                    float angle = (float)Game.RNG.NextDouble() * 2 * (float)Math.PI;
+                    distOffset = location - Size.X;
+                }
 
-                    float distOffset = (1 - precision) * HearingPrecision;
-
-                    Vector2 dir = new Vector2((float)Math.Sin(angle), (float)Math.Cos(angle));
-
-                    if(chunk.IntersectLine(position, dir, distOffset + Size.X, out float location, false))
-                    {
-                        distOffset = location - Size.X;
-                    }
-                    
-                    if (Target(position + dir * distOffset, chunk))
-                    {
-                        if(State == AIState.Searching)
+                
+                if (State == AIState.Searching)
+                {
+                    if(Target(position + dir * distOffset, chunk, AIState.Targeting))
+                        FinishPath = () => AlertSignal.Play("alert");
+                }
+                else if (State != AIState.Targeting && State != AIState.Investigating)
+                {
+                    if(Target(position + dir * distOffset, chunk, AIState.Investigating))
+                        FinishPath = () =>
                         {
-                            State = AIState.Targeting;
-                            AlertSignal.Play("alert");
-                        }
-                        else if (State != AIState.Targeting && State != AIState.Investigating)
-                        {
-                            State = AIState.Investigating;
                             AlertSignal.Play("noise");
                             Game.SoundEngine.Play("Enemy_Alarmed", Position, 1);
                             ViewCone.SetColor(ConeEntity.InspectColor);
-                        }
-                        break;
-                    }
+                        };
                 }
+                
                 
 
             }
@@ -793,14 +895,12 @@ namespace team5
                 ViewCone.FromDegrees(Direction, 30);
             }
 
-            if (Target(position, chunk))
-            {
-                State = AIState.Targeting;
-                AlertSignal.Play("alert");
-                ViewCone.SetColor(ConeEntity.AlertColor);
-            }
-
-
+            if(Target(position, chunk, AIState.Targeting))
+                FinishPath = () =>
+                {
+                    AlertSignal.Play("alert");
+                    ViewCone.SetColor(ConeEntity.AlertColor);
+                };
         }
 
         public void ClearAlarm(Chunk chunk)
@@ -815,7 +915,7 @@ namespace team5
 
         #region Public Methods
 
-        public List<Vector2> FindReducedPath(Chunk chunk, List<Vector2> path, Vector2 size)
+        public static List<Vector2> FindReducedPath(Chunk chunk, List<Vector2> path, Vector2 size, Vector2 position, List<Vector2> prevPath, int nextNode, CancellationToken token)
         {
             var reducedPath = new List<Vector2>();
 
@@ -826,18 +926,19 @@ namespace team5
 
             var lastDir = new Vector2(0);
 
-            reducedPath.Add(Position);
+            reducedPath.Add(position);
 
             Vector2 lastPoint = reducedPath.Last();
 
             for (int i = path.Count-1; i > 0; --i)
             {
+                token.ThrowIfCancellationRequested();
                 var tentativePoint = path[i];
 
                 var dir = tentativePoint - reducedPath.Last();
                 var point1 = new Vector2(dir.Y , -dir.X);
                 point1.Normalize();
-                point1 *= Size.X;
+                point1 *= size.X;
                 var point2 = -point1;
 
                 point1 += reducedPath.Last();
@@ -847,15 +948,15 @@ namespace team5
                 if(chunk.IntersectLine(point1, dir, 1, out float location1, false, true) || chunk.IntersectLine(point2, dir, 1, out float location2, false, true))
                 {
 
-                    if (Path != null)
+                    if (prevPath != null)
                     {
-                        int node = Path.FindIndex(NextNode, x => x == lastPoint);
+                        int node = prevPath.FindIndex(nextNode, x => x == lastPoint);
                         if (node != -1)
                         {
                             reducedPath = new List<Vector2>();
-                            for (int p = NextNode - 1; p <= node; ++p)
+                            for (int p = nextNode - 1; p <= node; ++p)
                             {
-                                reducedPath.Add(Path[p]);
+                                reducedPath.Add(prevPath[p]);
                             }
                         }
                         else
