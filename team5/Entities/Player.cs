@@ -237,7 +237,7 @@ namespace team5
                         else if (entity is ButtonPrompt)
                         {
                             Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position + new Vector2(0, 36));
-                            Game.TextEngine.QueueButton(((ButtonPrompt)entity).Button, buttonPos);
+                            ((ButtonPrompt)entity).DrawPrompt();
                         }
                         else if (entity is DialogTrigger)
                         {

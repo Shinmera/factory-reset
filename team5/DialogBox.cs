@@ -64,7 +64,7 @@ namespace team5
 
         public override void Update()
         {
-            if(CallSound == null) {
+            if(CallSound == null && TimePerLetter > 0) {
                 CallSound = Game.SoundEngine.Play("Player_WalkieTalk1", 1, false);
             }
 
@@ -173,6 +173,10 @@ namespace team5
 
         public void PlaySound()
         {
+            if(TimePerLetter == 0)
+            {
+                return;
+            }
             if (CallSound.Stopped)
             {
                 CallSound = Game.SoundEngine.Play("Player_WalkieTalk1", 1, false);
