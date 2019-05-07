@@ -419,14 +419,22 @@ namespace team5
         /// <summary> Sets the state to targeting and pathfinds towards the target location, then searches after it reaches it.</summary>
         public bool Target(Vector2 target, Chunk chunk, AIState nextState)
         {
-            if(State == AIState.Targeting && (LastTarget - target).LengthSquared() < Chunk.TileSize*Chunk.TileSize && Path.Count > 2)
+            if (State == AIState.Targeting && Path.Count - NextNode <= 1)
+            {
+                if (!chunk.IntersectLine(Position, target - Position, 1, out float location, false, true))
+                {
+                     Path[Path.Count - 1] = target;
+                }
+            }
+
+            if (State == AIState.Targeting && (LastTarget - target).LengthSquared() < Chunk.TileSize*Chunk.TileSize && Path.Count > 2)
             {
                 return false;
             }
 
             if(State == AIState.Targeting && (LastTarget - target).LengthSquared() < 1 && Path.Count > 1)
             {
-                //return false;
+                return false;
             }
 
             LastTarget = target;
@@ -527,29 +535,6 @@ namespace team5
 
         public override void Update(Chunk chunk)
         {
-            if(Pathfinding != null)
-            {
-                if (Pathfinding.IsCompleted)
-                {
-                    
-
-                    var newPath = Pathfinding.Result;
-
-                    Pathfinding.Dispose();
-                    Pathfinding = null;
-
-                    if (newPath.Count > 1)
-                    {
-                        Path = newPath;
-
-                        NextNode = 1;
-                    }
-
-                    State = NextState;
-
-                    FinishPath.Invoke();
-                }
-            }
 
             if(FlyingSound == null)
                 FlyingSound = Game.SoundEngine.Play("Enemy_DroneFly", Position, 1, true);
@@ -677,48 +662,6 @@ namespace team5
                         else
                         {
                             MoveTo(Path[NextNode], TargetSpeed);
-
-                            if (Path.Count - NextNode <= 1)
-                            {
-                                Vector2 dir = chunk.Level.Player.Position - Position;
-                                if (dir.LengthSquared() <= ViewSize * ViewSize * 4)
-                                {
-                                    float targetDirection = (float)Math.Atan2(dir.Y, dir.X);
-                                    if (ConeEntity.ConvertAngle(targetDirection - Direction) <= 2 * Game1.DeltaT * TurnAngularVelocity || ConeEntity.ConvertAngle(Direction - targetDirection) <= 2 * Game1.DeltaT * TurnAngularVelocity)
-                                    {
-                                        Direction = targetDirection;
-                                    }
-                                    else if (ConeEntity.ConvertAngle(targetDirection - Direction) < Math.PI)
-                                    {
-                                        Direction += Game1.DeltaT * TurnAngularVelocity;
-                                    }
-                                    else
-                                    {
-                                        Direction -= Game1.DeltaT * TurnAngularVelocity;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else if (Path.Count - NextNode <= 1)
-                    {
-                        Vector2 dir = chunk.Level.Player.Position - Position;
-                        if (dir.LengthSquared() <= ViewSize * ViewSize * 4)
-                        {
-                            float targetDirection = (float)Math.Atan2(dir.Y, dir.X);
-
-                            if (ConeEntity.ConvertAngle(targetDirection - Direction) <= 2 * Game1.DeltaT * TurnAngularVelocity || ConeEntity.ConvertAngle(Direction - targetDirection) <= 2 * Game1.DeltaT * TurnAngularVelocity)
-                            {
-                                Direction = targetDirection;
-                            }
-                            else if (ConeEntity.ConvertAngle(targetDirection - Direction) < Math.PI)
-                            {
-                                Direction += Game1.DeltaT * TurnAngularVelocity;
-                            }
-                            else
-                            {
-                                Direction -= Game1.DeltaT * TurnAngularVelocity;
-                            }
                         }
                     }
                     break;
@@ -747,6 +690,30 @@ namespace team5
                         }
                     }
                     break;
+            }
+
+            if (Pathfinding != null)
+            {
+                if (Pathfinding.IsCompleted)
+                {
+
+
+                    var newPath = Pathfinding.Result;
+
+                    Pathfinding.Dispose();
+                    Pathfinding = null;
+
+                    if (newPath.Count > 1)
+                    {
+                        Path = newPath;
+
+                        NextNode = 1;
+                    }
+
+                    State = NextState;
+
+                    FinishPath.Invoke();
+                }
             }
 
             { // Kill if touched.
