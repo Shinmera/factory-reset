@@ -403,6 +403,11 @@ namespace team5
                         Position = TargetSpot + new Vector2(0, Size.Y - Chunk.TileSize / 2);
                         Velocity.X = 0;
                     }
+
+                    if (Position.Y - Size.Y < TargetSpot.Y - Chunk.TileSize)
+                    {
+                        State = PlayerState.Normal;
+                    }
                     break;
                 case PlayerState.Hiding:
                     Velocity.X = 0;
@@ -431,6 +436,11 @@ namespace team5
 
                         Position.X = TargetSpot.X;
                         Velocity.X = 0;
+                    }
+
+                    if (Position.Y - Size.Y < TargetSpot.Y - Chunk.TileSize)
+                    {
+                        State = PlayerState.Normal;
                     }
                     break;
                 
