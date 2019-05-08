@@ -75,39 +75,56 @@ namespace team5
 
         private static readonly char[] Whitespace = { ' ' };
 
+        private static readonly char[] NewLine = { '\n' };
+
         private Dictionary<string, SpriteFont> Fonts;
 
         public string TextWrap(string text, float sizePx, string fontName, float textwidth)
         {
             SpriteFont font = Fonts[fontName];
 
-            string[] words = text.Split(Whitespace);
+            string[] lines = text.Split(NewLine);
 
-            float scaledWidth = textwidth * font.LineSpacing / sizePx;
+            var finalString = new System.Text.StringBuilder();
 
-            float spaceWidth = font.MeasureString(" ").X;
-            float lineWidth = -spaceWidth;
-
-            var lineWrappedString = new System.Text.StringBuilder();
-
-            for (int i = 0; i < words.Length; ++i)
+            for (int j = 0; j < lines.Length; ++j)
             {
-                float wordWidth = font.MeasureString(" " + words[i]).X;
-                lineWidth += wordWidth;
-                if (lineWidth > scaledWidth)
+                if (j != 0)
                 {
-                    lineWidth = -spaceWidth + wordWidth;
-                    lineWrappedString.Append("\n");
+                    finalString.Append("\n");
                 }
-                else
+                string[] words = lines[j].Split(Whitespace);
+
+                float scaledWidth = textwidth * font.LineSpacing / sizePx;
+
+                float spaceWidth = font.MeasureString(" ").X;
+                float lineWidth = -spaceWidth;
+
+                var lineWrappedString = new System.Text.StringBuilder();
+
+                for (int i = 0; i < words.Length; ++i)
                 {
-                    lineWrappedString.Append(" ");
+                    float wordWidth = font.MeasureString(" " + words[i]).X;
+                    lineWidth += wordWidth;
+                    if (lineWidth > scaledWidth)
+                    {
+                        lineWidth = -spaceWidth + wordWidth;
+                        lineWrappedString.Append("\n");
+                    }
+                    else
+                    {
+                        lineWrappedString.Append(" ");
+                    }
+
+                    lineWrappedString.Append(words[i]);
                 }
 
-                lineWrappedString.Append(words[i]);
+
+                finalString.Append(lineWrappedString);
+                
             }
 
-            return lineWrappedString.ToString();
+            return finalString.ToString();
         }
 
         public TextEngine(Game1 game)
