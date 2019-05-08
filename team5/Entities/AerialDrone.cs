@@ -426,7 +426,7 @@ namespace team5
             {
                 if (!chunk.IntersectLine(Position, target - Position, 1, out float location, false, true))
                 {
-                     Path[Path.Count - 1] = target;
+                     TargetLocation = target;
                 }
             }
 
@@ -464,7 +464,10 @@ namespace team5
                     PathfindingTokens.Dispose();
                 PathfindingTokens = new CancellationTokenSource();
                 var token = PathfindingTokens.Token;
-                Pathfinding = Task.Run( () => FindReducedPath(chunk, FindPath(chunk, startx, starty, target, token), Size, Position, Path, NextNode, token), token);
+                var localPos = Position;
+                var localNextNode = NextNode;
+                var localPath = Path;
+                Pathfinding = Task.Run( () => FindReducedPath(chunk, FindPath(chunk, startx, starty, target, token), Size, localPos, localPath, localNextNode, token), token);
                 NextState = nextState;
 
                 return true;
@@ -654,17 +657,21 @@ namespace team5
                     }
                     break;
                 case AIState.Targeting:
-                    if (MoveTo(Path[NextNode], TargetSpeed))
+                    Vector2 nextPos = NextNode < Path.Count - 1 ? Path[NextNode] : TargetLocation;
+                    if (MoveTo(nextPos, TargetSpeed))
                     {
                         Velocity = new Vector2();
                         ++NextNode;
+
+                        nextPos = NextNode < Path.Count - 1 ? Path[NextNode] : TargetLocation;
+
                         if (NextNode >= Path.Count)
                         {
-                            Search(Path[NextNode - 1], chunk, float.PositiveInfinity);
+                            Search(nextPos, chunk, float.PositiveInfinity);
                         }
                         else
                         {
-                            MoveTo(Path[NextNode], TargetSpeed);
+                            MoveTo(nextPos, TargetSpeed);
                         }
                     }
                     break;
