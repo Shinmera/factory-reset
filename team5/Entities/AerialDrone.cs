@@ -133,7 +133,10 @@ namespace team5
 
             while (openSet.Count > 0)
             {
-                token.ThrowIfCancellationRequested();
+                if (token.IsCancellationRequested)
+                {
+                    return null;
+                }
 
                 Point current = openSet.First();
 
@@ -877,7 +880,10 @@ namespace team5
 
             for (int i = path.Count-1; i > 0; --i)
             {
-                token.ThrowIfCancellationRequested();
+                if (token.IsCancellationRequested)
+                {
+                    return null;
+                }
                 var tentativePoint = path[i];
 
                 var dir = tentativePoint - reducedPath.Last();
