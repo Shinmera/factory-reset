@@ -395,7 +395,7 @@ namespace team5
             }
 
             maxDist -= Size.X;
-
+            
             if (maxDist < MinMovement)
             {
                 return false;

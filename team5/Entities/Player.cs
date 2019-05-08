@@ -204,7 +204,7 @@ namespace team5
                                 float dir = Math.Sign(Position.X - entity.Position.X);
                                 if (-Sprite.Direction == dir)
                                 {
-                                    Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position + new Vector2(dir * 1.1F * Chunk.TileSize, 36));
+                                    Vector2 buttonPos = Game.TextEngine.TranslateToWindow(entity.Position + new Vector2(dir * 1.1F * Chunk.TileSize, 32));
                                     Game.TextEngine.QueueButton(TextEngine.Button.Y, buttonPos);
                                     if (entity == TargetEntity)
                                     {

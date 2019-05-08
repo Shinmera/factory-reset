@@ -103,7 +103,7 @@ namespace team5
             return point.X >= X
                 && point.X < X + Width
                 && point.Y >= Y
-                && point.Y < Y + Width;
+                && point.Y < Y + Height;
         }
 
         public List<Vector2> ToPolygon()
