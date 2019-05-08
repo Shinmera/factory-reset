@@ -195,6 +195,7 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include=".editorconfig" />
+    <Content Include="Assets\main-menu-1080.png" />
     <Content Include="Content\Fonts\Wellbutrin.ttf" />
     <Content Include="Content\Levels\Office.zip" />
     <Content Include="Content\Levels\factory.zip" />
@@ -204,7 +205,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo.scale-200.png" />
-    <Content Include="Assets\main-menu.png" />
     <Content Include="Assets\SmallLogo.scale-200.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />

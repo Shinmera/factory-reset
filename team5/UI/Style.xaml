@@ -13,7 +13,7 @@
             <Setter.Value>
                 <ImageBrush>
                     <ImageBrush.ImageSource>
-                        <BitmapImage UriSource="/Assets/main-menu.png"/>
+                        <BitmapImage UriSource="/Assets/main-menu-1080.png"/>
                     </ImageBrush.ImageSource>
                 </ImageBrush>
             </Setter.Value>
@@ -21,14 +21,14 @@
     </Style>
     <Style x:Key="MenuPage" TargetType="Page">
         <Setter Property="FontSize" Value="24"/>
-        <Setter Property="Background" Value="#80000000"/>
+        <Setter Property="Background" Value="#80FFFFFF"/>
     </Style>
     <Style TargetType="ListViewItem">
         <Setter Property="FocusVisualPrimaryThickness" Value="0"/>
         <Setter Property="FocusVisualSecondaryThickness" Value="0"/>
     </Style>
     <Style x:Key="SidePanel" TargetType="ListView">
-        <Setter Property="Background" Value="#A0000000"/>
+        <Setter Property="Background" Value="#A0FFFFFF"/>
     </Style>
     <Style x:Key="PanelItem" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource Wellbutrin}" />
@@ -55,7 +55,7 @@
         <Setter Property="TextAlignment" Value="Center"/>
     </Style>
     <Style x:Key="GameOverlay" TargetType="StackPanel">
-        <Setter Property="Background" Value="#A0000000"/>
+        <Setter Property="Background" Value="#A0FFFFFF"/>
     </Style>
     <Style x:Key="OverlayHeader" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource Wellbutrin}" />
