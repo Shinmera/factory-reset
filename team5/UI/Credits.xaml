@@ -6,49 +6,50 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Style="{StaticResource Credits}">
-  <ScrollViewer>
-    <RichTextBlock Style="{StaticResource CreditsText}">
-      <Paragraph FontSize="36" Margin="10,50,0,0">Production</Paragraph>
-      <Paragraph>Nicolas Hafner</Paragraph>
+    Style="{StaticResource MenuPage}">
+  <ListView Style="{StaticResource Credits}">
+    <ListViewHeaderItem>Production</ListViewHeaderItem>
+    <ListViewItem>Nicolas Hafner</ListViewItem>
 
-      <Paragraph FontSize="36" Margin="10,50,0,0">Game Design</Paragraph>
-      <Paragraph>Nicolas Hafner</Paragraph>
-      <Paragraph>Gengyan Li</Paragraph>
-      <Paragraph>Pulkit Singh</Paragraph>
-      <Paragraph>Nicole Manojlovic</Paragraph>
-      <Paragraph>Amir Hossein Heidari</Paragraph>
+    <ListViewHeaderItem>Game Design</ListViewHeaderItem>
+    <ListViewItem>Nicolas Hafner</ListViewItem>
+    <ListViewItem>Gengyan Li</ListViewItem>
+    <ListViewItem>Pulkit Singh</ListViewItem>
+    <ListViewItem>Nicole Manojlovic</ListViewItem>
+    <ListViewItem>Amir Hossein Heidari</ListViewItem>
 
-      <Paragraph FontSize="36" Margin="10,50,0,0">Programming</Paragraph>
-      <Paragraph>Gengyan Li</Paragraph>
-      <Paragraph>Nicolas Hafner</Paragraph>
-      <Paragraph>Amir Hossein Heidari</Paragraph>
-      
-      <Paragraph FontSize="36" Margin="10,50,0,0">Character Design &amp; Animation</Paragraph>
-      <Paragraph>Nicolas Hafner</Paragraph>
-      
-      <Paragraph FontSize="36" Margin="10,50,0,0">Enemy Design &amp; Animation</Paragraph>
-      <Paragraph>Pulkit Singh</Paragraph>
-      
-      <Paragraph FontSize="36" Margin="10,50,0,0">Environment Design</Paragraph>
-      <Paragraph FontSize="30" Margin="15,5,0,0">Rooftops &amp; Office</Paragraph>
-      <Paragraph>Nicolas Hafner</Paragraph>
-      <Paragraph FontSize="30" Margin="15,5,0,0">Factory</Paragraph>
-      <Paragraph>Pulkit Singh</Paragraph>
-      
-      <Paragraph FontSize="36" Margin="10,50,0,0">Sound Design</Paragraph>
-      <Paragraph>Nicole Manojlovic</Paragraph>
-      
-      <Paragraph FontSize="36" Margin="10,50,0,0">Music</Paragraph>
-      <Paragraph>Nicolas Hafner</Paragraph>
-      
-      <Paragraph FontSize="36" Margin="10,50,0,0">Level Design</Paragraph>
-      <Paragraph FontSize="30" Margin="15,5,0,0">Rooftops</Paragraph>
-      <Paragraph>Nicole Manojlovic</Paragraph>
-      <Paragraph FontSize="30" Margin="15,5,0,0">Office</Paragraph>
-      <Paragraph>Amir Hossein Heidari</Paragraph>
-      <Paragraph FontSize="30" Margin="15,5,0,0">Factory</Paragraph>
-      <Paragraph>Pulkit Singh</Paragraph>
-    </RichTextBlock>
-  </ScrollViewer>
+    <ListViewHeaderItem>Programming</ListViewHeaderItem>
+    <ListViewItem>Gengyan Li</ListViewItem>
+    <ListViewItem>Nicolas Hafner</ListViewItem>
+    <ListViewItem>Amir Hossein Heidari</ListViewItem>
+    
+    <ListViewHeaderItem>Character Design &amp; Animation</ListViewHeaderItem>
+    <ListViewItem>Nicolas Hafner</ListViewItem>
+    
+    <ListViewHeaderItem>Enemy Design &amp; Animation</ListViewHeaderItem>
+    <ListViewItem>Pulkit Singh</ListViewItem>
+    
+    <ListViewHeaderItem>Environment Design</ListViewHeaderItem>
+    <ListViewHeaderItem>Rooftops &amp; Office</ListViewHeaderItem>
+    <Paragraph>Nicolas Hafner</Paragraph>
+    <ListViewHeaderItem>Factory</ListViewHeaderItem>
+    <Paragraph>Pulkit Singh</Paragraph>
+    
+    <ListViewHeaderItem>Sound Design</ListViewHeaderItem>
+    <Paragraph>Nicole Manojlovic</Paragraph>
+    
+    <ListViewHeaderItem>Music</ListViewHeaderItem>
+    <Paragraph>Nicolas Hafner</Paragraph>
+    
+    <ListViewHeaderItem>Level Design</ListViewHeaderItem>
+    <ListViewHeaderItem>Rooftops</ListViewHeaderItem>
+    <Paragraph>Nicole Manojlovic</Paragraph>
+    <ListViewHeaderItem>Office</ListViewHeaderItem>
+    <Paragraph>Amir Hossein Heidari</Paragraph>
+    <ListViewHeaderItem>Factory</ListViewHeaderItem>
+    <Paragraph>Pulkit Singh</Paragraph>
+    
+    <ListViewHeaderItem>Writing</ListViewHeaderItem>
+    <Paragraph>Nicole Manojlovic</Paragraph>
+  </ListView>
 </Page>

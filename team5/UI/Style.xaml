@@ -85,8 +85,8 @@
     <Style x:Key="ScoreContinue" TargetType="Button">
         <Setter Property="FontFamily" Value="{StaticResource Wellbutrin}" />
     </Style>
-    <Style x:Key="Credits" TargetType="Page">
-        <Setter Property="Background" Value="#80000000"/>
+    <Style x:Key="Credits" TargetType="ListView">
+        <Setter Property="FontFamily" Value="{StaticResource Wellbutrin}" />
     </Style>
     <Style x:Key="CreditsText" TargetType="RichTextBlock">
         <Setter Property="Margin" Value="10, 20, 5, 20"/>
