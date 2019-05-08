@@ -146,6 +146,8 @@ namespace team5
                     if (chunk.Level.StartChase)
                     {
                         Timer = 99.99F;
+                        if(!chunk.Level.Player.IsHiding)
+                            Alert(chunk.Level.Player.Position, chunk);
                     }
                     Timer -= dt;
                     if (Timer <= 0)
@@ -176,9 +178,9 @@ namespace team5
             float rest = (Timer + Game1.DeltaT) - full;
             Game.Transforms.PopView();
             Game.TextEngine.QueueText(full.ToString("00"), new Vector2(Camera.TargetWidth+5, 210), 26,
-                                      Color.White, TextEngine.Orientation.Right, TextEngine.Orientation.Center);
+                                      level.StartChase ? new Color(210, 0, 0, 1):Color.White, TextEngine.Orientation.Right, TextEngine.Orientation.Center);
             Game.TextEngine.QueueText(rest.ToString(".00"), new Vector2(Camera.TargetWidth+5, 210- 3), 16,
-                                      Color.LightGray, TextEngine.Orientation.Left, TextEngine.Orientation.Center);
+                                      level.StartChase ? new Color(180, 0, 0, 1) : Color.LightGray, TextEngine.Orientation.Left, TextEngine.Orientation.Center);
         }
 
     }
