@@ -30,26 +30,21 @@
     <ListViewItem>Pulkit Singh</ListViewItem>
     
     <ListViewHeaderItem>Environment Design</ListViewHeaderItem>
-    <ListViewHeaderItem>Rooftops &amp; Office</ListViewHeaderItem>
-    <Paragraph>Nicolas Hafner</Paragraph>
-    <ListViewHeaderItem>Factory</ListViewHeaderItem>
-    <Paragraph>Pulkit Singh</Paragraph>
+    <ListViewItem>Nicolas Hafner: Rooftops &amp; Office</ListViewItem>
+    <ListViewItem>Pulkit Singh: Factory</ListViewItem>
     
     <ListViewHeaderItem>Sound Design</ListViewHeaderItem>
-    <Paragraph>Nicole Manojlovic</Paragraph>
+    <ListViewItem>Nicole Manojlovic</ListViewItem>
     
     <ListViewHeaderItem>Music</ListViewHeaderItem>
-    <Paragraph>Nicolas Hafner</Paragraph>
+    <ListViewItem>Nicolas Hafner</ListViewItem>
     
     <ListViewHeaderItem>Level Design</ListViewHeaderItem>
-    <ListViewHeaderItem>Rooftops</ListViewHeaderItem>
-    <Paragraph>Nicole Manojlovic</Paragraph>
-    <ListViewHeaderItem>Office</ListViewHeaderItem>
-    <Paragraph>Amir Hossein Heidari</Paragraph>
-    <ListViewHeaderItem>Factory</ListViewHeaderItem>
-    <Paragraph>Pulkit Singh</Paragraph>
+    <ListViewItem>Nicole Manojlovic: Rooftops</ListViewItem>
+    <ListViewItem>Amir Hossein Heidari: Office</ListViewItem>
+    <ListViewItem>Factory: Pulkit Singh</ListViewItem>
     
     <ListViewHeaderItem>Writing</ListViewHeaderItem>
-    <Paragraph>Nicole Manojlovic</Paragraph>
+    <ListViewItem>Nicole Manojlovic</ListViewItem>
   </ListView>
 </Page>
