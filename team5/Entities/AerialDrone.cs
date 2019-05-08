@@ -457,8 +457,6 @@ namespace team5
                 if(Pathfinding != null)
                 {
                     PathfindingTokens.Cancel();
-                    Pathfinding.Wait();
-                    Pathfinding.Dispose();
                 }
                 if(PathfindingTokens != null)
                     PathfindingTokens.Dispose();
