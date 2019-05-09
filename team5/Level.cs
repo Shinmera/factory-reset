@@ -253,13 +253,6 @@ namespace team5
             }
             else
             {
-                if (StartChase)
-                {
-                    if (Alarm.Detected)
-                    {
-                        Alarm.Timer = 99.99F;
-                    }
-                }
                 Camera.Update();
                 Time += Game1.DeltaT;
 
@@ -376,6 +369,8 @@ namespace team5
                     TransitionChunks.Clear();
 
                     TargetChunk.Update();
+                    Alarm.Update(TargetChunk);
+
 
                     foreach (var chunk in Chunks)
                     {

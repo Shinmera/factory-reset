@@ -168,12 +168,14 @@ namespace team5
 
         public void Draw(Level level)
         {
+
             if(!Detected) return;
             Game.Transforms.PushView();
             Game.Transforms.ResetView();
             Game.Transforms.TranslateView(new Vector2(Camera.TargetWidth, 210));
             Game.Transforms.ScaleView(level.Camera.ViewScale);
             Sprite.Draw();
+
             float full = (float)Math.Truncate(Timer + Game1.DeltaT);
             float rest = (Timer + Game1.DeltaT) - full;
             Game.Transforms.PopView();

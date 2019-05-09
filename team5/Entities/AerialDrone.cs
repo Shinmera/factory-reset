@@ -819,11 +819,20 @@ namespace team5
 
                 Vector2 dir = new Vector2((float)Math.Sin(angle), (float)Math.Cos(angle));
 
-                if(chunk.IntersectLine(position, dir, distOffset + Size.X, out float location, false))
+                var point1 = new Vector2(dir.Y, -dir.X);
+                point1.Normalize();
+                point1 *= Size.X;
+                var point2 = -point1;
+
+                if (chunk.IntersectLine(Position + point1, dir, distOffset, out float distToIntersect1, false, true))
                 {
-                    distOffset = location - Size.X;
+                    distOffset = distToIntersect1;
                 }
 
+                if (chunk.IntersectLine(Position + point2, dir, distOffset, out float distToIntersect2, false, true))
+                {
+                    distOffset = distToIntersect2;
+                }
                 
                 if (State == AIState.Searching)
                 {
