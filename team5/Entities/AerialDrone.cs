@@ -279,6 +279,7 @@ namespace team5
         private CancellationTokenSource PathfindingTokens;
         private Action FinishPath = null;
         private AIState NextState;
+        //private Vector2 NextTarget;
 
 
         private SoundEngine.Sound FlyingSound = null;
@@ -450,7 +451,7 @@ namespace team5
             int startx = (int)Math.Floor((Position.X - chunk.BoundingBox.X) / Chunk.TileSize);
             int starty = (int)Math.Floor((Position.Y - chunk.BoundingBox.Y) / Chunk.TileSize);
 
-            TargetLocation = target;
+            //TargetLocation = target;
 
             if (Pathfinding == null || NextState != nextState)
             {
@@ -467,7 +468,6 @@ namespace team5
                 var localPath = Path;
                 Pathfinding = Task.Run( () => FindReducedPath(chunk, FindPath(chunk, startx, starty, target, token), Size, localPos, localPath, localNextNode, token), token);
                 NextState = nextState;
-
                 return true;
             }
             else
@@ -573,7 +573,10 @@ namespace team5
                         }
                         if (!foundSearch)
                         {
-                            Target(TargetLocation, chunk, AIState.Targeting);
+                            if(Target(TargetLocation, chunk, AIState.Targeting))
+                            {
+                                FinishPath = () => { };
+                            }
                         }
                     }
                     break;
@@ -592,7 +595,10 @@ namespace team5
                         }
                         if (!foundSearch)
                         {
-                            Target(TargetLocation, chunk, AIState.Investigating);
+                            if(Target(TargetLocation, chunk, AIState.Investigating))
+                            {
+                                FinishPath = () => { };
+                            }
                         }
                     }
 
@@ -714,6 +720,8 @@ namespace team5
                     if (newPath.Count > 1)
                     {
                         Path = newPath;
+
+                        TargetLocation = Path.Last();
 
                         NextNode = 1;
                     }
