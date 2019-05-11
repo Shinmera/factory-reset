@@ -150,6 +150,10 @@ namespace team5
                             Alert(chunk.Level.Player.Position, chunk);
                     }
                     Timer -= dt;
+                    if (chunk.Level.Player.IsHiding)
+                    {
+                        Timer -= dt;
+                    }
                     if (Timer <= 0)
                     {
                         

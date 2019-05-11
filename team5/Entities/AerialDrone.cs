@@ -46,7 +46,7 @@ namespace team5
         /// <summary> How far away from a target location the drone will search</summary>
         private const float SearchRange = 160;
         /// <summary> How long the drone will search before giving up after an investigation</summary>
-        private const float SearchTime = 10;
+        private const float SearchTime = 7;
         /// <summary> How long the drone will wait before wandering to a new spot (in patrol mode)</summary>
         private const float WaitTime = 5;
         /// <summary> How fast the drone turns during idling</summary>
@@ -57,7 +57,7 @@ namespace team5
         private const int WanderSearchAttempts = 15;
 
         private const float BaseVolume = 100;
-        private const float ClearSensitivity = 3F;
+        private const float ClearSensitivity = 2.4F;
         private const float AlertSensitivity = 5F;
         private const float HearingPrecision = Chunk.TileSize * 8;
 

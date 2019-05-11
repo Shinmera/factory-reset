@@ -93,8 +93,9 @@ namespace team5
 
             if(ShakeDuration > 0)
             {
-
-                if (ChunkClamps.Contains(Position))
+                bool xclamped = Position.X == clamp(ChunkClamps.Left, Position.X, ChunkClamps.Right);
+                bool yclamped = Position.Y == clamp(ChunkClamps.Bottom, Position.Y, ChunkClamps.Top);
+                if (xclamped || yclamped)
                 {
                     Vector2 OrigPosition = Position;
                     do
@@ -105,7 +106,8 @@ namespace team5
                         Vector2 offset = dist * new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
 
                         Position += offset;
-                    } while (!ChunkClamps.Contains(Position));
+                    } while ((xclamped && (Position.X != clamp(ChunkClamps.Left, Position.X, ChunkClamps.Right)))
+                    || (yclamped && (Position.Y != clamp(ChunkClamps.Bottom, Position.Y, ChunkClamps.Top))));
                 }
                 else
                 {
