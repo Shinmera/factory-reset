@@ -808,6 +808,15 @@ namespace team5
 
             Velocity.Y -= dt * Gravity;
 
+            if (State == PlayerState.CrashDoor)
+            {
+                if (Sprite.Frame == 6)
+                {
+                    State = PlayerState.Normal;
+                    TargetEntity = null;
+                }
+            }
+
             HandleCollisions(dt, targetChunk, false);
 
             if (0 < Velocity.Y)

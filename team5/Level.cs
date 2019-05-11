@@ -263,6 +263,9 @@ namespace team5
                     if (Player.DeathTimer > 0)
                     {
                         DeathFadeLingerTimer = DeathFadeLingerDuration;
+                        ActiveChunk.Update();
+                        Alarm.Update(ActiveChunk);
+                        return;
                     }
 
                     if (PlayerBB.Right + Game1.DeltaT * Player.Velocity.X > ActiveChunk.BoundingBox.Right && Player.Velocity.X > 0)
