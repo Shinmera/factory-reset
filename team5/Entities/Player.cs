@@ -301,7 +301,7 @@ namespace team5
 
                         if (jump && (!HasWallJumped || CanRepeatWallJump))
                         {
-                            if (right != null && (!Grounded || Controller.MoveRight))
+                            if (right != null && (!Grounded))
                             {
                                 MakeSound(chunk, "walljump");
                                 Velocity.X = -WallJumpVelocity.X;
@@ -309,7 +309,7 @@ namespace team5
                                 HasWallJumped = true;
                                 jump = false;
                             }
-                            else if (left != null && (!Grounded || Controller.MoveLeft))
+                            else if (left != null && (!Grounded))
                             {
                                 MakeSound(chunk, "walljump");
                                 Velocity.X = WallJumpVelocity.X;
