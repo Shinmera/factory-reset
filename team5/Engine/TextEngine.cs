@@ -233,6 +233,11 @@ namespace team5
 
         public void DrawText(RectangleF Mask = default(RectangleF))
         {
+            if(QueuedText.Count == 0)
+            {
+                return;
+            }
+
             if (Mask.Width != 0)
             {
                 RasterizerState _rasterizerState = new RasterizerState() { ScissorTestEnable = true };

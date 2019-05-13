@@ -183,8 +183,9 @@ namespace team5
             float full = (float)Math.Truncate(Timer + Game1.DeltaT);
             float rest = (Timer + Game1.DeltaT) - full;
             Game.Transforms.PopView();
+
             Game.TextEngine.QueueText(full.ToString("00"), new Vector2(Camera.TargetWidth+5, 210), 26,
-                                      level.StartChase ? new Color(210, 0, 0, 1):Color.White, TextEngine.Orientation.Right, TextEngine.Orientation.Center);
+                                      level.StartChase ? new Color(210, 0, 0, 1) : Color.White, TextEngine.Orientation.Right, TextEngine.Orientation.Center);
             Game.TextEngine.QueueText(rest.ToString(".00"), new Vector2(Camera.TargetWidth+5, 210- 3), 16,
                                       level.StartChase ? new Color(180, 0, 0, 1) : Color.LightGray, TextEngine.Orientation.Left, TextEngine.Orientation.Center);
         }

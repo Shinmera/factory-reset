@@ -107,7 +107,9 @@ namespace team5
             Game.Transforms.ResetView();
             Game.Transforms.ScaleView(scale);
             Game.Transforms.TranslateView(scale * center);
-            
+
+            Game.TextEngine.DrawText();
+
             BackgroundSprite.Draw();
             Game.Transforms.ResetView();
             float textX = center.X - (Background.Width/2 - LeftPadding);
