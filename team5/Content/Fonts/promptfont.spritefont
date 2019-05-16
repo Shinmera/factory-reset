@@ -5,7 +5,7 @@
     <Size>64</Size>
     <Spacing>0</Spacing>
     <UseKerning>true</UseKerning>
-    <Style>Regular</Style>
+    <Style>Regular</Style> 
     <!--
       DPAD-L   0x00AF
       DPAD-U   0x00B0
