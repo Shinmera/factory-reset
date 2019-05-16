@@ -176,6 +176,9 @@
     <Compile Include="Engine\TriangleEngine.cs" />
     <Compile Include="Engine\Particle.cs" />
     <Compile Include="Engine\ParticleEmitter.cs" />
+    <Compile Include="UI\NewGame.xaml.cs">
+      <DependentUpon>NewGame.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Options.xaml.cs">
       <DependentUpon>Options.xaml</DependentUpon>
     </Compile>
@@ -234,6 +237,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="UI\Credits.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\NewGame.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

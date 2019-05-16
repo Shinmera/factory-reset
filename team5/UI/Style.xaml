@@ -35,6 +35,13 @@
         <Setter Property="FocusVisualPrimaryThickness" Value="0"/>
         <Setter Property="FocusVisualSecondaryThickness" Value="0"/>
     </Style>
+    <Style x:Key="MenuHeader" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource Wellbutrin}" />
+        <Setter Property="FontSize" Value="48"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="Margin" Value="0,10,30,0"/>
+    </Style>
     <Style x:Key="Level" TargetType="StackPanel">
         <Setter Property="Margin" Value="10,10,10,10"/>
     </Style>

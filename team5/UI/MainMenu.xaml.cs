@@ -12,7 +12,7 @@ namespace team5.UI
         public MainMenu()
         {
             this.InitializeComponent();
-            Pages.Add(new MenuPage("New Game", null));
+            Pages.Add(new MenuPage("New Game", new NewGame()));
             Pages.Add(new MenuPage("Select Level", new LevelSelect()));
             Pages.Add(new MenuPage("Options", new Options()));
             Pages.Add(new MenuPage("Credits", new Credits()));
