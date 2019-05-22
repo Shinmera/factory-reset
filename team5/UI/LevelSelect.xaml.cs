@@ -12,7 +12,7 @@ namespace team5.UI
 {
     public sealed partial class LevelSelect : Page
     {
-        Dictionary<string, LevelPreview> LevelNames = new Dictionary<string, LevelPreview>();
+        Dictionary<string, LevelPreview> LevelNames = new Dictionary<string, LevelPreview>(StringComparer.OrdinalIgnoreCase);
 
         ObservableCollection<LevelPreview> Previews = new ObservableCollection<LevelPreview>();
 
