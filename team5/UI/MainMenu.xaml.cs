@@ -18,6 +18,7 @@ namespace team5.UI
             Pages.Add(new MenuPage("Credits", new Credits()));
             Pages.Add(new MenuPage("Quit", null));
             SidePanel.ItemsSource = Pages;
+            SidePanel.SelectedIndex = 0;
         }
 
         private void ShowPage(Page page)

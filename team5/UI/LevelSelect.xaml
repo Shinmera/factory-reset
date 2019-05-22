@@ -16,7 +16,7 @@
         <ListView ScrollViewer.HorizontalScrollMode="Enabled"
                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
                   ScrollViewer.VerticalScrollMode="Disabled"
-                  ScrollViewer.VerticalScrollBarVisibility="Hidden" SelectedIndex="0"
+                  ScrollViewer.VerticalScrollBarVisibility="Hidden"
                   IsItemClickEnabled="True" SelectionMode="Single" SingleSelectionFollowsFocus="True"
                   x:Name="LevelList" Grid.Row="0" ItemClick="LevelSelected" SelectionChanged="SelectionChanged"
                   HorizontalAlignment="Stretch" VerticalAlignment="Bottom">

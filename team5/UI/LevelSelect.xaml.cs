@@ -94,6 +94,7 @@ namespace team5.UI
             foreach (var level in UnsortedPreviews){
                 Previews.Add(level);
             }
+            LevelList.SelectedIndex = 0;
         }
 
         private void Sideload(object sender, Windows.UI.Xaml.RoutedEventArgs e)

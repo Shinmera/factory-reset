@@ -12,13 +12,13 @@
         <SplitView HorizontalAlignment="Stretch" IsPaneOpen="True" DisplayMode="Inline" OpenPaneLength="200"
                    PaneBackground="Transparent">
             <SplitView.Pane>
-                <ListView x:Name="SidePanel" HorizontalAlignment="Stretch" SelectedIndex="0"
+                <ListView x:Name="SidePanel" HorizontalAlignment="Stretch"
                           IsItemClickEnabled="True" SelectionMode="Single" SingleSelectionFollowsFocus="True"
                           ItemClick="ItemClick" SelectionChanged="SelectionChanged"
                           Style="{StaticResource SidePanel}">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="local:MenuPage">
-                            <TextBlock Text="{x:Bind Name}" Style="{StaticResource PanelItem}"/>
+                                <TextBlock Text="{x:Bind Name}" Style="{StaticResource PanelItem}"/>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>

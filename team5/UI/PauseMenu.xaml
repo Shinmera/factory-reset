@@ -8,7 +8,7 @@
             HorizontalAlignment="Center" VerticalAlignment="Stretch" Width="300"
             Style="{StaticResource GameOverlay}">
     <TextBlock Text="Pause" TextAlignment="Center" Style="{StaticResource OverlayHeader}"/>
-    <ListView x:Name="PauseMenuList" SelectedIndex="0"
+    <ListView x:Name="PauseMenuList"
                       IsItemClickEnabled="True" SelectionMode="Single" SingleSelectionFollowsFocus="True"
                       ItemClick="PauseItemClick">
         <ListView.ItemTemplate>
