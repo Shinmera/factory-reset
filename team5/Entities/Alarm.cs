@@ -152,7 +152,7 @@ namespace team5
                     Timer -= dt;
                     if (chunk.Level.Player.IsHiding)
                     {
-                        Timer -= dt;
+                        Timer -= dt*3;
                     }
                     if (Timer <= 0)
                     {
