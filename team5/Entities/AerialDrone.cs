@@ -824,12 +824,12 @@ namespace team5
                 point1 *= Size.X;
                 var point2 = -point1;
 
-                if (chunk.IntersectLine(Position + point1, dir, distOffset, out float distToIntersect1, false, true))
+                if (chunk.IntersectLine(position + point1, dir, distOffset, out float distToIntersect1, false, true))
                 {
                     distOffset = distToIntersect1;
                 }
 
-                if (chunk.IntersectLine(Position + point2, dir, distOffset, out float distToIntersect2, false, true))
+                if (chunk.IntersectLine(position + point2, dir, distOffset, out float distToIntersect2, false, true))
                 {
                     distOffset = distToIntersect2;
                 }
