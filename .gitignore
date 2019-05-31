@@ -1,0 +1,7 @@
+team5/Content/
+team5/bin/
+team5/obj/
+.vs/
+team5/Package.StoreAssociation.xml
+team5/team5.csproj.user
+team5/team5_StoreKey.pfx
