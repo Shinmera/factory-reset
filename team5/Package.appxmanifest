@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="27101944-f277-474a-8933-8b2e3f1e4278" Publisher="CN=linus" Version="1.0.31.0" />
-  <mp:PhoneIdentity PhoneProductId="27101944-f277-474a-8933-8b2e3f1e4278" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="7938Shirakumo.FactoryReset" Publisher="CN=A3AF7B5A-F1ED-4705-BB5D-5DBF8948A2D5" Version="1.0.36.0" />
+  <mp:PhoneIdentity PhoneProductId="933ecf61-716f-4f25-99f3-4c83136d2c0a" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Factory Reset</DisplayName>
-    <PublisherDisplayName>Team 5</PublisherDisplayName>
+    <PublisherDisplayName>Shirakumo</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
