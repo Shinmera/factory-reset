@@ -1,11 +1,4 @@
-# Factory Reset
-A 2D stealth action platformer with hand-crafted pixel-art animation. Made for the 2019 Games Programming Laboratory at ETH.
+# This repository has [moved](https://shinmera.com/projects/factory-reset)!
+Due to Microsoft's continued enshittification of the platform this repository has been moved to [Codeberg](https://shinmera.com/projects/factory-reset) in August of 2025. It will not receive further updates or patches. **Issues and pull requests will not be looked at here either**, please submit your patches and issue tickets on Codeberg, or send them directly via good old email patches to [shirakumo@tymoon.eu](mailto:shirakumo@tymoon.eu).
 
-The game can be downloaded on [itch.io](https://shinmera.itch.io/factory-reset) and a trailer can be seen on [YouTube](https://www.youtube.com/watch?v=L0zmt9HId54).
-
-## Authors
-* [Yukari Hafner](https://shinmera.com) ([@Shinmera](https://shinmera.com))
-* Gengyan li
-* Amir Heidari
-* Nicole Manojlovic
-* Pulkit Singh
+Thanks.
